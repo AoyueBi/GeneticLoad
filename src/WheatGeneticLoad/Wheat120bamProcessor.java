@@ -35,7 +35,7 @@ public class Wheat120bamProcessor {
         //this.mkParameterchr1_42();
         this.mkJavaCmdchr1_42();
         //this.mergewheatchrVCF();
-        //this.countVCF();
+        this.countVCF();
         //this.subsetVCF();
         /**
          * ***只含有SD Depth*******

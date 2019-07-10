@@ -3,18 +3,21 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package WheatGeneticLoad;
+package Entrance;
 
+import WheatGeneticLoad.WheatABDvcfProcessor;
+import WheatGeneticLoad.WheatABandDcleandataProcessor;
 import format.table.RowTable;
 import utils.IOFileFormat;
+import vcf.CountSites;
 
 /**
  *
  * @author Aoyue
  */
-public class WheatGLoadEntrance {
-    public WheatGLoadEntrance(){
-        //this.firstProcess();
+public class GeneticLoadEntrance {
+    public GeneticLoadEntrance(){
+        this.firstProcess();
         
         
     }
@@ -24,19 +27,19 @@ public class WheatGLoadEntrance {
         //new Wheat120bamProcessor();
         //new Wheat200cleanDataProcessor();
         //new WheatBamDatabase();
-        new WheatABandDcleandataProcessor();
-        //new WheatABDvcfProcessor();
+        //new WheatABandDcleandataProcessor();
+        new WheatABDvcfProcessor();
         
     }
     
     
     public static void main (String[] args){
-        System.out.println("Here is the entrance of wheatGload !");
+        System.out.println("傲月-个人库 Here is the entrance of GeneticLoad!");
         //System.out.println("I made some revise on itellij ");
-        new WheatGLoadEntrance();
+        new GeneticLoadEntrance();
         
      
-        //new WheatGLoadEntrance().test("s", "s");
+        //new GeneticLoadEntrance().test("s", "s");
         
     }  
     
