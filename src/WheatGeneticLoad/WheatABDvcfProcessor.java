@@ -29,7 +29,88 @@ public class WheatABDvcfProcessor {
         //new Treetest();
         //this.countSites("/data4/home/aoyue/vmap2/abd/rawVCF/");
         //this.calSNPHetMissMaf();
-        this.mergeChr1and2();
+        //this.mergeChr1and2();
+        //this.subsetHetMissMafRandom();
+        this.mergesubsetData();
+
+    }
+
+    /**
+     * 将生成的1-6染色体统计数据合并起来，成为一个文件。 1.建立表头，写入头文件； 2.建立数组，将文件名字按顺序读入；
+     * 3.进行for循环，合并文件。
+     */
+    public void mergesubsetData() {
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/003_calSNPHetMissMaf/002_subsetCalSNPHetMissMaf/";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/003_calSNPHetMissMaf/003_merge/subsetCalSNPHetMissMaf.txt";
+        File[] fs = new File(infileDirS).listFiles();
+        fs = IOUtils.listFilesEndsWith(fs, ".txt");
+        Arrays.sort(fs);
+
+        try {
+            //只读入表头
+            BufferedReader br = IOUtils.getTextReader("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/003_calSNPHetMissMaf/002_subsetCalSNPHetMissMaf/chr001_SNPheterMiss_subset.txt");
+            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            bw.write(br.readLine());
+            bw.newLine();
+            br.close();
+            //按文件顺序合并
+            for (int i = 0; i < fs.length; i++) {
+                String infileS = fs[i].getAbsolutePath();
+                br = IOUtils.getTextReader(infileS);
+                String temp = br.readLine(); //表头
+                while ((temp = br.readLine()) != null) {
+                    bw.write(temp);
+                    bw.newLine();
+                }
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+    }
+
+    /**
+     * 从全部数据中提取Chr HetPropotion MissProportion Maf 4列，合计1M数据量
+     */
+    public void subsetHetMissMafRandom() {
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/003_calSNPHetMissMaf";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/004_subsetCalSNPHetMissMaf";
+        File[] fs = new File(infileDirS).listFiles();
+        fs = IOUtils.listFilesEndsWith(fs, ".gz");
+        List<File> fsList = Arrays.asList(fs);
+        Collections.sort(fsList);
+        System.out.println(new SimpleDateFormat().format(new Date()) + "\tbegin.");
+        fsList.parallelStream().forEach(f -> {
+            try {
+                BufferedReader br = IOUtils.getTextGzipReader(f.getAbsolutePath());
+                String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "_subset.txt").getAbsolutePath();
+                BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+                String temp = br.readLine();
+                bw.write("Chr\tHetPropotion\tMissProportion\tMaf\n");
+                int cnt = 0;
+                while ((temp = br.readLine()) != null) {
+                    double r = Math.random();
+                    if (r > 0.001) {
+                        continue; //返回带正号的 double 值，该值大于等于 0.0 且小于 1.0。返回值是一个伪随机选择的数，在该范围内（近似）均匀分布
+                    }
+                    List<String> l = PStringUtils.fastSplit(temp);
+                    bw.write(l.get(0) + "\t" + l.get(3) + "\t" + l.get(5) + "\t" + l.get(6));
+                    bw.newLine();
+                }
+                br.close();
+                bw.flush();
+                bw.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
+
+        });
+        System.out.println(new SimpleDateFormat().format(new Date()) + "\tend.");
 
     }
 
