@@ -6,10 +6,9 @@
 package Entrance;
 
 import WheatGeneticLoad.WheatABDvcfProcessor;
+import AoUtils.SplitScript;
 import WheatGeneticLoad.WheatABandDcleandataProcessor;
-import format.table.RowTable;
-import utils.IOFileFormat;
-import vcf.CountSites;
+import WheatGeneticLoad.WheatBamDatabase;
 
 /**
  *
@@ -27,8 +26,8 @@ public class GeneticLoadEntrance {
         //new Wheat120bamProcessor();
         //new Wheat200cleanDataProcessor();
         //new WheatBamDatabase();
-        //new WheatABandDcleandataProcessor();
-        new WheatABDvcfProcessor();
+        new WheatABandDcleandataProcessor();
+        //new WheatABDvcfProcessor();
         
     }
     
@@ -37,6 +36,7 @@ public class GeneticLoadEntrance {
         System.out.println("傲月-个人库 Here is the entrance of GeneticLoad!");
         //System.out.println("I made some revise on itellij ");
         new GeneticLoadEntrance();
+        //new SplitScript().splitBwaScript("/Users/Aoyue/Documents/sh_md5_WheatVMapII_ABgenome_fixmatePosBam.sh", "md5_WheatVMapII_ABgenome_fixmateBam_", 20, 32);
         
      
         //new GeneticLoadEntrance().test("s", "s");
