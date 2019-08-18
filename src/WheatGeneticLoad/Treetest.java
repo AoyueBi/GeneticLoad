@@ -5,10 +5,12 @@
  */
 package WheatGeneticLoad;
 
+import format.table.RowTable;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import utils.IOUtils;
@@ -21,10 +23,185 @@ import utils.PStringUtils;
 public class Treetest {
 
     public Treetest() {
-        //this.colbyType();
-        this.colbyContinent();
-        this.binarybyType();
+//        this.colbyType();
+        //this.colbyContinent();
+//        this.binarybyType();
+//        this.labels();
+        this.TREE_COLORS();
+        //this.colRanges();
+        //this.colRangesbyDico();
 
+    }
+    
+    public void colRangesbyDico() {
+        String[] group = {"dicoccum", "dicoccoides"};
+        String[] col = {"#76EEC6","#cd3333"};  // 枫叶红 #cd3333   黄#FFC125
+        HashMap<String, String> hm = new HashMap<>();
+        for (int i = 0; i < group.length; i++) {
+            hm.put(group[i], col[i]);
+        }
+        String infileS = "/Users/Aoyue/project/wheatVMapII/001_germplasm/GermplasmDB/wheatVMapII_AB_S205_germplasmInfo.txt";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/AB/003_tree/002_labelsChange/";
+        Arrays.sort(group);
+        try {
+            BufferedReader br = IOUtils.getTextReader(infileS);
+            BufferedWriter[] bw = new BufferedWriter[2];
+            //bw[0] = IOUtils.getTextWriter(new File(outfileDirS, "001_addcol_branch_byContient.txt").getAbsolutePath());
+            bw[1] = IOUtils.getTextWriter(new File(outfileDirS, "003_colRangebyDico.ABgenome.txt").getAbsolutePath());
+            String temp = br.readLine();
+            List<String> l = new ArrayList<>();
+            //bw[0].write("TREE_COLORS\nSEPARATOR TAB\nDATA\n");
+            bw[1].write("TREE_COLORS\nSEPARATOR TAB\nDATA\n");
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                String DatabaseID = l.get(0);
+                String type = l.get(7);
+                //bw[0].write(DatabaseID + "\tbranch\t" + hm.get(partContinent));
+                
+                int index = Arrays.binarySearch(group, type);
+                if(index >= 0){
+                    bw[1].write(DatabaseID + "\trange\t" + hm.get(type) + "\t"+ type);
+                    bw[1].newLine();
+                }
+                //bw[0].newLine();
+            }
+            br.close();
+            //bw[0].flush();
+            bw[1].flush();
+            //bw[0].close();
+            bw[1].close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+    
+    /**
+     * 根据亚洲部洲和其他大洲信息，分组为10组进行着色显示
+     */
+    public void colRanges() {
+        String[] group = {"Oceania", "Africa", "North America", "South America", "Europe","Asia"};
+        //String[] col = {"#F1E1FF","#F4D03F","#F1948A","#5DADE2","#ABEBC6","#239B56","#CD6155","#FF6347","#7B241C","#EBEDEF"};
+        String[] col = {"#5DADE2","#7B241C","#F1E1FF","#F4D03F","#FF9900","#82C782"};
+        HashMap<String, String> hm = new HashMap<>();
+        for (int i = 0; i < group.length; i++) {
+            hm.put(group[i], col[i]);
+        }
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/ABD/001_tree/source/002_merge/All373wheat_ABD_CountryBreedingStatus.txt";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/ABD/001_tree/002_addcolor/";
+        Arrays.sort(group);
+        try {
+            BufferedReader br = IOUtils.getTextReader(infileS);
+            BufferedWriter[] bw = new BufferedWriter[2];
+            //bw[0] = IOUtils.getTextWriter(new File(outfileDirS, "001_addcol_branch_byContient.txt").getAbsolutePath());
+            bw[1] = IOUtils.getTextWriter(new File(outfileDirS, "003_addcol_range_byContient.txt").getAbsolutePath());
+            String temp = br.readLine();
+            List<String> l = new ArrayList<>();
+            //bw[0].write("TREE_COLORS\nSEPARATOR TAB\nDATA\n");
+            bw[1].write("TREE_COLORS\nSEPARATOR TAB\nDATA\n");
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                String DatabaseID = l.get(2);
+                String partContinent = l.get(14);
+                String continent = l.get(8);
+                //bw[0].write(DatabaseID + "\tbranch\t" + hm.get(partContinent));
+                
+                int index = Arrays.binarySearch(group, continent);
+                if(index >= 0){
+                    bw[1].write(DatabaseID + "\trange\t" + hm.get(continent) + "\t"+ partContinent);
+                    bw[1].newLine();
+                }
+                //bw[0].newLine();
+            }
+            br.close();
+            //bw[0].flush();
+            bw[1].flush();
+            //bw[0].close();
+            bw[1].close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    /**
+     * 修改树的颜色、标签风格（'normal','bold', 'italic' or 'bold-italic'）、字体大小
+     */
+    public void TREE_COLORS() {
+
+//        try {
+//            String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/AB/003_tree/002_labelsChange/002_reaptItem.txt";
+//            String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/AB/003_tree/002_labelsChange/003_reaptItemlist.txt";
+//            String temp;
+//            BufferedReader br = IOUtils.getTextReader(infileS);
+//            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+//            while ((temp = br.readLine()) != null) {
+//                bw.write(PStringUtils.fastSplit(temp).get(1).substring(0, 5));
+//                bw.newLine();
+//                bw.write(PStringUtils.fastSplit(temp).get(1).substring(6));
+//                bw.newLine();
+//            }
+//            br.close();
+//            bw.flush();
+//            bw.close();
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            System.exit(1);
+//        }
+
+        try {
+            String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/AB/003_tree/002_labelsChange/reaptItemlist.txt";
+            String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/AB/003_tree/002_labelsChange/002_treeColors.ABgenome.txt";
+            BufferedReader br = IOUtils.getTextReader(infileS);
+            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            bw.write("TREE_COLORS\n");
+            bw.write("SEPARATOR TAB\n");
+            bw.write("DATA\n");
+            String temp = null; //read header
+            while ((temp = br.readLine()) != null) {
+                String databaseID = PStringUtils.fastSplit(temp).get(0);
+                //String taxa = PStringUtils.fastSplit(temp).get(4);
+                bw.write(databaseID + "\tlabel\t#008000\tbold\t1.5");
+                bw.newLine();
+                bw.write(databaseID + "\trange\t#D3D3D3\trepeat");
+                bw.newLine();
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    /**
+     * 修改树node的名字
+     */
+    public void labels() {
+        String infileS = "/Users/Aoyue/project/wheatVMapII/001_germplasm/种质信息库/wheatVMapII_AB_S205_germplasmInfo.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/AB/003_tree/002_labelsChange/001_labelschange.ABgenome.txt";
+        try {
+            BufferedReader br = IOUtils.getTextReader(infileS);
+            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            bw.write("LABELS\n");
+            bw.write("SEPARATOR TAB\n");
+            bw.write("DATA\n");
+            String temp = br.readLine(); //read header
+            while ((temp = br.readLine()) != null) {
+                String databaseID = PStringUtils.fastSplit(temp).get(0);
+                String taxa = PStringUtils.fastSplit(temp).get(4);
+                bw.write(databaseID + "\t" + databaseID + " " + taxa);
+                bw.newLine();
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
     /**
@@ -79,8 +256,8 @@ public class Treetest {
             }
         }
 
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_tree/source/002_merge/All373wheat_ABD_CountryBreedingStatus.txt";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_tree/002_addcolor/002_binarybyType.txt";
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/ABD/001_tree/source/002_merge/All373wheat_ABD_CountryBreedingStatus.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/ABD/001_tree/002_addcolor/002_binarybyType.txt";
         try {
             BufferedReader br = IOUtils.getTextReader(infileS);
             BufferedWriter bw = IOUtils.getTextWriter(outfileS);
@@ -120,8 +297,8 @@ public class Treetest {
         for (int i = 0; i < group.length; i++) {
             hm.put(group[i], col[i]);
         }
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_tree/source/002_merge/All373wheat_ABD_CountryBreedingStatus.txt";
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_tree/002_addcolor/";
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/ABD/001_tree/source/002_merge/All373wheat_ABD_CountryBreedingStatus.txt";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/ABD/001_tree/002_addcolor";
         try {
             BufferedReader br = IOUtils.getTextReader(infileS);
             BufferedWriter[] bw = new BufferedWriter[2];
@@ -135,8 +312,8 @@ public class Treetest {
                 l = PStringUtils.fastSplit(temp);
                 String DatabaseID = l.get(2);
                 String partContinent = l.get(14);
-                bw[0].write(DatabaseID + "\tbranch\t" + hm.get(partContinent) + "\tnormal");
-                bw[1].write(DatabaseID + "\trange\t" + hm.get(partContinent) + "\tnormal");
+                bw[0].write(DatabaseID + "\tbranch\t" + hm.get(partContinent));
+                bw[1].write(DatabaseID + "\trange\t" + hm.get(partContinent) + "\t"+ partContinent);
                 bw[0].newLine();
                 bw[1].newLine();
             }

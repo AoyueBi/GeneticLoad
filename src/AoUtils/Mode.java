@@ -5,13 +5,45 @@
  */
 package AoUtils;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import utils.IOUtils;
+
 /**
  *
  * @author Aoyue
  */
 public class Mode {
     
-    String infileDirS = "";
-    String outfileDirS = "";
-    
+    public Mode(){
+        
+    }
+
+    public void mode() {
+        String infileDirS = "";
+        String outfileDirS = "";
+
+        String infileS = "";
+        String outfileS = "";
+
+        try {
+            BufferedReader br = IOUtils.getTextReader(infileS);
+            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            String temp = null;
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                StringBuilder sb = new StringBuilder();
+                if (temp.startsWith("#")) {
+                    continue;
+                }
+                cnt++;
+            }
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+    }
+
 }

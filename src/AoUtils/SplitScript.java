@@ -21,6 +21,15 @@ public class SplitScript {
     public SplitScript(){
         
     }
+    
+    /**
+     * 
+     * @param infileS
+     * @param nameprefix, the script name you wanna
+     * @param numfile, the file number you wanna split to
+     * @param numcmd, the number of CDM in each file
+     * eg:"/Users/Aoyue/Documents/sh_md5_WheatVMapII_ABgenome_fixmatePosBam.sh", "md5_WheatVMapII_ABgenome_fixmateBam_", 20, 32
+     */
     public void splitBwaScript(String infileS,String nameprefix,int numfile, int numcmd) {
         //String infileS = "/Users/Aoyue/project/wheatVMapII/006_ABandD/000_cleandata/001_bwaScript/bwa_20190705needRERUN.sh";
         //String outfileDirS = "/Users/Aoyue/project/wheatVMapII/006_ABandD/000_cleandata/001_bwaScript/splitScript";

@@ -5,6 +5,8 @@
  */
 package WheatGeneticLoad;
 
+import AoUtils.CountSites;
+import AoUtils.Script;
 import format.table.RowTable;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -23,21 +25,26 @@ import utils.PStringUtils;
  *
  * @author Aoyue
  */
-public class WheatABDvcfProcessor {
+public class ABDvcfProcessor {
 
-    public WheatABDvcfProcessor() {
-        //this.subsetVCFdataRandom();
-        //new Treetest();
-        //this.countSites("/data4/home/aoyue/vmap2/abd/rawVCF/");
-        //this.calSNPHetMissMaf();
+    public ABDvcfProcessor() {
+//        this.subsetVCFdataRandom();
+//        new Treetest();
+//        this.countSites("/data4/home/aoyue/vmap2/abd/rawVCF/");
+//        this.calSNPHetMissMaf();
         this.mergeChr1and2();
-        //this.subsetHetMissMafRandom(); //已和下一步合并起来
-        //this.mergesubsetHetMissMafRandomData();
-
-        //this.subsetVCFRandomParallel();
-        //this.mergesubsetVCF();
-        //this.addGrouptoMDS();
-        //this.VCFfromGATKTest();
+//        this.subsetHetMissMafRandom(); //已和下一步合并起来
+//        this.mergesubsetHetMissMafRandomData();
+//
+//        this.subsetVCFRandomParallel();
+        this.mergesubsetVCF();
+//        
+        this.addGrouptoMDS();
+//        this.VCFfromGATKTest();
+//        new Script().bgzip_noscript("/data4/home/aoyue/vmap2/abd/rawVCF/", "/data4/home/aoyue/vmap2/abd/rawVCF/");
+//        new CountSites().countSitesinFastCallformat("/data4/home/aoyue/vmap2/analysis/001_rawvcf/abd");
+//        new CountSites().filterAllele("/data4/home/aoyue/vmap2/analysis/001_rawvcf/abd/", "/data4/home/aoyue/vmap2/analysis/002_bivcf/abd/");
+        new CountSites().subsetVCFRandomParallel_GZ("/data4/home/aoyue/vmap2/analysis/003_filterMiss/abd/", "/data4/home/aoyue/vmap2/analysis/004_subsetvcf/abd/");
         
         
     }
@@ -46,8 +53,7 @@ public class WheatABDvcfProcessor {
      * 对CATK生成的VCF文件进行测试，看看结果是否和FastCall一样
      */
     public void VCFfromGATKTest(){
-        //this.subsetVCFRandomParallelfromGATK();
-        //this.calSNPHetMissMaffromGATK();
+        this.calSNPHetMissMaffromGATK();
         this.countSitesfromGATK("/data3/wgs/vcf/GATK/001_rawvcf/SNP_S319");
         
     }
@@ -59,7 +65,6 @@ public class WheatABDvcfProcessor {
      * @param infileDirS
      */
     public void countSitesfromGATK(String infileDirS) {
-        //infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_tree/source/";
         File[] fs = new File(infileDirS).listFiles();
         fs = IOUtils.listFilesEndsWith(fs, ".vcf.gz");
         List<File> fsList = Arrays.asList(fs);
@@ -199,63 +204,7 @@ public class WheatABDvcfProcessor {
 
     }
     
-    /**
-     * 对已生成的vcf数据进行随机抽取，多线程14条染色体同时进行；
-     */
-    public void subsetVCFRandomParallelfromGATK() {
-        //String infileDirS = "/data4/home/aoyue/vmap2/abd/rawVCF/";
-        //String outfileDirS = "/data4/home/aoyue/vmap2/abd/005_vcf/004_pca/001_subsetVCF/";
-        
-        String infileDirS = "";
-        String outfileDirS = "";
-        
-        File[] fs = new File(infileDirS).listFiles();
-        fs = IOUtils.listFilesEndsWith(fs, ".vcf");
-        List<File> fsList = Arrays.asList(fs);
-        Collections.sort(fsList);
-        System.out.println(new SimpleDateFormat().format(new Date()) + "\tbegin.");
-        long startTime = System.nanoTime();
-        fsList.parallelStream().forEach(f -> {
-            try {
-                BufferedReader br = IOUtils.getTextReader(f.getAbsolutePath());
-                String outfileS = new File(outfileDirS, f.getName().split(".vcf")[0] + "_subset.vcf").getAbsolutePath();
-                BufferedWriter bw = IOUtils.getTextWriter(outfileS);
-                String temp = null;
-                int cnt = 0;
-                while ((temp = br.readLine()) != null) {
-                    if (temp.startsWith("#")) {
-                        bw.write(temp);
-                        bw.newLine();
-                    } else {
-                        cnt++;
-                        double r = Math.random();
-                        if (r > 0.001) {
-                            continue; //返回带正号的 double 值，该值大于等于 0.0 且小于 1.0。返回值是一个伪随机选择的数，在该范围内（近似）均匀分布
-                        }
-                        List<String> l = PStringUtils.fastSplit(temp);
-                        if (l.get(3).contains(",")) {
-                            continue; // 第3列是alt的信息，若有2个等位基因，则去除这一行
-                        }
-                        bw.write(temp);
-                        bw.newLine();
-                    }
-                }
-                bw.flush();
-                bw.close();
-                br.close();
-
-                System.out.println(f.getName() + " is being subset about\t" + cnt);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-        });
-        long endTime = System.nanoTime();
-        float excTime = (float) (endTime - startTime) / 1000000000;
-        System.out.println("Execution time: " + String.format("%.2f", excTime) + "s");
-        System.out.println(new SimpleDateFormat().format(new Date()) + "\tend.");
-
-    }
+    
     
     
 
@@ -439,7 +388,7 @@ public class WheatABDvcfProcessor {
                         bw.write(temp);
                         bw.newLine();
                     } else {
-                        cnt++;
+                        
                         double r = Math.random();
                         if (r > 0.001) {
                             continue; //返回带正号的 double 值，该值大于等于 0.0 且小于 1.0。返回值是一个伪随机选择的数，在该范围内（近似）均匀分布
@@ -450,6 +399,7 @@ public class WheatABDvcfProcessor {
                         }
                         bw.write(temp);
                         bw.newLine();
+                        cnt++;
                     }
                 }
                 bw.flush();
@@ -759,11 +709,11 @@ public class WheatABDvcfProcessor {
     }
 
     private void subsetVCFdataRandom() {
-        //String infileS = "/data4/home/aoyue/vmap2/abd/rawVCF/chr001.vcf";
-        //String outfileS = "/data4/home/aoyue/vmap2/abd/rawVCF/chr001_subset.vcf";
+        String infileS = "/data4/home/aoyue/vmap2/abd/rawVCF/chr001.vcf";
+        String outfileS = "/data4/home/aoyue/vmap2/abd/rawVCF/chr001_subset.vcf";
 
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/004_pca/002_merge/subsetchr1_15.vcf.gz";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/004_pca/002_merge/subset10ksnp.vcf.gz";
+        //String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/004_pca/002_merge/subsetchr1_15.vcf.gz";
+        //String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/004_pca/002_merge/subset10ksnp.vcf.gz";
 
         try {
             //BufferedReader br = IOUtils.getTextReader(infileS);

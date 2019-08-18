@@ -34,7 +34,7 @@ public class Wheat120bamProcessor {
         //this.mkFastCallTaxaBamMapchr1_42();
         //this.mkParameterchr1_42();
         this.mkJavaCmdchr1_42();
-        //this.mergewheatchrVCF();
+        this.mergewheatchrVCF();
         this.countVCF();
         //this.subsetVCF();
         /**
