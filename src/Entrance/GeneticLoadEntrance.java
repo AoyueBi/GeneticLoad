@@ -19,7 +19,7 @@ import utils.PArrayUtils;
 public class GeneticLoadEntrance {
 
     public GeneticLoadEntrance() {
-        //this.firstProcess();
+        this.firstProcess();
 
     }
 
@@ -44,7 +44,7 @@ public class GeneticLoadEntrance {
     public static void main(String[] args) {
         System.out.println("Aoyue Repository --- Here is the entrance of GeneticLoad!\n");
         System.out.println(new SimpleDateFormat().format(new Date()) + "\tbegin.");
-        //new GeneticLoadEntrance();
+        new GeneticLoadEntrance();
         //new CountSites().extractHapPos(args[0], args[1]);
         System.out.println(new SimpleDateFormat().format(new Date()) + "\tend.");
 
@@ -60,10 +60,13 @@ public class GeneticLoadEntrance {
         //new SplitScript().splitBwaScript("/Users/Aoyue/Documents/sh_md5_WheatVMapII_ABgenome_fixmatePosBam.sh", "md5_WheatVMapII_ABgenome_fixmateBam_", 20, 32);
         //new GeneticLoadEntrance().test();
         //new CountSites().extractHapPos(args[0], args[1]);
-        new Bin().mkBintable("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/010_changeChrPos/004_changeHapPos/", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/010_changeChrPos/005_bin.1M/", 1000000);
+        //new Bin().mkBintable("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/010_changeChrPos/005_mergepos", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/010_changeChrPos/005_bin.1M/", 1000000);
         //new CountSites().changechrPos("/Users/Aoyue/Documents/003_mkHapPos/", "/Users/Aoyue/Documents/004_changeHapPos/");
         //new CountSites().changechrPosOnVCF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/003_subsetVCF/d/", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/003_subsetVCF/d_changChrPos/");
         //new CountSites().mergeTxt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/010_changeChrPos/004_changeHapPos/", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/010_changeChrPos/005_merge/chr_merged.Dgenome.txt.gz");
+        //new CountSites().mergeTxt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/011_snpDistribution/d/001_bin/", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/011_snpDistribution/d/002_mergeBinfile/chrDgenome.SNPdensity.1Mbwind.txt");
+        //new CountSites().mergefile1and2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/010_changeChrPos/004_changeHapPos/", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/010_changeChrPos/005_mergepos/");
+        //new CountSites().mergefile1and2("/Users/Aoyue/Documents/input/", "/Users/Aoyue/Documents/output/");
     }
 
     public void test() {

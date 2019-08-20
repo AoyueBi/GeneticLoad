@@ -24,7 +24,24 @@ public class Bin {
     public Bin() {
 
     }
+    
+    /**
+     * 根据合并后的1D 2D 3D 4D 5D 6D 7D文件，分别建立BinTable,最终依旧在一个文件中输出。
+     * @param infileS
+     * @param outfileDirS
+     * @param binSize 
+     */
+    public void mkBinTable(String infileS, String outfileDirS, int binSize){
+        
+    }
 
+    
+    /**
+     * make bin table, 一个文件制作一个Binfile
+     * @param infileDirS
+     * @param outfileDirS
+     * @param binSize 
+     */
     public void mkBintable(String infileDirS, String outfileDirS, int binSize) {
         //String 
         File[] fs = new File(infileDirS).listFiles();

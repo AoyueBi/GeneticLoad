@@ -36,7 +36,7 @@ public class WheatABandDcleandataProcessor {
         //this.mergeBamfromSuppleData();
         //this.mergeBamScript();
         //this.mkParameterchr1_42_D();
-        //this.mkJavaCmdchr1_42_D();
+        this.mkJavaCmdchr1_42_D();
         //this.mkParameterchr1_42_AB();
         //this.mkJavaCmdchr1_42_AB();
     }
