@@ -8,8 +8,11 @@ package Entrance;
 import AoUtils.Bin;
 import AoUtils.CountSites;
 import WheatGeneticLoad.Sift;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import utils.IOUtils;
 import utils.PArrayUtils;
 
 /**
@@ -17,12 +20,12 @@ import utils.PArrayUtils;
  * @author Aoyue
  */
 public class GeneticLoadEntrance {
-
+    
     public GeneticLoadEntrance() {
         this.firstProcess();
-
+        
     }
-
+    
     public void firstProcess() {
         //new MapMake();
         //new Wheat120cleandataProcessor();  //Jiao
@@ -38,9 +41,8 @@ public class GeneticLoadEntrance {
         //new ABvcfProcessor();
         //new DvcfProcessor();
         new Sift();
-
     }
-
+    
     public static void main(String[] args) {
         System.out.println("Aoyue Repository --- Here is the entrance of GeneticLoad!\n");
         System.out.println(new SimpleDateFormat().format(new Date()) + "\tbegin.");
@@ -49,13 +51,16 @@ public class GeneticLoadEntrance {
         System.out.println(new SimpleDateFormat().format(new Date()) + "\tend.");
 
         /**
-         * ******************************* temporary method *********************************************
+         * ******************************* temporary method
+         * *********************************************
          */
         /**
-         * ******************************* temporary method *********************************************
+         * ******************************* temporary method
+         * *********************************************
          */
         /**
-         * ******************************* temporary method *********************************************
+         * ******************************* temporary method
+         * *********************************************
          */
         //new SplitScript().splitBwaScript("/Users/Aoyue/Documents/sh_md5_WheatVMapII_ABgenome_fixmatePosBam.sh", "md5_WheatVMapII_ABgenome_fixmateBam_", 20, 32);
         //new GeneticLoadEntrance().test();
@@ -68,18 +73,29 @@ public class GeneticLoadEntrance {
         //new CountSites().mergefile1and2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/010_changeChrPos/004_changeHapPos/", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/010_changeChrPos/005_mergepos/");
         //new CountSites().mergefile1and2("/Users/Aoyue/Documents/input/", "/Users/Aoyue/Documents/output/");
     }
-
+    
     public void test() {
         
-        int[][] bound = PArrayUtils.getSubsetsIndicesBySubsetSize(600000, 30000);
-        for(int i=0; i<bound.length; i++){
-//            bound[i][0] = i*30000;
-//            bound[i][1] = i*30000;
-            System.out.println(bound[i][0]);
-        }
-        int a = 6;
+        String outfileS = "/Users/Aoyue/Documents/userAdd.txt";
         
+        try {
+            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            String[] user = {"aoyue", "changbin", "daxing", "feilu", "guest", "jijin", "jingwang", "junxu", "lipeng", "qianqian", "sharedData", "xiaohan", "xuebo", "yaozhou", "zhiliang"};
+            for (int i = 0; i < user.length; i++) {
+                bw.write("useradd -d /data1/home/" + user[i] + " -m " + user[i]+ "\n"
+                        + "passwd " + user[i] + "\n"
+                        + "chown " + user[i] + " -R /data1/home/" + user[i] + "\n");
+                
+            }
+            bw.flush();
+            bw.close();
             
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+        
     }
-
+    
 }

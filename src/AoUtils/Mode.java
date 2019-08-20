@@ -14,9 +14,9 @@ import utils.IOUtils;
  * @author Aoyue
  */
 public class Mode {
-    
-    public Mode(){
-        
+
+    public Mode() {
+
     }
 
     public void mode() {
@@ -43,6 +43,27 @@ public class Mode {
             e.printStackTrace();
             System.exit(1);
         }
+
+        try {
+            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        //////////////////
+        try {
+            BufferedReader br = IOUtils.getTextReader(infileS);
+            String temp = null;
+            while ((temp = br.readLine()) != null) {
+                
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+        ////////////////////
 
     }
 

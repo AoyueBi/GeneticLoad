@@ -5,6 +5,7 @@
  */
 package WheatGeneticLoad;
 
+import format.table.RowTable;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -26,13 +27,60 @@ public class Sift {
         //this.parseGff3();
         //this.mkInputDirs();
         //this.mkParameterConfigChr1_42();
-        this.mkJavaCmdchr1_42_SIFTdb();
+        //this.mkJavaCmdchr1_42_SIFTdb();
+        //this.mvDatabase();
+        this.annotatorVCF();
+
+    }
+
+    /**
+     * find -name "*.gz" | cut -c3- ; 本地获取运行脚本，输出在netbeans的output界面。 -c	To run
+     * on command line -i	Path to your input variants file in VCF format -d	Path
+     * to SIFT database directory -r Path to your output results folder -t	To
+     * extract annotations for multiple transcripts (Optional)
+     * 输出的文件产生的日志也保存下来，便于计算时间。 注意输入文件必须是解压后的vcf
+     */
+    public void annotatorVCF() {
+        String infileDirS = "/data4/home/aoyue/vmap2/analysis/008_sift/dbSNP20190820/abd/";
+        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/008_sift/abd_iwgscV1_SIFT4G_db/output/abd/";
+
+        try {
+            String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/002_annotatorVCF/001_fileList/list_chrABDgenomeTest.txt";
+            BufferedReader br = IOUtils.getTextReader(infileS);
+            String temp = null;
+            while ((temp = br.readLine()) != null) {
+                String chr = temp.substring(3, 6);
+                System.out.println("java -jar /data1/home/aoyue/biosoftware/SIFT4g_Annotator/SIFT4G_Annotator_v2.4.jar -c -i "
+                        + new File(infileDirS, temp).getAbsolutePath()
+                        + " -d /data4/home/aoyue/vmap2/analysis/008_sift/abd_iwgscV1_SIFT4G_db/siftDatabase -r "
+                        + new File(outfileDirS, "output" + chr).getAbsolutePath()
+                        + " -t > "
+                        + new File(outfileDirS, "log_" + temp + ".annotator.txt").getAbsolutePath()
+                        + " &");
+                //java -jar /data1/home/aoyue/biosoftware/SIFT4g_Annotator/SIFT4G_Annotator_v2.4.jar -c -i /data4/home/aoyue/vmap2/analysis/008_sift/abd_iwgscV1_SIFT4G_db/input001/dbSNP/chr036.Dgenome.bi.vcf.gz -d /data4/home/aoyue/vmap2/analysis/008_sift/abd_iwgscV1_SIFT4G_db/input001/abd_iwgscV1 -r /data4/home/aoyue/vmap2/analysis/008_sift/abd_iwgscV1_SIFT4G_db/output/output036 -t &
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    public void mvDatabase() {
+        String[] num = new String[42];
+        String[] num2 = new String[42];
+        for (int i = 0; i < num.length; i++) {
+            num[i] = String.valueOf(i + 1);
+            num2[i] = String.valueOf(PStringUtils.getNDigitNumber(3, i + 1));
+            System.out.println("cp -f /data4/home/aoyue/vmap2/analysis/008_sift/abd_iwgscV1_SIFT4G_db/input" + num2[i] + "/abd_iwgscV1/" + num[i] + ".gz /data4/home/aoyue/vmap2/analysis/008_sift/abd_iwgscV1_SIFT4G_db/siftDatabase/ ");
+            System.out.println("cp -f /data4/home/aoyue/vmap2/analysis/008_sift/abd_iwgscV1_SIFT4G_db/input" + num2[i] + "/abd_iwgscV1/" + num[i] + ".regions /data4/home/aoyue/vmap2/analysis/008_sift/abd_iwgscV1_SIFT4G_db/siftDatabase/ ");
+            System.out.println("cp -f /data4/home/aoyue/vmap2/analysis/008_sift/abd_iwgscV1_SIFT4G_db/input" + num2[i] + "/abd_iwgscV1/" + num[i] + "_SIFTDB_stats.txt /data4/home/aoyue/vmap2/analysis/008_sift/abd_iwgscV1_SIFT4G_db/siftDatabase/ ");
+        }
 
     }
 
     public void mkJavaCmdchr1_42_SIFTdb() {
         String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/001_buildWheatSIFTdb/script/";
-        String shfileS = new File("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/001_buildWheatSIFTdb/","sh_mkSIFTdb.sh").getAbsolutePath();
+        String shfileS = new File("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/001_buildWheatSIFTdb/", "sh_mkSIFTdb.sh").getAbsolutePath();
         //nohup java -Xms200g -Xmx500g -jar FastCall.jar parameters_001_FastCall.txt > log_001_fastcall.txt &
         try {
 
@@ -45,17 +93,16 @@ public class Sift {
                         + "perl make-SIFT-db-all.pl -config /data4/home/aoyue/vmap2/analysis/008_sift/abd_iwgscV1_SIFT4G_db/config/abd_iwgscV1_SIFT4G_Create_Genomic_DB_config" + chr + ".txt > log_chr" + chr + ".wheat_sift4G_pipeline.step.txt\n"
                         + "date\n"
                         + "echo \"chr" + chr + "    :Create wheat sif4G database ends\"" + "\n");
-                
+
                 bw.flush();
                 bw.close();
             }
-            
 
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
         }
-        
+
         try {
             File[] fs = new File(outfileDirS).listFiles();
             fs = IOUtils.listFilesEndsWith(fs, ".sh");
