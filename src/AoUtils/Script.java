@@ -20,7 +20,30 @@ import utils.IOUtils;
 public class Script {
 
     public Script() {
+        this.removeBadTaxafromVCF();
 
+    }
+    
+    /**
+     * find -name "*.vcf" | cut -c3- ; 本地获取运行脚本，输出在netbeans的output界面。 
+     */
+    public void removeBadTaxafromVCF() {
+        try {
+            String infileS = "/Users/Aoyue/Documents/vcflist.txt";
+            BufferedReader br = IOUtils.getTextReader(infileS);
+            String temp = null;
+            while ((temp = br.readLine()) != null) {
+                String chr = temp.substring(3, 6);
+//vcftools --vcf /data2/aoyue/fastcall_ABgenome/003_rawVCF_removeBadTaxa/chr001.ABgenome.10000lines.vcf --remove-indv B0043  --remove-indv B0205 --remove-indv B0092 --remove-indv B0144 --remove-indv B0028 --remove-indv B0191 --remove-indv B0178 --remove-indv B0046 --recode --recode-INFO-all --out chr001.ABgenome.10000lines.removeBadTaxa
+                System.out.println("vcftools --gzvcf /data2/aoyue/fastcall_ABgenome/002_bivcf/" + temp 
+                        + " --remove /data2/aoyue/fastcall_ABgenome/003_rawVCF_removeBadTaxa/removeList_ABgenome.txt --recode --recode-INFO-all --stdout | bgzip -c -@ 4 > " 
+                        + "/data2/aoyue/fastcall_ABgenome/004_bivcf_removeBadTaxa/" + temp.replaceFirst(".vcf.gz", ".removeBadTaxa.vcf.gz")
+                        + " &");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
     
     
@@ -47,6 +70,7 @@ public class Script {
     
     /**
      * find | cut -f2 -d"/"
+     * 如果不写路径的话，会直接压缩覆盖原来的文件;如果写路径，则会重新生成一个文件，原来未压缩的文件依旧存在。q前提是bgzip 不加 -c参数 
      * @param infileDirS
      * @param outfileDirS 
      */

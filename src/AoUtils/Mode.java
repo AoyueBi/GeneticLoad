@@ -15,6 +15,7 @@ import utils.IOUtils;
  */
 public class Mode {
 
+    /*==================================== 测试用 =============================================*/
     public Mode() {
 
     }
@@ -25,7 +26,7 @@ public class Mode {
 
         String infileS = "";
         String outfileS = "";
-
+//////////////////
         try {
             BufferedReader br = IOUtils.getTextReader(infileS);
             BufferedWriter bw = IOUtils.getTextWriter(outfileS);
@@ -43,7 +44,7 @@ public class Mode {
             e.printStackTrace();
             System.exit(1);
         }
-
+//////////////////
         try {
             BufferedWriter bw = IOUtils.getTextWriter(outfileS);
 
@@ -57,7 +58,7 @@ public class Mode {
             BufferedReader br = IOUtils.getTextReader(infileS);
             String temp = null;
             while ((temp = br.readLine()) != null) {
-                
+
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -32,19 +32,19 @@ public class ABDvcfProcessor {
 //        new Treetest();
 //        this.countSites("/data4/home/aoyue/vmap2/abd/rawVCF/");
 //        this.calSNPHetMissMaf();
-        this.mergeChr1and2();
+        //this.mergeChr1and2();
 //        this.subsetHetMissMafRandom(); //已和下一步合并起来
 //        this.mergesubsetHetMissMafRandomData();
 //
 //        this.subsetVCFRandomParallel();
-        this.mergesubsetVCF();
+        //this.mergesubsetVCF();
 //        
-        this.addGrouptoMDS();
+        //this.addGrouptoMDS();
 //        this.VCFfromGATKTest();
 //        new Script().bgzip_noscript("/data4/home/aoyue/vmap2/abd/rawVCF/", "/data4/home/aoyue/vmap2/abd/rawVCF/");
 //        new CountSites().countSitesinFastCallformat("/data4/home/aoyue/vmap2/analysis/001_rawvcf/abd");
 //        new CountSites().filterAllele("/data4/home/aoyue/vmap2/analysis/001_rawvcf/abd/", "/data4/home/aoyue/vmap2/analysis/002_bivcf/abd/");
-        new CountSites().subsetVCFRandomParallel_GZ("/data4/home/aoyue/vmap2/analysis/003_filterMiss/abd/", "/data4/home/aoyue/vmap2/analysis/004_subsetvcf/abd/");
+        //new CountSites().subsetVCFRandomParallel_GZ("/data4/home/aoyue/vmap2/analysis/003_filterMiss/abd/", "/data4/home/aoyue/vmap2/analysis/004_subsetvcf/abd/");
         
         
     }

@@ -26,6 +26,144 @@ import utils.PStringUtils;
 public class CountSites {
 
     public CountSites() {
+        this.getSharedSNP();
+
+    }
+
+    public void getSharedSNP() {
+//        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/013_mergeTaxaVCF/chr005.ABDgenome.10000lines.vcf";
+//        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/013_mergeTaxaVCF/chr005.Dgenome.10000lines.vcf";
+//        String outfileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/013_mergeTaxaVCF/chr005.ABDgenome.10000lines.shared.txt";
+//        String outfileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/013_mergeTaxaVCF/chr005.Dgenome.10000lines.shared.txt";
+//        String infileS3 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/013_mergeTaxaVCF/test.vcf";
+//        String outfileS3 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/013_mergeTaxaVCF/test.all.shared.txt";
+        
+//////// 1A merge test
+//        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/013_mergeTaxaVCF/chr001.ABDgenome.10000lines.vcf";
+//        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/013_mergeTaxaVCF/chr001.ABgenome.10000lines.vcf";
+//        String outfileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/013_mergeTaxaVCF/chr001.ABDgenome.10000lines.shared.txt";
+//        String outfileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/013_mergeTaxaVCF/chr001.ABgenome.10000lines.shared.txt";
+//        String infileS3 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/013_mergeTaxaVCF/merge/chr001_mergeTaxa.vcf";
+//        String outfileS3 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/013_mergeTaxaVCF/chr001_mergeTaxa.all.shared.txt";
+/////// 1B merge test
+        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/013_mergeTaxaVCF/chr003.ABDgenome.10000lines.vcf";
+        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/013_mergeTaxaVCF/chr003.ABgenome.10000lines.vcf";
+        String outfileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/013_mergeTaxaVCF/chr003.ABDgenome.10000lines.shared.txt";
+        String outfileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/013_mergeTaxaVCF/chr003.ABgenome.10000lines.shared.txt";
+        String infileS3 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/013_mergeTaxaVCF/merge/chr003_mergeTaxa.vcf";
+        String outfileS3 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/013_mergeTaxaVCF/chr003_mergeTaxa.all.shared.txt";
+
+        
+        List<String> posl = new ArrayList<>();
+        List<String> sharedpos = new ArrayList<>();
+        try {
+            //先建立pos数据库
+            BufferedReader br = IOUtils.getTextReader(infileS1);
+            BufferedWriter bw = null;
+            String temp = null;
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                StringBuilder sb = new StringBuilder();
+                if (temp.startsWith("#")) {
+                    continue;
+                }
+                List<String> l = PStringUtils.fastSplit(temp);
+                String chr = l.get(0);
+                String pos = l.get(1);
+                String ref = l.get(3);
+                String alt = l.get(4);
+                posl.add(pos);
+                cnt++;
+            }
+            br.close();
+            System.out.println(cnt + "  snps totally in chr005ABD");
+
+            //找出D中共有的snp,并写出
+            Collections.sort(posl);
+            br = IOUtils.getTextReader(infileS2);
+            bw = IOUtils.getTextWriter(outfileS2);
+            bw.write("CHROM\tPOS\tREF\tALT\n");
+            int share = 0;
+            while ((temp = br.readLine()) != null) {
+                StringBuilder sb = new StringBuilder();
+                if (temp.startsWith("#")) {
+                    continue;
+                }
+                List<String> l = PStringUtils.fastSplit(temp);
+                String chr = l.get(0);
+                String pos = l.get(1);
+                String ref = l.get(3);
+                String alt = l.get(4);
+                int index = Collections.binarySearch(posl, pos);
+                if (index >= 0) {
+                    share++;
+                    sharedpos.add(pos);
+                    bw.write(chr + "\t" + pos + "\t" + ref + "\t" + alt);
+                    bw.newLine();
+                }
+            }
+            
+            bw.flush();
+            bw.close();
+            br.close();
+            System.out.println(share + "  shared snps totally in chr005ABD and chr005D");
+            
+           //写出ABD中共有的snp
+           Collections.sort(sharedpos);
+            br = IOUtils.getTextReader(infileS1);
+            bw = IOUtils.getTextWriter(outfileS1);
+            bw.write("CHROM\tPOS\tREF\tALT\n");
+            while ((temp = br.readLine()) != null) {
+                StringBuilder sb = new StringBuilder();
+                if (temp.startsWith("#")) {
+                    continue;
+                }
+                List<String> l = PStringUtils.fastSplit(temp);
+                String chr = l.get(0);
+                String pos = l.get(1);
+                String ref = l.get(3);
+                String alt = l.get(4);
+                int index = Collections.binarySearch(sharedpos, pos);
+                if (index >= 0) {
+                    bw.write(chr + "\t" + pos + "\t" + ref + "\t" + alt);
+                    bw.newLine();
+                }
+            }
+            
+            bw.flush();
+            bw.close();
+            br.close();
+            
+            //找出合并后的文件中，共有POS的ALT变化情况
+            Collections.sort(sharedpos);
+            br = IOUtils.getTextReader(infileS3);
+            bw = IOUtils.getTextWriter(outfileS3);
+            bw.write("CHROM\tPOS\tREF\tALT\n");
+            while ((temp = br.readLine()) != null) {
+                StringBuilder sb = new StringBuilder();
+                if (temp.startsWith("#")) {
+                    continue;
+                }
+                List<String> l = PStringUtils.fastSplit(temp);
+                String chr = l.get(0);
+                String pos = l.get(1);
+                String ref = l.get(3);
+                String alt = l.get(4);
+                int index = Collections.binarySearch(sharedpos, pos);
+                if (index >= 0) {
+                    bw.write(chr + "\t" + pos + "\t" + ref + "\t" + alt);
+                    bw.newLine();
+                }
+            }
+            
+            bw.flush();
+            bw.close();
+            br.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
 
     }
 
@@ -97,9 +235,9 @@ public class CountSites {
                                 bw.write(sb.toString());
                                 bw.newLine();
                             }
-                            int a =3;
+                            int a = 3;
                             //开始读入第2个文件
-                            infileS = new File (fs[i].getParent(),fs[i].getName().replaceFirst(PStringUtils.getNDigitNumber(3, chr), secondchr)).getAbsolutePath();
+                            infileS = new File(fs[i].getParent(), fs[i].getName().replaceFirst(PStringUtils.getNDigitNumber(3, chr), secondchr)).getAbsolutePath();
                             if (infileS.endsWith(".txt")) {
                                 br = IOUtils.getTextReader(infileS);
                             } else if (infileS.endsWith(".txt.gz")) {
@@ -514,7 +652,7 @@ public class CountSites {
     public void extractHapPosAllele(String infileDirS, String outfileDirS) {
         File[] fs = new File(infileDirS).listFiles();
         List<File> fsList = Arrays.asList(fs);
-        fsList.stream().forEach(f -> {
+        fsList.parallelStream().forEach(f -> {
             try {
                 String infileS = f.getAbsolutePath();
                 String outfileS = null;
@@ -543,7 +681,7 @@ public class CountSites {
                     sb.append("\t").append(l.get(1)).append("\t").append(l.get(3)).append("\t").append(l.get(4));
                     bw.write(sb.toString());
                     bw.newLine();
-                    if (cnt % 1000 == 0) {
+                    if (cnt % 100000 == 0) {
                         System.out.println("Output " + String.valueOf(cnt) + " SNPs");
                     }
                     cnt++;
@@ -1142,7 +1280,7 @@ public class CountSites {
                 }
 
                 indelNum = delectionNum + insertionNum;
-                snpNum = cnt - indelNum;
+                snpNum = cnt - indelNum; //只要含有D 和 I， 就不算是SNP
                 br.close();
                 System.out.println(String.valueOf(chrint) + "\t" + String.valueOf(snpNum) + "\t" + String.valueOf(biallelicNum) + "\t" + String.valueOf(indelNum) + "\t" + String.valueOf(insertionNum) + "\t" + String.valueOf(delectionNum));
             } catch (Exception e) {

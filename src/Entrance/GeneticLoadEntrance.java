@@ -5,15 +5,12 @@
  */
 package Entrance;
 
-import AoUtils.Bin;
 import AoUtils.CountSites;
-import WheatGeneticLoad.Sift;
-import java.io.BufferedReader;
+import WheatGeneticLoad.FilterVCF;
 import java.io.BufferedWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import utils.IOUtils;
-import utils.PArrayUtils;
 
 /**
  *
@@ -40,14 +37,16 @@ public class GeneticLoadEntrance {
         //new ABDvcfProcessor();
         //new ABvcfProcessor();
         //new DvcfProcessor();
-        new Sift();
+        //new SIFT();
+        //new Script();
+        //new CountSites();
+        new FilterVCF();
     }
     
     public static void main(String[] args) {
         System.out.println("Aoyue Repository --- Here is the entrance of GeneticLoad!\n");
         System.out.println(new SimpleDateFormat().format(new Date()) + "\tbegin.");
         new GeneticLoadEntrance();
-        //new CountSites().extractHapPos(args[0], args[1]);
         System.out.println(new SimpleDateFormat().format(new Date()) + "\tend.");
 
         /**
