@@ -5,19 +5,16 @@
  */
 package AoUtils;
 
+import gnu.trove.list.array.TDoubleArrayList;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import utils.IOUtils;
+import utils.PStringUtils;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import utils.IOUtils;
-import utils.PStringUtils;
+import java.util.*;
 
 /**
  *
@@ -26,7 +23,7 @@ import utils.PStringUtils;
 public class CountSites {
 
     public CountSites() {
-        this.getSharedSNP();
+        //this.getSharedSNP();
 
     }
 
@@ -37,7 +34,7 @@ public class CountSites {
 //        String outfileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/013_mergeTaxaVCF/chr005.Dgenome.10000lines.shared.txt";
 //        String infileS3 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/013_mergeTaxaVCF/test.vcf";
 //        String outfileS3 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/013_mergeTaxaVCF/test.all.shared.txt";
-        
+
 //////// 1A merge test
 //        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/013_mergeTaxaVCF/chr001.ABDgenome.10000lines.vcf";
 //        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/013_mergeTaxaVCF/chr001.ABgenome.10000lines.vcf";
@@ -53,7 +50,6 @@ public class CountSites {
         String infileS3 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/013_mergeTaxaVCF/merge/chr003_mergeTaxa.vcf";
         String outfileS3 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/013_mergeTaxaVCF/chr003_mergeTaxa.all.shared.txt";
 
-        
         List<String> posl = new ArrayList<>();
         List<String> sharedpos = new ArrayList<>();
         try {
@@ -102,14 +98,14 @@ public class CountSites {
                     bw.newLine();
                 }
             }
-            
+
             bw.flush();
             bw.close();
             br.close();
             System.out.println(share + "  shared snps totally in chr005ABD and chr005D");
-            
-           //写出ABD中共有的snp
-           Collections.sort(sharedpos);
+
+            //写出ABD中共有的snp
+            Collections.sort(sharedpos);
             br = IOUtils.getTextReader(infileS1);
             bw = IOUtils.getTextWriter(outfileS1);
             bw.write("CHROM\tPOS\tREF\tALT\n");
@@ -129,11 +125,11 @@ public class CountSites {
                     bw.newLine();
                 }
             }
-            
+
             bw.flush();
             bw.close();
             br.close();
-            
+
             //找出合并后的文件中，共有POS的ALT变化情况
             Collections.sort(sharedpos);
             br = IOUtils.getTextReader(infileS3);
@@ -155,7 +151,7 @@ public class CountSites {
                     bw.newLine();
                 }
             }
-            
+
             bw.flush();
             bw.close();
             br.close();
@@ -214,15 +210,19 @@ public class CountSites {
                             //读入文件
                             String infileS = fs[i].getAbsolutePath();
                             BufferedReader br = null;
+                            String outfileS = null;
                             if (infileS.endsWith(".txt")) {
                                 br = IOUtils.getTextReader(infileS);
+                                outfileS = new File(outfileDirS, "chr" + hmcntchr.get(chr) + fs[i].getName().substring(6) + ".gz").getAbsolutePath();
                             } else if (infileS.endsWith(".txt.gz")) {
                                 br = IOUtils.getTextGzipReader(infileS);
+                                outfileS = new File(outfileDirS, "chr" + hmcntchr.get(chr) + fs[i].getName().substring(6)).getAbsolutePath();
                             }
 
                             //确定输出文件的路径，并读入header
                             String secondchr = PStringUtils.getNDigitNumber(3, chr + 1);
-                            String outfileS = new File(outfileDirS, "chr" + hmcntchr.get(chr) + ".ChrPos.txt.gz").getAbsolutePath();
+                            //名字变一下：
+                            
                             BufferedWriter bw = IOUtils.getTextGzipWriter(outfileS);
                             bw.write(br.readLine()); //先读表头
                             bw.newLine();
@@ -280,8 +280,13 @@ public class CountSites {
             }
         }
         fs = new File(infileDirS).listFiles();
+        //fs = IOUtils.listFilesEndsWith(fs, "D.delSNP.changeChrPos.txt.gz");
+        //fs = IOUtils.listFilesEndsWith(fs, "D.nonsyTolerantSNP.changeChrPos.txt.gz");
+        //fs = IOUtils.listFilesEndsWith(fs, "D.synSNP.changeChrPos.txt.gz");
+        // fs = IOUtils.listFilesEndsWith(fs, "B.delSNP.changeChrPos.1M.binTable.txt");
+        fs = IOUtils.listFilesEndsWith(fs, "changeChrPos.txt.gz");
         Arrays.sort(fs);
-        System.out.println("Chr\tSNP_Num");
+        //System.out.println("Chr\tSNP_Num");
 
         try {
             String infileS = fs[0].getAbsolutePath();
@@ -292,7 +297,7 @@ public class CountSites {
                 br = IOUtils.getTextGzipReader(infileS);
             }
 
-            BufferedWriter bw = IOUtils.getTextGzipWriter(outfileS);
+            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
             bw.write(br.readLine());
             bw.newLine();
 
@@ -569,6 +574,9 @@ public class CountSites {
                         }
                         sb = new StringBuilder();
                         sb.append(Chr).append("\t").append(String.valueOf(pos));
+                        for(int i =2; i<l.size();i++){
+                            sb.append("\t" + l.get(i));
+                        }
                         bw.write(sb.toString());
                         bw.newLine();
                         if (a % 1000 == 0) {
@@ -596,7 +604,14 @@ public class CountSites {
      */
     public void extractHapPos(String infileDirS, String outfileDirS) {
         File[] fs = new File(infileDirS).listFiles();
+        for (int i = 0; i < fs.length; i++) {
+            if (fs[i].isHidden()) {
+                fs[i].delete();
+            }
+        }
+        fs = new File(infileDirS).listFiles();
         List<File> fsList = Arrays.asList(fs);
+        Collections.sort(fsList);
         fsList.parallelStream().forEach(f -> {
             try {
                 String infileS = f.getAbsolutePath();
@@ -619,7 +634,7 @@ public class CountSites {
                     if (temp.startsWith("#")) {
                         continue;
                     }
-                    temp = temp.substring(0, 40); //肯定够                 
+                    temp = temp.substring(0, 50); //肯定够                 
                     l = PStringUtils.fastSplit(temp);
                     StringBuilder sb = new StringBuilder();
                     sb = new StringBuilder(l.get(0));
@@ -701,23 +716,106 @@ public class CountSites {
     }
 
     /**
+     * 结果只有一列 depth平均深度
+     *
+     * @param infileDirS
+     * @param outfileDirS
+     */
+    public void calVcfAverageDepth(String infileDirS, String outfileDirS) {
+        File[] fs = new File(infileDirS).listFiles();
+        for (int i = 0; i < fs.length; i++) {
+            if (fs[i].isHidden()) {
+                fs[i].delete();
+            }
+        }
+        fs = new File(infileDirS).listFiles();
+        Arrays.sort(fs);
+        List<File> fsList = Arrays.asList(fs);
+        fsList.parallelStream().forEach(f -> {
+            String infileS = f.getAbsolutePath();
+            String outfileS = null;
+            BufferedReader br = null;
+            if (infileS.endsWith(".vcf")) {
+                br = IOUtils.getTextReader(infileS);
+                outfileS = new File(outfileDirS, f.getName().replaceFirst(".vcf", ".depth.txt.gz")).getAbsolutePath();
+            } else if (infileS.endsWith(".vcf.gz")) {
+                br = IOUtils.getTextGzipReader(infileS);
+                outfileS = new File(outfileDirS, f.getName().replaceFirst(".vcf.gz", ".depth.txt.gz")).getAbsolutePath();
+            }
+            BufferedWriter bw = IOUtils.getTextGzipWriter(outfileS);
+            String temp = null;
+            int cnt = 0;
+            try {
+                while ((temp = br.readLine()).startsWith("##")) {
+                }
+                List<String> linetaxa = PStringUtils.fastSplit(temp, "\t");
+                bw.write("AverageDepth");
+                bw.newLine();
+                String[] taxa = new String[linetaxa.size() - 9];
+                cnt = 0;
+                while ((temp = br.readLine()) != null) {
+                    cnt++; // 对snp开始计数
+                    if (cnt % 1000000 == 0) {
+                        System.out.println(String.valueOf(cnt) + " lines");
+                    }
+
+                    TDoubleArrayList depthList = new TDoubleArrayList();
+                    TDoubleArrayList PValueList = new TDoubleArrayList();
+                    List<String> l = new ArrayList<>();
+                    l = PStringUtils.fastSplit(temp, "\t");
+                    String chr = l.get(0);
+                    String pos = l.get(1);
+                    for (int i = 0; i < taxa.length; i++) {
+                        String genoS = l.get(i + 9);
+                        if (genoS.startsWith(".")) {
+                            depthList.add(0);
+                            continue;
+                        }
+                        List<String> ll = PStringUtils.fastSplit(genoS, ":");
+                        List<String> lll = PStringUtils.fastSplit(ll.get(1), ",");
+                        int depth = Integer.valueOf(lll.get(0)) + Integer.valueOf(lll.get(1));
+                        depthList.add(depth);
+                    }
+                    double[] dep = depthList.toArray();
+                    DescriptiveStatistics d = new DescriptiveStatistics(dep);
+                    double relativeMean = d.getMean();
+                    double sd = d.getStandardDeviation();
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(String.format("%.6f", relativeMean));
+                    bw.write(sb.toString());
+                    bw.newLine();
+                }
+                br.close();
+                bw.flush();
+                bw.close();
+                System.out.println();
+                System.out.println(f.getName() + "\t" + cnt + " sites is completed");
+            } catch (Exception e) {
+                System.out.println(temp);
+                e.printStackTrace();
+                System.exit(1);
+            }
+
+        });
+    }
+
+    /**
      * chr001_5000.vcf --> chr001_5000_IndiHeter.txt Calculate the heterozygote
      * count and propotion by individual taxa
      */
-    public void calIndiHeterMiss(String infileDirS, String outfileDirS) {
-        //String infileDirS = "/Users/Aoyue/project/wheatVMapII/005_preTest/fastCall/004_fastV2_JiaoDataParameters/003_testvcf/000_sampleVCF";
-        //String outfileDirS = "/Users/Aoyue/Documents/test/";
+    public void calIndiHeter(String infileDirS, String outfileDirS) {
         File[] fs = new File(infileDirS).listFiles();
-        //fs = IOUtils.listFilesEndsWith(fs, ".vcf");
+        for (int i = 0; i < fs.length; i++) {
+            if (fs[i].isHidden()) {
+                fs[i].delete();
+            }
+        }
+        fs = new File(infileDirS).listFiles();
         List<File> fsList = Arrays.asList(fs);
+        Collections.sort(fsList);
         fsList.stream().forEach(f -> {
-            //Start to cal the time beginning
-            long startTime = System.nanoTime();
-            System.out.println("******************************************************");
-            //Start to cal heterozygous
             try {
                 String infileS = f.getAbsolutePath();
-                //String siteoutfileS = new File(outfileDirS,f.getName().split(".vc")[0] + "_SNPheter.txt").getAbsolutePath();
                 String indioutfileS = new File(outfileDirS, f.getName().split(".vc")[0] + "_IndiHeter.txt").getAbsolutePath();
                 BufferedReader br = null;
                 if (infileS.endsWith(".vcf")) {
@@ -725,10 +823,7 @@ public class CountSites {
                 } else if (infileS.endsWith(".vcf.gz")) {
                     br = IOUtils.getTextGzipReader(infileS);
                 }
-                //BufferedWriter bw = IOUtils.getTextGzipWriter(siteoutfileS);
                 BufferedWriter indibw = IOUtils.getTextWriter(indioutfileS);
-                //bw.write("Chr\tPos\tHetNum\tHomNum\tHetPropotion\n");
-
                 String temp;
                 String te[] = null;
                 /**
@@ -743,10 +838,7 @@ public class CountSites {
                 }
                 /**
                  * *****************定义Genotype
-                 * TIntArrayList**********************
                  */
-                //TIntArrayList[] genoList = new TIntArrayList[taxa.length];
-                //for (int i = 0; i < taxa.length; i++) genoList[i] = new TIntArrayList();
                 List[] genoList = new ArrayList[taxa.length];
                 for (int i = 0; i < taxa.length; i++) {
                     genoList[i] = new ArrayList();
@@ -760,7 +852,6 @@ public class CountSites {
                     //在一个位点内进行计算
 
                     if (!temp.startsWith("#")) {
-                        //l = PStringUtils.fastSplit(temp, "\t");
                         te = temp.split("\t");
                         if (te[4].length() > 1) {
                             continue;
@@ -782,7 +873,6 @@ public class CountSites {
                             }
                         }
                         hetRate = hetNum / genoNum;
-                        //bw.write(te[0]+ "\t"+ te[1]+ "\t" + String.format("%.0f", hetNum)+ "\t"+ String.format("%.0f", homNum) + "\t"+ String.format("%.5f", hetRate) + "\n");
                     }
                 }
 
@@ -800,22 +890,243 @@ public class CountSites {
                             + String.format("%.0f", missSites) + "\t" + String.format("%.5f", missProportion) + "\n");
                 }
                 br.close();
-                //bw.flush();
-                //bw.close();
                 indibw.flush();
                 indibw.close();
+                System.out.println(f.getName() + " is completed at " + indioutfileS);
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
+        });
+    }
+
+    /**
+     * chr001_5000.vcf --> chr001_5000_SNPheter.txt Calculate the heterozygote
+     * count and propotion by individual taxa
+     */
+    public void calSNPSitesHeter(String infileDirS, String outfileDirS) {
+        //String infileDirS = "/Users/Aoyue/project/wheatVMapII/005_preTest/fastCall/004_fastV2_JiaoDataParameters/003_testvcf/000_sampleVCF";
+        //String outfileDirS = "/Users/Aoyue/Documents/test/";
+        File[] fs = new File(infileDirS).listFiles();
+        for (int i = 0; i < fs.length; i++) {
+            if (fs[i].isHidden()) {
+                fs[i].delete();
+            }
+        }
+        fs = new File(infileDirS).listFiles();
+        List<File> fsList = Arrays.asList(fs);
+        Collections.sort(fsList);
+        fsList.stream().forEach(f -> {
+            //Start to cal the time beginning
+            //long startTime = System.nanoTime();
+            //System.out.println("******************************************************");
+            //Start to cal heterozygous
+            try {
+                String infileS = f.getAbsolutePath();
+                String siteoutfileS = null;
+                BufferedReader br = null;
+                if (infileS.endsWith(".vcf")) {
+                    br = IOUtils.getTextReader(infileS);
+                    siteoutfileS = new File(outfileDirS, f.getName().split(".vc")[0] + "_SNPheter.txt").getAbsolutePath();
+                } else if (infileS.endsWith(".vcf.gz")) {
+                    br = IOUtils.getTextGzipReader(infileS);
+                    siteoutfileS = new File(outfileDirS, f.getName().split(".vc")[0] + "_SNPheter.txt").getAbsolutePath();
+                }
+                BufferedWriter bw = IOUtils.getTextGzipWriter(siteoutfileS);
+                bw.write("Chr\tPos\tHetNum\tHomNum\tHetPropotion\n");
+                //bw.write("Chr\tPos\tHetPropotion\n");
+                String temp;
+                String te[] = null;
+                /**
+                 * *****************定义taxa数组，并添加元素**********************
+                 */
+                while ((temp = br.readLine()).startsWith("##")) {
+                }
+                List<String> l = PStringUtils.fastSplit(temp);
+                String[] taxa = new String[l.size() - 9];
+                for (int i = 0; i < taxa.length; i++) {
+                    taxa[i] = l.get(i + 9);
+                }
+                /**
+                 * *****************定义Genotype
+                 */
+                List[] genoList = new ArrayList[taxa.length];
+                for (int i = 0; i < taxa.length; i++) {
+                    genoList[i] = new ArrayList();
+                }
+
+                while ((temp = br.readLine()) != null) {
+                    int genoNum = 0;
+                    double homNum = 0;
+                    double hetNum = 0;
+                    double hetRate = 0;
+                    //在一个位点内进行计算
+
+                    if (!temp.startsWith("#")) {
+                        te = temp.split("\t");
+                        if (te[4].length() > 1) {
+                            continue;
+                        } //only keep biallelic
+                        for (int i = 9; i < te.length; i++) {
+                            if (te[i].startsWith(".")) {
+                                genoList[i - 9].add(0);
+                            }
+                            if (!te[i].startsWith(".")) {
+                                genoNum++; //have the genotype
+                                if (te[i].startsWith("0/1") || te[i].startsWith("1/0")) {
+                                    hetNum++; //the number of heterozygous
+                                    genoList[i - 9].add(2); // 2 stand for heter
+                                }
+                                if (te[i].startsWith("0/0") || te[i].startsWith("1/1")) {
+                                    homNum++; //the number of heterozygous
+                                    genoList[i - 9].add(1); // 1 stand for homo
+                                }
+                            }
+                        }
+                        hetRate = hetNum / genoNum;
+                        //
+                        bw.write(te[0] + "\t" + te[1] + "\t" + String.format("%.0f", hetNum) + "\t" + String.format("%.0f", homNum) + "\t" + String.format("%.5f", hetRate) + "\n");
+                        //bw.write(te[0]+ "\t"+ te[1] +  "\t"+ String.format("%.5f", hetRate) + "\n");
+                    }
+                }
+
+                br.close();
+                bw.flush();
+                bw.close();
+                System.out.println(f.getName() + " is completed at " + siteoutfileS);
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
+            //文件处理完毕，计时
+//            long endTime = System.nanoTime();
+//            float excTime = (float) (endTime - startTime) / 1000000000;
+            //System.out.println("******************************************************" );
+            //System.out.println("Execution time: " + String.format("%.2f", excTime) + "s" + "    or " + String.format("%.2f", excTime / 60) + " min");
+        });
+    }
+
+    /**
+     *
+     * @param infileDirS
+     * @param outfileDirS
+     */
+    public void calSNPHetMissMaf(String infileDirS, String outfileDirS) {
+        File[] fs = new File(infileDirS).listFiles();
+        for (int i = 0; i < fs.length; i++) {
+            if (fs[i].isHidden()) {
+                fs[i].delete();
+            }
+        }
+        fs = new File(infileDirS).listFiles();
+        List<File> fsList = Arrays.asList(fs);
+        Collections.sort(fsList);
+        fsList.parallelStream().forEach(f -> {
+            //开始处理文件，计时
+            long startTime = System.nanoTime();
+            Calendar cal = Calendar.getInstance();
+            int hour = cal.get(Calendar.HOUR_OF_DAY);
+            int minute = cal.get(Calendar.MINUTE);
+            int second = cal.get(Calendar.SECOND);
+            System.out.println("******************************************************");
+            System.out.println(String.format("%d:%d:%d\t", hour, minute, second) + "Now starting to " + f.getName() + " heterozygote propotion;");
+
+            try {
+                String infileS = f.getAbsolutePath();
+                String outfileS = new File(outfileDirS, f.getName().split(".vc")[0] + "_SNPheterMissMaf.txt.gz").getAbsolutePath(); //输出是压缩的
+                BufferedReader br = null;
+                if (infileS.endsWith(".vcf")) {
+                    br = IOUtils.getTextReader(infileS);
+                } else if (infileS.endsWith(".vcf.gz")) {
+                    br = IOUtils.getTextGzipReader(infileS);
+                }
+                BufferedWriter bw = IOUtils.getTextGzipWriter(outfileS);
+                //bw.write("Chr\tPos\tHetPropotion\n");
+                //bw.write("Chr\tPos\tHetNum\tHetPropotion\tMissingNum\tMissProportion\tMaf\n");
+                bw.write("Chr\tPos\tHetProportion\tMissProportion\tMaf");
+                bw.newLine();
+                String temp;
+                String te[] = null;
+                while ((temp = br.readLine()) != null) {
+                    int genoNum = 0;
+                    double homNum = 0;
+                    double hetNum = 0;
+                    double hetRate = 0;
+                    double missNum = 0;
+                    double missRate = 0;
+
+                    double refAlleleGametes = 0;
+                    double altAlleleGametes = 0;
+                    double refAF = 0;
+                    double altAF = 0;
+                    double maf = 0;
+                    //在一个位点内进行计算
+                    if (!temp.startsWith("#")) {
+                        te = temp.split("\t");
+                        if (te[4].length() > 1) {
+                            continue;
+                        }
+                        for (int i = 9; i < te.length; i++) {
+                            if (te[i].startsWith(".")) {
+                                missNum++;
+                            }
+                            if (!te[i].startsWith(".")) {
+                                genoNum++; //have the genotype
+                                if (te[i].startsWith("0/1") || te[i].startsWith("1/0")) {
+                                    hetNum++; //the number of heterozygous
+                                    refAlleleGametes++;
+                                    altAlleleGametes++;
+                                }
+                                if (te[i].startsWith("0/0")) {
+                                    homNum++; //the number of heterozygous
+                                    refAlleleGametes++;
+                                    refAlleleGametes++;
+                                }
+                                if (te[i].startsWith("1/1")) {
+                                    homNum++;
+                                    altAlleleGametes++;
+                                    altAlleleGametes++;
+
+                                }
+                            }
+                        }
+                        hetRate = hetNum / genoNum;
+                        missRate = missNum / (missNum + genoNum);
+                        refAF = refAlleleGametes / (refAlleleGametes + altAlleleGametes);
+                        altAF = altAlleleGametes / (refAlleleGametes + altAlleleGametes);;
+                        if (refAF >= altAF) {
+                            maf = altAF;
+                        } else {
+                            maf = refAF;
+                        }
+                        //bw.write(te[0]+ "\t"+ te[1]+ "\t" + String.format("%.5f", hetRate) + "\n");
+//                        bw.write(te[0] + "\t" + te[1] + "\t" + String.format("%.0f", hetNum) + "\t" + String.format("%.5f", hetRate)
+//                                + "\t" + String.format("%.0f", missNum) + "\t" + String.format("%.5f", missRate) + "\t" + String.format("%.5f", maf) + "\n");
+                        bw.write(te[0] + "\t" + te[1] + "\t" + String.format("%.5f", hetRate)
+                                + "\t" + String.format("%.5f", missRate) + "\t" + String.format("%.5f", maf));
+                        bw.newLine();
+                    }
+                }
+                br.close();
+                bw.flush();
+                bw.close();
+
             } catch (Exception e) {
                 e.printStackTrace();
                 System.exit(1);
             }
 
             //文件处理完毕，计时
+            hour = cal.get(Calendar.HOUR_OF_DAY);
+            minute = cal.get(Calendar.MINUTE);
+            second = cal.get(Calendar.SECOND);
             long endTime = System.nanoTime();
             float excTime = (float) (endTime - startTime) / 1000000000;
             //System.out.println("******************************************************" );
-            System.out.println(f.getName() + " is finished!!!");
-            System.out.println("Execution time: " + String.format("%.2f", excTime) + "s" + "    or " + String.format("%.2f", excTime / 60) + " min");
+            //System.out.println(String.format("%d:%d:%d\t", hour, minute, second) + f.getName() + " is finished!!!");
+            System.out.println("Execution time: " + String.format("%.2f", excTime) + "s");
         });
+
     }
 
     /**
@@ -828,8 +1139,6 @@ public class CountSites {
         File[] fs = new File(infileDirS).listFiles();
         fs = IOUtils.listFilesEndsWith(fs, ".vcf.gz");
         Arrays.sort(fs);
-        System.out.println("Chr\tSNP_Num");
-
         try {
             long startTime = System.nanoTime();
             BufferedReader br = IOUtils.getTextGzipReader(fs[0].getAbsolutePath());
@@ -842,9 +1151,9 @@ public class CountSites {
                 }
             }
             br.close();
+            int total = 0;
             for (int i = 0; i < fs.length; i++) {
                 br = IOUtils.getTextGzipReader(fs[i].getAbsolutePath());
-                int chrint = Integer.parseInt(fs[i].getName().substring(3, 6));
                 int cnt = 0;
                 while ((temp = br.readLine()) != null) {
                     if (temp.startsWith("#")) {
@@ -858,11 +1167,16 @@ public class CountSites {
 
                     }
                 }
-                System.out.println(String.valueOf(chrint) + "\t" + cnt);
+                total = total + cnt;
+                System.out.println(cnt + "\tsnps in " + fs[i].getName());
             }
+            System.out.println(total + "\tsnps totally, mergevcf pipeline is completed at\t" + outfileS);
             br.close();
             bw.flush();
             bw.close();
+
+            br = IOUtils.getTextGzipReader(outfileS);
+
             long endTime = System.nanoTime();
             float excTime = (float) (endTime - startTime) / 1000000000;
             System.out.println("Execution time: " + String.format("%.2f", excTime) + "s");
@@ -890,22 +1204,23 @@ public class CountSites {
         fs = new File(infileDirS).listFiles();
         List<File> fsList = Arrays.asList(fs);
         Collections.sort(fsList);
-        //System.out.println(new SimpleDateFormat().format(new Date()) + "\tbegin.");
-        long startTime = System.nanoTime();
         fsList.parallelStream().forEach(f -> {
             try {
                 String infileS = f.getAbsolutePath();
+                String outfileS = null;
                 BufferedReader br = null;
                 if (infileS.endsWith(".vcf")) {
                     br = IOUtils.getTextReader(infileS);
+                    outfileS = new File(outfileDirS, f.getName().split(".vcf")[0] + "_subset.vcf.gz").getAbsolutePath();
                 } else if (infileS.endsWith(".vcf.gz")) {
                     br = IOUtils.getTextGzipReader(infileS);
+                    outfileS = new File(outfileDirS, f.getName().split(".vcf.gz")[0] + "_subset.vcf.gz").getAbsolutePath();
                 }
-                String outfileS = new File(outfileDirS, f.getName().split(".vcf")[0] + "_subset.vcf.gz").getAbsolutePath();
                 BufferedWriter bw = IOUtils.getTextGzipWriter(outfileS);
                 String temp = null;
                 int cnttotal = 0;
                 int cntsubset = 0;
+                List<String> l = new ArrayList<>();
                 while ((temp = br.readLine()) != null) {
                     if (temp.startsWith("#")) {
                         bw.write(temp);
@@ -917,7 +1232,7 @@ public class CountSites {
                         if (r > ratio) {
                             continue; //返回带正号的 double 值，该值大于等于 0.0 且小于 1.0。返回值是一个伪随机选择的数，在该范围内（近似）均匀分布
                         }
-                        List<String> l = PStringUtils.fastSplit(temp);
+                        l = PStringUtils.fastSplit(temp);
                         if (l.get(3).contains(",")) {
                             continue; // 第3列是alt的信息，若有2个等位基因，则去除这一行
                         }
@@ -929,18 +1244,11 @@ public class CountSites {
                 bw.flush();
                 bw.close();
                 br.close();
-
-                System.out.println(f.getName() + " with " + cnttotal + " bp has a subset of\t" + cntsubset);
+                System.out.println(f.getName() + "\twith " + cnttotal + " bp has a subset of\t" + cntsubset + "\tis completed at " + outfileS);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
         });
-        long endTime = System.nanoTime();
-        float excTime = (float) (endTime - startTime) / 1000000000;
-        System.out.println("Execution time: " + String.format("%.2f", excTime) + "s or  " + String.format("%.2f", excTime / 60) + "min");
-        //System.out.println(new SimpleDateFormat().format(new Date()) + "\tend.");
-
     }
 
     /**
@@ -999,67 +1307,312 @@ public class CountSites {
         float excTime = (float) (endTime - startTime) / 1000000000;
         System.out.println("Execution time: " + String.format("%.2f", excTime) + "s");
         //System.out.println(new SimpleDateFormat().format(new Date()) + "\tend.");
-
     }
 
     /**
      *
-     * @param infileDirS
-     * @param outfileDirS
+     * @param infileS
+     * @param outfileS
      */
-    public void calSNPHetMissMaf(String infileDirS, String outfileDirS) {
-        //String infileDirS = "/data4/home/aoyue/vmap2/abd/rawVCF/";
-        //String outfileDirS = "/data4/home/aoyue/vmap2/abd/005_vcf/001_calSNPHetMissMaf/";
-        File[] fs = new File(infileDirS).listFiles();
-        fs = IOUtils.listFilesEndsWith(fs, ".vcf");
-        List<File> fsList = Arrays.asList(fs);
-        fsList.parallelStream().forEach(f -> {
-            //开始处理文件，计时
+    public void subsetVCFdataRandom_singleStream(String infileS, String outfileS, String ratio) {
+        //String infileS = "/data4/home/aoyue/vmap2/abd/rawVCF/chr001.vcf";
+        //String outfileS = "/data4/home/aoyue/vmap2/abd/rawVCF/chr001_subset.vcf";
+
+        //String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/004_pca/002_merge/subsetchr1_15.vcf.gz";
+        //String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/004_pca/002_merge/subset10ksnp.vcf.gz";
+        try {
+            //BufferedReader br = IOUtils.getTextReader(infileS);
+            //BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+
+            BufferedReader br = IOUtils.getTextReader(infileS);
+            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+
+            String temp = null;
+            int cnt = 0;
+            System.out.println(new SimpleDateFormat().format(new Date()) + "    program execution.\n");
             long startTime = System.nanoTime();
-            Calendar cal = Calendar.getInstance();
-            int hour = cal.get(Calendar.HOUR_OF_DAY);
-            int minute = cal.get(Calendar.MINUTE);
-            int second = cal.get(Calendar.SECOND);
-            System.out.println("******************************************************");
-            System.out.println(String.format("%d:%d:%d\t", hour, minute, second) + "Now starting to " + f.getName() + " heterozygote propotion;");
-
-            try {
-                if (f.getName().equals("chr014.vcf")) {
-
+            Double Ratio = Double.parseDouble(ratio);
+            while ((temp = br.readLine()) != null) {
+                if (temp.startsWith("#")) {
+                    bw.write(temp);
+                    bw.newLine();
                 } else {
-                    String infileS = f.getAbsolutePath();
-                    String outfileS = new File(outfileDirS, f.getName().split(".vc")[0] + "_SNPheterMiss.txt").getAbsolutePath();
-
-                    BufferedReader br = null;
-                    if (infileS.endsWith(".vcf")) {
-                        br = IOUtils.getTextReader(infileS);
-                    } else if (infileS.endsWith(".vcf.gz")) {
-                        br = IOUtils.getTextGzipReader(infileS);
+                    cnt++;
+                    double r = Math.random();
+                    if (r > Ratio) {
+                        continue; //返回带正号的 double 值，该值大于等于 0.0 且小于 1.0。返回值是一个伪随机选择的数，在该范围内（近似）均匀分布
                     }
-                    BufferedWriter bw = IOUtils.getTextWriter(outfileS);
-                    //bw.write("Chr\tPos\tHetPropotion\n");
-                    bw.write("Chr\tPos\tHetNum\tHetPropotion\tMissingNum\tMissProportion\tMaf\n");
-                    String temp;
-                    String te[] = null;
-                    while ((temp = br.readLine()) != null) {
-                        int genoNum = 0;
-                        double homNum = 0;
-                        double hetNum = 0;
-                        double hetRate = 0;
-                        double missNum = 0;
-                        double missRate = 0;
+                    List<String> l = PStringUtils.fastSplit(temp);
+                    if (l.get(3).contains(",")) {
+                        continue; // 第3列是alt的信息，若有2个等位基因，则去除这一行
+                    }
+                    bw.write(temp);
+                    bw.newLine();
+                }
+            }
+            bw.flush();
+            bw.close();
+            br.close();
+            long endTime = System.nanoTime();
+            float excTime = (float) (endTime - startTime) / 1000000000;
+            System.out.println("Execution time: " + String.format("%.2f", excTime) + "s");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-                        double refAlleleGametes = 0;
-                        double altAlleleGametes = 0;
-                        double refAF = 0;
-                        double altAF = 0;
-                        double maf = 0;
-                        //在一个位点内进行计算
-                        if (!temp.startsWith("#")) {
-                            te = temp.split("\t");
-                            if (te[4].length() > 1) {
+    /**
+     * chr005.Dlineage.vcf --> chr005.Dlineage.maf0.005.bi.vcf
+     *
+     * @param infileDirS
+     */
+    public void filterIndelMaf(String infileDirS, String outfileDirS) {
+        new File(outfileDirS).mkdirs();
+        File[] fs = new File(infileDirS).listFiles();
+        for (int i = 0; i < fs.length; i++) {
+            if (fs[i].isHidden()) {
+                fs[i].delete();
+            }
+        }
+        fs = new File(infileDirS).listFiles();
+        List<File> fsList = Arrays.asList(fs);
+        Collections.sort(fsList);
+        System.out.println("FileName\tTotalSNPNum\tBiallelicMafmore0.005Num\tTriallelicMafmore0.005Num\tTriallelicAlt2more0.005Num\tProportionofTriallelicMafmore0.005Num\tProportionofTriallelicAlt2more0.005Num");
+        fsList.parallelStream().forEach(f -> {
+            try {
+                String infileS = f.getAbsolutePath();
+                String outfileS = null;
+                BufferedReader br = null;
+                if (infileS.endsWith(".vcf")) {
+                    br = IOUtils.getTextReader(infileS);
+                    outfileS = new File(outfileDirS, f.getName().replaceFirst(".vcf", ".maf0.005.SNP.vcf")).getAbsolutePath();
+                } else if (infileS.endsWith(".vcf.gz")) {
+                    br = IOUtils.getTextGzipReader(infileS);
+                    outfileS = new File(outfileDirS, f.getName().replaceFirst(".vcf.gz", ".maf0.005.SNP.vcf")).getAbsolutePath();
+                }
+                BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+                String temp = null;
+                String te[] = null;
+                int cnt = 0;
+                int biallelicMafmoreNum = 0;
+                int cntCmaf12 = 0; //alt1 +alt2 大于0.005的个数
+                int cntCmaf2 = 0; //alt2 大于 0.005的个数
+                double ProportionofTriallelicMafmoreNum = Double.MIN_VALUE;
+                double ProportionofTriallelicAlt2moreNum = Double.MIN_VALUE;
+
+                while ((temp = br.readLine()) != null) {
+                    int genoNum = 0;
+                    double homNum = 0;
+                    double hetNum = 0;
+                    double hetRate = 0;
+                    double missNum = 0;
+                    double missRate = 0;
+
+                    double refAlleleGametes = 0;
+                    double alt1AlleleGametes = 0;
+                    double alt2AlleleGametes = 0;
+                    double refAF = 0;
+                    double alt1AF = 0;
+                    double alt2AF = 0;
+                    double maf = 0;
+
+                    if (temp.startsWith("#")) {//过滤含有#的注释部分
+                        bw.write(temp);
+                        bw.newLine();
+                    } else { //开始进行位点的判断和计算
+                        te = temp.split("\t");
+                        String alt = PStringUtils.fastSplit(temp).get(4);
+                        //***************************************************** 开始分情况讨论，这里分含逗号和不含逗号的情况 ***************************
+                        if (te[4].length() == 1) { //不含有逗号的情况，即只有一个alt。又开始分，是D 是I 是ATGC 3种情况
+                            if (alt.contains("D") || alt.contains("I")) {
+                                continue; //只有一个alt且不是indel
+                            }
+                            cnt++;
+                            for (int i = 9; i < te.length; i++) {
+                                if (te[i].startsWith(".")) {
+                                    missNum++;
+                                }
+                                if (!te[i].startsWith(".")) {
+                                    genoNum++; //have the genotype
+                                    if (te[i].startsWith("0/1") || te[i].startsWith("1/0")) {
+                                        hetNum++; //the number of heterozygous
+                                        refAlleleGametes++;
+                                        alt1AlleleGametes++;
+                                    }
+                                    if (te[i].startsWith("0/0")) {
+                                        homNum++; //the number of heterozygous
+                                        refAlleleGametes++;
+                                        refAlleleGametes++;
+                                    }
+                                    if (te[i].startsWith("1/1")) {
+                                        homNum++;
+                                        alt1AlleleGametes++;
+                                        alt1AlleleGametes++;
+                                    }
+                                }
+                            }
+                            //hetRate = hetNum / genoNum;
+                            //missRate = missNum / (missNum + genoNum);
+                            refAF = refAlleleGametes / (refAlleleGametes + alt1AlleleGametes);
+                            alt1AF = alt1AlleleGametes / (refAlleleGametes + alt1AlleleGametes);;
+                            if (refAF >= alt1AF) {
+                                maf = alt1AF;
+                            } else {
+                                maf = refAF;
+                            }
+
+                            if (maf <= 0.005) {
                                 continue;
                             }
+                            biallelicMafmoreNum++;
+                            StringBuilder sb = new StringBuilder();
+                            bw.write(sb.append(temp).toString());
+                            bw.newLine();
+
+                        } else if (te[4].length() > 1) { //含有逗号的情况，即有2个alt。又开始分，是D 是I 是ATGC 3种情况
+                            if (alt.contains("D") || alt.contains("I")) {
+                                continue;
+                            }
+                            cnt++;
+                            for (int i = 9; i < te.length; i++) {
+                                if (te[i].startsWith(".")) {
+                                    missNum++;
+                                }
+                                if (!te[i].startsWith(".")) {
+                                    genoNum++; //have the genotype
+                                    if (te[i].startsWith("0/1") || te[i].startsWith("1/0")) {
+                                        hetNum++; //the number of heterozygous
+                                        refAlleleGametes++;
+                                        alt1AlleleGametes++;
+                                    }
+                                    if (te[i].startsWith("0/0")) {
+                                        homNum++; //the number of heterozygous
+                                        refAlleleGametes++;
+                                        refAlleleGametes++;
+                                    }
+                                    if (te[i].startsWith("1/1")) {
+                                        homNum++;
+                                        alt1AlleleGametes++;
+                                        alt1AlleleGametes++;
+                                    }
+                                    if (te[i].startsWith("2/2")) {
+                                        homNum++;
+                                        alt2AlleleGametes++;
+                                        alt2AlleleGametes++;
+                                    }
+                                    if (te[i].startsWith("0/2") || te[i].startsWith("2/0")) {
+                                        hetNum++;
+                                        refAlleleGametes++;
+                                        alt2AlleleGametes++;
+                                    }
+                                }
+                            }
+
+                            //hetRate = hetNum / genoNum;
+                            //missRate = missNum / (missNum + genoNum);
+                            refAF = refAlleleGametes / (refAlleleGametes + alt1AlleleGametes + alt2AlleleGametes);
+                            alt1AF = alt1AlleleGametes / (refAlleleGametes + alt1AlleleGametes + alt2AlleleGametes);
+                            alt2AF = alt2AlleleGametes / (refAlleleGametes + alt1AlleleGametes + alt2AlleleGametes);
+
+                            if (refAF >= alt1AF) { //先计算maf值大小，进行0.05的判断
+                                maf = alt1AF;
+                            } else {
+                                maf = refAF;
+                            }
+
+                            if (maf <= 0.005) { //如果maf值小于0.005则过滤掉
+                                continue;
+                            }
+                            cntCmaf12++;
+                            if (alt2AF > 0.005) {
+                                cntCmaf2++;
+                            }
+                            StringBuilder sb = new StringBuilder();
+                            bw.write(sb.append(temp).toString());
+                            bw.newLine();
+                        }
+
+                        //bw.write(te[0]+ "\t"+ te[1]+ "\t" + String.format("%.5f", hetRate) + "\n");
+                        //bw.write(te[0] + "\t" + te[1] + "\t" + String.format("%.0f", hetNum) + "\t" + String.format("%.5f", hetRate)
+                        // + "\t" + String.format("%.0f", missNum) + "\t" + String.format("%.5f", missRate) + "\t" + String.format("%.5f", maf) + "\n");
+                    }//////////////////////////在这里活动
+
+                }
+                ProportionofTriallelicMafmoreNum = (double) cntCmaf12 / (double) (biallelicMafmoreNum + cntCmaf12);
+                ProportionofTriallelicAlt2moreNum = (double) cntCmaf2 / (double) (biallelicMafmoreNum + cntCmaf12);
+                br.close();
+                bw.flush();
+                bw.close();
+
+                System.out.println(String.valueOf(f.getName()) + "\t" + cnt + "\t" + String.valueOf(biallelicMafmoreNum) + "\t" + cntCmaf12 + "\t" + cntCmaf2 + "\t" + ProportionofTriallelicMafmoreNum + "\t" + ProportionofTriallelicAlt2moreNum + "\tis completed at " + outfileS);
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
+        });
+    }
+
+    /**
+     * chr005.Dlineage.vcf --> chr005.Dlineage.maf0.005.bi.vcf 过滤D I
+     * 和含有3个等位位点的pos，保留只有一个alt并且maf大于0.005的pos
+     *
+     * @param infileDirS
+     */
+    public void filterAlleleMaf(String infileDirS, String outfileDirS) {
+        new File(outfileDirS).mkdirs();
+        File[] fs = new File(infileDirS).listFiles();
+        for (int i = 0; i < fs.length; i++) {
+            if (fs[i].isHidden()) {
+                fs[i].delete();
+            }
+        }
+        fs = new File(infileDirS).listFiles();
+        List<File> fsList = Arrays.asList(fs);
+        Collections.sort(fsList);
+        System.out.println("FileName\tbiallelicNum\tBiallelicMafmore0.005Num");
+        fsList.parallelStream().forEach(f -> {
+            try {
+                String infileS = f.getAbsolutePath();
+                String outfileS = null;
+                BufferedReader br = null;
+                if (infileS.endsWith(".vcf")) {
+                    br = IOUtils.getTextReader(infileS);
+                    outfileS = new File(outfileDirS, f.getName().replaceFirst(".vcf", ".maf0.005.bi.vcf")).getAbsolutePath();
+                } else if (infileS.endsWith(".vcf.gz")) {
+                    br = IOUtils.getTextGzipReader(infileS);
+                    outfileS = new File(outfileDirS, f.getName().replaceFirst(".vcf.gz", ".maf0.005.bi.vcf")).getAbsolutePath();
+                }
+                BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+                String temp = null;
+                String te[] = null;
+                int biallelicNum = 0;
+                int biallelicMafmoreNum = 0;
+                while ((temp = br.readLine()) != null) {
+                    int genoNum = 0;
+                    double homNum = 0;
+                    double hetNum = 0;
+                    double hetRate = 0;
+                    double missNum = 0;
+                    double missRate = 0;
+
+                    double refAlleleGametes = 0;
+                    double altAlleleGametes = 0;
+                    double refAF = 0;
+                    double altAF = 0;
+                    double maf = 0;
+
+                    if (temp.startsWith("#")) {
+                        bw.write(temp);
+                        bw.newLine();
+                    } else {
+                        te = temp.split("\t");
+                        String alt = PStringUtils.fastSplit(temp).get(4);
+
+                        if (te[4].length() == 1) { //不含有逗号的情况，即只有一个alt。又开始分，是D 是I 是ATGC 3种情况
+                            if (alt.contains("D") || alt.contains("I")) {
+                                continue; //只有一个alt且不是indel
+                            }
+                            biallelicNum++;
                             for (int i = 9; i < te.length; i++) {
                                 if (te[i].startsWith(".")) {
                                     missNum++;
@@ -1080,12 +1633,11 @@ public class CountSites {
                                         homNum++;
                                         altAlleleGametes++;
                                         altAlleleGametes++;
-
                                     }
                                 }
                             }
-                            hetRate = hetNum / genoNum;
-                            missRate = missNum / (missNum + genoNum);
+                            //hetRate = hetNum / genoNum;
+                            //missRate = missNum / (missNum + genoNum);
                             refAF = refAlleleGametes / (refAlleleGametes + altAlleleGametes);
                             altAF = altAlleleGametes / (refAlleleGametes + altAlleleGametes);;
                             if (refAF >= altAF) {
@@ -1093,86 +1645,27 @@ public class CountSites {
                             } else {
                                 maf = refAF;
                             }
-                            //bw.write(te[0]+ "\t"+ te[1]+ "\t" + String.format("%.5f", hetRate) + "\n");
-                            bw.write(te[0] + "\t" + te[1] + "\t" + String.format("%.0f", hetNum) + "\t" + String.format("%.5f", hetRate)
-                                    + "\t" + String.format("%.0f", missNum) + "\t" + String.format("%.5f", missRate) + "\t" + String.format("%.5f", maf) + "\n");
+
+                            if (maf <= 0.005) {
+                                continue;
+                            }
+                            biallelicMafmoreNum++;
+                            StringBuilder sb = new StringBuilder();
+                            bw.write(sb.append(temp).toString());
+                            bw.newLine();
+
                         }
                     }
-                    br.close();
-                    bw.flush();
-                    bw.close();
                 }
-
+                br.close();
+                bw.flush();
+                bw.close();
+                System.out.println(String.valueOf(f.getName()) + "\t" + String.valueOf(biallelicNum) + "\t" + String.valueOf(biallelicMafmoreNum) + "\tis completed at " + outfileS);
             } catch (Exception e) {
                 e.printStackTrace();
                 System.exit(1);
             }
-
-            //文件处理完毕，计时
-            hour = cal.get(Calendar.HOUR_OF_DAY);
-            minute = cal.get(Calendar.MINUTE);
-            second = cal.get(Calendar.SECOND);
-            long endTime = System.nanoTime();
-            float excTime = (float) (endTime - startTime) / 1000000000;
-            //System.out.println("******************************************************" );
-            //System.out.println(String.format("%d:%d:%d\t", hour, minute, second) + f.getName() + " is finished!!!");
-            System.out.println("Execution time: " + String.format("%.2f", excTime) + "s");
         });
-
-    }
-
-    /**
-     *
-     * @param infileS
-     * @param outfileS
-     */
-    private void subsetVCFdataRandom_singleStream(String infileS, String outfileS) {
-        //String infileS = "/data4/home/aoyue/vmap2/abd/rawVCF/chr001.vcf";
-        //String outfileS = "/data4/home/aoyue/vmap2/abd/rawVCF/chr001_subset.vcf";
-
-        //String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/004_pca/002_merge/subsetchr1_15.vcf.gz";
-        //String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/004_pca/002_merge/subset10ksnp.vcf.gz";
-        try {
-            //BufferedReader br = IOUtils.getTextReader(infileS);
-            //BufferedWriter bw = IOUtils.getTextWriter(outfileS);
-
-            BufferedReader br = IOUtils.getTextGzipReader(infileS);
-            BufferedWriter bw = IOUtils.getTextGzipWriter(outfileS);
-
-            String temp = null;
-            int cnt = 0;
-            System.out.println(new SimpleDateFormat().format(new Date()) + "    program execution.\n");
-            long startTime = System.nanoTime();
-            while ((temp = br.readLine()) != null) {
-                if (temp.startsWith("#")) {
-                    bw.write(temp);
-                    bw.newLine();
-                } else {
-                    cnt++;
-                    double r = Math.random();
-                    //if (r > 0.001) {
-                    if (r > 0.067) {
-                        continue; //返回带正号的 double 值，该值大于等于 0.0 且小于 1.0。返回值是一个伪随机选择的数，在该范围内（近似）均匀分布
-                    }
-                    List<String> l = PStringUtils.fastSplit(temp);
-                    if (l.get(3).contains(",")) {
-                        continue; // 第3列是alt的信息，若有2个等位基因，则去除这一行
-                    }
-                    bw.write(temp);
-                    bw.newLine();
-                }
-            }
-            bw.flush();
-            bw.close();
-            br.close();
-            long endTime = System.nanoTime();
-            float excTime = (float) (endTime - startTime) / 1000000000;
-            System.out.println("Execution time: " + String.format("%.2f", excTime) + "s");
-
-            System.out.println("Chr 1 snp number is " + cnt + ".");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -1238,22 +1731,106 @@ public class CountSites {
     }
 
     /**
-     * 对已生成的14条染色体进行计数.注意加log文件，结果在log文件中显示
+     * 统计一下位点既含有D又含有I的情况,确实存在着这种情况！！！
+     *
+     * @param infileDirS
+     */
+    public void countrepeatIndelinFastCallformat(String infileDirS) {
+        File[] fs = new File(infileDirS).listFiles();
+        for (int i = 0; i < fs.length; i++) {
+            if (fs[i].isHidden()) {
+                fs[i].delete();
+            }
+        }
+        fs = new File(infileDirS).listFiles();
+        List<File> fsList = Arrays.asList(fs);
+        Collections.sort(fsList);
+
+        System.out.println("Chr\tSNPNum\tRepeatDI\tBiallelicNum\tIndelNum\tInsertionNum\tDelectionNum\t");
+        fsList.stream().forEach(f -> {
+            try {
+                if (f.getName().contains("036")) {
+                    String infileS = f.getAbsolutePath();
+                    BufferedReader br = null;
+                    if (infileS.endsWith(".vcf")) {
+                        br = IOUtils.getTextReader(infileS);
+                    } else if (infileS.endsWith(".vcf.gz")) {
+                        br = IOUtils.getTextGzipReader(infileS);
+                    }
+                    String chr = f.getName().substring(3, 6); //提取染色体号 001
+                    int chrint = Integer.parseInt(chr); //将染色体号转化为数字
+                    String temp = null;
+                    int cnt = 0;
+                    int snpNum = 0;
+                    int biallelicNum = 0;
+                    int indelNum = 0;
+                    int insertionNum = 0;
+                    int delectionNum = 0;
+                    int repeatDI = 0;
+                    while ((temp = br.readLine()) != null) { //是否含有D I
+                        if (temp.startsWith("#")) {
+                            continue;
+                        }
+                        cnt++;
+                        String alt = PStringUtils.fastSplit(temp).get(4);
+                        if (alt.contains("D")) {
+                            delectionNum++;
+                        }
+                        if (alt.contains("I")) {
+                            insertionNum++;
+                        }
+                        if (alt.contains("I") && alt.contains("D")) {
+                            repeatDI++;
+                        }
+
+                        if (!(alt.contains(",")) && !(alt.equals("D")) && !(alt.equals("I"))) {
+                            biallelicNum++;
+                        }
+                    }
+
+                    indelNum = delectionNum + insertionNum;
+                    snpNum = cnt - indelNum; //只要含有D 和 I， 就不算是SNP
+                    br.close();
+                    System.out.println(String.valueOf(chrint) + "\t" + String.valueOf(snpNum) + "\t" + repeatDI + "\t" + String.valueOf(biallelicNum) + "\t" + String.valueOf(indelNum) + "\t" + String.valueOf(insertionNum) + "\t" + String.valueOf(delectionNum));
+
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
+        });
+
+    }
+
+    /**
+     * 对已生成的14条染色体进行计数.注意加log文件，结果在log文件中显示 文件以 .vcf结尾
      *
      * @param infileDirS
      */
     public void countSitesinFastCallformat(String infileDirS) {
         File[] fs = new File(infileDirS).listFiles();
-        fs = IOUtils.listFilesEndsWith(fs, ".vcf.gz");
+        for (int i = 0; i < fs.length; i++) {
+            if (fs[i].isHidden()) {
+                fs[i].delete();
+            }
+        }
+        fs = new File(infileDirS).listFiles();
         List<File> fsList = Arrays.asList(fs);
         Collections.sort(fsList);
 
         System.out.println("Chr\tSNPNum\tBiallelicNum\tIndelNum\tInsertionNum\tDelectionNum\t");
         fsList.parallelStream().forEach(f -> {
             try {
+                String infileS = f.getAbsolutePath();
+                BufferedReader br = null;
+                if (infileS.endsWith(".vcf")) {
+                    br = IOUtils.getTextReader(infileS);
+                } else if (infileS.endsWith(".vcf.gz")) {
+                    br = IOUtils.getTextGzipReader(infileS);
+                }
                 String chr = f.getName().substring(3, 6); //提取染色体号 001
                 int chrint = Integer.parseInt(chr); //将染色体号转化为数字
-                BufferedReader br = IOUtils.getTextGzipReader(f.getAbsolutePath());
                 String temp = null;
                 int cnt = 0;
                 int snpNum = 0;
@@ -1261,17 +1838,22 @@ public class CountSites {
                 int indelNum = 0;
                 int insertionNum = 0;
                 int delectionNum = 0;
+                int repeatDI = 0;
                 while ((temp = br.readLine()) != null) { //是否含有D I
                     if (temp.startsWith("#")) {
                         continue;
                     }
                     cnt++;
                     String alt = PStringUtils.fastSplit(temp).get(4);
+
                     if (alt.contains("D")) {
                         delectionNum++;
                     }
                     if (alt.contains("I")) {
                         insertionNum++;
+                    }
+                    if (alt.contains("D") && alt.contains("I")) {
+                        repeatDI++;
                     }
 
                     if (!(alt.contains(",")) && !(alt.equals("D")) && !(alt.equals("I"))) {
@@ -1279,7 +1861,7 @@ public class CountSites {
                     }
                 }
 
-                indelNum = delectionNum + insertionNum;
+                indelNum = delectionNum + insertionNum - repeatDI; //把既含有I 又含有D的位点重复计数的减去，这下就对了
                 snpNum = cnt - indelNum; //只要含有D 和 I， 就不算是SNP
                 br.close();
                 System.out.println(String.valueOf(chrint) + "\t" + String.valueOf(snpNum) + "\t" + String.valueOf(biallelicNum) + "\t" + String.valueOf(indelNum) + "\t" + String.valueOf(insertionNum) + "\t" + String.valueOf(delectionNum));
@@ -1335,7 +1917,69 @@ public class CountSites {
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
+        }
+    }
 
+    /**
+     * 将表格汇总的每一列数值按照1A 1B 1D 相加，产生一个新的表格，表格中可以有很多列的值,但必须为int类型
+     *
+     * @param infileS
+     * @param outfileS
+     */
+    public void mergeChr1and2txt(String infileS, String outfileS) {
+        String[] chr = {"1A", "1B", "1D", "2A", "2B", "2D", "3A", "3B", "3D", "4A", "4B", "4D", "5A", "5B", "5D", "6A", "6B", "6D", "7A", "7B", "7D"};
+        int[] cnts = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21};
+        HashMap<Integer, String> hmcntchr = new HashMap<>();
+
+        for (int i = 0; i < chr.length; i++) {
+            hmcntchr.put(cnts[i], chr[i]);
+        }
+
+        try {
+            BufferedReader br = IOUtils.getTextReader(infileS);
+            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            String temp = br.readLine(); //read header
+            bw.write(temp);
+            bw.newLine(); //writer header
+            int cnt = 0;
+
+            List<String> l = new ArrayList<>();
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                int[] site1 = new int[l.size()];
+                int[] site2 = new int[l.size()];
+                int[] site = new int[l.size()];
+                HashMap<Integer, Integer>[] hmcnt = new HashMap[l.size()];
+                for (int i = 1; i < l.size(); i++) {
+                    site1[i] = Integer.parseInt(l.get(i));
+                }
+
+                if ((temp = br.readLine()) != null) {
+                    cnt++;
+                    l = PStringUtils.fastSplit(temp);
+                    for (int i = 1; i < l.size(); i++) {
+                        site2[i] = Integer.parseInt(l.get(i));
+                    }
+                    for (int i = 1; i < l.size(); i++) {
+                        site[i] = site1[i] + site2[i];
+                    }
+                   
+                    bw.write(hmcntchr.get(cnt)); // + "\t" + hmcnt.get(cnt));
+                    for (int i = 1; i < l.size(); i++) {
+                        bw.write("\t" + site[i]);
+                    }
+                    bw.newLine();
+                } else {
+
+                }
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
         }
 
     }
@@ -1384,9 +2028,7 @@ public class CountSites {
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
-
         }
-
     }
 
     /**

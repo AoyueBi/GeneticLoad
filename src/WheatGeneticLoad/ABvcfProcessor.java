@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import utils.IOFileFormat;
 import utils.IOUtils;
 import utils.PStringUtils;
 
@@ -33,11 +34,196 @@ public class ABvcfProcessor {
 //        new Treetest().labels();
 //        new Treetest().TREE_COLORS();
 //        new Treetest().colRangesbyDico();
-        //this.addGrouptoMDS();
-        this.checkIBSdistance();
+        this.addGrouptoMDS();
+        //this.checkIBSdistance();
+
+        this.getAllValuefromMatrix();
+        //this.removeRepeat();
+        //this.getsubsetMatrix();
+        this.getValuefrom125IBSdistance();
 
     }
 
+    /**
+     * 从125matrix得到两两之间关系矩阵的值，列成一列，为了画密度分布图
+     */
+    public void getValuefrom125IBSdistance() {
+        String distancefileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/ab/002_checkIBSdistance/007_getsubset125IBSdistance.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/ab/002_checkIBSdistance/008_IBSdistance_S125.txt";
+        int taxanum = 125;
+        try {
+            BufferedReader br = IOUtils.getTextReader(distancefileS);
+            String temp = br.readLine();
+            List<String> l = new ArrayList<>();
+
+            String[][] matrix = new String[125][125];
+            int r = -1;
+            //建立matrix
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                r++; //r代表了矩阵行的index； j 代表了第 
+                for (int j = 0; j < taxanum; j++) {
+                    matrix[r][j] = l.get(j + 1);
+                }
+            }
+            br.close();
+
+            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            bw.write("IBSdistance");
+            bw.newLine();
+            for (int i = 0; i < taxanum; i++) {
+                for (int j = 0; j < i + 1; j++) {
+                    bw.write(matrix[i][j]);
+                    bw.newLine();
+                }
+            }
+            bw.flush();
+            bw.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+    }
+
+    /**
+     * 从205个样品的matrix中，获取不是重复的额165个样品两两比较的matrix，然后将该matrix种的值提出出来方成一类。
+     */
+    public void getsubsetMatrix() {
+        String repeatlistS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/ab/002_labelsChange/reaptItemlist.txt";
+        String distancefileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/ab/002_checkIBSdistance/006_matrix_S205.modify.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/ab/002_checkIBSdistance/007_getsubset125IBSdistance.txt";
+        List<String> rep = new ArrayList<>();
+
+        try {
+            BufferedReader br = IOUtils.getTextReader(repeatlistS);
+            String temp = null;
+            while ((temp = br.readLine()) != null) {
+                rep.add(temp);
+            }
+            String[] reps = rep.toArray(new String[rep.size()]);
+            Arrays.sort(reps);
+
+            //将原始matrix读进表格
+            RowTable<String> t = new RowTable<>(distancefileS);
+            boolean[] ifout = new boolean[t.getRowNumber()];
+            List<Integer> indexColum = new ArrayList<>();
+
+            //开始删除列
+            for (int i = 0; i < reps.length; i++) {
+                t.removeColumn(reps[i]);
+            }
+
+            //开始删除行
+            for (int i = 0; i < t.getRowNumber(); i++) {
+                String rowname = t.getCell(i, 0);
+                int f = Arrays.binarySearch(reps, rowname);
+                if (f < 0) {
+                    ifout[i] = true;
+                }
+            }
+
+            t.writeTextTable(outfileS, IOFileFormat.Text, ifout);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+    }
+
+    /**
+     * 除去40对重复的IBS distance值，但是这种想法是错误的。呵呵呵额
+     */
+    public void removeRepeat() {
+        String allIBSfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/ab/002_checkIBSdistance/004_IBSdistance_S205.txt";
+        String repeatfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/ab/002_checkIBSdistance/001_checkIBSdistance.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/ab/002_checkIBSdistance/005_removeRepeatIBSdistance.txt";
+        try {
+            RowTable<String> t = new RowTable<>(allIBSfileS);
+            List<String> db = t.getColumn(5);
+            Collections.sort(db);
+
+            BufferedReader br = IOUtils.getTextReader(allIBSfileS);
+            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            bw.write(br.readLine());
+            bw.newLine();
+            String temp = null;
+            while ((temp = br.readLine()) != null) {
+                int index = Collections.binarySearch(db, temp);
+                if (index < 0) {
+                    bw.write(temp);
+                    bw.newLine();
+                }
+            }
+            bw.flush();
+            bw.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+    }
+
+    /**
+     * 获取matrix中所有两两比较的遗传距离值，放入一列中，为了做密度分布图用。
+     */
+    public void getAllValuefromMatrix() {
+        int taxanum = 0;
+        String distancefileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/ab/001_newick/chr1_4.ABgenome.filterMiss_subset1.8m.matrix.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/ab/002_checkIBSdistance/004_IBSdistance_S205.txt";
+
+        try {
+            BufferedReader br = IOUtils.getTextReader(distancefileS);
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            //确定taxa数量
+            while ((temp = br.readLine()) != null) {
+                if (temp.startsWith("#")) {
+                    continue;
+                }
+                taxanum = Integer.parseInt(temp);
+                break;
+            }
+
+            String[][] matrix = new String[taxanum][taxanum];
+            int r = -1;
+            //建立matrix
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                r++;
+                for (int j = 0; j < taxanum; j++) {
+                    matrix[r][j] = l.get(j + 1);
+                }
+            }
+            br.close();
+
+            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            bw.write("IBSdistance");
+            bw.newLine();
+            for (int i = 0; i < taxanum; i++) {
+                for (int j = 0; j < i + 1; j++) {
+                    bw.write(matrix[i][j]);
+                    bw.newLine();
+                }
+            }
+            bw.flush();
+            bw.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    /**
+     * 获取重复的40个样品，两两比较的IBS distance值
+     *
+     * ##IBS_Distance_Matrix.AverageTotalSites=1406356.8265901483
+     * ##IBS_Distance_Matrix.NumAlleles=3 ##IBS_Distance_Matrix.TrueIBS=false
+     * ##Matrix_Type=IBS_Distance_Matrix 
+     * ##205 
+     * ##B0001
+     */
     public void checkIBSdistance() {
         int taxanum = 0;
         String distancefileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/ab/001_newick/chr1_4.ABgenome.filterMiss_subset1.8m.matrix.txt";
@@ -60,14 +246,14 @@ public class ABvcfProcessor {
                 if (temp.startsWith("#")) {
                     continue;
                 }
-                taxanum = Integer.parseInt(temp);
+                taxanum = Integer.parseInt(temp); //matrix文件显示taxa数目
                 break;
             }
             String[][] matrix = new String[taxanum][taxanum];
             int r = -1;
             while ((temp = br.readLine()) != null) {
                 l = PStringUtils.fastSplit(temp);
-                r++;
+                r++; //r从0开始，j也从0开始，matrix的二维矩阵就是00
                 for (int j = 0; j < taxanum; j++) {
                     matrix[r][j] = l.get(j + 1);
                 }
@@ -89,14 +275,15 @@ public class ABvcfProcessor {
                 hmEmmertype.put(databaseID, type);
                 hmtaxa.put(databaseID, taxa);
             }
-            
+
             br = IOUtils.getTextReader(reaptItemS);
             BufferedWriter bw = IOUtils.getTextWriter(outfileS);
-            bw.write("Taxa\tDatabase1\tDatebase2\tType\tCty\tIBSdistance");bw.newLine();
-            while ((temp = br.readLine()) != null){
+            bw.write("Taxa\tDatabase1\tDatebase2\tType\tCty\tIBSdistance");
+            bw.newLine();
+            while ((temp = br.readLine()) != null) {
                 String dbid1 = PStringUtils.fastSplit(temp).get(1).substring(0, 5);
                 String dbid2 = PStringUtils.fastSplit(temp).get(1).substring(6);
-                bw.write(hmtaxa.get(dbid1) + "\t" + dbid1  + "\t" + dbid2 + "\t" + hmEmmertype.get(dbid1) + "\t" + hmDatabaseIDCty.get(dbid1) +"\t" + matrix[Integer.parseInt(dbid1.substring(1)) -1][Integer.parseInt(dbid2.substring(1)) -1]);
+                bw.write(hmtaxa.get(dbid1) + "\t" + dbid1 + "\t" + dbid2 + "\t" + hmEmmertype.get(dbid1) + "\t" + hmDatabaseIDCty.get(dbid1) + "\t" + matrix[Integer.parseInt(dbid1.substring(1)) - 1][Integer.parseInt(dbid2.substring(1)) - 1]);
                 bw.newLine();
             }
             br.close();
@@ -109,21 +296,23 @@ public class ABvcfProcessor {
 
     }
 
-    /**
-     * 对MDS方法生成的PC结果添加分组信息，在第二列中加入 String[] group = {"Oceania","Africa","North
-     * America","South America","Europe","Central Asia","South Asia","Western
-     * Asia","East Asia","NA"}; //String[] col =
-     * {"#F1E1FF","#F4D03F","#F1948A","#5DADE2","#ABEBC6","#239B56","#CD6155","#FF6347","#7B241C","#EBEDEF"};
-     * String[] col =
-     * {"#5DADE2","#7B241C","#F1E1FF","#F4D03F","#FF9900","#006600","#389038","#82C782","#CCFFCC","#EBEDEF"};
-     * 分组1为：index 分组2为：大洋洲 非洲 北美洲 南美洲 欧洲 亚洲 "Oceania","Africa","North
-     * America","South America","Europe","Asia" 颜色为："#F1E1FF","#F4D03F",
-     * "#5DADE2","#7B241C","#FF9900","#82C782" 分组3为：大洋洲 非洲 北美洲 南美洲 欧洲部洲 亚洲部洲
-     * 分组4为国家
-     *
-     * 0 <- "Africa" 1 <- "Asia" 2 <- "Europe" 3 <- "North America" 4 <-
-     * "Oceania" 5 <- "South America" 6<- "NA"
-     */
+    // 对MDS方法生成的PC结果添加分组信息，在第二列中加入 
+    //String[] group = {"Oceania","Africa","North America","South America","Europe","Central Asia","South Asia","Western Asia","East Asia","NA"};
+    //String[] col = {"#F1E1FF","#F4D03F","#F1948A","#5DADE2","#ABEBC6","#239B56","#CD6155","#FF6347","#7B241C","#EBEDEF"};
+    //String[] col = {"#5DADE2","#7B241C","#F1E1FF","#F4D03F","#FF9900","#006600","#389038","#82C782","#CCFFCC","#EBEDEF"};
+    //分组1为：indexColum 
+    //分组2为：大洋洲 非洲 北美洲 南美洲 欧洲 亚洲 
+    //"Oceania","Africa","North America","South America","Europe","Asia" 
+    //颜色为："#F1E1FF","#F4D03F","#5DADE2","#7B241C","#FF9900","#82C782"
+    // 分组3为：大洋洲 非洲 北美洲 南美洲 欧洲部洲 亚洲部洲
+    //分组4为国家
+    //0 <- "Africa" 
+    // 1 <- "Asia" 
+    // 2 <- "Europe" 
+    // 3 <- "North America" 
+    // 4 <- * "Oceania"
+    // 5 <- "South America"
+    //6<- "NA"
     public void addGrouptoMDS() {
         String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/005_pca/ab/001_mdsMethod/002_MDS_PCs_Matrix_subset63ksnp_forR.txt";
         String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/005_pca/ab/001_mdsMethod/003_MDS_PCs_Matrix_subset63ksnp_forR_addGroup.txt";

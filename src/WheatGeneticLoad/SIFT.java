@@ -6,6 +6,7 @@
 package WheatGeneticLoad;
 
 import AoUtils.CountSites;
+import AoUtils.SplitScript;
 import format.genomeAnnotation.GeneFeature;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -14,6 +15,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import utils.IOUtils;
 import utils.PStringUtils;
@@ -23,7 +25,7 @@ import utils.PStringUtils;
  * @author Aoyue
  */
 public class SIFT {
-    
+
     public SIFT() {
         //this.addGeneBiotype();
         //new FastaBit("/Users/Aoyue/Documents/chr036.fa.gz").getName(0);
@@ -32,14 +34,159 @@ public class SIFT {
         //this.mkParameterConfigChr1_42();
         //this.mkJavaCmdchr1_42_SIFTdb();
         //this.mvDatabase();
-        //this.annotatorVCF();
+        //this.annotatorVCF("a","b");
         //new CountSites().extractHapPosAllele("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/003_result/test/", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/003_result/test2/");
         //this.generateSIFT();
         //this.calVariantsType("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/003_result/001_DB_addSIFT/abd/", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/003_result/002_calVariantsType/abd_variantsType.txt");
         //this.calVariantsType("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/003_result/001_DB_addSIFT/ab/", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/003_result/002_calVariantsType/ab_variantsType.txt");
-        this.calVariantsType("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/003_result/001_DB_addSIFT/d/", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/003_result/002_calVariantsType/d_variantsType.txt");
+        //this.calVariantsType("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/003_result/001_DB_addSIFT/d/", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/003_result/002_calVariantsType/d_variantsType.txt");
+        //this.calVariantsType("/data4/home/aoyue/vmap2/analysis/015_annoDB/003_addSIFT/", "/data4/home/aoyue/vmap2/analysis/015_annoDB/004_calSIFTNum/variantsType.txt");
+        /**
+         * ******** 正式数据的计算**************
+         */
+        //this.annotatorVCF2("/data4/home/aoyue/vmap2/genotype/mergedVCF/002_biMAF0.005VCF/", "/data4/home/aoyue/vmap2/analysis/008_sift/result/001_annotatorResult");
+        //new SplitScript().splitBwaScript("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/004_newScript/sh_vcfAnnotator.sh", "vcfAnnotator", 7, 6);
         
-        
+        this.calVariantsType2("/data4/home/aoyue/vmap2/analysis/015_annoDB/003_addSIFT/", "/data4/home/aoyue/vmap2/analysis/015_annoDB/004_calSIFTNum/cal_sift20190930.txt");
+        new CountSites().mergeChr1and2txt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/005_result2/cal_sift20190930.txt", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/005_result2/cal_sift.byChrRef.txt");
+    }
+    
+    /**
+     * 本程序对merge后的vcf注释结果进行分类计算
+     * @param infileDirS
+     * @param outfileS 
+     */
+    public void calVariantsType2(String infileDirS, String outfileS) {
+
+        File[] fs = new File(infileDirS).listFiles();
+        for (int i = 0; i < fs.length; i++) {
+            if (fs[i].isHidden()) {
+                fs[i].delete();
+            }
+        }
+        fs = new File(infileDirS).listFiles();
+        Arrays.sort(fs);
+
+        try {
+            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            bw.write("Chromosome\tNonSynonymousDeleteriousMutation\tNonSynonymousTolerentMutation\tSynonymousMutation\tNoncodingMutation\t"
+                    + "StartLostDeleteriousMutation\tStartLostTolerentMutation\tStopGainMutation\tStopLossMutation\t"
+                    + "FrameshiftInsertionMutation\n");
+            for (int i = 0; i < fs.length; i++) {
+                System.out.println("Now " + fs[i].getName() + " are being processed");
+                String infileS = fs[i].getAbsolutePath();
+                BufferedReader br = null;
+                if (infileS.endsWith(".txt")) {
+                    br = IOUtils.getTextReader(infileS);
+                } else if (infileS.endsWith(".txt.gz")) {
+                    br = IOUtils.getTextGzipReader(infileS);
+                }
+
+                String temp = br.readLine();
+                int cnt = 0;
+                int NonSynonymousDeleteriousMutation = 0;
+                int NonSynonymousTolerentMutation = 0;
+                int SynonymousMutation = 0;
+                int NoncodingMutation = 0;
+                int StartLostMutation = 0;
+                int StartLostDeleteriousMutation = 0;
+                int StartLostTolerentMutation = 0;
+                int StopGainMutation = 0;
+                int StopLossMutation = 0;
+                int FrameshiftInsertionMutation = 0;
+                int naCount = 0; //
+                List<String> l = new ArrayList<>();
+                while ((temp = br.readLine()) != null) {
+                    cnt++;
+                    l = PStringUtils.fastSplit(temp);
+                    String Variant_type = l.get(9);
+                    String score = l.get(10);
+                    if (Variant_type.equals("NONSYNONYMOUS")) { //如果score的值为NA，那么NONSYNONYMOUS的预测也是不确定的
+                        if (score.equals("NA")) {
+                            naCount++; //即是NONSYNONYMOUS但是没有sift值的个数
+                        } else {
+                            if (Double.valueOf(score) < 0.05) {
+                                NonSynonymousDeleteriousMutation++;
+                            } else {
+                                NonSynonymousTolerentMutation++;
+                            }
+
+                        }
+
+                    } else if (Variant_type.equals("SYNONYMOUS")) {
+                        SynonymousMutation++;
+                    } else if (Variant_type.equals("START-LOST")) {
+                        StartLostMutation++;
+                        if (score.equals("NA")) {
+                            //StartLostTolerentMutation++;
+                        } else {
+                            if (Double.valueOf(score) < 0.05) {
+                                StartLostDeleteriousMutation++;
+                            } else {
+                                StartLostTolerentMutation++;
+                            }
+
+                        }
+
+                    } else if (Variant_type.equals("STOP-GAIN")) {
+                        StopGainMutation++;
+                    } else if (Variant_type.equals("STOP-LOSS")) {
+                        StopLossMutation++;
+                    } else if (Variant_type.equals("NONCODING")) {
+                        NoncodingMutation++;
+                    } else if (Variant_type.equals("FRAMESHIFT INSERTION")) {
+                        FrameshiftInsertionMutation++;
+                    }
+
+                }
+                br.close();
+
+                bw.write(Integer.parseInt(fs[i].getName().substring(3, 6)) + "\t" + NonSynonymousDeleteriousMutation + "\t" + NonSynonymousTolerentMutation
+                        + "\t" + SynonymousMutation + "\t" + NoncodingMutation + "\t" + StartLostDeleteriousMutation + "\t" + StartLostTolerentMutation
+                        + "\t" + StopGainMutation + "\t" + StopLossMutation  + "\t" + FrameshiftInsertionMutation + "\n");
+            }
+            bw.flush();
+            bw.close();
+            System.out.println("Calculating SIFT result is completed at " + outfileS);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+    }
+    
+
+    /**
+     * find -name "*.vcf" | cut -c3- ; 本地获取运行脚本，输出在netbeans的output界面。 -c	To run
+     * on command line -i	Path to your input variants file in VCF format -d	Path
+     * to SIFT database directory -r Path to your output results folder -t	To
+     * extract annotations for multiple transcripts (Optional)
+     * 输出的文件产生的日志也保存下来，便于计算时间。 注意输入文件必须是解压后的vcf
+     */
+    public void annotatorVCF2(String infileDirS, String outfileDirS) {
+        //String infileDirS = "/data4/home/aoyue/vmap2/analysis/008_sift/dbSNP20190820/ab/";
+        //String outfileDirS = "/data4/home/aoyue/vmap2/analysis/008_sift/abd_iwgscV1_SIFT4G_db/output/ab/";
+
+        try {
+            String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_chrList/list_chrlineage.txt";
+            BufferedReader br = IOUtils.getTextReader(infileS);
+            String temp = null;
+            while ((temp = br.readLine()) != null) {
+                String chr = temp.substring(3, 6);
+                System.out.println("java -jar /data1/home/aoyue/biosoftware/SIFT4g_Annotator/SIFT4G_Annotator_v2.4.jar -c -i "
+                        + new File(infileDirS, temp).getAbsolutePath()
+                        + " -d /data4/home/aoyue/vmap2/analysis/008_sift/abd_iwgscV1_SIFT4G_db/siftDatabase -r "
+                        + new File(outfileDirS, "output" + chr).getAbsolutePath()
+                        + " -t > "
+                        + new File(outfileDirS, "log_" + temp + ".annotator.txt").getAbsolutePath()
+                        + "");
+                //java -jar /data1/home/aoyue/biosoftware/SIFT4g_Annotator/SIFT4G_Annotator_v2.4.jar -c -i /data4/home/aoyue/vmap2/analysis/008_sift/abd_iwgscV1_SIFT4G_db/input001/dbSNP/chr036.Dgenome.bi.vcf.gz -d /data4/home/aoyue/vmap2/analysis/008_sift/abd_iwgscV1_SIFT4G_db/input001/abd_iwgscV1 -r /data4/home/aoyue/vmap2/analysis/008_sift/abd_iwgscV1_SIFT4G_db/output/output036 -t &
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
     /**
@@ -52,7 +199,7 @@ public class SIFT {
      * @param outfileDirS
      */
     public void calVariantsType(String infileDirS, String outfileS) {
-        
+
         File[] fs = new File(infileDirS).listFiles();
         for (int i = 0; i < fs.length; i++) {
             if (fs[i].isHidden()) {
@@ -61,12 +208,12 @@ public class SIFT {
         }
         fs = new File(infileDirS).listFiles();
         Arrays.sort(fs);
-        
+
         try {
             BufferedWriter bw = IOUtils.getTextWriter(outfileS);
             bw.write("Chromosome\tNonSynonymousDeleteriousMutation\tNonSynonymousTolerentMutation\tSynonymousMutation\t"
-                        + "StartLostDeleteriousMutation\tStartLostTolerentMutation\tStopGainMutation\tStopLossMutation\t"
-                        + "NoncodingMutation\tFrameshiftInsertionMutation\n");
+                    + "StartLostDeleteriousMutation\tStartLostTolerentMutation\tStopGainMutation\tStopLossMutation\t"
+                    + "NoncodingMutation\tFrameshiftInsertionMutation\n");
             for (int i = 0; i < fs.length; i++) {
                 String infileS = fs[i].getAbsolutePath();
                 BufferedReader br = null;
@@ -75,7 +222,7 @@ public class SIFT {
                 } else if (infileS.endsWith(".txt.gz")) {
                     br = IOUtils.getTextGzipReader(infileS);
                 }
-                
+
                 String temp = br.readLine();
                 int cnt = 0;
                 int NonSynonymousDeleteriousMutation = 0;
@@ -94,18 +241,18 @@ public class SIFT {
                     l = PStringUtils.fastSplit(temp);
                     String Variant_type = l.get(4);
                     String score = l.get(5);
-                    if (Variant_type.equals("NONSYNONYMOUS")) { //如果score的值为NA，那么NONSYNONYMOUS为可容忍的
+                    if (Variant_type.equals("NONSYNONYMOUS")) { //如果score的值为NA，那么NONSYNONYMOUS的预测也是不确定的
                         if (score.equals("NA")) {
-                            NonSynonymousTolerentMutation++;
+                            //NonSynonymousTolerentMutation++;
                         } else {
                             if (Double.valueOf(score) <= 0.05) {
                                 NonSynonymousDeleteriousMutation++;
                             } else {
                                 NonSynonymousTolerentMutation++;
                             }
-                            
+
                         }
-                        
+
                     } else if (Variant_type.equals("SYNONYMOUS")) {
                         SynonymousMutation++;
                     } else if (Variant_type.equals("START-LOST")) {
@@ -118,9 +265,9 @@ public class SIFT {
                             } else {
                                 StartLostTolerentMutation++;
                             }
-                            
+
                         }
-                        
+
                     } else if (Variant_type.equals("STOP-GAIN")) {
                         StopGainMutation++;
                     } else if (Variant_type.equals("STOP-LOSS")) {
@@ -130,21 +277,22 @@ public class SIFT {
                     } else if (Variant_type.equals("FRAMESHIFT INSERTION")) {
                         FrameshiftInsertionMutation++;
                     }
-                    
+
                 }
                 br.close();
-                
-                bw.write(fs[i].getName().substring(0, 6) + "\t" + NonSynonymousDeleteriousMutation + "\t" + NonSynonymousTolerentMutation 
-                        + "\t" + SynonymousMutation + "\t" + StartLostDeleteriousMutation + "\t" + StartLostTolerentMutation 
-                        + "\t" +  StopGainMutation + "\t" + StopLossMutation + "\t" + NoncodingMutation + "\t" + FrameshiftInsertionMutation + "\n");
+
+                bw.write(Integer.parseInt(fs[i].getName().substring(3, 6)) + "\t" + NonSynonymousDeleteriousMutation + "\t" + NonSynonymousTolerentMutation
+                        + "\t" + SynonymousMutation + "\t" + StartLostDeleteriousMutation + "\t" + StartLostTolerentMutation
+                        + "\t" + StopGainMutation + "\t" + StopLossMutation + "\t" + NoncodingMutation + "\t" + FrameshiftInsertionMutation + "\n");
             }
-            bw.flush();bw.close();
-            
+            bw.flush();
+            bw.close();
+
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
         }
-        
+
     }
 
     /**
@@ -157,6 +305,18 @@ public class SIFT {
      * @num5: String outfileS
      */
     public void generateSIFT() {
+        int[] arra = {1,2,7,8,13,14,19,20,25,26,31,32,37,38};
+        int[] arrb = {3,4,9,10,15,16,21,22,27,28,33,34,39,40};
+        int[] arrd = {5,6,11,12,17,18,23,24,29,30,35,36,41,42};
+        HashMap<Integer,String> hml = new HashMap<>();
+        Arrays.sort(arra);
+        Arrays.sort(arrb);
+        Arrays.sort(arrd);
+        for(int i =0; i<arra.length;i++){
+            hml.put(arra[i], "A");
+            hml.put(arrb[i], "B");
+            hml.put(arrd[i], "D");
+        }
         /*==================================== 测试用 =============================================*/
 //        String infileS = "/Users/Aoyue/Documents/Data/wheat/gene/v1.1/wheat_v1.1_Lulab.pgf";
 //        //包含sift annotator注释结果的xls文件，可以用java文件输入读取， 非压缩格式
@@ -166,12 +326,25 @@ public class SIFT {
 //        //文件输出，在数据库添加SIFT信息  压缩格式
 //        String outputDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/003_result/001_annoDB_addSIFT/";
 
-        /*==================================== abd =============================================*/
-        String infileS = "/Users/Aoyue/Documents/Data/wheat/gene/v1.1/wheat_v1.1_Lulab.pgf";
-        String siftDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/003_result/000_annotatorResult/ab/";
-        String dbDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/003_result/000_DB/ab/";
-        String outputDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/003_result/001_DB_addSIFT/ab/";
-        
+//        /*==================================== abd =============================================*/
+//        String infileS = "/Users/Aoyue/Documents/Data/wheat/gene/v1.1/wheat_v1.1_Lulab.pgf";
+//        String siftDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/003_result/000_annotatorResult/ab/";
+//        String dbDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/003_result/000_DB/ab/";
+//        String outputDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/003_result/001_DB_addSIFT/ab/";
+
+//                /*==================================== merge =============================================*/
+//        String infileS = "/Users/Aoyue/Documents/Data/wheat/gene/v1.1/wheat_v1.1_Lulab.pgf";
+//        String siftDirS = "/Users/Aoyue/Documents/siftOut";
+//        String dbDirS = "/Users/Aoyue/Documents/annoDB";
+//        String outputDirS = "/Users/Aoyue/Documents/annoDB2";
+
+
+                /*==================================== HPC =============================================*/
+        String infileS = "/data1/publicData/wheat/gene/v1.1/wheat_v1.1_Lulab.pgf";
+        String siftDirS = "/data4/home/aoyue/vmap2/analysis/008_sift/result/001_annotatorResult/output/";
+        String dbDirS = "/data4/home/aoyue/vmap2/analysis/015_annoDB/001_step1/";
+        String outputDirS = "/data4/home/aoyue/vmap2/analysis/015_annoDB/003_addSIFT/";
+
         new File(outputDirS).mkdir();
         //先处理pgf文件
         GeneFeature gf = new GeneFeature(infileS);
@@ -182,7 +355,7 @@ public class SIFT {
             trans[i] = gf.getTranscriptName(i, index); //获取对应基因的最长转录本的名字
         }
         Arrays.sort(trans);
-        
+
         File[] fs = new File(siftDirS).listFiles();
         fs = IOUtils.listFilesEndsWith(fs, "xls");
         List<File> fList = Arrays.asList(fs);
@@ -192,11 +365,14 @@ public class SIFT {
             //chr001.ABDgenome.filterMiss.posAllele.txt.gz
             /*==================================== 此处需要修改 =============================================*/
             // dbFileS 即数据库的绝对路径
-            String dbFileS = new File(dbDirS, "chr" + PStringUtils.getNDigitNumber(3, chrIndex + 1) + ".ABgenome.filterMiss.posAllele.txt.gz").getAbsolutePath();
-            String outfileS = new File(outputDirS, "chr" + PStringUtils.getNDigitNumber(3, chrIndex + 1) + ".ABgenome.filterMiss.posAllele.SIFT.txt.gz").getAbsolutePath();
+//            String dbFileS = new File(dbDirS, "chr" + PStringUtils.getNDigitNumber(3, chrIndex + 1) + ".ABgenome.filterMiss.posAllele.txt.gz").getAbsolutePath();
+//            String outfileS = new File(outputDirS, "chr" + PStringUtils.getNDigitNumber(3, chrIndex + 1) + ".ABgenome.filterMiss.posAllele.SIFT.txt.gz").getAbsolutePath();
+            //chr036.Dlineage.maf0.005.bi.AnnoDB.txt.gz
+            String dbFileS = new File(dbDirS, "chr" + PStringUtils.getNDigitNumber(3, chrIndex + 1)+ "."+ hml.get(chrIndex + 1) + "lineage.maf0.005.bi.AnnoDB.txt.gz").getAbsolutePath();
+            String outfileS = new File(outputDirS, "chr" + PStringUtils.getNDigitNumber(3, chrIndex + 1)+".lineage.maf0.005.bi.AnnoDB.addSIFT.txt.gz").getAbsolutePath();
             String header = null;
             try {
-                BufferedReader br = IOUtils.getTextReader(f.getAbsolutePath());
+                BufferedReader br = IOUtils.getTextReader(f.getAbsolutePath()); //是xls文件，故不是压缩的
                 String temp = br.readLine(); //read header
                 List<SIFT.SIFTRecord> sList = new ArrayList<>(); //建立sift记录的集合
                 List<String> l = null;
@@ -214,6 +390,7 @@ public class SIFT {
                 }
                 br.close();
                 Collections.sort(sList);
+                
                 br = IOUtils.getTextGzipReader(dbFileS);
                 header = br.readLine() + "\tVariant_type\tSIFT_score\tTranscript";
                 BufferedWriter bw = IOUtils.getTextGzipWriter(outfileS);
@@ -232,7 +409,7 @@ public class SIFT {
                     SIFT.SIFTRecord query = new SIFT.SIFTRecord(pos, alt, "", "", "");
                     index = Collections.binarySearch(sList, query);
                     if (index < 0) {
-                        
+
                         sb.append("NA").append("\t").append("NA").append("\t").append("NA");
                         bw.write(sb.toString());
                         bw.newLine();
@@ -256,7 +433,7 @@ public class SIFT {
                             } else {
                                 sb.append(sList.get(i).type).append("\t").append(sList.get(i).value).append("\t").append(sList.get(i).transcript);
                             }
-                            
+
                             bw.write(sb.toString());
                             bw.newLine();
                             status = true;
@@ -277,15 +454,15 @@ public class SIFT {
             }
         });
     }
-    
+
     class SIFTRecord implements Comparable<SIFTRecord> {
-        
+
         public int pos;
         public String alt;
         public String transcript;
         public String type;
         public String value;
-        
+
         public SIFTRecord(int pos, String alt, String transcript, String type, String value) {
             this.pos = pos;
             this.alt = alt;
@@ -293,14 +470,14 @@ public class SIFT {
             this.type = type;
             this.value = value;
         }
-        
+
         public boolean isSimilar(int pos, String alt) {
             if (pos == this.pos && alt.equals(this.alt)) {
                 return true;
             }
             return false;
         }
-        
+
         @Override
         public int compareTo(SIFTRecord o) {
             if (this.pos < o.pos) {
@@ -310,10 +487,10 @@ public class SIFT {
             } else {
                 return 1;
             }
-            
+
         }
     }
-    
+
     public boolean ifMatch(List<String> l, int pos, String alt, String[] trans) {
         int posS = Integer.parseInt(l.get(1));
         if (posS != pos) {
@@ -340,10 +517,10 @@ public class SIFT {
      * extract annotations for multiple transcripts (Optional)
      * 输出的文件产生的日志也保存下来，便于计算时间。 注意输入文件必须是解压后的vcf
      */
-    public void annotatorVCF() {
-        String infileDirS = "/data4/home/aoyue/vmap2/analysis/008_sift/dbSNP20190820/ab/";
-        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/008_sift/abd_iwgscV1_SIFT4G_db/output/ab/";
-        
+    public void annotatorVCF(String infileDirS, String outfileDirS) {
+        //String infileDirS = "/data4/home/aoyue/vmap2/analysis/008_sift/dbSNP20190820/ab/";
+        //String outfileDirS = "/data4/home/aoyue/vmap2/analysis/008_sift/abd_iwgscV1_SIFT4G_db/output/ab/";
+
         try {
             String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/002_annotatorVCF/001_fileList/list_chrABDgenomeTest.txt";
             BufferedReader br = IOUtils.getTextReader(infileS);
@@ -364,7 +541,7 @@ public class SIFT {
             System.exit(1);
         }
     }
-    
+
     public void mvDatabase() {
         String[] num = new String[42];
         String[] num2 = new String[42];
@@ -375,15 +552,15 @@ public class SIFT {
             System.out.println("cp -f /data4/home/aoyue/vmap2/analysis/008_sift/abd_iwgscV1_SIFT4G_db/input" + num2[i] + "/abd_iwgscV1/" + num[i] + ".regions /data4/home/aoyue/vmap2/analysis/008_sift/abd_iwgscV1_SIFT4G_db/siftDatabase/ ");
             System.out.println("cp -f /data4/home/aoyue/vmap2/analysis/008_sift/abd_iwgscV1_SIFT4G_db/input" + num2[i] + "/abd_iwgscV1/" + num[i] + "_SIFTDB_stats.txt /data4/home/aoyue/vmap2/analysis/008_sift/abd_iwgscV1_SIFT4G_db/siftDatabase/ ");
         }
-        
+
     }
-    
+
     public void mkJavaCmdchr1_42_SIFTdb() {
         String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/001_buildWheatSIFTdb/script/";
         String shfileS = new File("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/001_buildWheatSIFTdb/", "sh_mkSIFTdb.sh").getAbsolutePath();
         //nohup java -Xms200g -Xmx500g -jar FastCall.jar parameters_001_FastCall.txt > log_001_fastcall.txt &
         try {
-            
+
             for (int i = 1; i < 43; i++) {
                 String chr = PStringUtils.getNDigitNumber(3, i);
                 String outfileS = new File(outfileDirS, "chr" + chr + "_create_wheat_sift4g_db.sh").getAbsolutePath();
@@ -393,16 +570,16 @@ public class SIFT {
                         + "perl make-SIFT-db-all.pl -config /data4/home/aoyue/vmap2/analysis/008_sift/abd_iwgscV1_SIFT4G_db/config/abd_iwgscV1_SIFT4G_Create_Genomic_DB_config" + chr + ".txt > log_chr" + chr + ".wheat_sift4G_pipeline.step.txt\n"
                         + "date\n"
                         + "echo \"chr" + chr + "    :Create wheat sif4G database ends\"" + "\n");
-                
+
                 bw.flush();
                 bw.close();
             }
-            
+
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
         }
-        
+
         try {
             File[] fs = new File(outfileDirS).listFiles();
             fs = IOUtils.listFilesEndsWith(fs, ".sh");
@@ -419,7 +596,7 @@ public class SIFT {
             System.exit(1);
         }
     }
-    
+
     public void mkParameterConfigChr1_42() {
         String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/001_buildWheatSIFTdb/config/";
         try {
@@ -467,15 +644,15 @@ public class SIFT {
                 bw.newLine();
                 bw.flush();
                 bw.close();
-                
+
             }
-            
+
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
         }
     }
-    
+
     public void mkInputDirs() {
         String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/001_buildWheatSIFTdb/003_inputFileList/";
         for (int i = 1; i < 43; i++) {
@@ -502,7 +679,7 @@ public class SIFT {
                 bw.newLine();
                 bw.flush();
                 bw.close();
-                
+
                 StringBuilder sb = new StringBuilder("sh ");
                 sb.append(scriptS);
                 Runtime run = Runtime.getRuntime();
@@ -527,7 +704,7 @@ public class SIFT {
 
             //cat /Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_chrList/chrABDgenomeList.txt | awk '{print $1}' | while read a;do echo "cp -f /data1/publicData/wheat/reference/v1.0/byChr/chr${a}.fa.gz /data4/home/aoyue/vmap2/analysis/008_sift/abd_iwgscV1_SIFT4G_db/input${a}/chr-src/ &";done
         }
-        
+
     }
 
     /**

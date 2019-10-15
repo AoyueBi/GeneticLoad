@@ -19,6 +19,7 @@ import utils.PStringUtils;
 public class SplitScript {
     
     public SplitScript(){
+        this.splitBwaScript("/Users/Aoyue/Documents/sh_removeBadTaxaFromMergeVCF_notGZ20191015.sh", "sh_removeBadTaxaFromMergeVCF_notGZ_", 10, 4);
         
     }
     
@@ -36,7 +37,7 @@ public class SplitScript {
         String parentS = new File(infileS).getParent();
         new File(parentS,"splitScript").mkdirs();
         String outfileDirS = new File(parentS,"splitScript").getAbsolutePath();
-        String shfileS = new File(outfileDirS,"sh_split.sh").getAbsolutePath();
+        String shfileS = new File(parentS,"sh_split.sh").getAbsolutePath();
 
         try {
             String[] outfileS = new String[numfile];
@@ -68,7 +69,7 @@ public class SplitScript {
             Arrays.sort(fs);
             BufferedWriter bw = IOUtils.getTextWriter(shfileS);
             for (int i = 0; i < fs.length; i++) {
-                bw.write("sh " + fs[i].getName() + " &");
+                bw.write("sh " + fs[i].getName() + " > log_" + fs[i].getName().split(".sh")[0] +".txt &");
                 bw.newLine();
             }
             bw.flush();
@@ -77,7 +78,5 @@ public class SplitScript {
             e.printStackTrace();
             System.exit(1);
         }
-
     }
-    
 }

@@ -26,18 +26,78 @@ public class Bin {
     }
     
     /**
-     * 根据合并后的1D 2D 3D 4D 5D 6D 7D文件，分别建立BinTable,最终依旧在一个文件中输出。
-     * @param infileS
+     * make bin table, 一个文件制作一个Binfile，有起始和终止位置
+     * @param infileDirS
      * @param outfileDirS
      * @param binSize 
      */
-    public void mkBinTable(String infileS, String outfileDirS, int binSize){
-        
-    }
+    public void mkBintable2(String infileDirS, String outfileDirS, String binsize) {
+        int binSize = Integer.parseInt(binsize);
+        File[] fs = new File(infileDirS).listFiles();
+        for (int i = 0; i < fs.length; i++) {
+            if (fs[i].isHidden()) {
+                fs[i].delete();
+            }
+        }
+        fs = new File(infileDirS).listFiles();
+        List<File> fsList = Arrays.asList(fs);
+        fsList.stream().forEach(f -> {
+            String infileS = f.getAbsolutePath();
+            String outfileS = null;
+            BufferedReader br = null;
+            if (infileS.endsWith(".txt")) {
+                br = IOUtils.getTextReader(infileS);
+                outfileS = new File(outfileDirS, f.getName().replaceFirst(".txt", "." + binSize/1000000 + "M" + ".binTable.txt")).getAbsolutePath();
+            } else if (infileS.endsWith(".txt.gz")) {
+                br = IOUtils.getTextGzipReader(infileS);
+                outfileS = new File(outfileDirS, f.getName().replaceFirst(".txt.gz", "." + binSize/1000000 + "M" + ".binTable.txt")).getAbsolutePath();
+            }
 
+            RowTable<String> t = new RowTable(infileS);
+            //染色体的长度是最后一行pos的位置
+            int chrlength = Integer.valueOf(t.getCell(t.getRowNumber() - 1, 1));
+            String Chr = t.getCell(0, 0);
+
+            int[][] bound = PArrayUtils.getSubsetsIndicesBySubsetSize(chrlength, binSize);
+            int count[] = new int[bound.length];
+            int[] bounds = new int[bound.length];
+            for(int i=0; i< bound.length; i++){
+                bounds[i] = bound[i][0];
+            }
+            for (int i = 0; i < t.getRowNumber(); i++) {
+                int index = Arrays.binarySearch(bounds, Integer.valueOf(t.getCell(i, 1)));
+                if (index < 0) {
+                    index = -index - 2;
+                }
+                count[index]++;
+            }
+
+            try {
+                BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+                bw.write("CHROM\tBIN_START\tSNP_COUNT\tVARIANTS.KB");
+                bw.newLine();
+                for (int i = 0; i < bound.length; i++) {
+                    StringBuilder sb = new StringBuilder();
+                    double variant = (double)count[i] / (double)1000;
+                    //sb.append(Chr).append("\t").append(bound[i][0]).append("\t").append(bound[i][1]).append("\t").append(variant);
+                    sb.append(Chr).append("\t").append(bound[i][0]).append("\t").append(count[i]).append("\t").append(variant);
+                    bw.write(sb.toString());
+                    bw.newLine();
+                }
+                bw.flush();
+                bw.close();
+                System.out.println(f.getName() + " is completed.");
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
+        });
+    }
+    
     
     /**
-     * make bin table, 一个文件制作一个Binfile
+     * make bin table, 一个文件制作一个Binfile 只有起始位置
      * @param infileDirS
      * @param outfileDirS
      * @param binSize 
@@ -113,7 +173,7 @@ public class Bin {
     public void mkHapPos(String infileDirS, String outfileDirS) {
         File[] fs = new File(infileDirS).listFiles();
         List<File> fsList = Arrays.asList(fs);
-        fsList.stream().forEach(f -> {
+        fsList.parallelStream().forEach(f -> {
             try {
                 String infileS = f.getAbsolutePath();
                 String outfileS = null;
