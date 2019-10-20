@@ -11,15 +11,18 @@ import AoUtils.Script;
 import AoUtils.SplitScript;
 import Plot.Circos;
 import PopulationAnalysis.PopGenPara;
-
+import WheatGeneticLoad.FilterVCF;
+import daxing.common.VCF;
 import WheatGeneticLoad.SIFT;
 import WheatGeneticLoad.Treetest;
 import WheatGeneticLoad.VariantsSum;
+import daxing.common.ChrConvertionRule;
 
 
 import utils.IOUtils;
 
 import java.io.BufferedWriter;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -30,8 +33,8 @@ import java.util.Date;
 public class GeneticLoadEntrance {
 
     public GeneticLoadEntrance() {
-        this.firstProcess();
-        //this.secondProcess();
+        //this.firstProcess();
+        this.secondProcess();
 
     }
 
@@ -60,14 +63,19 @@ public class GeneticLoadEntrance {
         //new CountSites().countSitesinFastCallformat("/data4/home/aoyue/vmap2/genotype/abd/");
         //new CountSites().mergeTxt("/Users/Aoyue/Documents/d_depth_m", "/Users/Aoyue/Documents/002_chr1D-7D.Dgenome.depth.txt.gz");
         //new FilterVCF().mergePosList("/Users/Aoyue/Documents/chr036.ABDgenome.filtered0.75.vcf.gz", "/Users/Aoyue/Documents/chr036.Dgenome.filtered0.75.vcf.gz", "/Users/Aoyue/Documents/chr036.posAllele.txt");
+        //new CountSites();
         //new ScriptHapscanner2();
         //new VariantsSum();
         //new PopGenPara();
         //new SplitScript();
+        //new Script();
+        //new FilterVCF();
 
     }
 
     public static void main(String[] args) {
+        //ChrConvertionRule c=new ChrConvertionRule(Paths.get(""));
+        //VCF.mergeVCFtoLineage("", "", c);
         System.out.println("Aoyue Repository --- Here is the entrance of GeneticLoad!\n");
         System.out.println(new SimpleDateFormat().format(new Date()) + "\tbegin.");
         new GeneticLoadEntrance();
@@ -91,7 +99,7 @@ public class GeneticLoadEntrance {
 //new CountSites().countSitesinFastCallformat(args[0]);
         //new CountSites().filterAlleleMaf(args[0], args[1]);
         //new CountSites().mergeTxt("/Users/Aoyue/Documents/005_bin", "/Users/Aoyue/Documents/snpDensity.txt");
-        //new CountSites().subsetVCFRandomParallel(args[0], args[1],args[2]);
+        //new CountSites().subsetVCF(args[0], args[1],args[2]);
         //new FilterVCF().statVcfDepth_SD_PValue("/Users/Aoyue/Documents/ab/", "/Users/Aoyue/Documents/ab_depth/");
         //new FilterVCF().statVcfDepth_SD_PValue(args[0], args[1]);
         //new FilterVCF().statVcfDepth_SD_PValue_singlethread(args[0], args[1]);
@@ -99,8 +107,12 @@ public class GeneticLoadEntrance {
         //new CountSites().mergeTxt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/008_genomeDistribution/001_binBasedPos","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/008_genomeDistribution/002_mergebinBasedPos/chrAsubgenome.delSNP.changeChrPos.1M.binTable.txt");
         //new CountSites().mergeTxt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/008_genomeDistribution/001_binBasedPos","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/008_genomeDistribution/002_mergebinBasedPos/chrBsubgenome.delSNP.changeChrPos.1M.binTable.txt");
         //new Script().bgzip_lineage();
+        //new CountSites().mergeChr1and2txt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/012_countsiteFrommergedVCF/003_maf0.01SNP/002_log_filterIndelMaf0.01_20191016.txt", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/012_countsiteFrommergedVCF/003_maf0.01SNP/002_log_filterIndelMaf0.01ByRefChr_20191016.txt");
+        //new FilterVCF().reINFOHexaTetraPloid("/Users/Aoyue/Documents/test/chr001.lineage.maf0.01.SNP_subset1000lines.vcf", "/Users/Aoyue/Documents/out/chr001.lineage.maf0.01.SNP_subset1000lines_reINFO.POPU.vcf");
+        //new FilterVCF().reINFOHexaDiPloid("/Users/Aoyue/Documents/test/chr036.lineage.maf0.01.SNP_subset1000lines.vcf", "/Users/Aoyue/Documents/out/chr036.lineage.maf0.01.SNP_subset1000lines_reINFO.POPU.vcf");
+        //new FilterVCF().reINFOHexaTetraPloid(args[0], args[1]);
+        //new FilterVCF().reINFOHexaDiPloid(args[0], args[1]);
         System.out.println(new SimpleDateFormat().format(new Date()) + "\tend.");
-        
 
         
         
@@ -130,21 +142,12 @@ public class GeneticLoadEntrance {
 
     public void test() {
 
-        String outfileS = "/Users/Aoyue/Documents/userAdd.txt";
+        String[][] array = new String[3][10];
 
         try {
-            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
-            String[] user = {"aoyue", "changbin", "daxing", "feilu", "guest", "jijin", "jingwang", "junxu", "lipeng", "qianqian", "sharedData", "xiaohan", "xuebo", "yaozhou", "zhiliang"};
-            for (int i = 0; i < user.length; i++) {
-                bw.write("useradd -d /data1/home/" + user[i] + " -m " + user[i] + "\n"
-                        + "passwd " + user[i] + "\n"
-                        + "chown " + user[i] + " -R /data1/home/" + user[i] + "\n");
+            
 
-            }
-            bw.flush();
-            bw.close();
-
-            System.out.println();
+            System.out.println(array.length);
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);

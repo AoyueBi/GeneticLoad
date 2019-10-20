@@ -34,10 +34,73 @@ public class Treetest {
         //this.colRangesbyDico();
         //this.colRangebyPloidy();
         //this.prune_removeNA();
-        this.colRangebyPloidy_Dsubgenome();
+        //this.colRangebyPloidy_Dsubgenome();
         //this.prune_removeNA_Dsubgenome();
 
     }
+    
+    /**
+     * 进行D subgenome 的分组
+     */
+    public void colRangebyHexaDiGroup_Dsubgenome() {
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/003_Dsubgenome_maf0.001/source/003_group/";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/003_Dsubgenome_maf0.001/003_labels/001_colRangebyploidy.Dsubgenome.txt";
+        String outfileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/003_Dsubgenome_maf0.001/003_labels/001_colBranchbyploidy.Dsubgenome.txt";
+        File f = new File(infileDirS);
+        File[] fs = IOUtils.listRecursiveFiles(f);
+        for (int i = 0; i < fs.length; i++) {
+            if (fs[i].isHidden()) {
+                fs[i].delete();
+            }
+            //System.out.println(fs[i].getName().split(".txt")[0]);
+        }
+        fs = IOUtils.listRecursiveFiles(f);
+        Arrays.sort(fs);
+
+        String[] groups = {"Ae.tauschii", "Wild emmer","Domesticated emmer","Free-threshing emmer wheat","Not-free-thresh","Cultivar","Landrace","Breeding_Research Material"};
+        String[] col = {"#87cef9", "#ffcf66", "#cc8c00", "#664600", "#996900", "#996900", "#996900", "#996900", "#996900", "#996900", "#e10505", "#fc6e6e", "#af0404"};
+        HashMap<String, String> hm = new HashMap<>();
+        for (int i = 0; i < groups.length; i++) {
+            hm.put(groups[i], col[i]);
+        }
+        try {
+            BufferedWriter[] bw = new BufferedWriter[2];
+            bw[0] = IOUtils.getTextWriter(outfileS);
+            bw[1] = IOUtils.getTextWriter(outfileS1);
+            //先写表头
+            bw[0].write("TREE_COLORS\nSEPARATOR TAB\nDATA\n");
+            bw[1].write("TREE_COLORS\nSEPARATOR TAB\nDATA\n");
+            //再写内部的分组，注意文件名字必须和HashMap里的分组名保持一致
+            for (int i = 0; i < fs.length; i++) {
+                String infileS = fs[i].getAbsolutePath();
+                String group = fs[i].getName().split(".txt")[0];
+                if(group.equals("NA")) continue;
+                BufferedReader br = IOUtils.getTextReader(infileS);
+                String temp = null;
+                int cnt = 0;
+                while ((temp = br.readLine()) != null) {
+                    cnt++;
+                    bw[0].write(temp + "\trange\t" + hm.get(group) + "\t" + group);
+                    bw[0].newLine();
+                    
+                    bw[1].write(temp + "\tbranch\t" + hm.get(group) + "\t" + "normal");
+                    bw[1].newLine();
+                }
+                br.close();
+
+            }
+            bw[0].flush();
+            bw[1].flush();
+            bw[0].close();
+            bw[1].close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+    }
+    
     
     /**
      * 

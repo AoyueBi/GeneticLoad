@@ -20,6 +20,7 @@ public class Script {
 
     public Script() {
         //this.removeBadTaxafromVCF();
+        this.bgzip_AB();
 
     }
 
@@ -104,7 +105,10 @@ public class Script {
             String chr = PStringUtils.getNDigitNumber(3, i);
             int index = Collections.binarySearch(l, i);
             if (index < 0) {
-                System.out.println("bgzip -@ 6 chr" + chr + ".vcf && tabix -p vcf chr" + chr + ".vcf.gz &");
+                //System.out.println("bgzip -@ 6 chr" + chr + ".vcf && tabix -p vcf chr" + chr + ".vcf.gz &");
+                //System.out.println("/data1/programs/bcftools-1.8/bcftools reheader --samples /data4/home/aoyue/vmap2/analysis/017_removeBadTaxa/005_test_reheaderVCF/changeTaxaName.txt --threads 10 /data4/home/aoyue/vmap2/genotype/mergedVCF/005_maf0.01SNP/chr" + chr + ".lineage.maf0.01.SNP.vcf -o /data4/home/aoyue/vmap2/genotype/mergedVCF/006_reheader/chr" + chr + ".lineage.maf0.01.SNP.vcf");
+                //System.out.println("rm -f chr" + chr + ".lineage.maf0.01.SNP.vcf");
+                //System.out.println("mv chr" + chr + ".lineage.maf0.01.SNP.vcf ../005_maf0.01SNP/");
             }
         }
     }

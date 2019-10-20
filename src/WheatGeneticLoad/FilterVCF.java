@@ -92,14 +92,483 @@ public class FilterVCF {
 //        this.addGroupforsubsetDepthDB("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/008_cellMethod/003_getHighCumulativePos/d/chrDgenome_bin100_0.85.depthVSsd.txt.gz", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/008_cellMethod/004_subset5000sitefromDepthDB/d/002_chr1D-7D.Dgenome.depth_5049sites.txt", "8", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/008_cellMethod/005_subset.addGroup/d/chrDgenome.depthVSsd.addGroup.bin100_0.85.txt");
 ////
         //this.mergePosList();
+        this.scriptReINFO();
+    }
+    
+    public void scriptReINFO() {
+        List<Integer> l = new ArrayList<>();
+        int j = 5;
+        l.add(j);
+        for (int i = 0; i < 6; i++) {
+            j = j + 6;
+            l.add(j);
+        }
+
+        int k = 6;
+        l.add(k);
+        for (int i = 0; i < 6; i++) {
+            k = k + 6;
+            l.add(k);
+        }
+        Collections.sort(l);
+
+        for (int i = 1; i < 43; i++) {
+            String chr = PStringUtils.getNDigitNumber(3, i);
+            int index = Collections.binarySearch(l, i);
+            if (index < 0) {
+                System.out.println("java -jar 020_reINFOHexaTetraPloid.jar /data4/home/aoyue/vmap2/genotype/mergedVCF/005_maf0.01SNP/chr" + chr + ".lineage.maf0.01.SNP.vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/007_reINFO/chr" + chr + ".subgenome.maf0.01.SNP.vcf > log_020/reINFOHexaTetraPloid_chr" + chr + ".txt &");
+            }
+            else{
+                System.out.println("java -jar 020_reINFOHexaDiPloid.jar /data4/home/aoyue/vmap2/genotype/mergedVCF/005_maf0.01SNP/chr" + chr + ".lineage.maf0.01.SNP.vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/007_reINFO/chr" + chr + ".subgenome.maf0.01.SNP.vcf > log_020/reINFOHexaTetraPloid_chr" + chr + ".txt &");
+            }
+        }
+    }
+
+    
+    public void reINFOHexaDiPloid(String infileS, String outfileS) {
+        ////// 先建立数据库，进行六倍体和四倍体的taxa整理并排序；
+        //String hexaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/removeBadTaxa/BreadWheat_S419.txt";
+        //String diFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/removeBadTaxa/Ae.tauschii_S36.txt";
         
+        String hexaFileS = "/data4/home/aoyue/vmap2/analysis/000_taxaList/BreadWheat_S419.txt";
+        String diFileS = "/data4/home/aoyue/vmap2/analysis/000_taxaList/Ae.tauschii_S36.txt";
         
+        List<String> lhexa = new ArrayList<>();
+        List<String> ldi = new ArrayList<>();
+        List<Integer> indexHexa = new ArrayList<>();
+        List<Integer> indexDi = new ArrayList<>();
+        
+
+        try {
+            BufferedReader br = IOUtils.getTextReader(hexaFileS);
+            String temp = null;
+            while ((temp = br.readLine()) != null) {
+                lhexa.add(temp);
+            }
+            br.close();
+            br = IOUtils.getTextReader(diFileS);
+            while ((temp = br.readLine()) != null) {
+                ldi.add(temp);
+            }
+            br.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        String[] hexaArray = lhexa.toArray(new String[lhexa.size()]);
+        String[] diArray = ldi.toArray(new String[ldi.size()]);
+        Arrays.sort(hexaArray);
+        Arrays.sort(diArray);
+        //System.out.println("Chr\tTotalSNP Num\tBiallelic Num(Maf>0.01)\tTriallelic Num(Maf>0.01)\tTriallelic Num(Alt2F>0.01)\tTriallelic Ratio(Maf>0.01)\tTriallelic Ratio(Alt2F>0.01)");
+        try {
+            BufferedReader br = null;
+            BufferedWriter bw = null;
+            if (infileS.endsWith(".vcf")) {
+                br = IOUtils.getTextReader(infileS);
+            } else if (infileS.endsWith(".vcf.gz")) {
+                br = IOUtils.getTextGzipReader(infileS);
+            }
+            if (outfileS.endsWith(".vcf")) {
+                bw = IOUtils.getTextWriter(outfileS);
+            } else if (outfileS.endsWith(".vcf.gz")) {
+                bw = IOUtils.getTextGzipWriter(outfileS);
+            }
+            String temp = null;
+            String te[] = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+//            int biallelicMafmoreNum = 0;
+//            int cntCmaf12 = 0; //alt1 +alt2 大于0.005的个数
+//            int cntCmaf2 = 0; //alt2 大于 0.005的个数
+//            double ProportionofTriallelicMafmoreNum = Double.MIN_VALUE;
+//            double ProportionofTriallelicAlt2moreNum = Double.MIN_VALUE;
+            while ((temp = br.readLine()) != null) {
+                //***********************************************************//
+                if (temp.startsWith("##")) {//过滤含有#的注释部分
+                    if (temp.equals("##ALT=<ID=DEL,Description=\"Deletion\">")) {
+                        temp = br.readLine();
+                        bw.write("##INFO=<ID=MAF_ABD,Number=1,Type=Float,Description=\"Minor allele frequency on hexaploid bread wheat\">");
+                        bw.newLine();
+                        bw.write("##INFO=<ID=MAF_D,Number=1,Type=Float,Description=\"Minor allele frequency on diploid Aegilops tauschii\">");
+                        bw.newLine();
+                        //bw.write("##INFO=<ID=MAF_diploid,Number=1,Type=Float,Description=\"Minor allele frequency on diploid Aegilops tauschii\">");
+                        //bw.newLine();
+                        bw.write("##ALT=<ID=D,Description=\"Deletion\">");
+                        bw.newLine();
+                        bw.write("##ALT=<ID=I,Description=\"Insertion\">");
+                        bw.newLine();
+                        bw.write("##Species=Wheat");
+                        bw.newLine();
+                        bw.write("##ReferenceGenome=iwgsc_refseqv1.0");
+                        bw.newLine();
+                    }
+                    if (temp.equals("##ALT=<ID=INS,Description=\"Insertion\">")) {
+                        continue;
+                    }
+                    if (temp.startsWith("##bcftools")) {
+                        continue;
+                    }
+                    if(temp.startsWith("##contig")){
+                       continue;
+                    }
+                    bw.write(temp);
+                    bw.newLine();
+                }
+
+                //***********************************************************//
+                //开始处理taxa的问题，先把所有taxa放入array中，记住在temp中的index
+                if (temp.startsWith("#CHROM")) {
+                    l = PStringUtils.fastSplit(temp);
+                    bw.write(temp);
+                    bw.newLine();
+                    for (int i = 9; i < l.size(); i++) {
+                        String taxon = l.get(i);
+                        int index1 = Arrays.binarySearch(hexaArray, taxon);
+                        int index2 = Arrays.binarySearch(diArray, taxon);
+
+                        if (index1 > -1) {
+                            indexHexa.add(i);
+                        }
+                        if (index2 > -1) {
+                            indexDi.add(i);
+                        }
+                    }
+                    Collections.sort(indexHexa);
+                    Collections.sort(indexDi);
+
+                }
+                if (!temp.startsWith("#")) { //
+                    l = PStringUtils.fastSplit(temp);
+                    List<String> lgeno = new ArrayList<>();
+                    List<String> lHexaGeno = new ArrayList<>();
+                    List<String> lDiGeno = new ArrayList<>();
+                    String altList = l.get(4);
+                    for (int i = 9; i < l.size(); i++) {
+                        lgeno.add(l.get(i));
+                        int index1 = Collections.binarySearch(indexHexa, i);
+                        int index2 = Collections.binarySearch(indexDi, i);
+                        if (index1 > -1) {
+                            lHexaGeno.add(l.get(i));
+                        }
+                        if (index2 > -1) {
+                            lDiGeno.add(l.get(i));
+                        }
+                    }
+                    String[] genoArray = lgeno.toArray(new String[lgeno.size()]);
+                    String[] hexaGenoArray = lHexaGeno.toArray(new String[lHexaGeno.size()]);
+                    String[] diGenoArray = lDiGeno.toArray(new String[lDiGeno.size()]);
+
+                    String INFO = this.getInfo(genoArray, altList);
+                    String hexaMAF = this.getSubgenomeMAF(hexaGenoArray, altList);
+                    String diMAF = this.getSubgenomeMAF(diGenoArray, altList);
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 0; i < 7; i++) {
+                        sb.append(l.get(i)).append("\t");
+                    }
+                    sb.append(INFO).append(";MAF_ABD=").append(hexaMAF).append(";MAF_D=").append(diMAF).append("\tGT:AD:PL");
+                    for (int i = 9; i < l.size(); i++) {
+                        sb.append("\t").append(l.get(i));
+                    }
+                    bw.write(sb.toString());
+                    bw.newLine();
+                } //
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println(infileS + " is completed at " + outfileS);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+    }
+
+
+    public void reINFOHexaTetraPloid(String infileS, String outfileS) {
+        ////// 先建立数据库，进行六倍体和四倍体的taxa整理并排序；
+//        String hexaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/removeBadTaxa/BreadWheat_S419.txt";
+//        String tetraFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/removeBadTaxa/EmmerWheat_S187.txt";
+        
+        String hexaFileS = "/data4/home/aoyue/vmap2/analysis/000_taxaList/BreadWheat_S419.txt";
+        String tetraFileS = "/data4/home/aoyue/vmap2/analysis/000_taxaList/EmmerWheat_S187.txt";
+        List<String> lhexa = new ArrayList<>();
+        List<String> ltetra = new ArrayList<>();
+        List<Integer> indexHexa = new ArrayList<>();
+        List<Integer> indexTetra = new ArrayList<>();
+        
+
+        try {
+            BufferedReader br = IOUtils.getTextReader(hexaFileS);
+            String temp = null;
+            while ((temp = br.readLine()) != null) {
+                lhexa.add(temp);
+            }
+            br.close();
+            br = IOUtils.getTextReader(tetraFileS);
+            while ((temp = br.readLine()) != null) {
+                ltetra.add(temp);
+            }
+            br.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        String[] hexaArray = lhexa.toArray(new String[lhexa.size()]);
+        String[] tetraArray = ltetra.toArray(new String[ltetra.size()]);
+        Arrays.sort(hexaArray);
+        Arrays.sort(tetraArray);
+
+        //System.out.println("Chr\tTotalSNP Num\tBiallelic Num(Maf>0.01)\tTriallelic Num(Maf>0.01)\tTriallelic Num(Alt2F>0.01)\tTriallelic Ratio(Maf>0.01)\tTriallelic Ratio(Alt2F>0.01)");
+
+        try {
+            BufferedReader br = null;
+            BufferedWriter bw = null;
+            if (infileS.endsWith(".vcf")) {
+                br = IOUtils.getTextReader(infileS);
+            } else if (infileS.endsWith(".vcf.gz")) {
+                br = IOUtils.getTextGzipReader(infileS);
+            }
+            if (outfileS.endsWith(".vcf")) {
+                bw = IOUtils.getTextWriter(outfileS);
+            } else if (outfileS.endsWith(".vcf.gz")) {
+                bw = IOUtils.getTextGzipWriter(outfileS);
+            }
+            String temp = null;
+            String te[] = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+//            int biallelicMafmoreNum = 0;
+//            int cntCmaf12 = 0; //alt1 +alt2 大于0.005的个数
+//            int cntCmaf2 = 0; //alt2 大于 0.005的个数
+//            double ProportionofTriallelicMafmoreNum = Double.MIN_VALUE;
+//            double ProportionofTriallelicAlt2moreNum = Double.MIN_VALUE;
+            while ((temp = br.readLine()) != null) {
+                //***********************************************************//
+                if (temp.startsWith("##")) {//过滤含有#的注释部分
+                    if (temp.equals("##ALT=<ID=DEL,Description=\"Deletion\">")) {
+                        temp = br.readLine();
+                        bw.write("##INFO=<ID=MAF_ABD,Number=1,Type=Float,Description=\"Minor allele frequency on hexaploid bread wheat\">");
+                        bw.newLine();
+                        bw.write("##INFO=<ID=MAF_AB,Number=1,Type=Float,Description=\"Minor allele frequency on tetraploid emmer wheat\">");
+                        bw.newLine();
+                        //bw.write("##INFO=<ID=MAF_diploid,Number=1,Type=Float,Description=\"Minor allele frequency on diploid Aegilops tauschii\">");
+                        //bw.newLine();
+                        bw.write("##ALT=<ID=D,Description=\"Deletion\">");
+                        bw.newLine();
+                        bw.write("##ALT=<ID=I,Description=\"Insertion\">");
+                        bw.newLine();
+                        bw.write("##Species=Wheat");
+                        bw.newLine();
+                        bw.write("##ReferenceGenome=iwgsc_refseqv1.0");
+                        bw.newLine();
+                    }
+                    if (temp.equals("##ALT=<ID=INS,Description=\"Insertion\">")) {
+                        continue;
+                    }
+                    if (temp.startsWith("##bcftools")) {
+                        continue;
+                    }
+                    if(temp.startsWith("##contig")){
+                       continue;
+                    }
+                    bw.write(temp);
+                    bw.newLine();
+                }
+
+                //***********************************************************//
+                //开始处理taxa的问题，先把所有taxa放入array中，记住在temp中的index
+                if (temp.startsWith("#CHROM")) {
+                    l = PStringUtils.fastSplit(temp);
+                    bw.write(temp);
+                    bw.newLine();
+                    for (int i = 9; i < l.size(); i++) {
+                        String taxon = l.get(i);
+                        int index1 = Arrays.binarySearch(hexaArray, taxon);
+                        int index2 = Arrays.binarySearch(tetraArray, taxon);
+
+                        if (index1 > -1) {
+                            indexHexa.add(i);
+                        }
+                        if (index2 > -1) {
+                            indexTetra.add(i);
+                        }
+                    }
+                    Collections.sort(indexHexa);
+                    Collections.sort(indexTetra);
+
+                }
+                if (!temp.startsWith("#")) { //
+                    l = PStringUtils.fastSplit(temp);
+                    List<String> lgeno = new ArrayList<>();
+                    List<String> lHexaGeno = new ArrayList<>();
+                    List<String> lTetraGeno = new ArrayList<>();
+                    String altList = l.get(4);
+                    for (int i = 9; i < l.size(); i++) {
+                        lgeno.add(l.get(i));
+                        int index1 = Collections.binarySearch(indexHexa, i);
+                        int index2 = Collections.binarySearch(indexTetra, i);
+                        if (index1 > -1) {
+                            lHexaGeno.add(l.get(i));
+                        }
+                        if (index2 > -1) {
+                            lTetraGeno.add(l.get(i));
+                        }
+                    }
+                    String[] genoArray = lgeno.toArray(new String[lgeno.size()]);
+                    String[] hexaGenoArray = lHexaGeno.toArray(new String[lHexaGeno.size()]);
+                    String[] tetraGenoArray = lTetraGeno.toArray(new String[lTetraGeno.size()]);
+
+                    String INFO = this.getInfo(genoArray, altList);
+                    String hexaMAF = this.getSubgenomeMAF(hexaGenoArray, altList);
+                    String tetraMAF = this.getSubgenomeMAF(tetraGenoArray, altList);
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 0; i < 7; i++) {
+                        sb.append(l.get(i)).append("\t");
+                    }
+                    sb.append(INFO).append(";MAF_ABD=").append(hexaMAF).append(";MAF_AB=").append(tetraMAF).append("\tGT:AD:PL");
+                    for (int i = 9; i < l.size(); i++) {
+                        sb.append("\t").append(l.get(i));
+                    }
+                    bw.write(sb.toString());
+                    bw.newLine();
+                } //
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println(infileS + " is completed at " + outfileS);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+    }
+
+    public String getSubgenomeMAF(String[] PopGenoArray, String altList) {
+        int dp = 0;
+        int nz = 0;
+        int nAlt = PStringUtils.fastSplit(altList, ",").size();
+        int[] adCnt = new int[1 + nAlt]; //所有包括ref和alt的个数
+        int[] acCnt = new int[1 + nAlt]; //所有包括ref和alt的个数
+        int[][] gnCnt = new int[1 + nAlt][1 + nAlt]; //GN到底代表什么？
+        int ht = 0;
+        List<String> tempList = null;
+        List<String> temList = null;
+        for (int i = 0; i < PopGenoArray.length; i++) {
+            if (PopGenoArray[i].startsWith(".")) {
+                nz++;
+                continue;
+            }
+            tempList = PStringUtils.fastSplit(PopGenoArray[i], ":"); //tempList是包含基因型AD还有PL的集合
+//            temList = PStringUtils.fastSplit(tempList.get(1), ","); //temList是AD所有的深度集合
+//            for (int j = 0; j < temList.size(); j++) {
+//                int c = Integer.parseInt(temList.get(j)); //c是第j个allele的深度值。注意AD的第一个是ref，第二个是次等位位点的深度，第三个是最小等位位点的深度
+//                dp += c; //dp是总深度
+//                adCnt[j] += c; //adCnt[j] 是第j个allele的深度值的总和，AD按照 ref alt1 alt2排序
+//            }
+            temList = PStringUtils.fastSplit(tempList.get(0), "/"); //temList是包含基因型拆分后的集合
+            for (int j = 0; j < temList.size(); j++) {
+                int c = Integer.parseInt(temList.get(j)); // c是基因型第j个数值
+                acCnt[c]++; //acCnt[c] 是所有taxa基因型某一数值如0 1 2的总和
+            }
+//            int index1 = Integer.parseInt(temList.get(0)); //
+//            int index2 = Integer.parseInt(temList.get(1));
+//            gnCnt[index1][index2]++; //gnCnt[][]是二维数组，代表alt的个数的矩阵，比如有1个alt，则gnCnt[][]有gnCnt[0][0]  gnCnt[0][1] gnCnt[1][0] gnCnt[1][1]
+//            if (index1 != index2) {
+//                ht++;
+//            }
+        }
+//        nz = PopGenoArray.length - nz;
+        int sum = 0;
+        for (int i = 0; i < acCnt.length; i++) {
+            sum += acCnt[i];
+        }
+        float maf = (float) ((double) acCnt[0] / sum);
+        if (maf >= 0.5) {
+            maf = (float) ((double) acCnt[1] / sum);
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("%.4f", maf)); //.append(";MAF=")根据实际情况书写MAF_ABD MAF_AB MAF_D
+        return sb.toString();
+    }
+
+    public String getInfo(String[] genoArray, String altList) {
+        int dp = 0;
+        int nz = 0;
+        int nAlt = PStringUtils.fastSplit(altList, ",").size();
+        int[] adCnt = new int[1 + nAlt]; //所有包括ref和alt的个数
+        int[] acCnt = new int[1 + nAlt]; //所有包括ref和alt的个数
+        int[][] gnCnt = new int[1 + nAlt][1 + nAlt]; //GN到底代表什么？
+        int ht = 0;
+        List<String> tempList = null;
+        List<String> temList = null;
+        for (int i = 0; i < genoArray.length; i++) {
+            if (genoArray[i].startsWith(".")) {
+                nz++;
+                continue;
+            }
+            tempList = PStringUtils.fastSplit(genoArray[i], ":"); //tempList是包含基因型AD还有PL的集合
+            temList = PStringUtils.fastSplit(tempList.get(1), ","); //temList是AD所有的深度集合
+            for (int j = 0; j < temList.size(); j++) {
+                int c = Integer.parseInt(temList.get(j)); //c是第j个allele的深度值。注意AD的第一个是ref，第二个是次等位位点的深度，第三个是最小等位位点的深度
+                dp += c; //dp是总深度
+                adCnt[j] += c; //adCnt[j] 是第j个allele的深度值的总和，AD按照 ref alt1 alt2排序
+            }
+            temList = PStringUtils.fastSplit(tempList.get(0), "/"); //temList是包含基因型拆分后的集合
+            for (int j = 0; j < temList.size(); j++) {
+                int c = Integer.parseInt(temList.get(j)); // c是基因型第j个数值
+                acCnt[c]++; //acCnt[c] 是所有taxa基因型某一数值如0 1 2的总和
+            }
+            int index1 = Integer.parseInt(temList.get(0)); //
+            int index2 = Integer.parseInt(temList.get(1));
+            gnCnt[index1][index2]++; //gnCnt[][]是二维数组，代表alt的个数的矩阵，比如有1个alt，则gnCnt[][]有gnCnt[0][0]  gnCnt[0][1] gnCnt[1][0] gnCnt[1][1]
+            if (index1 != index2) {
+                ht++;
+            }
+        }
+        nz = genoArray.length - nz;
+        int sum = 0;
+        for (int i = 0; i < acCnt.length; i++) {
+            sum += acCnt[i];
+        }
+        float maf = (float) ((double) acCnt[0] / sum);
+        if (maf >= 0.5) {
+            maf = (float) ((double) acCnt[1] / sum);
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("DP=").append(dp).append(";NZ=").append(nz).append(";AD=");
+        for (int i = 0; i < adCnt.length; i++) {
+            sb.append(adCnt[i]).append(",");
+        }
+        sb.deleteCharAt(sb.length() - 1); //删除最后一个字符","号
+        sb.append(";AC=");
+        for (int i = 1; i < acCnt.length; i++) {
+            sb.append(acCnt[i]).append(",");
+        }
+        sb.deleteCharAt(sb.length() - 1);
+        sb.append(";GN=");
+        for (int i = 0; i < gnCnt.length; i++) { //二维数组的长度是第一维的长度，这里是2（只有1个alt） 或者3 (有2个alt)
+            for (int j = i + 1; j < gnCnt.length; j++) {
+                sb.append(gnCnt[i][j]).append(",");
+            }
+        }
+        sb.deleteCharAt(sb.length() - 1);
+        sb.append(";HT=").append(ht).append(";MAF=").append(String.format("%.4f", maf));
+        return sb.toString();
     }
 
     /**
      * 将chr001.ABDgenome 和 chr001.ABgenome 合并起来，生成一个合并后的文件
      */
-    public void mergePosList(String inFileS1, String inFileS2, String outfileS ) {
+    public void mergePosList(String inFileS1, String inFileS2, String outfileS) {
 //        String inFileS1 = "/Users/Aoyue/Documents/chr001.ABDgenome.10000lines.vcf.gz";
 //        String inFileS2 = "/Users/Aoyue/Documents/chr001.ABgenome.10000lines.vcf.gz";
 //        String outfileS = "/Users/Aoyue/Documents/chr001_PosAllele.txt";
@@ -218,7 +687,7 @@ public class FilterVCF {
                     }
                     for (int j = 0; j < tem.length; j++) { //fre指的是"A", "C", "G", "T", "D", "I"
                         int index = Arrays.binarySearch(alleles, tem[j]);//第0，1个AD，在 ACGTDI中的index搜索
-                        fre[index] = fre1[j+1] * weight1; //复制fre1[j+1]到 fre中去， 权重1等于 在ABD中群体的个数 除以 在ABD中群体的个数加上AB群体的个数之和
+                        fre[index] = fre1[j + 1] * weight1; //复制fre1[j+1]到 fre中去， 权重1等于 在ABD中群体的个数 除以 在ABD中群体的个数加上AB群体的个数之和
                     }
                     //再处理AB群体
                     tem = altList2.get(index2).split(",");
@@ -236,9 +705,9 @@ public class FilterVCF {
                     for (int j = 0; j < tem.length; j++) {
                         int index = Arrays.binarySearch(alleles, tem[j]);
                         if (fre[index] < 0) {
-                            fre[index] = fre2[j+1] * weight2; //如果没搜到，说明在ABD群体中没有发现，只在群体2中发现；
+                            fre[index] = fre2[j + 1] * weight2; //如果没搜到，说明在ABD群体中没有发现，只在群体2中发现；
                         } else {
-                            fre[index] = fre[index] + fre2[j+1] * weight2; //说明在ABD和AB群体中都有，2者相加。
+                            fre[index] = fre[index] + fre2[j + 1] * weight2; //说明在ABD和AB群体中都有，2者相加。
                         }
                     }
 
@@ -256,7 +725,7 @@ public class FilterVCF {
                 bw.write(sb.toString());
                 bw.newLine();
             }
-            
+
             System.out.println(mergedPos.length + "\t" + (intf1 + shared) + "\t" + (intf2 + shared) + "\t" + shared);
             br.close();
             bw.flush();

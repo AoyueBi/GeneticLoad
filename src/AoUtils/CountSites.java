@@ -24,7 +24,10 @@ public class CountSites {
 
     public CountSites() {
         //this.getSharedSNP();
-
+        //this.mergesubsetVCF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/022_subsetVCF/Asub", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/022_subsetVCF/004_merged/chr.Asubgenome.maf0.01.SNP_bi.subset.vcf.gz");
+        //this.mergesubsetVCF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/022_subsetVCF/Bsub", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/022_subsetVCF/004_merged/chr.Bsubgenome.maf0.01.SNP_bi.subset.vcf.gz");
+        //this.mergesubsetVCF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/022_subsetVCF/Dsub", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/022_subsetVCF/004_merged/chr.Dsubgenome.maf0.01.SNP_bi.subset.vcf.gz");
+        this.mergesubsetVCF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/022_subsetVCF/004_merged","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/022_subsetVCF/005_all/chr.ABsubgenome.maf0.01.SNP_bi.subset.vcf.gz");
     }
 
     public void getSharedSNP() {
@@ -169,7 +172,7 @@ public class CountSites {
      * @param infileDirS
      * @param outfileDirS
      */
-    public void mergefile1and2(String infileDirS, String outfileDirS) {
+    public void mergefile1and2_chr1and2(String infileDirS, String outfileDirS) {
 
         //建立1-44一一对应chr1A的关系,目的：根据chr1找到chr1A
         String[] chrs = {"1A", "1B", "1D", "2A", "2B", "2D", "3A", "3B", "3D", "4A", "4B", "4D", "5A", "5B", "5D", "6A", "6B", "6D", "7A", "7B", "7D", "Mit", "Chl"};
@@ -222,7 +225,7 @@ public class CountSites {
                             //确定输出文件的路径，并读入header
                             String secondchr = PStringUtils.getNDigitNumber(3, chr + 1);
                             //名字变一下：
-                            
+
                             BufferedWriter bw = IOUtils.getTextGzipWriter(outfileS);
                             bw.write(br.readLine()); //先读表头
                             bw.newLine();
@@ -574,7 +577,7 @@ public class CountSites {
                         }
                         sb = new StringBuilder();
                         sb.append(Chr).append("\t").append(String.valueOf(pos));
-                        for(int i =2; i<l.size();i++){
+                        for (int i = 2; i < l.size(); i++) {
                             sb.append("\t" + l.get(i));
                         }
                         bw.write(sb.toString());
@@ -1193,7 +1196,7 @@ public class CountSites {
      * @param infileDirS
      * @param outfileDirS
      */
-    public void subsetVCFRandomParallel(String infileDirS, String outfileDirS, String extractRatio) {
+    public void subsetVCF(String infileDirS, String outfileDirS, String extractRatio) {
 
         File[] fs = new File(infileDirS).listFiles();
         for (int i = 0; i < fs.length; i++) {
@@ -1211,10 +1214,10 @@ public class CountSites {
                 BufferedReader br = null;
                 if (infileS.endsWith(".vcf")) {
                     br = IOUtils.getTextReader(infileS);
-                    outfileS = new File(outfileDirS, f.getName().split(".vcf")[0] + "_subset.vcf.gz").getAbsolutePath();
+                    outfileS = new File(outfileDirS, f.getName().split(".vcf")[0] + "_bi.subset.vcf.gz").getAbsolutePath();
                 } else if (infileS.endsWith(".vcf.gz")) {
                     br = IOUtils.getTextGzipReader(infileS);
-                    outfileS = new File(outfileDirS, f.getName().split(".vcf.gz")[0] + "_subset.vcf.gz").getAbsolutePath();
+                    outfileS = new File(outfileDirS, f.getName().split(".vcf.gz")[0] + "_bi.subset.vcf.gz").getAbsolutePath();
                 }
                 BufferedWriter bw = IOUtils.getTextGzipWriter(outfileS);
                 String temp = null;
@@ -1233,9 +1236,10 @@ public class CountSites {
                             continue; //返回带正号的 double 值，该值大于等于 0.0 且小于 1.0。返回值是一个伪随机选择的数，在该范围内（近似）均匀分布
                         }
                         l = PStringUtils.fastSplit(temp);
-                        if (l.get(3).contains(",")) {
-                            continue; // 第3列是alt的信息，若有2个等位基因，则去除这一行
+                        if (l.get(4).contains(",")) {
+                            continue; // 第4列是alt的信息，若有2个等位基因，则去除这一行
                         }
+
                         bw.write(temp);
                         bw.newLine();
                         cntsubset++;
@@ -1244,69 +1248,11 @@ public class CountSites {
                 bw.flush();
                 bw.close();
                 br.close();
-                System.out.println(f.getName() + "\twith " + cnttotal + " bp has a subset of\t" + cntsubset + "\tis completed at " + outfileS);
+                System.out.println(f.getName() + "\twith " + cnttotal + " bp has a subset of\t" + cntsubset + "\tbiallelic SNPs is completed at " + outfileS);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
-    }
-
-    /**
-     * chr002.ABgenome.filterMiss.vcf.gz -->
-     * chr002.ABgenome.filterMiss_subset.vcf.gz
-     *
-     * @param infileDirS
-     * @param outfileDirS
-     */
-    public void subsetVCFRandomParallel_GZ(String infileDirS, String outfileDirS) {
-
-        File[] fs = new File(infileDirS).listFiles();
-        fs = IOUtils.listFilesEndsWith(fs, ".vcf.gz");
-        List<File> fsList = Arrays.asList(fs);
-        Collections.sort(fsList);
-        //System.out.println(new SimpleDateFormat().format(new Date()) + "\tbegin.");
-        long startTime = System.nanoTime();
-        fsList.parallelStream().forEach(f -> {
-            try {
-                BufferedReader br = IOUtils.getTextGzipReader(f.getAbsolutePath());
-                String outfileS = new File(outfileDirS, f.getName().split(".vcf.gz")[0] + "_subset.vcf.gz").getAbsolutePath();
-                BufferedWriter bw = IOUtils.getTextGzipWriter(outfileS);
-                String temp = null;
-                int cnttotal = 0;
-                int cntsubset = 0;
-                while ((temp = br.readLine()) != null) {
-                    if (temp.startsWith("#")) {
-                        bw.write(temp);
-                        bw.newLine();
-                    } else {
-                        cnttotal++;
-                        double r = Math.random();
-                        if (r > 0.01) {
-                            continue; //返回带正号的 double 值，该值大于等于 0.0 且小于 1.0。返回值是一个伪随机选择的数，在该范围内（近似）均匀分布
-                        }
-                        List<String> l = PStringUtils.fastSplit(temp);
-                        if (l.get(3).contains(",")) {
-                            continue; // 第3列是alt的信息，若有2个等位基因，则去除这一行
-                        }
-                        bw.write(temp);
-                        bw.newLine();
-                        cntsubset++;
-                    }
-                }
-                bw.flush();
-                bw.close();
-                br.close();
-
-                System.out.println(f.getName() + " with " + cnttotal + " bp has a subset of\t" + cntsubset);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-        });
-        long endTime = System.nanoTime();
-        float excTime = (float) (endTime - startTime) / 1000000000;
-        System.out.println("Execution time: " + String.format("%.2f", excTime) + "s");
-        //System.out.println(new SimpleDateFormat().format(new Date()) + "\tend.");
     }
 
     /**
@@ -1314,7 +1260,7 @@ public class CountSites {
      * @param infileS
      * @param outfileS
      */
-    public void subsetVCFdataRandom_singleStream(String infileS, String outfileS, String ratio) {
+    public void subsetVCF_singleStream(String infileS, String outfileS, String ratio) {
         //String infileS = "/data4/home/aoyue/vmap2/abd/rawVCF/chr001.vcf";
         //String outfileS = "/data4/home/aoyue/vmap2/abd/rawVCF/chr001_subset.vcf";
 
@@ -1343,7 +1289,7 @@ public class CountSites {
                         continue; //返回带正号的 double 值，该值大于等于 0.0 且小于 1.0。返回值是一个伪随机选择的数，在该范围内（近似）均匀分布
                     }
                     List<String> l = PStringUtils.fastSplit(temp);
-                    if (l.get(3).contains(",")) {
+                    if (l.get(4).contains(",")) {
                         continue; // 第3列是alt的信息，若有2个等位基因，则去除这一行
                     }
                     bw.write(temp);
@@ -1363,6 +1309,7 @@ public class CountSites {
 
     /**
      * chr005.Dlineage.vcf --> chr005.Dlineage.maf0.005.bi.vcf
+     * chr005.Dlineage.vcf --> chr005.Dlineage.maf0.01.bi.vcf
      *
      * @param infileDirS
      */
@@ -1377,18 +1324,20 @@ public class CountSites {
         fs = new File(infileDirS).listFiles();
         List<File> fsList = Arrays.asList(fs);
         Collections.sort(fsList);
-        System.out.println("FileName\tTotalSNPNum\tBiallelicMafmore0.005Num\tTriallelicMafmore0.005Num\tTriallelicAlt2more0.005Num\tProportionofTriallelicMafmore0.005Num\tProportionofTriallelicAlt2more0.005Num");
+        //System.out.println("FileName\tTotalSNPNum\tBiallelicMafmore0.01Num\tTriallelicMafmore0.01Num\tTriallelicAlt2more0.01Num\tProportionofTriallelicMafmore0.01Num\tProportionofTriallelicAlt2more0.01Num");
+        System.out.println("Chr\tTotalSNP Num\tBiallelic Num(Maf>0.01)\tTriallelic Num(Maf>0.01)\tTriallelic Num(Alt2F>0.01)\tTriallelic Ratio(Maf>0.01)\tTriallelic Ratio(Alt2F>0.01)");
         fsList.parallelStream().forEach(f -> {
+//        fsList.stream().forEach(f -> {  
             try {
                 String infileS = f.getAbsolutePath();
                 String outfileS = null;
                 BufferedReader br = null;
                 if (infileS.endsWith(".vcf")) {
                     br = IOUtils.getTextReader(infileS);
-                    outfileS = new File(outfileDirS, f.getName().replaceFirst(".vcf", ".maf0.005.SNP.vcf")).getAbsolutePath();
+                    outfileS = new File(outfileDirS, f.getName().replaceFirst(".vcf", ".maf0.01.SNP.vcf")).getAbsolutePath();
                 } else if (infileS.endsWith(".vcf.gz")) {
                     br = IOUtils.getTextGzipReader(infileS);
-                    outfileS = new File(outfileDirS, f.getName().replaceFirst(".vcf.gz", ".maf0.005.SNP.vcf")).getAbsolutePath();
+                    outfileS = new File(outfileDirS, f.getName().replaceFirst(".vcf.gz", ".maf0.01.SNP.vcf")).getAbsolutePath();
                 }
                 BufferedWriter bw = IOUtils.getTextWriter(outfileS);
                 String temp = null;
@@ -1461,7 +1410,7 @@ public class CountSites {
                                 maf = refAF;
                             }
 
-                            if (maf <= 0.005) {
+                            if (maf <= 0.01) {
                                 continue;
                             }
                             biallelicMafmoreNum++;
@@ -1505,6 +1454,11 @@ public class CountSites {
                                         refAlleleGametes++;
                                         alt2AlleleGametes++;
                                     }
+                                    if (te[i].startsWith("1/2") || te[i].startsWith("2/1")) {
+                                        hetNum++;
+                                        alt1AlleleGametes++;
+                                        alt2AlleleGametes++;
+                                    }
                                 }
                             }
 
@@ -1520,11 +1474,11 @@ public class CountSites {
                                 maf = refAF;
                             }
 
-                            if (maf <= 0.005) { //如果maf值小于0.005则过滤掉
+                            if (maf <= 0.01) { //如果maf值小于0.005则过滤掉
                                 continue;
                             }
                             cntCmaf12++;
-                            if (alt2AF > 0.005) {
+                            if (alt2AF > 0.01) {
                                 cntCmaf2++;
                             }
                             StringBuilder sb = new StringBuilder();
@@ -1646,7 +1600,7 @@ public class CountSites {
                                 maf = refAF;
                             }
 
-                            if (maf <= 0.005) {
+                            if (maf <= 0.01) {
                                 continue;
                             }
                             biallelicMafmoreNum++;
@@ -1669,7 +1623,8 @@ public class CountSites {
     }
 
     /**
-     * chr005.Dgenome.vcf.gz --> chr005.Dgenome.bi.vcf.gz
+     * chr005.Dgenome.vcf.gz --> chr005.Dgenome.bi.vcf.gz Keep only the binary
+     * allele
      *
      * @param infileDirS
      */
@@ -1946,24 +1901,24 @@ public class CountSites {
             List<String> l = new ArrayList<>();
             while ((temp = br.readLine()) != null) {
                 l = PStringUtils.fastSplit(temp);
-                int[] site1 = new int[l.size()];
-                int[] site2 = new int[l.size()];
-                int[] site = new int[l.size()];
+                Double[] site1 = new Double[l.size()];
+                Double[] site2 = new Double[l.size()];
+                Double[] site = new Double[l.size()];
                 HashMap<Integer, Integer>[] hmcnt = new HashMap[l.size()];
                 for (int i = 1; i < l.size(); i++) {
-                    site1[i] = Integer.parseInt(l.get(i));
+                    site1[i] = Double.parseDouble(l.get(i));
                 }
 
                 if ((temp = br.readLine()) != null) {
                     cnt++;
                     l = PStringUtils.fastSplit(temp);
                     for (int i = 1; i < l.size(); i++) {
-                        site2[i] = Integer.parseInt(l.get(i));
+                        site2[i] = Double.parseDouble(l.get(i));
                     }
                     for (int i = 1; i < l.size(); i++) {
                         site[i] = site1[i] + site2[i];
                     }
-                   
+
                     bw.write(hmcntchr.get(cnt)); // + "\t" + hmcnt.get(cnt));
                     for (int i = 1; i < l.size(); i++) {
                         bw.write("\t" + site[i]);
@@ -1987,7 +1942,7 @@ public class CountSites {
     /**
      * 将计算出的snp位点数进行合并，成1A 1B 1D形式；
      */
-    public void mergeChr1and2(String infileS, String outfileS) {
+    public void mergeChr1and2_deprecated(String infileS, String outfileS) {
 //        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/002_countSites/countSites.txt";
 //        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/002_countSites/countSites_mergeChr1and2.txt";
 
