@@ -52,7 +52,7 @@ public class SIFT {
 //        new SplitScript().splitBwaScript("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/006_newScript_MAF0.01byPop/sh_vcfAnnotator20191029.sh", "vcfAnnotator", 7, 6);
 //        this.mkdis();
 //        this.ifDone("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/007_log_siftAnnotator", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/008_log_summary/log_summary.txt");
-this.move();
+//this.move();
     
     }
     

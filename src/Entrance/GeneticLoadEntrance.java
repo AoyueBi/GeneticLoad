@@ -24,7 +24,7 @@ import utils.PStringUtils;
 public class GeneticLoadEntrance {
 
     public GeneticLoadEntrance() {
-//        this.firstProcess();
+        this.firstProcess();
         //this.secondProcess();
 
     }
@@ -83,7 +83,7 @@ public class GeneticLoadEntrance {
         //new CountSites().mergesubsetVCF(args[0], args[1]);
         //new CountSites().calVcfAverageDepth(args[0], args[1]);
         //new CountSites().calSNPHetMissMaf(args[0], args[1]);
-        new CountSites().countSitesinFastCallformat(args[0]);
+//        new CountSites().countSitesinFastCallformat(args[0]);
         //new CountSites().filterAlleleMaf(args[0], args[1]);
 //        new CountSites().subsetVCF(args[0], args[1],args[2]);
         //new FilterVCF().statVcfDepth_SD_PValue(args[0], args[1]);

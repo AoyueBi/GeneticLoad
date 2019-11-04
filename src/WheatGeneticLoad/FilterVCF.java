@@ -694,69 +694,22 @@ public class FilterVCF {
      * @return
      */
     public boolean ifSegregation(String[] genoArray, String altList) {
-        int dp = 0;
-        int nz = 0;
         int nAlt = PStringUtils.fastSplit(altList, ",").size();
-        int[] adCnt = new int[1 + nAlt]; //所有包括ref和alt的个数
         int[] acCnt = new int[1 + nAlt]; //所有包括ref和alt的个数
-        int[][] gnCnt = new int[1 + nAlt][1 + nAlt]; //GN到底代表什么？
-        int ht = 0;
         List<String> tempList = null;
         List<String> temList = null;
         for (int i = 0; i < genoArray.length; i++) {
             if (genoArray[i].startsWith(".")) {
-                nz++;
                 continue;
             }
             tempList = PStringUtils.fastSplit(genoArray[i], ":"); //tempList是包含基因型AD还有PL的集合
             temList = PStringUtils.fastSplit(tempList.get(1), ","); //temList是AD所有的深度集合
-            for (int j = 0; j < temList.size(); j++) {
-                int c = Integer.parseInt(temList.get(j)); //c是第j个allele的深度值。注意AD的第一个是ref，第二个是次等位位点的深度，第三个是最小等位位点的深度
-                dp += c; //dp是总深度
-                adCnt[j] += c; //adCnt[j] 是第j个allele的深度值的总和，AD按照 ref alt1 alt2排序
-            }
             temList = PStringUtils.fastSplit(tempList.get(0), "/"); //temList是包含基因型拆分后的集合
             for (int j = 0; j < temList.size(); j++) {
                 int c = Integer.parseInt(temList.get(j)); // c是基因型第j个数值
                 acCnt[c]++; //acCnt[c] 是所有taxa基因型某一数值如0 1 2的总和
             }
-            int index1 = Integer.parseInt(temList.get(0)); //
-            int index2 = Integer.parseInt(temList.get(1));
-            gnCnt[index1][index2]++; //gnCnt[][]是二维数组，代表alt的个数的矩阵，比如有1个alt，则gnCnt[][]有gnCnt[0][0]  gnCnt[0][1] gnCnt[1][0] gnCnt[1][1]
-            if (index1 != index2) {
-                ht++;
-            }
         }
-        //        nz = genoArray.length - nz;
-        //        int sum = 0;
-        //        for (int i = 0; i < acCnt.length; i++) {
-        //            sum += acCnt[i];
-        //        }
-        //        float maf = (float) ((double) acCnt[0] / sum);
-        //        if (maf >= 0.5) {
-        //            maf = (float) ((double) acCnt[1] / sum);
-        //        }
-        //
-        //        StringBuilder sb = new StringBuilder();
-        //
-        //        sb.append("DP=").append(dp).append(";NZ=").append(nz).append(";AD=");
-        //        for (int i = 0; i < adCnt.length; i++) {
-        //            sb.append(adCnt[i]).append(",");
-        //        }
-        //        sb.deleteCharAt(sb.length() - 1); //删除最后一个字符","号
-        //        sb.append(";AC=");
-        //        for (int i = 1; i < acCnt.length; i++) {
-        //            sb.append(acCnt[i]).append(",");
-        //        }
-        //        sb.deleteCharAt(sb.length() - 1);
-        //        sb.append(";GN=");
-        //        for (int i = 0; i < gnCnt.length; i++) { //二维数组的长度是第一维的长度，这里是2（只有1个alt） 或者3 (有2个alt)
-        //            for (int j = i + 1; j < gnCnt.length; j++) {
-        //                sb.append(gnCnt[i][j]).append(",");
-        //            }
-        //        }
-        //        sb.deleteCharAt(sb.length() - 1);
-        //        sb.append(";HT=").append(ht).append(";MAF=").append(String.format("%.4f", maf));
         //判断该群体在一个位点是否有分离，若有分离则返回true,若无分离则返回false
         boolean a = false;
         if ((acCnt[0] == 0 && acCnt[1] > 0) || (acCnt[0] > 0 && acCnt[1] == 0)) {
