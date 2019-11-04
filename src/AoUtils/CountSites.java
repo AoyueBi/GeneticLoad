@@ -27,7 +27,12 @@ public class CountSites {
         //this.mergesubsetVCF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/022_subsetVCF/Asub", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/022_subsetVCF/004_merged/chr.Asubgenome.maf0.01.SNP_bi.subset.vcf.gz");
         //this.mergesubsetVCF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/022_subsetVCF/Bsub", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/022_subsetVCF/004_merged/chr.Bsubgenome.maf0.01.SNP_bi.subset.vcf.gz");
         //this.mergesubsetVCF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/022_subsetVCF/Dsub", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/022_subsetVCF/004_merged/chr.Dsubgenome.maf0.01.SNP_bi.subset.vcf.gz");
-        this.mergesubsetVCF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/022_subsetVCF/004_merged","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/022_subsetVCF/005_all/chr.ABsubgenome.maf0.01.SNP_bi.subset.vcf.gz");
+        //this.mergesubsetVCF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/022_subsetVCF/004_merged","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/022_subsetVCF/005_all/chr.ABsubgenome.maf0.01.SNP_bi.subset.vcf.gz");
+        //this.calSNPHetMissMaf("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/023_rebackDDtauschii/002_subsetVCFandMAF/001_rawVCF", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/023_rebackDDtauschii/002_subsetVCFandMAF/002_calMAF");
+        //new Bin().mkBarplotofMAF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/023_rebackDDtauschii/002_subsetVCFandMAF/006_calMAF", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/023_rebackDDtauschii/002_subsetVCFandMAF/007_bintable", "25", "0.5");
+        //this.mergesubsetVCF("", "");
+        
+
     }
 
     public void getSharedSNP() {
@@ -167,7 +172,74 @@ public class CountSites {
     }
 
     /**
+     * 将抽样的42条染色体按照Asub Bsub Dsub 分别合并成一个文件，并排好顺序
+     *
+     * @param infileDirS
+     * @param outfileDirS
+     */
+    public void mergeVCFbysubgenome(String infileDirS, String outfileDirS) {
+        //建立1-42 一一对应的亚基因组的关系，根据chr001找到chr.Asub
+        int[] arra = {1, 2, 7, 8, 13, 14, 19, 20, 25, 26, 31, 32, 37, 38};
+        int[] arrb = {3, 4, 9, 10, 15, 16, 21, 22, 27, 28, 33, 34, 39, 40};
+        int[] arrd = {5, 6, 11, 12, 17, 18, 23, 24, 29, 30, 35, 36, 41, 42};
+        HashMap<Integer, String> hml = new HashMap<>();
+        Arrays.sort(arra);
+        Arrays.sort(arrb);
+        Arrays.sort(arrd);
+        for (int i = 0; i < arra.length; i++) {
+            hml.put(arra[i], "A");
+            hml.put(arrb[i], "B");
+            hml.put(arrd[i], "D");
+        }
+
+        //列出文件
+        File[] fs = new File(infileDirS).listFiles();
+        for (int i = 0; i < fs.length; i++) {
+            if (fs[i].isHidden()) {
+                System.out.println(fs[i].getName() + " is hidden");
+                fs[i].delete();
+            }
+        }
+        fs = new File(infileDirS).listFiles();
+        Arrays.sort(fs);
+
+        String[] outfileS = new String[3];
+        outfileS[0] = new File(outfileDirS, "chr.Asubgenome.vcf.gz").getAbsolutePath();
+        outfileS[1] = new File(outfileDirS, "chr.Bsubgenome.vcf.gz").getAbsolutePath();
+        outfileS[2] = new File(outfileDirS, "chr.Dsubgenome.vcf.gz").getAbsolutePath();
+        //建立文件和Sub的关系,从而根据Sub找到要写入的文件
+        HashMap<String, String> hmSuboutfileS = new HashMap<>();
+        hmSuboutfileS.put(outfileS[0], "A");
+        hmSuboutfileS.put(outfileS[1], "B");
+        hmSuboutfileS.put(outfileS[2], "D");
+
+        //开始进行写文件
+        try {
+            for (int i = 0; i < outfileS.length; i++) {
+                BufferedWriter bw = IOUtils.getTextGzipWriter(outfileS[i]);
+            }
+
+            for (int i = 0; i < fs.length; i++) {
+                String infileS = fs[i].getAbsolutePath();
+                BufferedReader br = null;
+                if (infileS.endsWith(".vcf")) {
+                    br = IOUtils.getTextReader(infileS);
+                } else if (infileS.endsWith(".vcf.gz")) {
+                    br = IOUtils.getTextGzipReader(infileS);
+                }
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+
+        }
+
+    }
+
+    /**
      * 将改变位置的chr5和chr6文本文件合并成1D一个文件， chr11,chr12两个文件合并成2D一个文件。自动识别染色体序号并进行合并。
+     * 针对Txt文件
      *
      * @param infileDirS
      * @param outfileDirS
@@ -287,7 +359,7 @@ public class CountSites {
         //fs = IOUtils.listFilesEndsWith(fs, "D.nonsyTolerantSNP.changeChrPos.txt.gz");
         //fs = IOUtils.listFilesEndsWith(fs, "D.synSNP.changeChrPos.txt.gz");
         // fs = IOUtils.listFilesEndsWith(fs, "B.delSNP.changeChrPos.1M.binTable.txt");
-        fs = IOUtils.listFilesEndsWith(fs, "changeChrPos.txt.gz");
+        //fs = IOUtils.listFilesEndsWith(fs, ".txt");
         Arrays.sort(fs);
         //System.out.println("Chr\tSNP_Num");
 
@@ -299,11 +371,13 @@ public class CountSites {
             } else if (infileS.endsWith(".txt.gz")) {
                 br = IOUtils.getTextGzipReader(infileS);
             }
-
+            
+            ///读表头
             BufferedWriter bw = IOUtils.getTextWriter(outfileS);
             bw.write(br.readLine());
             bw.newLine();
 
+            //读正文部分
             for (int i = 0; i < fs.length; i++) {
                 infileS = fs[i].getAbsolutePath();
                 if (infileS.endsWith(".txt")) {
@@ -475,7 +549,7 @@ public class CountSites {
      * @param infileDirS
      * @param outfileDirS
      */
-    public void changechrPos(String infileDirS, String outfileDirS) {
+    public void changechrPosonTxt(String infileDirS, String outfileDirS) {
 
         //建立1-44一一对应chr1A的关系,目的：根据chr1找到chr1A
         String[] chrs = {"1A", "1B", "1D", "2A", "2B", "2D", "3A", "3B", "3D", "4A", "4B", "4D", "5A", "5B", "5D", "6A", "6B", "6D", "7A", "7B", "7D", "Mit", "Chl"};
@@ -784,7 +858,7 @@ public class CountSites {
                     double relativeMean = d.getMean();
                     double sd = d.getStandardDeviation();
                     StringBuilder sb = new StringBuilder();
-                    sb.append(String.format("%.6f", relativeMean));
+                    sb.append(String.format("%.4f", relativeMean));
                     bw.write(sb.toString());
                     bw.newLine();
                 }
@@ -1192,6 +1266,7 @@ public class CountSites {
 
     /**
      * chr002.ABgenome.filterMiss.vcf --> chr002.ABgenome.filterMiss_subset.vcf
+     * 过滤了alt含有2个allele的sites
      *
      * @param infileDirS
      * @param outfileDirS
@@ -1230,16 +1305,17 @@ public class CountSites {
                         bw.newLine();
                     } else {
                         cnttotal++;
+                        l = PStringUtils.fastSplit(temp);
+                        if (l.get(4).contains(",") || (l.get(4).contains("D")) || (l.get(4).contains("I"))) {
+                            continue; // 第4列是alt的信息，若有2个等位基因，则去除这一行
+                        }
                         double r = Math.random();
                         double ratio = Double.parseDouble(extractRatio);
+                        
                         if (r > ratio) {
                             continue; //返回带正号的 double 值，该值大于等于 0.0 且小于 1.0。返回值是一个伪随机选择的数，在该范围内（近似）均匀分布
                         }
-                        l = PStringUtils.fastSplit(temp);
-                        if (l.get(4).contains(",")) {
-                            continue; // 第4列是alt的信息，若有2个等位基因，则去除这一行
-                        }
-
+                        
                         bw.write(temp);
                         bw.newLine();
                         cntsubset++;
@@ -1759,7 +1835,7 @@ public class CountSites {
     }
 
     /**
-     * 对已生成的14条染色体进行计数.注意加log文件，结果在log文件中显示 文件以 .vcf结尾
+     * 对已生成的14条染色体进行计数.注意加log文件，结果在log文件中显示
      *
      * @param infileDirS
      */
@@ -1774,7 +1850,7 @@ public class CountSites {
         List<File> fsList = Arrays.asList(fs);
         Collections.sort(fsList);
 
-        System.out.println("Chr\tSNPNum\tBiallelicNum\tIndelNum\tInsertionNum\tDelectionNum\t");
+        System.out.println("Chr\tRaw SNPs\tBiallelic SNPs\tTriallelic SNPs\tIndels\tInsertions\tDeletions");
         fsList.parallelStream().forEach(f -> {
             try {
                 String infileS = f.getAbsolutePath();
@@ -1786,46 +1862,59 @@ public class CountSites {
                 }
                 String chr = f.getName().substring(3, 6); //提取染色体号 001
                 int chrint = Integer.parseInt(chr); //将染色体号转化为数字
+                
+                int cntSNP = 0;
+                int cntBi = 0;
+                int cntTri = 0;
+                int cntIndel = 0;
+                int cntI = 0;
+                int cntD = 0;
                 String temp = null;
-                int cnt = 0;
-                int snpNum = 0;
-                int biallelicNum = 0;
-                int indelNum = 0;
-                int insertionNum = 0;
-                int delectionNum = 0;
-                int repeatDI = 0;
                 while ((temp = br.readLine()) != null) { //是否含有D I
                     if (temp.startsWith("#")) {
                         continue;
                     }
-                    cnt++;
                     String alt = PStringUtils.fastSplit(temp).get(4);
+                    if (!(alt.length() == 1)) { //2个alt的情况;若该位点含有D或I ，那么就属于Indel，如果没有D 或者I，那么就属于SNP
+                            boolean ifD = false;
+                            if (!alt.contains("D") && (!alt.contains("I"))) {
+                                cntTri++;
+                                cntSNP++;
+                            }
+                            if (alt.contains("D")) {
+                                cntD++;
+                                cntIndel++;
+                                ifD = true;
+                            }
+                            if (alt.contains("I")) {
+                                cntI++;
+                                if (ifD == false) {
+                                    cntIndel++;
+                                }
+                            }
 
-                    if (alt.contains("D")) {
-                        delectionNum++;
-                    }
-                    if (alt.contains("I")) {
-                        insertionNum++;
-                    }
-                    if (alt.contains("D") && alt.contains("I")) {
-                        repeatDI++;
-                    }
-
-                    if (!(alt.contains(",")) && !(alt.equals("D")) && !(alt.equals("I"))) {
-                        biallelicNum++;
-                    }
+                        } else if (alt.length() == 1) { //1个alt的情况;
+                            if (!alt.equals("D") && (!alt.equals("I"))) {
+                                cntBi++;
+                                cntSNP++;
+                            }
+                            if (alt.equals("D")) {
+                                cntD++;
+                                cntIndel++;
+                            }
+                            if (alt.equals("I")) {
+                                cntI++;
+                                cntIndel++;
+                            }
+                        }
                 }
-
-                indelNum = delectionNum + insertionNum - repeatDI; //把既含有I 又含有D的位点重复计数的减去，这下就对了
-                snpNum = cnt - indelNum; //只要含有D 和 I， 就不算是SNP
                 br.close();
-                System.out.println(String.valueOf(chrint) + "\t" + String.valueOf(snpNum) + "\t" + String.valueOf(biallelicNum) + "\t" + String.valueOf(indelNum) + "\t" + String.valueOf(insertionNum) + "\t" + String.valueOf(delectionNum));
+                System.out.println(String.valueOf(chrint) + "\t" + String.valueOf(cntSNP) + "\t" + String.valueOf(cntBi) + "\t" + String.valueOf(cntTri) + "\t" + String.valueOf(cntIndel) + "\t" + String.valueOf(cntI)+ "\t" + String.valueOf(cntD));
             } catch (Exception e) {
                 e.printStackTrace();
                 System.exit(1);
             }
         });
-
     }
 
     /**

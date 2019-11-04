@@ -19,7 +19,9 @@ import utils.PStringUtils;
 public class SplitScript {
     
     public SplitScript(){
-        this.splitBwaScript("/Users/Aoyue/Documents/sh_removeBadTaxaFromMergeVCF_notGZ20191015.sh", "sh_removeBadTaxaFromMergeVCF_notGZ_", 10, 4);
+        //this.splitBwaScript("/Users/Aoyue/Documents/sh_removeBadTaxaFromMergeVCF_notGZ20191015.sh", "sh_removeBadTaxaFromMergeVCF_notGZ_", 10, 4);
+        //this.splitBwaScript("/Users/Aoyue/Documents/sh_filterMafbyPopHexaTetra20191023.sh", "sh_filterMafbyPopHexaTetra", 10, 3);
+//        this.splitBwaScript("/Users/Aoyue/Documents/sh_filterMafbyPopHexaTetra20191026.sh", "sh_filterMafbyPopHexaTetra", 9, 3);
         
     }
     
@@ -69,7 +71,7 @@ public class SplitScript {
             Arrays.sort(fs);
             BufferedWriter bw = IOUtils.getTextWriter(shfileS);
             for (int i = 0; i < fs.length; i++) {
-                bw.write("sh " + fs[i].getName() + " > log_" + fs[i].getName().split(".sh")[0] +".txt &");
+                bw.write("sh " + fs[i].getName() + " > log_" + fs[i].getName().split(".sh")[0] +".txt 2>&1 &");
                 bw.newLine();
             }
             bw.flush();

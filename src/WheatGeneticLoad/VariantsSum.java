@@ -64,6 +64,144 @@ public class VariantsSum {
     public void bin() {
 
     }
+    
+    
+    /**
+     * chr005.Dlineage.vcf --> chr005.Dlineage.maf0.005.bi.vcf 过滤D I
+     * 和含有3个等位位点的pos，保留只有一个alt并且maf大于0.005的pos
+     *
+     * @param infileDirS
+     */
+    public void mkSNPsummary2(String infileDirS, String outfileDirS) {
+
+        new File(outfileDirS).mkdirs();
+        File[] fs = new File(infileDirS).listFiles();
+        for (int i = 0; i < fs.length; i++) {
+            if (fs[i].isHidden()) {
+                fs[i].delete();
+            }
+        }
+        fs = new File(infileDirS).listFiles();
+        List<File> fsList = Arrays.asList(fs);
+        Collections.sort(fsList);
+        /**
+         * *************************************************************
+         */
+        System.out.println("FileName\tbiallelicNum\tBiallelicMafmore0.005Num");
+        fsList.parallelStream().forEach(f -> {
+            try {
+                String infileS = f.getAbsolutePath();
+                String outfileS = null;
+                BufferedReader br = null;
+                if (infileS.endsWith(".vcf")) {
+                    br = IOUtils.getTextReader(infileS);
+                    outfileS = new File(outfileDirS, f.getName().replaceFirst(".vcf", ".AnnoDB.txt.gz")).getAbsolutePath();
+                } else if (infileS.endsWith(".vcf.gz")) {
+                    br = IOUtils.getTextGzipReader(infileS);
+                    outfileS = new File(outfileDirS, f.getName().replaceFirst(".vcf.gz", ".AnnoDB.txt.gz")).getAbsolutePath();
+                }
+                BufferedWriter bw = IOUtils.getTextGzipWriter(outfileS);
+                bw.write("Chr\tPos\tRef\tAlt\tMajor\tMinor\tMaf\tHetProportion\tMissProportion");
+                bw.newLine();
+                String temp = null;
+                String te[] = null;
+                int biallelicNum = 0;
+                int biallelicMafmoreNum = 0;
+
+                String major = null;
+                String minor = null;
+                while ((temp = br.readLine()) != null) {
+                    int genoNum = 0;
+                    double homNum = 0;
+                    double hetNum = 0;
+                    double hetRate = 0;
+                    double missNum = 0;
+                    double missRate = 0;
+
+                    double refAlleleGametes = 0;
+                    double altAlleleGametes = 0;
+                    double refAF = 0;
+                    double altAF = 0;
+                    double maf = 0;
+
+                    if (temp.startsWith("#")) {
+                        //bw.write(temp);
+                        //bw.newLine();
+                    } else {
+                        te = temp.split("\t");
+                        String chr = PStringUtils.fastSplit(temp).get(0);
+                        String pos = PStringUtils.fastSplit(temp).get(1);
+                        String ref = PStringUtils.fastSplit(temp).get(3);
+                        String alt = PStringUtils.fastSplit(temp).get(4);
+
+                        if (te[4].length() == 1) { //不含有逗号的情况，即只有一个alt。又开始分，是D 是I 是ATGC 3种情况
+                            if (alt.contains("D") || alt.contains("I")) {
+                                continue; //只有一个alt且不是indel
+                            }
+                            biallelicNum++;
+                            for (int i = 9; i < te.length; i++) {
+                                if (te[i].startsWith(".")) {
+                                    missNum++;
+                                }
+                                if (!te[i].startsWith(".")) {
+                                    genoNum++; //have the genotype
+                                    if (te[i].startsWith("0/1") || te[i].startsWith("1/0")) {
+                                        hetNum++; //the number of heterozygous
+                                        refAlleleGametes++;
+                                        altAlleleGametes++;
+                                    }
+                                    if (te[i].startsWith("0/0")) {
+                                        homNum++; //the number of heterozygous
+                                        refAlleleGametes++;
+                                        refAlleleGametes++;
+                                    }
+                                    if (te[i].startsWith("1/1")) {
+                                        homNum++;
+                                        altAlleleGametes++;
+                                        altAlleleGametes++;
+                                    }
+                                }
+                            }
+                            hetRate = hetNum / genoNum;
+                            missRate = missNum / (missNum + genoNum);
+                            refAF = refAlleleGametes / (refAlleleGametes + altAlleleGametes);
+                            altAF = altAlleleGametes / (refAlleleGametes + altAlleleGametes);;
+                            if (refAF >= altAF) {
+                                major = ref;
+                                minor = alt;
+                                maf = altAF;
+                            } else {
+                                maf = refAF;
+                                major = alt;
+                                minor = ref;
+                            }
+
+                            if (maf <= 0.005) {
+                                continue;
+                            }
+                            biallelicMafmoreNum++;
+                            StringBuilder sb = new StringBuilder();
+                            //bw.write("Chr\tPos\tRef\tAlt\tMajor\tMinor\tMaf\tHetProportion\tMissProportion");
+                            sb.append(chr).append("\t").append(pos).append("\t").append(ref).append("\t").append(alt).append("\t").
+                                    append(major).append("\t").append(minor).append("\t").append(String.format("%.4f", maf)).append("\t").
+                                    append(String.format("%.4f", hetRate)).append("\t").append(String.format("%.4f", missRate));
+                            bw.write(sb.toString());
+                            bw.newLine();
+
+                        }
+                    } //else的终止
+                }
+                br.close();
+                bw.flush();
+                bw.close();
+                System.out.println(String.valueOf(f.getName()) + "\t" + String.valueOf(biallelicNum) + "\t" + String.valueOf(biallelicMafmoreNum) + "\tis completed at " + outfileS);
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
+        });
+    }
+    
 
     /**
      * 对文件进行分bin，画分布图

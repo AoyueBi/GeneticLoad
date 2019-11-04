@@ -26,6 +26,7 @@ public class ScriptHapscanner2 {
         //this.mkTaxaRefBam();
         //this.mkParameterchr1_42_ABD();
         //this.mkJavaCmdchr1_42_ABD();
+
         //this.mkParameterchr1_42_AB();
         //this.mkParameterchr1_42_D();
         //this.mkJavaCmdchr1_42_AB();
@@ -35,23 +36,27 @@ public class ScriptHapscanner2 {
         //this.bgzip_AB();
         //this.bgzip_ABD();
         //this.bcftools_merge();
-        
-
     }
 
     /**
      * 本方法的目的是进行ABD AB D VCF文件的合并,写成脚本形式 bcftools merge -m all --force-samples
      * -f PASS,.
-     * /Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/011_hapScanner/test/out_hapscanner/VCF/chr001_2.vcf.gz
-     * /Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/011_hapScanner/test/out_hapscanner/VCF/chr001.vcf.gz
+     * /Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/011_hapScanner/ff/out_hapscanner/VCF/chr001_2.vcf.gz
+     * /Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/011_hapScanner/ff/out_hapscanner/VCF/chr001.vcf.gz
      * -o
-     * /Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/011_hapScanner/test/out_hapscanner/VCF/merge.vcf
+     * /Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/011_hapScanner/ff/out_hapscanner/VCF/merge.vcf
      */
     public void bcftools_merge() {
-        String abdFileDirS = "/data4/home/aoyue/vmap2/analysis/012_hapscanner/abd/output/VCF/";
-        String abFileDirS = "/data4/home/aoyue/vmap2/analysis/012_hapscanner/ab/output/VCF/";
-        String dFileDirS = "/data4/home/aoyue/vmap2/analysis/012_hapscanner/d/output/VCF/";
-        String mergedFileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/001_rawMergedVCF/";
+//        String abdFileDirS = "/data4/home/aoyue/vmap2/analysis/012_hapscanner/abd/output/VCF/";
+//        String abFileDirS = "/data4/home/aoyue/vmap2/analysis/012_hapscanner/ab/output/VCF/";
+//        String dFileDirS = "/data4/home/aoyue/vmap2/analysis/012_hapscanner/d/output/VCF/";
+//        String mergedFileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/001_rawMergedVCF/";
+        
+        String abdFileDirS = "/data4/home/aoyue/vmap2/analysis/019_rebackDDtauschii/004_hapscannerABD/output/VCF/";
+        String abFileDirS = "";
+        String dFileDirS = "/data4/home/aoyue/vmap2/analysis/019_rebackDDtauschii/005_hapscanner/output/VCF/";
+        String mergedFileDirS = "/data4/home/aoyue/vmap2/analysis/019_rebackDDtauschii/006_bcftoolsMerge/";
+        
         /**
          * pseudo-code: 1.建立3个lineage的list,然后进行循环，判断：在A lineage下合并，依次类推。
          */
@@ -94,16 +99,16 @@ public class ScriptHapscanner2 {
             int index = Collections.binarySearch(lD, i);
             int index2 = Collections.binarySearch(lA, i);
             if (index < 0) { //说明是属于AB的
-                if (index2 > -1) { //说明是属于A的
-                    String mPath = new File(mergedFileDirS, "chr" + chr + ".Alineage.vcf").getAbsolutePath();
-                    System.out.println("/data1/programs/bcftools-1.8/bcftools merge -m all --force-samples -f PASS,. --threads 2 " + abdPath + " " + abPath + " -o " + mPath + " &");
-                } else { //说明是属于B的
-                    String mPath = new File(mergedFileDirS, "chr" + chr + ".Blineage.vcf").getAbsolutePath();
-                    System.out.println("/data1/programs/bcftools-1.8/bcftools merge -m all --force-samples -f PASS,. --threads 2 " + abdPath + " " + abPath + " -o " + mPath + " &");
-                }
+//                if (index2 > -1) { //说明是属于A的
+//                    String mPath = new File(mergedFileDirS, "chr" + chr + ".Alineage.vcf").getAbsolutePath();
+//                    System.out.println("/data1/programs/bcftools-1.8/bcftools merge -m all --force-samples -f PASS,. --threads 2 " + abdPath + " " + abPath + " -o " + mPath + " &");
+//                } else { //说明是属于B的
+//                    String mPath = new File(mergedFileDirS, "chr" + chr + ".Blineage.vcf").getAbsolutePath();
+//                    System.out.println("/data1/programs/bcftools-1.8/bcftools merge -m all --force-samples -f PASS,. --threads 2 " + abdPath + " " + abPath + " -o " + mPath + " &");
+//                }
             } else if (index > -1) { //说明是属于D的
-                String mPath = new File(mergedFileDirS, "chr" + chr + ".Dlineage.vcf").getAbsolutePath();
-                System.out.println("/data1/programs/bcftools-1.8/bcftools merge -m all --force-samples -f PASS,. --threads 2 " + abdPath + " " + dPath + " -o " + mPath + " &");
+                String mPath = new File(mergedFileDirS, "chr" + chr + ".subgenome.vcf").getAbsolutePath();
+                System.out.println("/data1/programs/bcftools-1.8/bcftools merge -m all --force-samples -f PASS,. --threads 10 " + abdPath + " " + dPath + " -o " + mPath + " &");
             }
         }
     }
@@ -117,6 +122,11 @@ public class ScriptHapscanner2 {
 
     public void bgzip_ABD() {
         for (int i = 1; i < 43; i++) {
+            int[] db = {5, 6, 11, 12, 17, 18, 23, 24, 29, 30, 35, 36, 41, 42};
+            Arrays.sort(db);
+            if (Arrays.binarySearch(db, i) < 0) {
+                continue;
+            }
             String chr = PStringUtils.getNDigitNumber(3, i);
             System.out.println("bgzip -@ 6 chr" + chr + ".vcf && tabix -p vcf chr" + chr + ".vcf.gz &");
         }
@@ -199,7 +209,8 @@ public class ScriptHapscanner2 {
      * 本方法的目的是：建立14条染色体的java 运行脚本。
      */
     public void mkJavaCmdchr1_42_D() {
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/011_hapScanner/hapScanner_Dgenome_chr1_42.sh";
+        //String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/011_hapScanner/hapScanner_Dgenome_chr1_42.sh";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/023_rebackDDtauschii/005_hapscanner/hapScanner_Dgenome_chr1_42.sh";
         //nohup java -Xms500g -Xmx500g -jar HapScanner2.jar parameters_001_abd_hapScanner2.txt > log_001_abd_hapScanner2.txt & 
         List<Integer> l = new ArrayList<>();
         int j = 5;
@@ -224,7 +235,7 @@ public class ScriptHapscanner2 {
                     continue;
                 }
                 String chr = PStringUtils.getNDigitNumber(3, i + 1);
-                bw.write("java -Xms500g -Xmx500g -jar HapScanner2.jar parameters_");
+                bw.write("java -Xms200g -Xmx200g -jar HapScanner2.jar parameters_");
                 bw.write(chr);
                 bw.write("_d_hapScanner2.txt > log_");
                 bw.write(chr);
@@ -287,7 +298,8 @@ public class ScriptHapscanner2 {
      * 本方法的目的是：建立14条染色体的parameters文件。
      */
     public void mkParameterchr1_42_D() {
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/011_hapScanner/para_d_addNAFU/";
+        //String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/011_hapScanner/para_d_addNAFU/";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/023_rebackDDtauschii/005_hapscanner/para_d_addNAFU";
         List<Integer> l = new ArrayList<>();
         int j = 5;
         l.add(j);
@@ -322,19 +334,24 @@ public class ScriptHapscanner2 {
                         + "#The usage is java -Xms10g -Xmx20g HapScanner2.jar parameters_hapScanner2.txt > log.txt &\n"
                         + "#Please keep the order of following parameters\n"
                         + "#The taxaRefBam file containing information of taxon and its corresponding reference genome and bam files. The bam file should have .bai file in the same folder. For the situation of one taxon with multiple bams, the bams can be listed by row.\n"
-                        + "/data4/home/aoyue/vmap2/analysis/012_hapscanner/d/003_taxaRefBam.Dgenome.addNAFU.txt\n"//taxaRefBam路径
+                        //+ "/data4/home/aoyue/vmap2/analysis/012_hapscanner/d/003_taxaRefBam.Dgenome.addNAFU.txt\n"//taxaRefBam路径
+                        + "/data4/home/aoyue/vmap2/analysis/019_rebackDDtauschii/005_hapscanner/taxaRefBam.Dgenome.addNAFU.txt\n"//taxaRefBam路径
                         + "#The posAllele file (with header), the format is Chr\\tPos\\tRef\\tAlt (from VCF format). The positions come from haplotype library.\n"
-                        + "/data4/home/aoyue/vmap2/analysis/011_filterVCF/abd/004_merge/posAllele/chr" + chr + "_PosAllele.txt.gz\n" //posAllele路径
+                        //+ "/data4/home/aoyue/vmap2/analysis/011_filterVCF/abd/004_merge/posAllele/chr" + chr + "_PosAllele.txt.gz\n" //posAllele路径
+                        + "/data4/home/aoyue/vmap2/analysis/019_rebackDDtauschii/003_filterVCF_Dgenome/004_mergePos/posAllele/chr" + chr + "_PosAllele.txt.gz\n" //posAllele路径
+
                         + "#The pos files (without header), the format is Chr\\tPos. The positions come from haplotype library, which is used in mpileup to select pileup sites.\n"
-                        + "/data4/home/aoyue/vmap2/analysis/011_filterVCF/abd/004_merge/hapPos/chr" + chr + "_HapPos.txt.gz\n"
+                        //+ "/data4/home/aoyue/vmap2/analysis/011_filterVCF/abd/004_merge/hapPos/chr" + chr + "_HapPos.txt.gz\n"
+                        + "/data4/home/aoyue/vmap2/analysis/019_rebackDDtauschii/003_filterVCF_Dgenome/004_mergePos/hapPos/chr" + chr + "_HapPos.txt.gz\n"
                         + "#The chromosome which will be scanned\n"
                         + (i + 1) + "\n" //染色体号
                         + "#The path of samtools\n"
                         + "/data1/programs/samtools-1.8/samtools\n" //samtools 路径
                         + "#Number of threads\n"
-                        + "16\n" //线程大小
+                        + "32\n" //线程大小
                         + "#The directory of output\n"
-                        + "/data4/home/aoyue/vmap2/analysis/012_hapscanner/d/output/");
+                        //+ "/data4/home/aoyue/vmap2/analysis/012_hapscanner/d/output/");        
+                        + "/data4/home/aoyue/vmap2/analysis/019_rebackDDtauschii/005_hapscanner/output/");
 
                 bw.write(sb.toString());
                 bw.newLine();
@@ -418,11 +435,17 @@ public class ScriptHapscanner2 {
      * 本方法的目的是：建立42条染色体的java 运行脚本。
      */
     public void mkJavaCmdchr1_42_ABD() {
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/011_hapScanner/hapScanner_ABDgenome_chr1_42.sh";
+        //String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/011_hapScanner/hapScanner_ABDgenome_chr1_42.sh";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/023_rebackDDtauschii/004_hapscannerABD/hapScanner_ABDgenome_chr1_42.sh";
         //nohup java -Xms500g -Xmx500g -jar HapScanner2.jar parameters_001_abd_hapScanner2.txt > log_001_abd_hapScanner2.txt & 
         try {
             BufferedWriter bw = IOUtils.getTextWriter(outfileS);
             for (int i = 0; i < 42; i++) {
+                int[] db = {5, 6, 11, 12, 17, 18, 23, 24, 29, 30, 35, 36, 41, 42};
+                Arrays.sort(db);
+                if (Arrays.binarySearch(db, i + 1) < 0) {
+                    continue;
+                }
                 String chr = PStringUtils.getNDigitNumber(3, i + 1);
                 bw.write("java -Xms500g -Xmx500g -jar HapScanner2.jar parameters_");
                 bw.write(chr);
@@ -443,9 +466,15 @@ public class ScriptHapscanner2 {
      * 本方法的目的是：建立42条染色体的parameters文件。
      */
     public void mkParameterchr1_42_ABD() {
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/011_hapScanner/para_abd/addNAFU/";
+        //String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/011_hapScanner/para_abd/addNAFU/";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/023_rebackDDtauschii/004_hapscannerABD/para_abd/";
         try {
             for (int i = 0; i < 42; i++) {
+                int[] db = {5, 6, 11, 12, 17, 18, 23, 24, 29, 30, 35, 36, 41, 42};
+                Arrays.sort(db);
+                if (Arrays.binarySearch(db, i + 1) < 0) {
+                    continue;
+                }
                 String chr = PStringUtils.getNDigitNumber(3, i + 1);
                 String outfileS = new File(outfileDirS, "parameters_" + chr + "_abd_hapScanner2.txt").getAbsolutePath();
                 BufferedWriter bw = IOUtils.getTextWriter(outfileS);
@@ -458,19 +487,23 @@ public class ScriptHapscanner2 {
                         + "#The usage is java -Xms10g -Xmx20g HapScanner2.jar parameters_hapScanner2.txt > log.txt &\n"
                         + "#Please keep the order of following parameters\n"
                         + "#The taxaRefBam file containing information of taxon and its corresponding reference genome and bam files. The bam file should have .bai file in the same folder. For the situation of one taxon with multiple bams, the bams can be listed by row.\n"
-                        + "/data4/home/aoyue/vmap2/analysis/012_hapscanner/abd/002_taxaRefBam.ABDgenome.manual.addNAFU.txt\n"//taxaRefBam路径
+                        //+ "/data4/home/aoyue/vmap2/analysis/012_hapscanner/abd/002_taxaRefBam.ABDgenome.manual.addNAFU.txt\n"//taxaRefBam路径
+                        + "/data4/home/aoyue/vmap2/analysis/019_rebackDDtauschii/004_hapscannerABD/002_taxaRefBam.ABDgenome.manual.addNAFU.txt\n"//taxaRefBam路径
                         + "#The posAllele file (with header), the format is Chr\\tPos\\tRef\\tAlt (from VCF format). The positions come from haplotype library.\n"
-                        + "/data4/home/aoyue/vmap2/analysis/011_filterVCF/abd/004_merge/posAllele/chr" + chr + "_PosAllele.txt.gz\n" //posAllele路径
+                        //+ "/data4/home/aoyue/vmap2/analysis/011_filterVCF/abd/004_merge/posAllele/chr" + chr + "_PosAllele.txt.gz\n" //posAllele路径
+                        + "/data4/home/aoyue/vmap2/analysis/019_rebackDDtauschii/003_filterVCF_Dgenome/004_mergePos/posAllele/chr" + chr + "_PosAllele.txt.gz\n" //posAllele路径        
                         + "#The pos files (without header), the format is Chr\\tPos. The positions come from haplotype library, which is used in mpileup to select pileup sites.\n"
-                        + "/data4/home/aoyue/vmap2/analysis/011_filterVCF/abd/004_merge/hapPos/chr" + chr + "_HapPos.txt.gz\n"
+                        //+ "/data4/home/aoyue/vmap2/analysis/011_filterVCF/abd/004_merge/hapPos/chr" + chr + "_HapPos.txt.gz\n"
+                        + "/data4/home/aoyue/vmap2/analysis/019_rebackDDtauschii/003_filterVCF_Dgenome/004_mergePos/hapPos/chr" + chr + "_HapPos.txt.gz\n"
                         + "#The chromosome which will be scanned\n"
                         + (i + 1) + "\n" //染色体号
                         + "#The path of samtools\n"
                         + "/data1/programs/samtools-1.8/samtools\n" //samtools 路径
                         + "#Number of threads\n"
-                        + "16\n" //线程大小
+                        + "33\n" //线程大小
                         + "#The directory of output\n"
-                        + "/data4/home/aoyue/vmap2/analysis/012_hapscanner/abd/output/");
+                        //+ "/data4/home/aoyue/vmap2/analysis/012_hapscanner/abd/output/");
+                        + "/data4/home/aoyue/vmap2/analysis/019_rebackDDtauschii/004_hapscannerABD/output/");
 
                 bw.write(sb.toString());
                 bw.newLine();

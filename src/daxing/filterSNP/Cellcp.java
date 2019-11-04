@@ -3,6 +3,7 @@ package daxing.filterSNP;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class Cellcp {
 
     private double depthBoundary;

@@ -9,6 +9,7 @@ import format.table.RowTable;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,7 +41,7 @@ public class WheatABandDcleandataProcessor {
         //this.mkParameterchr1_42_AB();
         //this.mkJavaCmdchr1_42_AB();
     }
-    
+
     /**
      * 本方法的目的是：建立42条染色体的java 运行脚本。
      */
@@ -65,7 +66,7 @@ public class WheatABandDcleandataProcessor {
             System.exit(1);
         }
     }
-    
+
     /**
      * 本方法的目的是：建立42条染色体的parameters文件。
      */
@@ -93,7 +94,8 @@ public class WheatABandDcleandataProcessor {
                 sb.append("/data2/aoyue/fastcall_ABgenome/rawVCF/").append("\n").append("\n");
                 sb.append("#Parameter5:\tNumber of threads for pileup\n");
                 sb.append("32");
-                bw.write(sb.toString());bw.newLine();
+                bw.write(sb.toString());
+                bw.newLine();
                 bw.flush();
                 bw.close();
             }
@@ -103,7 +105,7 @@ public class WheatABandDcleandataProcessor {
             System.exit(1);
         }
     }
-    
+
     /**
      * 本方法的目的是：建立42条染色体的java 运行脚本。
      */
@@ -128,37 +130,60 @@ public class WheatABandDcleandataProcessor {
             System.exit(1);
         }
     }
-    
+
     /**
      * 本方法的目的是：建立42条染色体的parameters文件。
      */
     public void mkParameterchr1_42_D() {
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/003_fastCall/000_uploadParameters/005_Parameters_D/";
+        //String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/003_fastCall/000_uploadParameters/005_Parameters_D/";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/023_rebackDDtauschii/001_fastcall_Dgenome/001_Parameters_D/";
         try {
-            for (int i = 0; i < 45; i++) {
+            List<Integer> l = new ArrayList<>();
+            int j = 5;
+            l.add(j);
+            for (int i = 0; i < 6; i++) {
+                j = j + 6;
+                l.add(j);
+            }
+
+            int k = 6;
+            l.add(k);
+            for (int i = 0; i < 6; i++) {
+                k = k + 6;
+                l.add(k);
+            }
+            Collections.sort(l);
+
+            for (int i = 1; i < 43; i++) {
                 String chr = PStringUtils.getNDigitNumber(3, i);
-                String outfileS = new File(outfileDirS, "parameters_" + chr + "_FastCall_Dgenome.txt").getAbsolutePath();
-                BufferedWriter bw = IOUtils.getTextWriter(outfileS);
-                StringBuilder sb = new StringBuilder();
-                sb.append("Author: Fei Lu\n");
-                sb.append("Email: flu@genetics.ac.cn; dr.lufei@gmail.com\n");
-                sb.append("Homepage: https://plantgeneticslab.weebly.com/\n").append("\n");
-                sb.append("#This WGS SNP discovery pipeline are designed for both heterozygous and inbred species, especially the depth is high (e.g. >10X each taxon).\n");
-                sb.append("#To run and pipeline, the machine should have Java 8 and samtools installed. The lib directory should stay with FastCall.jar in the same folder. Command (e.g.): java -Xmx200g -jar FastCall.jar parameter.txt > log.txt &\n");
-                sb.append("#To specify reference, bam direcotory, chromosome, and output direcotory, please edit the the parameters below. Also, please keep the order of parameters.\n").append("\n").append("\n");
-                sb.append("#Parameter1:\tReference genome file with an index file (.fai). The reference should be in FastA format. Chromosomes are labled as 1-based numbers (1,2,3,4,5...).\n");
-                sb.append("/data1/home/aoyue/wheatRef_v1.0/D/d_iwgscV1.fa.gz").append("\n").append("\n");
-                sb.append("#Parameter2:\tTaxa bam information file, including the info about what bams are included for each taxon\n");
-                sb.append("/data1/home/aoyue/fastcall_Dgenome/taxaBamMap_D.txt").append("\n").append("\n");
-                sb.append("#Parameter3:\tChromosome or region on which genotyping will be performed (e.g. chromosome 1 is designated as 1. Region 1bp to 100000bp on chromosome 1 is 1:1,100000)\n");
-                sb.append(i).append("\n").append("\n");
-                sb.append("#Parameter4:\tVCF output directory\n");
-                sb.append("/data1/home/aoyue/fastcall_Dgenome/rawVCF/").append("\n").append("\n");
-                sb.append("#Parameter5:\tNumber of threads for pileup\n");
-                sb.append("32");
-                bw.write(sb.toString());bw.newLine();
-                bw.flush();
-                bw.close();
+                int index = Collections.binarySearch(l, i);
+                if (index > -1) {
+                    String outfileS = new File(outfileDirS, "parameters_" + chr + "_FastCall_Dgenome.txt").getAbsolutePath();
+                    BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("Author: Fei Lu\n");
+                    sb.append("Email: flu@genetics.ac.cn; dr.lufei@gmail.com\n");
+                    sb.append("Homepage: https://plantgeneticslab.weebly.com/\n").append("\n");
+                    sb.append("#This WGS SNP discovery pipeline are designed for both heterozygous and inbred species, especially the depth is high (e.g. >10X each taxon).\n");
+                    sb.append("#To run and pipeline, the machine should have Java 8 and samtools installed. The lib directory should stay with FastCall.jar in the same folder. Command (e.g.): java -Xmx200g -jar FastCall.jar parameter.txt > log.txt &\n");
+                    sb.append("#To specify reference, bam direcotory, chromosome, and output direcotory, please edit the the parameters below. Also, please keep the order of parameters.\n").append("\n").append("\n");
+                    sb.append("#Parameter1:\tReference genome file with an index file (.fai). The reference should be in FastA format. Chromosomes are labled as 1-based numbers (1,2,3,4,5...).\n");
+                    sb.append("/data1/home/aoyue/wheatRef_v1.0/D/d_iwgscV1.fa.gz").append("\n").append("\n");
+                    sb.append("#Parameter2:\tTaxa bam information file, including the info about what bams are included for each taxon\n");
+                    //sb.append("/data1/home/aoyue/fastcall_Dgenome/taxaBamMap_D.txt").append("\n").append("\n");
+                    sb.append("/data4/home/aoyue/vmap2/analysis/019_rebackDDtauschii/001_fastcall_Dgenome/taxaBamMap_D.txt").append("\n").append("\n");
+                    sb.append("#Parameter3:\tChromosome or region on which genotyping will be performed (e.g. chromosome 1 is designated as 1. Region 1bp to 100000bp on chromosome 1 is 1:1,100000)\n");
+                    sb.append(i).append("\n").append("\n");
+                    sb.append("#Parameter4:\tVCF output directory\n");
+                    //sb.append("/data1/home/aoyue/fastcall_Dgenome/rawVCF/").append("\n").append("\n");
+                    sb.append("/data4/home/aoyue/vmap2/analysis/019_rebackDDtauschii/001_fastcall_Dgenome/rawVCF/").append("\n").append("\n");
+                    sb.append("#Parameter5:\tNumber of threads for pileup\n");
+                    sb.append("32");
+                    bw.write(sb.toString());
+                    bw.newLine();
+                    bw.flush();
+                    bw.close();
+                }
             }
 
         } catch (Exception e) {
@@ -166,7 +191,6 @@ public class WheatABandDcleandataProcessor {
             System.exit(1);
         }
     }
-    
 
     /**
      * 将去处重复的bam文件进行合并
@@ -187,7 +211,8 @@ public class WheatABandDcleandataProcessor {
         HashMap<String, String> hm = new HashMap<>(); //ID和倍性的映射关系
 
         /**
-         * ***********************得到id-samples列表，并写出文件到 outfileDirS 文件夹****************************************
+         * ***********************得到id-samples列表，并写出文件到 outfileDirS
+         * 文件夹****************************************
          */
         try {
             BufferedWriter[] bw = new BufferedWriter[IDs.length];
@@ -274,7 +299,8 @@ public class WheatABandDcleandataProcessor {
         HashMap<String, String> hm = new HashMap<>(); //ID和倍性的映射关系
 
         /**
-         * ***********************得到id-samples列表，并写出文件到 outfileDirS 文件夹****************************************
+         * ***********************得到id-samples列表，并写出文件到 outfileDirS
+         * 文件夹****************************************
          */
         try {
             BufferedWriter[] bw = new BufferedWriter[IDs.length];

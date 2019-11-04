@@ -5,20 +5,16 @@
  */
 package WheatGeneticLoad;
 
-import AoUtils.CountSites;
 import AoUtils.SplitScript;
 import format.genomeAnnotation.GeneFeature;
+import utils.IOUtils;
+import utils.PStringUtils;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import utils.IOUtils;
-import utils.PStringUtils;
+import java.util.*;
 
 /**
  *
@@ -44,17 +40,117 @@ public class SIFT {
         /**
          * ******** 正式数据的计算**************
          */
-        //this.annotatorVCF2("/data4/home/aoyue/vmap2/genotype/mergedVCF/002_biMAF0.005VCF/", "/data4/home/aoyue/vmap2/analysis/008_sift/result/001_annotatorResult");
+//        this.annotatorVCF2("/data4/home/aoyue/vmap2/genotype/mergedVCF/002_biMAF0.005VCF/", "/data4/home/aoyue/vmap2/analysis/008_sift/result/001_annotatorResult");
         //new SplitScript().splitBwaScript("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/004_newScript/sh_vcfAnnotator.sh", "vcfAnnotator", 7, 6);
-        
-        this.calVariantsType2("/data4/home/aoyue/vmap2/analysis/015_annoDB/003_addSIFT/", "/data4/home/aoyue/vmap2/analysis/015_annoDB/004_calSIFTNum/cal_sift20190930.txt");
-        new CountSites().mergeChr1and2txt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/005_result2/cal_sift20190930.txt", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/005_result2/cal_sift.byChrRef.txt");
+
+        //this.calVariantsType2("/data4/home/aoyue/vmap2/analysis/015_annoDB/003_addSIFT/", "/data4/home/aoyue/vmap2/analysis/015_annoDB/004_calSIFTNum/cal_sift20190930.txt");
+        //new CountSites().mergeChr1and2txt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/005_result2/cal_sift20190930.txt", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/005_result2/cal_sift.byChrRef.txt");
+        /**
+         * ******** 正式数据的计算**************
+         */
+//        this.annotatorVCF2("/data4/home/aoyue/vmap2/genotype/mergedVCF/008_maf0.01SNPbyPop/", "/data4/home/aoyue/vmap2/analysis/008_sift/001_result/001_annotatorResult/");
+//        new SplitScript().splitBwaScript("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/006_newScript_MAF0.01byPop/sh_vcfAnnotator20191029.sh", "vcfAnnotator", 7, 6);
+//        this.mkdis();
+//        this.ifDone("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/007_log_siftAnnotator", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/008_log_summary/log_summary.txt");
+this.move();
+    
     }
     
     /**
-     * 本程序对merge后的vcf注释结果进行分类计算
+     * 将xls结果移动到同一个文件夹中，以备后续需要
+     */
+    public void move(){
+        for(int i=1; i<43;i++){
+            String chr = PStringUtils.getNDigitNumber(3, i);
+            System.out.println("mv output" + chr + "/chr" + chr + ".subgenome.maf0.01byPop.SNP_SIFTannotations.xls output/");
+            
+        }
+        
+        
+    }
+
+    /**
+     * 目的：检查/008_sift/007_log_siftAnnotator中所有log文件，查看是否全部运行完毕。车看第12行是否都包括completed,把第9行的内容提取出来，把第8行的表头提取一次
+     *
      * @param infileDirS
-     * @param outfileS 
+     * @param outfileS
+     */
+    public void ifDone(String infileDirS, String outfileS) {
+        File[] fs = new File(infileDirS).listFiles();
+        for (int i = 0; i < fs.length; i++) {
+            if (fs[i].isHidden()) {
+                fs[i].delete();
+            }
+        }
+        fs = new File(infileDirS).listFiles();
+        Arrays.sort(fs);
+        //System.out.println("Chr\tSNP_Num");
+
+        try {
+            String infileS = fs[0].getAbsolutePath();
+            BufferedReader br = null;
+            if (infileS.endsWith(".txt")) {
+                br = IOUtils.getTextReader(infileS);
+            } else if (infileS.endsWith(".txt.gz")) {
+                br = IOUtils.getTextGzipReader(infileS);
+            }
+
+            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            for (int i = 1; i < 15; i++) {
+                String temp = br.readLine();
+                if (i == 8) {
+                    bw.write(temp);
+                    bw.newLine();
+                }
+            }
+
+            //读正文部分
+            for (int i = 0; i < fs.length; i++) {
+                infileS = fs[i].getAbsolutePath();
+                if (infileS.endsWith(".txt")) {
+                    br = IOUtils.getTextReader(infileS);
+                } else if (infileS.endsWith(".txt.gz")) {
+                    br = IOUtils.getTextGzipReader(infileS);
+                }
+                String temp = null;
+                //int chrint = Integer.parseInt(fs[i].getName().substring(3, 6));
+                int cnt = 0;
+                for (int j = 1; j < 15; j++) {  //每个log文件有14行，我们只要第9行的数据
+                    temp = br.readLine();
+                    if (j == 9) {
+                        bw.write(temp);
+                        bw.newLine();
+                    }
+                }
+                System.out.println(fs[i].getName() + " is completed at" + outfileS);
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+
+            //下面一段程序，是用来去除文本中含有的tab键空格
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    /**
+     * 建立42个空的文件夹，上传至集群
+     */
+    public void mkdis() {
+        for (int i = 1; i < 43; i++) {
+            String chr = PStringUtils.getNDigitNumber(3, i);
+            System.out.println("mkdir output" + chr);
+        }
+
+    }
+
+    /**
+     * 本程序对merge后的vcf注释结果进行分类计算
+     *
+     * @param infileDirS
+     * @param outfileS
      */
     public void calVariantsType2(String infileDirS, String outfileS) {
 
@@ -143,7 +239,7 @@ public class SIFT {
 
                 bw.write(Integer.parseInt(fs[i].getName().substring(3, 6)) + "\t" + NonSynonymousDeleteriousMutation + "\t" + NonSynonymousTolerentMutation
                         + "\t" + SynonymousMutation + "\t" + NoncodingMutation + "\t" + StartLostDeleteriousMutation + "\t" + StartLostTolerentMutation
-                        + "\t" + StopGainMutation + "\t" + StopLossMutation  + "\t" + FrameshiftInsertionMutation + "\n");
+                        + "\t" + StopGainMutation + "\t" + StopLossMutation + "\t" + FrameshiftInsertionMutation + "\n");
             }
             bw.flush();
             bw.close();
@@ -155,21 +251,26 @@ public class SIFT {
         }
 
     }
-    
 
+//     find -name "*.vcf" | cut -c3- ; 本地获取运行脚本，输出在netbeans的output界面。 
+//     -c	To run on command line 
+//     -i	Path to your input variants file in VCF format 
+//     -d	Path to SIFT database directory 
+//     -r       Path to your output results folder 
+//     -t	To extract annotations for multiple transcripts (Optional)
+//    输出的文件产生的日志也保存下来，便于计算时间。 注意输入文件必须是解压后的vcf
     /**
-     * find -name "*.vcf" | cut -c3- ; 本地获取运行脚本，输出在netbeans的output界面。 -c	To run
-     * on command line -i	Path to your input variants file in VCF format -d	Path
-     * to SIFT database directory -r Path to your output results folder -t	To
-     * extract annotations for multiple transcripts (Optional)
-     * 输出的文件产生的日志也保存下来，便于计算时间。 注意输入文件必须是解压后的vcf
+     *
+     * @param infileDirS
+     * @param outfileDirS
      */
     public void annotatorVCF2(String infileDirS, String outfileDirS) {
         //String infileDirS = "/data4/home/aoyue/vmap2/analysis/008_sift/dbSNP20190820/ab/";
         //String outfileDirS = "/data4/home/aoyue/vmap2/analysis/008_sift/abd_iwgscV1_SIFT4G_db/output/ab/";
 
         try {
-            String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_chrList/list_chrlineage.txt";
+//            String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_chrList/list_chrlineage.txt";
+            String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_chrList/list_chrMerged.txt";
             BufferedReader br = IOUtils.getTextReader(infileS);
             String temp = null;
             while ((temp = br.readLine()) != null) {
@@ -305,14 +406,15 @@ public class SIFT {
      * @num5: String outfileS
      */
     public void generateSIFT() {
-        int[] arra = {1,2,7,8,13,14,19,20,25,26,31,32,37,38};
-        int[] arrb = {3,4,9,10,15,16,21,22,27,28,33,34,39,40};
-        int[] arrd = {5,6,11,12,17,18,23,24,29,30,35,36,41,42};
-        HashMap<Integer,String> hml = new HashMap<>();
+        //分别建立染色体和对应亚基因组的关系
+        int[] arra = {1, 2, 7, 8, 13, 14, 19, 20, 25, 26, 31, 32, 37, 38};
+        int[] arrb = {3, 4, 9, 10, 15, 16, 21, 22, 27, 28, 33, 34, 39, 40};
+        int[] arrd = {5, 6, 11, 12, 17, 18, 23, 24, 29, 30, 35, 36, 41, 42};
+        HashMap<Integer, String> hml = new HashMap<>();
         Arrays.sort(arra);
         Arrays.sort(arrb);
         Arrays.sort(arrd);
-        for(int i =0; i<arra.length;i++){
+        for (int i = 0; i < arra.length; i++) {
             hml.put(arra[i], "A");
             hml.put(arrb[i], "B");
             hml.put(arrd[i], "D");
@@ -331,20 +433,17 @@ public class SIFT {
 //        String siftDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/003_result/000_annotatorResult/ab/";
 //        String dbDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/003_result/000_DB/ab/";
 //        String outputDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/003_result/001_DB_addSIFT/ab/";
-
 //                /*==================================== merge =============================================*/
 //        String infileS = "/Users/Aoyue/Documents/Data/wheat/gene/v1.1/wheat_v1.1_Lulab.pgf";
 //        String siftDirS = "/Users/Aoyue/Documents/siftOut";
 //        String dbDirS = "/Users/Aoyue/Documents/annoDB";
 //        String outputDirS = "/Users/Aoyue/Documents/annoDB2";
-
-
-                /*==================================== HPC =============================================*/
+        /*==================================== HPC =============================================*/
         String infileS = "/data1/publicData/wheat/gene/v1.1/wheat_v1.1_Lulab.pgf";
         String siftDirS = "/data4/home/aoyue/vmap2/analysis/008_sift/result/001_annotatorResult/output/";
         String dbDirS = "/data4/home/aoyue/vmap2/analysis/015_annoDB/001_step1/";
         String outputDirS = "/data4/home/aoyue/vmap2/analysis/015_annoDB/003_addSIFT/";
-
+        //首先建立输出目录文件夹
         new File(outputDirS).mkdir();
         //先处理pgf文件
         GeneFeature gf = new GeneFeature(infileS);
@@ -352,11 +451,11 @@ public class SIFT {
         String[] trans = new String[geneNum]; //2.定义trans数组
         for (int i = 0; i < geneNum; i++) { //循环基因
             int index = gf.getLongestTranscriptIndex(i); //获取最长转录本的索引
-            trans[i] = gf.getTranscriptName(i, index); //获取对应基因的最长转录本的名字
+            trans[i] = gf.getTranscriptName(i, index); //根据索引，获取对应基因的最长转录本的名字
         }
-        Arrays.sort(trans);
+        Arrays.sort(trans); //对转录本进行排序
 
-        File[] fs = new File(siftDirS).listFiles();
+        File[] fs = new File(siftDirS).listFiles(); //软件计算出的包含SIFT结果的xls文件和VCF文件；
         fs = IOUtils.listFilesEndsWith(fs, "xls");
         List<File> fList = Arrays.asList(fs);
         fList.parallelStream().forEach(f -> {
@@ -368,8 +467,8 @@ public class SIFT {
 //            String dbFileS = new File(dbDirS, "chr" + PStringUtils.getNDigitNumber(3, chrIndex + 1) + ".ABgenome.filterMiss.posAllele.txt.gz").getAbsolutePath();
 //            String outfileS = new File(outputDirS, "chr" + PStringUtils.getNDigitNumber(3, chrIndex + 1) + ".ABgenome.filterMiss.posAllele.SIFT.txt.gz").getAbsolutePath();
             //chr036.Dlineage.maf0.005.bi.AnnoDB.txt.gz
-            String dbFileS = new File(dbDirS, "chr" + PStringUtils.getNDigitNumber(3, chrIndex + 1)+ "."+ hml.get(chrIndex + 1) + "lineage.maf0.005.bi.AnnoDB.txt.gz").getAbsolutePath();
-            String outfileS = new File(outputDirS, "chr" + PStringUtils.getNDigitNumber(3, chrIndex + 1)+".lineage.maf0.005.bi.AnnoDB.addSIFT.txt.gz").getAbsolutePath();
+            String dbFileS = new File(dbDirS, "chr" + PStringUtils.getNDigitNumber(3, chrIndex + 1) + "." + hml.get(chrIndex + 1) + "lineage.maf0.005.bi.AnnoDB.txt.gz").getAbsolutePath();
+            String outfileS = new File(outputDirS, "chr" + PStringUtils.getNDigitNumber(3, chrIndex + 1) + ".lineage.maf0.005.bi.AnnoDB.addSIFT.txt.gz").getAbsolutePath();
             String header = null;
             try {
                 BufferedReader br = IOUtils.getTextReader(f.getAbsolutePath()); //是xls文件，故不是压缩的
@@ -390,7 +489,7 @@ public class SIFT {
                 }
                 br.close();
                 Collections.sort(sList);
-                
+
                 br = IOUtils.getTextGzipReader(dbFileS);
                 header = br.readLine() + "\tVariant_type\tSIFT_score\tTranscript";
                 BufferedWriter bw = IOUtils.getTextGzipWriter(outfileS);

@@ -213,8 +213,4 @@ public class Mode {
         l.add(new ChrPos(Short.valueOf(chr), Integer.valueOf(pos)));
 
     }
-    
-    
-    
-
 }
