@@ -5,6 +5,7 @@
  */
 package WheatGeneticLoad;
 
+import AoUtils.Bin;
 import AoUtils.CountSites;
 import format.genomeAnnotation.GeneFeature;
 import format.range.Range;
@@ -30,7 +31,7 @@ import utils.PStringUtils;
 public class VariantsSum {
 
     public VariantsSum() {
-        //this.mkSNPsummary("/data4/home/aoyue/vmap2/genotype/mergedVCF/002_biMAF0.005VCF/", "/data4/home/aoyue/vmap2/analysis/015_annoDB/001_step1/");
+//        this.mkSNPsummary("/data4/home/aoyue/vmap2/genotype/mergedVCF/002_biMAF0.005VCF/", "/data4/home/aoyue/vmap2/analysis/015_annoDB/001_step1/");
         //this.addAncestralAllele("/Users/Aoyue/Documents/out", "/Users/Aoyue/Documents/out1", "/Users/Aoyue/Documents/out2");
         //this.scriptAddAncAllele();
         //new CountSites().changechrPos("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/delSNP", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/007_merge006/delSNP");
@@ -47,154 +48,159 @@ public class VariantsSum {
 //new CountSites().mergeTxt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/003_merge1A/synSNP","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/004_merge/synSNP/chrB.subgenome.synSNP.changeChrPos.txt");
 //this.mkBarplotOfSNPs();
 
-     //this.classifySNPs("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/005_addAncestralAllele/", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/006_ori/");
-    //new CountSites().changechrPos("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/006_ori/delSNP","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/007_changeChrPos/delSNP");
-    //new CountSites().changechrPos("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/006_ori/nonsyTolerantSNP","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/007_changeChrPos/nonsyTolerantSNP");
-    //new CountSites().changechrPos("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/006_ori/synSNP","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/007_changeChrPos/synSNP");
-    //new CountSites().mergefile1and2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/007_changeChrPos/delSNP/", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/008_merge1A/delSNP/");
-    //new CountSites().mergefile1and2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/007_changeChrPos/nonsyTolerantSNP", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/008_merge1A/nonsyTolerantSNP");
-    //new CountSites().mergefile1and2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/007_changeChrPos/synSNP", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/008_merge1A/synSNP");
+        //this.classifySNPs("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/005_addAncestralAllele/", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/006_ori/");
+        //new CountSites().changechrPos("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/006_ori/delSNP","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/007_changeChrPos/delSNP");
+        //new CountSites().changechrPos("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/006_ori/nonsyTolerantSNP","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/007_changeChrPos/nonsyTolerantSNP");
+        //new CountSites().changechrPos("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/006_ori/synSNP","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/007_changeChrPos/synSNP");
+        //new CountSites().mergefile1and2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/007_changeChrPos/delSNP/", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/008_merge1A/delSNP/");
+        //new CountSites().mergefile1and2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/007_changeChrPos/nonsyTolerantSNP", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/008_merge1A/nonsyTolerantSNP");
+        //new CountSites().mergefile1and2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/007_changeChrPos/synSNP", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/008_merge1A/synSNP");
 //    new CountSites().mergeTxt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/008_merge1A/delSNP","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/009_merge/delSNP/chrD.subgenome.delSNP.changeChrPos.txt");
 //    new CountSites().mergeTxt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/008_merge1A/nonsyTolerantSNP","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/009_merge/nonsyTolerantSNP/chrD.subgenome.nonsyTolerantSNP.changeChrPos.txt");
 //    new CountSites().mergeTxt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/008_merge1A/synSNP","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/009_merge/synSNP/chrD.subgenome.synSNP.changeChrPos.txt");
-    this.mkBarplotOfSNPs();
-    
+//        this.mkBarplotOfSNPs();
+//        this.mkSNPsummary_step1("/Users/Aoyue/Documents/chr001_vmap2.1_line50.vcf.gz", "/Users/Aoyue/Documents/out/chr001_vmap2.1_line50.annotation.txt.gz");
+//        this.mkSNPsummary_step2("/Users/Aoyue/Documents/chr001_vmap2.1_AnnoDB_10000lines.txt", "/Users/Aoyue/Documents/chr001.wheat.ancestralAllele_1000000.txt", "/Users/Aoyue/Documents/out/chr001_vmap2.1_.txt.gz");
+//    this.getCDSannotation("/Users/Aoyue/Documents/test", "/Users/Aoyue/Documents/out");
+//        this.classifySNP_byPop("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/102_cdsAnnoDB", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/001_ori");
+//        this.changeChrPos();
+//        this.mergebySub();
+//        new Bin().mkBarplotofMAF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/003_mergebySub", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/004_bin/daf/001_total", "100", "1");
+//        new Bin().mkBarplotofMAF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/003_mergebySub", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/004_bin/daf/002_abd", "100", "1");
+//        new Bin().mkBarplotofMAF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/003_mergebySub", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/004_bin/daf/003_ab", "100", "1");
+//        new Bin().mkBarplotofMAF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/003_mergebySub", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/004_bin/daf/004_d", "100", "1");
+        //10 bins
+//        this.mkBarplotofDAF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/003_mergebySub", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/004_bin/003_daf/001_mkBarplotofDAF", "10", "1");
+//        this.mkBarplotofMAF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/003_mergebySub", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/004_bin/004_maf/001_mkBarplotofMaf","10","0.5");
+        //20 bins
+//        this.mkBarplotofDAF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/003_mergebySub", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/004_bin/005_daf_20bins", "20", "1");
     }
-
-    public void bin() {
-
-    }
-    
     
     /**
-     * chr005.Dlineage.vcf --> chr005.Dlineage.maf0.005.bi.vcf 过滤D I
-     * 和含有3个等位位点的pos，保留只有一个alt并且maf大于0.005的pos
      *
      * @param infileDirS
+     * @param outfileDirS
+     * @param binNum the number of bins that would be divided
      */
-    public void mkSNPsummary2(String infileDirS, String outfileDirS) {
-
+    public void mkBarplotofMAF(String infileDirS, String outfileDirS, String binNum, String max) {
+        int bins = Integer.parseInt(binNum);
+        double length = Double.parseDouble(max);
         new File(outfileDirS).mkdirs();
+
         File[] fs = new File(infileDirS).listFiles();
         for (int i = 0; i < fs.length; i++) {
             if (fs[i].isHidden()) {
+                System.out.println(fs[i].getName() + " is hidden");
                 fs[i].delete();
             }
         }
         fs = new File(infileDirS).listFiles();
         List<File> fsList = Arrays.asList(fs);
-        Collections.sort(fsList);
-        /**
-         * *************************************************************
-         */
-        System.out.println("FileName\tbiallelicNum\tBiallelicMafmore0.005Num");
-        fsList.parallelStream().forEach(f -> {
+        fsList.stream().forEach(f -> {
+            String infileS = f.getAbsolutePath();
+            String outfileS = null;
+            BufferedReader br = null;
+            if (infileS.endsWith(".txt")) {
+                br = IOUtils.getTextReader(infileS);
+                outfileS = new File(outfileDirS, f.getName().replaceFirst("txt", bins + "bins" + ".Table.txt")).getAbsolutePath();
+            } else if (infileS.endsWith(".txt.gz")) {
+                br = IOUtils.getTextGzipReader(infileS);
+                outfileS = new File(outfileDirS, f.getName().replaceFirst("txt.gz", bins + "bins" + ".Table.txt")).getAbsolutePath();
+            }
+            //先建立bound数组
+            double[] bound = new double[bins];
+            for (int i = 1; i < bound.length; i++) {
+                bound[i] = (double) length / bins * i;
+            }
+            
+            
+            //开始计算daf
+            double[] daf1 = new double[bins];
+            TDoubleArrayList dafList1 = new TDoubleArrayList();
+            RowTable<String> t = new RowTable<>(infileS);
+            int count = t.getRowNumber();
+            for (int i = 0; i < t.getRowNumber(); i++) {
+                if (t.getCell(i, 2).equals("NA")) { //DAF值所在的那一列
+                    continue;
+                }
+                double value = t.getCellAsDouble(i, 2); //DAF值所在的那一列
+                dafList1.add(value);
+                int index = Arrays.binarySearch(bound, value);
+                if (index < 0) {
+                    index = -index - 2;
+                }
+                //例如 0.112021856在bound搜索结果为-13，则此时index为11，及0.1-0.2范围内。好神奇！！又如0.112394，index也是11.
+                //又如0.21652在bound搜索结果中为-23,这样index=21， 这样就将maf的值按照1-100分布开来。
+                daf1[index]++; //值落入第i种变异的第index个区间的个数
+            }
+            //开始计算每个区间落入点的比例
+            for (int i = 0; i < daf1.length; i++) {
+                daf1[i] = daf1[i] / dafList1.size();
+            }
+            System.out.println(dafList1.size()  + "  size");
+            
+            
+            //开始计算daf_ABD
+            double[] daf2 = new double[bins];
+            TDoubleArrayList dafList2 = new TDoubleArrayList();
+            for (int i = 0; i < t.getRowNumber(); i++) {
+                if (t.getCell(i, 3).equals("NA")) { //DAF值所在的那一列
+                    continue;
+                }
+                double value = t.getCellAsDouble(i, 3); //DAF值所在的那一列
+                dafList2.add(value);
+                int index = Arrays.binarySearch(bound, value);
+                if (index < 0) {
+                    index = -index - 2;
+                }
+                //例如 0.112021856在bound搜索结果为-13，则此时index为11，及0.1-0.2范围内。好神奇！！又如0.112394，index也是11.
+                //又如0.21652在bound搜索结果中为-23,这样index=21， 这样就将maf的值按照1-100分布开来。
+                daf2[index]++; //值落入第i种变异的第index个区间的个数
+            }
+            //开始计算每个区间落入点的比例
+            for (int i = 0; i < daf2.length; i++) {
+                daf2[i] = daf2[i] / dafList2.size();
+            }
+            System.out.println(dafList2.size() + "  size");
+            
+            //开始计算daf_AB
+            double[] daf3 = new double[bins];
+            TDoubleArrayList dafList3 = new TDoubleArrayList();
+            for (int i = 0; i < t.getRowNumber(); i++) {
+                if (t.getCell(i, 4).equals("NA")) { //DAF值所在的那一列
+                    continue;
+                }
+                double value = t.getCellAsDouble(i, 4); //DAF值所在的那一列
+                dafList3.add(value);
+                int index = Arrays.binarySearch(bound, value);
+                if (index < 0) {
+                    index = -index - 2;
+                }
+                //例如 0.112021856在bound搜索结果为-13，则此时index为11，及0.1-0.2范围内。好神奇！！又如0.112394，index也是11.
+                //又如0.21652在bound搜索结果中为-23,这样index=21， 这样就将maf的值按照1-100分布开来。
+                daf3[index]++; //值落入第i种变异的第index个区间的个数
+            }
+            //开始计算每个区间落入点的比例
+            for (int i = 0; i < daf3.length; i++) {
+                daf3[i] = daf3[i] / dafList3.size();
+            }
+            System.out.println(dafList3.size() + "  size");
+            
+            
+            //开始写出文件
             try {
-                String infileS = f.getAbsolutePath();
-                String outfileS = null;
-                BufferedReader br = null;
-                if (infileS.endsWith(".vcf")) {
-                    br = IOUtils.getTextReader(infileS);
-                    outfileS = new File(outfileDirS, f.getName().replaceFirst(".vcf", ".AnnoDB.txt.gz")).getAbsolutePath();
-                } else if (infileS.endsWith(".vcf.gz")) {
-                    br = IOUtils.getTextGzipReader(infileS);
-                    outfileS = new File(outfileDirS, f.getName().replaceFirst(".vcf.gz", ".AnnoDB.txt.gz")).getAbsolutePath();
-                }
-                BufferedWriter bw = IOUtils.getTextGzipWriter(outfileS);
-                bw.write("Chr\tPos\tRef\tAlt\tMajor\tMinor\tMaf\tHetProportion\tMissProportion");
+                BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+                bw.write("Maf\tDensity_Total\tDensity_ABD\tDensity_AB");
                 bw.newLine();
-                String temp = null;
-                String te[] = null;
-                int biallelicNum = 0;
-                int biallelicMafmoreNum = 0;
-
-                String major = null;
-                String minor = null;
-                while ((temp = br.readLine()) != null) {
-                    int genoNum = 0;
-                    double homNum = 0;
-                    double hetNum = 0;
-                    double hetRate = 0;
-                    double missNum = 0;
-                    double missRate = 0;
-
-                    double refAlleleGametes = 0;
-                    double altAlleleGametes = 0;
-                    double refAF = 0;
-                    double altAF = 0;
-                    double maf = 0;
-
-                    if (temp.startsWith("#")) {
-                        //bw.write(temp);
-                        //bw.newLine();
-                    } else {
-                        te = temp.split("\t");
-                        String chr = PStringUtils.fastSplit(temp).get(0);
-                        String pos = PStringUtils.fastSplit(temp).get(1);
-                        String ref = PStringUtils.fastSplit(temp).get(3);
-                        String alt = PStringUtils.fastSplit(temp).get(4);
-
-                        if (te[4].length() == 1) { //不含有逗号的情况，即只有一个alt。又开始分，是D 是I 是ATGC 3种情况
-                            if (alt.contains("D") || alt.contains("I")) {
-                                continue; //只有一个alt且不是indel
-                            }
-                            biallelicNum++;
-                            for (int i = 9; i < te.length; i++) {
-                                if (te[i].startsWith(".")) {
-                                    missNum++;
-                                }
-                                if (!te[i].startsWith(".")) {
-                                    genoNum++; //have the genotype
-                                    if (te[i].startsWith("0/1") || te[i].startsWith("1/0")) {
-                                        hetNum++; //the number of heterozygous
-                                        refAlleleGametes++;
-                                        altAlleleGametes++;
-                                    }
-                                    if (te[i].startsWith("0/0")) {
-                                        homNum++; //the number of heterozygous
-                                        refAlleleGametes++;
-                                        refAlleleGametes++;
-                                    }
-                                    if (te[i].startsWith("1/1")) {
-                                        homNum++;
-                                        altAlleleGametes++;
-                                        altAlleleGametes++;
-                                    }
-                                }
-                            }
-                            hetRate = hetNum / genoNum;
-                            missRate = missNum / (missNum + genoNum);
-                            refAF = refAlleleGametes / (refAlleleGametes + altAlleleGametes);
-                            altAF = altAlleleGametes / (refAlleleGametes + altAlleleGametes);;
-                            if (refAF >= altAF) {
-                                major = ref;
-                                minor = alt;
-                                maf = altAF;
-                            } else {
-                                maf = refAF;
-                                major = alt;
-                                minor = ref;
-                            }
-
-                            if (maf <= 0.005) {
-                                continue;
-                            }
-                            biallelicMafmoreNum++;
-                            StringBuilder sb = new StringBuilder();
-                            //bw.write("Chr\tPos\tRef\tAlt\tMajor\tMinor\tMaf\tHetProportion\tMissProportion");
-                            sb.append(chr).append("\t").append(pos).append("\t").append(ref).append("\t").append(alt).append("\t").
-                                    append(major).append("\t").append(minor).append("\t").append(String.format("%.4f", maf)).append("\t").
-                                    append(String.format("%.4f", hetRate)).append("\t").append(String.format("%.4f", missRate));
-                            bw.write(sb.toString());
-                            bw.newLine();
-
-                        }
-                    } //else的终止
+                for (int i = 0; i < bound.length; i++) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(String.format("%.3f", (double)bound[i] + (double)(length / bins) / (double)2)).append("\t").append(String.format("%.4f", daf1[i])).append("\t").append(String.format("%.4f", daf2[i])).append("\t").append(String.format("%.4f", daf3[i]));
+                    bw.write(sb.toString());
+                    bw.newLine();
                 }
-                br.close();
                 bw.flush();
                 bw.close();
-                System.out.println(String.valueOf(f.getName()) + "\t" + String.valueOf(biallelicNum) + "\t" + String.valueOf(biallelicMafmoreNum) + "\tis completed at " + outfileS);
+                System.out.println(f.getName() + " is completed at " + outfileS);
             } catch (Exception e) {
                 e.printStackTrace();
                 System.exit(1);
@@ -202,6 +208,666 @@ public class VariantsSum {
         });
     }
     
+    /**
+     *
+     * @param infileDirS
+     * @param outfileDirS
+     * @param binNum the number of bins that would be divided
+     */
+    public void mkBarplotofDAF(String infileDirS, String outfileDirS, String binNum, String max) {
+        int bins = Integer.parseInt(binNum);
+        double length = Double.parseDouble(max);
+        new File(outfileDirS).mkdirs();
+
+        File[] fs = new File(infileDirS).listFiles();
+        for (int i = 0; i < fs.length; i++) {
+            if (fs[i].isHidden()) {
+                System.out.println(fs[i].getName() + " is hidden");
+                fs[i].delete();
+            }
+        }
+        fs = new File(infileDirS).listFiles();
+        List<File> fsList = Arrays.asList(fs);
+        fsList.stream().forEach(f -> {
+            String infileS = f.getAbsolutePath();
+            String outfileS = null;
+            BufferedReader br = null;
+            if (infileS.endsWith(".txt")) {
+                br = IOUtils.getTextReader(infileS);
+                outfileS = new File(outfileDirS, f.getName().replaceFirst("txt", bins + "bins" + ".Table.txt")).getAbsolutePath();
+            } else if (infileS.endsWith(".txt.gz")) {
+                br = IOUtils.getTextGzipReader(infileS);
+                outfileS = new File(outfileDirS, f.getName().replaceFirst("txt.gz", bins + "bins" + ".Table.txt")).getAbsolutePath();
+            }
+            //先建立bound数组
+            double[] bound = new double[bins];
+            for (int i = 1; i < bound.length; i++) {
+                bound[i] = (double) length / bins * i;
+            }
+            
+            
+            //开始计算daf
+            double[] daf1 = new double[bins];
+            TDoubleArrayList dafList1 = new TDoubleArrayList();
+            RowTable<String> t = new RowTable<>(infileS);
+            int count = t.getRowNumber();
+            for (int i = 0; i < t.getRowNumber(); i++) {
+                if (t.getCell(i, 5).equals("NA")) { //DAF值所在的那一列
+                    continue;
+                }
+                double value = t.getCellAsDouble(i, 5); //DAF值所在的那一列
+                dafList1.add(value);
+                int index = Arrays.binarySearch(bound, value);
+                if (index < 0) {
+                    index = -index - 2;
+                }
+                //例如 0.112021856在bound搜索结果为-13，则此时index为11，及0.1-0.2范围内。好神奇！！又如0.112394，index也是11.
+                //又如0.21652在bound搜索结果中为-23,这样index=21， 这样就将maf的值按照1-100分布开来。
+                daf1[index]++; //值落入第i种变异的第index个区间的个数
+            }
+            //开始计算每个区间落入点的比例
+            for (int i = 0; i < daf1.length; i++) {
+                daf1[i] = daf1[i] / dafList1.size();
+            }
+            System.out.println(dafList1.size()  + "  size");
+            
+            
+            //开始计算daf_ABD
+            double[] daf2 = new double[bins];
+            TDoubleArrayList dafList2 = new TDoubleArrayList();
+            for (int i = 0; i < t.getRowNumber(); i++) {
+                if (t.getCell(i, 6).equals("NA")) { //DAF值所在的那一列
+                    continue;
+                }
+                double value = t.getCellAsDouble(i, 6); //DAF值所在的那一列
+                dafList2.add(value);
+                int index = Arrays.binarySearch(bound, value);
+                if (index < 0) {
+                    index = -index - 2;
+                }
+                //例如 0.112021856在bound搜索结果为-13，则此时index为11，及0.1-0.2范围内。好神奇！！又如0.112394，index也是11.
+                //又如0.21652在bound搜索结果中为-23,这样index=21， 这样就将maf的值按照1-100分布开来。
+                daf2[index]++; //值落入第i种变异的第index个区间的个数
+            }
+            //开始计算每个区间落入点的比例
+            for (int i = 0; i < daf2.length; i++) {
+                daf2[i] = daf2[i] / dafList2.size();
+            }
+            System.out.println(dafList2.size() + "  size");
+            
+            //开始计算daf_AB
+            double[] daf3 = new double[bins];
+            TDoubleArrayList dafList3 = new TDoubleArrayList();
+            for (int i = 0; i < t.getRowNumber(); i++) {
+                if (t.getCell(i, 7).equals("NA")) { //DAF值所在的那一列
+                    continue;
+                }
+                double value = t.getCellAsDouble(i, 7); //DAF值所在的那一列
+                dafList3.add(value);
+                int index = Arrays.binarySearch(bound, value);
+                if (index < 0) {
+                    index = -index - 2;
+                }
+                //例如 0.112021856在bound搜索结果为-13，则此时index为11，及0.1-0.2范围内。好神奇！！又如0.112394，index也是11.
+                //又如0.21652在bound搜索结果中为-23,这样index=21， 这样就将maf的值按照1-100分布开来。
+                daf3[index]++; //值落入第i种变异的第index个区间的个数
+            }
+            //开始计算每个区间落入点的比例
+            for (int i = 0; i < daf3.length; i++) {
+                daf3[i] = daf3[i] / dafList3.size();
+            }
+            System.out.println(dafList3.size() + "  size");
+            
+            
+            //开始写出文件
+            try {
+                BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+                bw.write("Daf\tDensity_Total\tDensity_ABD\tDensity_AB");
+                bw.newLine();
+                for (int i = 0; i < bound.length; i++) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(String.format("%.3f", (double)bound[i] + (double)(length / bins) / (double)2)).append("\t").append(String.format("%.4f", daf1[i])).append("\t").append(String.format("%.4f", daf2[i])).append("\t").append(String.format("%.4f", daf3[i]));
+                    bw.write(sb.toString());
+                    bw.newLine();
+                }
+                bw.flush();
+                bw.close();
+                System.out.println(f.getName() + " is completed at " + outfileS);
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
+        });
+    }
+    
+    
+    public void mergebySub(){
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/002_changeChrPos";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/003_mergebySub";
+        File[] fs = new File(infileDirS).listFiles();
+        for(int i = 0; i < fs.length; i++){
+            if(fs[i].isHidden())
+                fs[i].delete();
+        }
+        fs = new File(infileDirS).listFiles();
+        for (int i = 0; i < fs.length; i++) {
+            System.out.println(fs[i]);
+            new File(outfileDirS, fs[i].getName()).mkdirs();
+        }
+        for(int i = 0; i < fs.length; i++){
+            new CountSites().mergeTxtbysuffix(fs[i].getAbsolutePath(), new File(outfileDirS, fs[i].getName()).getAbsolutePath() + "_A.txt.gz", "A.");
+            new CountSites().mergeTxtbysuffix(fs[i].getAbsolutePath(), new File(outfileDirS, fs[i].getName()).getAbsolutePath()+ "_B.txt.gz", "B.");
+            new CountSites().mergeTxtbysuffix(fs[i].getAbsolutePath(), new File(outfileDirS, fs[i].getName()).getAbsolutePath()+ "_D.txt.gz", "D.");
+        }
+        
+    }
+
+    public void changeChrPos() {
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/001_ori";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/002_changeChrPos";
+        File[] fs = new File(infileDirS).listFiles();
+        for(int i = 0; i < fs.length; i++){
+            if(fs[i].isHidden())
+                fs[i].delete();
+        }
+        fs = new File(infileDirS).listFiles();
+        for (int i = 0; i < fs.length; i++) {
+            System.out.println(fs[i]);
+            new File(outfileDirS, fs[i].getName()).mkdirs();
+        }
+        
+        for(int i = 0; i < fs.length; i++){
+            new CountSites().mergefileandChangeChrPos_chr1and2(fs[i].getAbsolutePath(),new File(outfileDirS, fs[i].getName()).getAbsolutePath());
+        }
+    }
+
+    /**
+     * 将SNP按照同义非同义突变进行分类，并画出DAF分布图
+     *
+     * @param infileDirS
+     * @param outfileDirS
+     */
+    public void classifySNP_byPop(String infileDirS, String outfileDirS) {
+
+        String[] snpClass = {"delSNP", "nonsyTolerantSNP", "synSNP"};
+        String[] out = new String[snpClass.length];
+        for (int i = 0; i < snpClass.length; i++) {
+            new File(outfileDirS, snpClass[i]).mkdirs();
+            out[i] = new File(outfileDirS, snpClass[i]).getAbsolutePath();
+        }
+
+        File[] fs = new File(infileDirS).listFiles();
+        for (int i = 0; i < fs.length; i++) {
+            if (fs[i].isHidden()) {
+                fs[i].delete();
+            }
+            if (fs[i].getName().endsWith(".xlsx")) {
+                fs[i].delete();
+            }
+        }
+        fs = new File(infileDirS).listFiles();
+        List<File> fsList = Arrays.asList(fs);
+        Collections.sort(fsList);
+        fsList.parallelStream().forEach(f -> {
+            try {
+                String MAF_ABD = null;
+                String MAF_AB = null;
+                String chrS = f.getName().substring(3, 6);
+                boolean ifd = false;
+                //根据染色体号进行AB还是D的判断
+                String[] db = {"5", "6", "11", "12", "17", "18", "23", "24", "29", "30", "35", "36", "41", "42"};
+                Arrays.sort(db);
+                if (Arrays.binarySearch(db, chrS) > -1) { //说明是属于D的
+                    ifd = true;
+                }
+
+                String infileS = f.getAbsolutePath();
+                String outfileS = null;
+                BufferedReader br = null;
+                if (infileS.endsWith(".txt")) {
+                    br = IOUtils.getTextReader(infileS);
+                } else if (infileS.endsWith(".txt.gz")) {
+                    br = IOUtils.getTextGzipReader(infileS);
+                }
+
+                BufferedWriter[] bw = new BufferedWriter[snpClass.length];
+                for (int i = 0; i < bw.length; i++) {
+                    outfileS = new File(out[i], "chr" + chrS + "." + snpClass[i] + ".txt.gz").getAbsolutePath();
+                    bw[i] = IOUtils.getTextGzipWriter(outfileS);
+
+                    if (ifd == false) {
+                        bw[i].write("Chr\tPos\tMaf\tMAF_ABD\tMAF_AB\tDaf\tDaf_ABD\tDaf_AB\tTrans");
+                        bw[i].newLine();
+                    } else if (ifd == true) {
+                        bw[i].write("Chr\tPos\tMaf\tMAF_ABD\tMAF_D\tDaf\tDaf_ABD\tDaf_D\tTrans");
+                        bw[i].newLine();
+                    }
+                }
+
+                String temp = br.readLine(); //read header
+                while ((temp = br.readLine()) != null) {
+//0Chr	1Pos	2Ref	3Alt	4Major	5Minor	6Maf	7AAF_ABD	8AAF_AB	9Ancestral	10Daf	11Daf_ABD	12Daf_AB	13Variant_type	14SIFT_score	15Transcript
+                    List<String> l = PStringUtils.fastSplit(temp);
+                    String chr = l.get(0);
+                    String pos = l.get(1);
+                    String major = l.get(4);
+                    String minor = l.get(5);
+                    String maf = l.get(6);
+                    String AAF_ABD = l.get(7); //注意AAF_ABD中含有0 和1
+                    String AAF_AB = l.get(8);
+                    String anc = l.get(9);
+                    String daf = l.get(10);
+                    String Daf_ABD = l.get(11); //注意Daf_ABD中 不含有0和1
+                    String Daf_AB = l.get(12);
+                    String snpType = l.get(13);
+                    String scoreS = l.get(14);
+                    String trans = l.get(15);
+
+                    if (AAF_ABD.equals("0.0000") || AAF_ABD.equals("1.0000")) {
+                        MAF_ABD = "NA";
+                    }
+                    if (AAF_AB.equals("0.0000") || AAF_AB.equals("1.0000")) {
+                        MAF_AB = "NA";
+                    }
+                    if (!AAF_ABD.equals("0.0000") && (!AAF_ABD.equals("1.0000"))) { //AAF有分离
+                        MAF_ABD = String.valueOf(Math.min(Double.parseDouble(AAF_ABD), 1 - Double.parseDouble(AAF_ABD)));
+                    }
+                    if (!AAF_AB.equals("0.0000") && (!AAF_AB.equals("1.0000"))) { //AAF有分离
+                        MAF_AB = String.valueOf(Math.min(Double.parseDouble(AAF_AB), 1 - Double.parseDouble(AAF_AB)));
+                    }
+
+                    //先过滤没有type类型的位点，只保留有类型的位点
+                    if (snpType.equals("NA")) {
+                        continue;
+                    }
+                    if (snpType.equals("NONSYNONYMOUS")) { //在类型下进行sift值的判断，
+                        if (scoreS.equals("NA")) {
+                            continue;
+                        }
+                        double score = Double.parseDouble(l.get(14));
+                        if (score < 0.05) {//说明是有害突变
+                            bw[0].write(chr + "\t" + pos + "\t" + maf + "\t" + MAF_ABD + "\t" + MAF_AB + "\t" + daf + "\t" + Daf_ABD + "\t" + Daf_AB + "\t" + trans);
+                            bw[0].newLine();
+                        } else {//说明是可忍受突变
+                            bw[1].write(chr + "\t" + pos + "\t" + maf + "\t" + MAF_ABD + "\t" + MAF_AB + "\t" + daf + "\t" + Daf_ABD + "\t" + Daf_AB + "\t" + trans);
+                            bw[1].newLine();
+                        }
+                    }
+                    if (snpType.equals("SYNONYMOUS")) {
+                        bw[2].write(chr + "\t" + pos + "\t" + maf + "\t" + MAF_ABD + "\t" + MAF_AB + "\t" + daf + "\t" + Daf_ABD + "\t" + Daf_AB + "\t" + trans);
+                        bw[2].newLine();
+                    }
+                }
+                for (int i = 0; i < snpClass.length; i++) {
+                    bw[i].flush();
+                    bw[i].close();
+                }
+                br.close();
+                System.out.println(f.getName() + "\tis completed at " + outfileDirS);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public void getCDSannotation(String infileDirS, String outfileDirS) {
+        File[] fs = new File(infileDirS).listFiles();
+        fs = IOUtils.listFilesStartsWith(fs, "chr");
+        List<File> fList = Arrays.asList(fs);
+        fList.parallelStream().forEach(f -> {
+            String infileS = f.getAbsolutePath();
+            String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "_CDSregion.txt.gz").getAbsolutePath();
+            BufferedReader br = null;
+            if (infileS.endsWith(".txt")) {
+                br = IOUtils.getTextReader(infileS);
+            } else if (infileS.endsWith(".txt.gz")) {
+                br = IOUtils.getTextGzipReader(infileS);
+            }
+            BufferedWriter bw = null;
+            if (outfileS.endsWith(".txt")) {
+                bw = IOUtils.getTextWriter(outfileS);
+            } else if (outfileS.endsWith(".txt.gz")) {
+                bw = IOUtils.getTextGzipWriter(outfileS);
+            }
+
+            try {
+                String header = br.readLine();
+                bw.write(header);
+                bw.newLine();
+                String temp = null;
+                List<String> l = null;
+                int cnt = 0;
+                while ((temp = br.readLine()) != null) {
+                    l = PStringUtils.fastSplit(temp);
+                    String trans = l.get(15);
+                    if (trans.equals("NA")) {
+                        continue;
+                        /*如果siftascore的值为NA，则无法判断其为有害或是中性突变。我们要筛选即有sift变异类型又有sift值的sites*/
+                    }
+                    cnt++;
+                    bw.write(temp);
+                    bw.newLine();
+                }
+                bw.flush();
+                bw.close();
+                br.close();
+                System.out.println(f.getName() + "\t" + String.valueOf(cnt) + "\t" + "trans sites is completed at " + outfileS);
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
+        });
+    }
+
+    /**
+     * Goal:将ancestral allele添加到数据库中，并计算Daf,Daf_ABD Daf_AB Daf_D
+     *
+     * @param dbfileS
+     * @param ancS
+     * @param outfileS
+     */
+    public void mkSNPsummary_step2(String dbfileS, String ancS, String outfileS) {
+        boolean ifd = false;
+        double daf = Double.NaN;
+        double daf_ABD = Double.NaN;
+        double daf_AB = Double.NaN;
+        double daf_D = Double.NaN;
+        int cntAncNum = 0;
+        File f = new File(ancS); //根据ancestral allele 文件，得到染色体号
+        int chr = Integer.parseInt(f.getName().substring(3, 6));
+        //根据染色体号进行AB还是D的判断
+        int[] db = {5, 6, 11, 12, 17, 18, 23, 24, 29, 30, 35, 36, 41, 42};
+        Arrays.sort(db);
+        if (Arrays.binarySearch(db, chr) > -1) { //说明是属于D的
+            ifd = true;
+        }
+        TIntArrayList snpPosList = new TIntArrayList();
+        HashMap<Integer, String> hm = new HashMap<>();
+
+        /*==================================== 建立ancestral allele HashMap =============================================*/
+        try { // chr001.wheat.ancestralAllele.txt  chr001_vmap2.1_AnnoDB.txt.gz
+            BufferedReader br = null;
+            if (f.getName().endsWith(".txt")) {
+                br = IOUtils.getTextReader(ancS);
+            } else if (f.getName().endsWith(".txt.gz")) {
+                br = IOUtils.getTextGzipReader(ancS);
+            }
+            String temp = br.readLine(); //read header
+            while ((temp = br.readLine()) != null) {
+                cntAncNum++;
+                List<String> l = PStringUtils.fastSplit(temp);
+                int pos = Integer.parseInt(l.get(1));
+                String anc = l.get(3); //
+                snpPosList.add(pos);
+                hm.put(pos, anc);
+            }
+            br.close();
+            System.out.println(f.getName() + "\tis completed on posList DB with ancestral allele number " + cntAncNum);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        int[] snpPos = snpPosList.toArray(new int[snpPosList.size()]);
+        Arrays.sort(snpPos);
+
+        try {
+            String chrS = PStringUtils.getNDigitNumber(3, chr);
+            BufferedReader br = null;
+            if (dbfileS.endsWith(".txt")) {
+                br = IOUtils.getTextReader(dbfileS);
+            } else if (dbfileS.endsWith(".txt.gz")) {
+                br = IOUtils.getTextGzipReader(dbfileS);
+            }
+            BufferedWriter bw = null;
+            if (outfileS.endsWith(".txt")) {
+                bw = IOUtils.getTextWriter(outfileS);
+            } else if (outfileS.endsWith(".txt.gz")) {
+                bw = IOUtils.getTextGzipWriter(outfileS);
+            }
+
+            String temp = br.readLine(); //read header
+
+            if (ifd == false) {
+                bw.write(temp + "\tAncestral\tDaf\tDaf_ABD\tDaf_AB");
+                bw.newLine();
+            } else if (ifd == true) {
+                bw.write(temp + "\tAncestral\tDaf\tDaf_ABD\tDaf_D");
+                bw.newLine();
+            }
+
+            int cntAnc = 0;
+            int cntAncNotMajororMinor = 0;
+            while ((temp = br.readLine()) != null) {
+                List<String> l = PStringUtils.fastSplit(temp);
+                int pos = Integer.parseInt(l.get(1));
+                String major = l.get(4);
+                String minor = l.get(5);
+                double maf = Double.parseDouble(l.get(6));
+                double AAF_ABD = Double.parseDouble(l.get(7));
+                double AAF_AB = Double.parseDouble(l.get(8));
+                int index = Arrays.binarySearch(snpPos, pos);
+                StringBuilder sb = new StringBuilder();
+                if (index > -1) { //表明含有anc
+                    String ancAllele = hm.get(pos);
+                    //如果ancestral allele存在,且等于major，则derived allele等于minor, daf 就等于maf
+                    //如果ancestral allele存在,且等于minor，则derived allele等于major, daf 就等于 1-daf1
+                    if (ancAllele.equals(minor)) {
+                        cntAnc++;
+                        daf = 1 - maf;
+                        if (AAF_ABD > 0.5) {
+                            daf_ABD = AAF_ABD;
+                        } else if (AAF_ABD < 0.5) {
+                            daf_ABD = 1 - AAF_ABD;
+                        }
+                        if (AAF_AB > 0.5) {
+                            daf_AB = AAF_AB;
+                        } else if (AAF_AB < 0.5) {
+                            daf_AB = 1 - AAF_AB;
+                        }
+                        //多加一道判断，如果群体内部没有分离，直接将DAF设置为NA
+                        String DAF_ABD = String.format("%.4f", daf_ABD);
+                        String DAF_AB = String.format("%.4f", daf_AB);
+                        if (DAF_ABD.equals("0.0000") || DAF_ABD.equals("1.0000")) {
+                            DAF_ABD = "NA";
+                        }
+                        if (DAF_AB.equals("0.0000") || DAF_AB.equals("1.0000")) {
+                            DAF_AB = "NA";
+                        }
+                        sb.append(temp).append("\t").append(ancAllele).append("\t").append(String.format("%.4f", daf)).append("\t").append(DAF_ABD).append("\t").append(DAF_AB);
+                        bw.write(sb.toString());
+                        bw.newLine();
+                    }
+                    if (ancAllele.equals(major)) {
+                        cntAnc++;
+                        daf = maf;
+                        if (AAF_ABD > 0.5) {
+                            daf_ABD = 1 - AAF_ABD;
+                        } else if (AAF_ABD < 0.5) {
+                            daf_ABD = AAF_ABD;
+                        }
+                        if (AAF_AB > 0.5) {
+                            daf_AB = 1 - AAF_AB;
+                        } else if (AAF_AB < 0.5) {
+                            daf_AB = AAF_AB;
+                        }
+                        //多加一道判断，如果群体内部没有分离，直接将DAF设置为NA
+                        String DAF_ABD = String.format("%.4f", daf_ABD);
+                        String DAF_AB = String.format("%.4f", daf_AB);
+                        if (DAF_ABD.equals("0.0000") || DAF_ABD.equals("1.0000")) {
+                            DAF_ABD = "NA";
+                        }
+                        if (DAF_AB.equals("0.0000") || DAF_AB.equals("1.0000")) {
+                            DAF_AB = "NA";
+                        }
+                        sb.append(temp).append("\t").append(ancAllele).append("\t").append(String.format("%.4f", daf)).append("\t").append(DAF_ABD).append("\t").append(DAF_AB);
+                        bw.write(sb.toString());
+                        bw.newLine();
+                    }
+                    if (!ancAllele.equals(minor) && (!ancAllele.equals(major))) {
+                        sb.append(temp).append("\t").append(ancAllele).append("\t").append("NA").append("\t").append("NA").append("\t").append("NA");
+                        bw.write(sb.toString());
+                        bw.newLine();
+                        //System.out.println("CHR" + PStringUtils.getNDigitNumber(3, CHR) + "\t" + pos + " are neither major nor minor.");
+                        cntAncNotMajororMinor++;
+                    }
+
+                } else { //表明不含anc
+                    sb.append(temp).append("\t").append("NA").append("\t").append("NA").append("\t").append("NA").append("\t").append("NA");
+                    bw.write(sb.toString());
+                    bw.newLine();
+                }
+            }
+            double ratio = (double) cntAncNotMajororMinor / (cntAncNotMajororMinor + cntAnc);
+            bw.flush();
+            bw.close();
+            br.close();
+            System.out.println(f.getName() + "\tis completed at " + outfileS + "\t" + cntAnc + "\tancestral allele are with daf value by state major or minor");
+            System.out.println(new File(dbfileS).getName() + "\thave " + cntAncNotMajororMinor + " sites which are neither major nor minor. The ratio is " + String.format("%.4f", ratio));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 目的：1.将vmap2的chr pos 提取出来，建立数据库；
+     *
+     * @param infileDirS
+     * @param infile2DirS
+     * @param outfileDirS
+     */
+    public void mkSNPsummary_step1(String infileS, String outfileS) {
+        //Chr	Pos	Ref	Alt	Major	Minor	Maf	AAF_ABD	AAF_AB
+        boolean ifd = false;
+        File f = new File(infileS);
+        int CHR = Integer.parseInt(f.getName().substring(3, 6));
+        //根据染色体号进行AB还是D的判断
+        int[] db = {5, 6, 11, 12, 17, 18, 23, 24, 29, 30, 35, 36, 41, 42};
+        Arrays.sort(db);
+        if (Arrays.binarySearch(db, CHR) > -1) { //说明是属于D的
+            ifd = true;
+        }
+
+        try {
+            BufferedReader br = null;
+            BufferedWriter bw = null; // IOUtils.getTextGzipWriter(outfileS);
+            if (infileS.endsWith(".vcf")) {
+                br = IOUtils.getTextReader(infileS);
+            } else if (infileS.endsWith(".vcf.gz")) {
+                br = IOUtils.getTextGzipReader(infileS);
+            }
+            if (outfileS.endsWith(".txt")) {
+                bw = IOUtils.getTextWriter(outfileS);
+            } else if (outfileS.endsWith(".txt.gz")) {
+                bw = IOUtils.getTextGzipWriter(outfileS);
+            }
+
+            if (ifd == false) {
+                bw.write("Chr\tPos\tRef\tAlt\tMajor\tMinor\tMaf\tAAF_ABD\tAAF_AB");
+                bw.newLine();
+            } else if (ifd == true) {
+                bw.write("Chr\tPos\tRef\tAlt\tMajor\tMinor\tMaf\tAAF_ABD\tAAF_D");
+                bw.newLine();
+            }
+
+            String temp = null;
+            String te[] = null;
+            String major = null;
+            String minor = null;
+            int biallelicNum = 0;
+
+            String AAF_ABD = null;
+            String AAF_AB = null;
+            String AAF_D = null;
+
+            while ((temp = br.readLine()) != null) {
+                int genoNum = 0;
+//                double homNum = 0;
+//                double hetNum = 0;
+//                double hetRate = 0;
+//                double missNum = 0;
+//                double missRate = 0;
+
+                double refAlleleGametes = 0;
+                double altAlleleGametes = 0;
+                double refAF = 0;
+                double altAF = 0;
+                double maf = 0;
+                if (temp.startsWith("#")) {
+                    //bw.write(temp);
+                    //bw.newLine();
+                } else {
+                    te = temp.split("\t");
+                    String chr = PStringUtils.fastSplit(temp).get(0);
+                    String pos = PStringUtils.fastSplit(temp).get(1);
+                    String ref = PStringUtils.fastSplit(temp).get(3);
+                    String alt = PStringUtils.fastSplit(temp).get(4);
+
+                    if (te[4].length() == 1) { //不含有逗号的情况，即只有一个alt。又开始分，是D 是I 是ATGC 3种情况
+                        if (alt.contains("D") || alt.contains("I")) {
+                            continue; //只有一个alt且不是indel
+                        }
+                        AAF_ABD = te[7].split(";")[7].split("=")[1];
+                        AAF_AB = te[7].split(";")[8].split("=")[1];
+                        AAF_D = te[7].split(";")[8].split("=")[1];
+
+                        biallelicNum++;
+                        for (int i = 9; i < te.length; i++) {
+                            if (te[i].startsWith(".")) {
+//                                missNum++;
+                            }
+                            if (!te[i].startsWith(".")) {
+                                genoNum++; //have the genotype
+                                if (te[i].startsWith("0/1") || te[i].startsWith("1/0")) {
+//                                    hetNum++; //the number of heterozygous
+                                    refAlleleGametes++;
+                                    altAlleleGametes++;
+                                }
+                                if (te[i].startsWith("0/0")) {
+//                                    homNum++; //the number of heterozygous
+                                    refAlleleGametes++;
+                                    refAlleleGametes++;
+                                }
+                                if (te[i].startsWith("1/1")) {
+//                                    homNum++;
+                                    altAlleleGametes++;
+                                    altAlleleGametes++;
+                                }
+                            }
+                        }
+//                        hetRate = hetNum / genoNum;
+//                        missRate = missNum / (missNum + genoNum);
+                        refAF = refAlleleGametes / (refAlleleGametes + altAlleleGametes);
+                        altAF = altAlleleGametes / (refAlleleGametes + altAlleleGametes);;
+                        if (refAF > altAF) {
+                            major = ref;
+                            minor = alt;
+                            maf = altAF;
+                        } else {
+                            maf = refAF;
+                            major = alt;
+                            minor = ref;
+                        }
+                        StringBuilder sb = new StringBuilder();
+                        //bw.write("Chr\tPos\tRef\tAlt\tMajor\tMinor\tMaf\tAAF_ABD\tAAF_AB");
+                        sb.append(chr).append("\t").append(pos).append("\t").append(ref).append("\t").append(alt).append("\t").
+                                append(major).append("\t").append(minor).append("\t").append(String.format("%.4f", maf)).append("\t").
+                                append(AAF_ABD).append("\t").append(AAF_AB);
+                        bw.write(sb.toString());
+                        bw.newLine();
+
+                    }
+                }
+            }
+            System.out.println(infileS + " is completed at " + outfileS);
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
 
     /**
      * 对文件进行分bin，画分布图
@@ -211,33 +877,38 @@ public class VariantsSum {
 //        String countFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/005_bin/delSNPCount.txt";
 //        String mafDistrubutionFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/005_bin/delSNP/mafSFS.txt";
 //        String dafDistrubutionFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/005_bin/delSNP/dafSFS.txt";
-        
+
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/004_merge/nonsyTolerantSNP";
 //        String countFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/005_bin/nonsyTolerantSNP.txt";
 //        String mafDistrubutionFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/005_bin/nonsyTolerantSNP/mafSFS.txt";
 //        String dafDistrubutionFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/005_bin/nonsyTolerantSNP/dafSFS.txt";
-        
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/004_merge/synSNP";
 //        String countFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/005_bin/synSNP.txt";
 //        String mafDistrubutionFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/005_bin/synSNP/mafSFS.txt";
 //        String dafDistrubutionFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/005_bin/synSNP/dafSFS.txt";
-       /********************** D subgenome *****************************/
+        /**
+         * ******************** D subgenome ****************************
+         */
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/009_merge/delSNP";
 //        String countFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/010_bin/delSNPCount.txt";
 //        String mafDistrubutionFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/010_bin/delSNP/mafSFS.txt";
 //        String dafDistrubutionFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/010_bin/delSNP/dafSFS.txt";
-        
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/009_merge/nonsyTolerantSNP/";
 //        String countFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/010_bin/nonsyTolerantSNP.txt";
 //        String mafDistrubutionFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/010_bin/nonsyTolerantSNP/mafSFS.txt";
 //        String dafDistrubutionFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/010_bin/nonsyTolerantSNP/dafSFS.txt";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/009_merge/synSNP";
+//        String countFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/010_bin/synSNP.txt";
+//        String mafDistrubutionFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/010_bin/synSNP/mafSFS.txt";
+//        String dafDistrubutionFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/010_bin/synSNP/dafSFS.txt";
         
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/009_merge/synSNP";
-        String countFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/010_bin/synSNP.txt";
-        String mafDistrubutionFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/010_bin/synSNP/mafSFS.txt";
-        String dafDistrubutionFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/010_bin/synSNP/dafSFS.txt";
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/003_mergebySub";
+        String countFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/004_bin/synSNP.txt";
+        String mafDistrubutionFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/004_bin/mafSFS.txt";
+        String dafDistrubutionFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/004_bin/dafSFS.txt";
         
         
+
         //int sampleSize = 10000;
         File[] fs = new File(infileDirS).listFiles();
         for (int i = 0; i < fs.length; i++) {
@@ -251,7 +922,7 @@ public class VariantsSum {
         /*建立一个边界数组bound，大小是100；bound[i] = 1/100*i;即，均分为100等分！
         建立一个二维数组mafFrequency 和 dafFrequency， 长度为class的种类长，100宽；
         建立一个count 和 dafCount 数组，长度为class分类长；
-        建立一个 mafList 和 dafList 数组，长度为class分类长；
+        建立一个 dafList1 和 dafList 数组，长度为class分类长；
         
         进入for循环，对class文件一一遍历，以读表格的形式进入文件
         Chr	Pos	MinorAllele	MAF	DerivedAllele	DAF
@@ -326,7 +997,7 @@ public class VariantsSum {
             bw.newLine();
             bw.flush();
             bw.close();
-            
+
             bw = IOUtils.getTextWriter(mafDistrubutionFileS); //开始写新的文件MAF
             bw.write("MAF");
             for (int i = 0; i < fs.length; i++) {
@@ -343,7 +1014,7 @@ public class VariantsSum {
             }
             bw.flush();
             bw.close();
-            
+
             bw = IOUtils.getTextWriter(dafDistrubutionFileS);//开始写新的文件DAF
             bw.write("DAF");
             for (int i = 0; i < fs.length; i++) {
@@ -642,7 +1313,7 @@ public class VariantsSum {
                         if (l.get(16).equals("SYNONYMOUS")) { //如果type等于syn，那么 该位点所属的基因的syn属性就加一
                             type = "Syn";
                             synCount[geneIndex]++;
-                            if (derivedState == 1) {  //如果derived allele就等于1，说明ancestral allele 等于alt， derived allele 等于ref； 如何计算daf,判断da是major还是minor，如果da是major那么daf=1-maf，如何判断major allele和minor allele？ 如果ref allele frequency > alt allele frequence,那么major是ref; 反之亦然；
+                            if (derivedState == 1) {  //如果derived allele就等于1，说明ancestral allele 等于alt， derived allele 等于ref； 如何计算daf,判断da是major还是minor，如果da是major那么daf=1-daf1，如何判断major allele和minor allele？ 如果ref allele frequency > alt allele frequence,那么major是ref; 反之亦然；
                                 b73SynCount[geneIndex]++; //如果参考基因组是 derived allele,那么就加一，为什么？
                             }
                         } else {
@@ -817,13 +1488,13 @@ public class VariantsSum {
 
     public void scriptAddAncAllele() {
 //        for (int i = 1; i < 43; i++) {
-//            String chr = PStringUtils.getNDigitNumber(3, i);
+//            String CHR = PStringUtils.getNDigitNumber(3, i);
 //            System.out.println("java -Xms50g -Xmx100g -jar 017_mkAnnoDB.addAncAllele.single.jar /data4/home/aoyue/vmap2/analysis/015_annoDB/001_step1/chr" 
-//                    + chr + ".lineage.maf0.005.bi.AnnoDB.txt.gz "
-//                    + "/data4/home/aoyue/vmap2/analysis/ancestralAllele/Chr" + chr 
+//                    + CHR + ".lineage.maf0.005.bi.AnnoDB.txt.gz "
+//                    + "/data4/home/aoyue/vmap2/analysis/ancestralAllele/Chr" + CHR 
 //                    + ".ancestralAllele.txt " 
 //                    + "/data4/home/aoyue/vmap2/analysis/015_annoDB/002_addAncestralAllele/chr"
-//                    + chr + ".lineage.maf0.005.bi.AnnoDB.addAncAllele.txt.gz"
+//                    + CHR + ".lineage.maf0.005.bi.AnnoDB.addAncAllele.txt.gz"
 //                    );
 //        }
 
@@ -926,7 +1597,7 @@ public class VariantsSum {
                 if (index > -1) { //表明含有anc
                     String ancAllele = hm.get(pos);
                     //如果ancestral allele存在,且等于major，则da等于的minor, daf 就等于maf
-                    //如果ancestral allele存在,且等于minor，则da等于的major, daf 就等于 1-maf
+                    //如果ancestral allele存在,且等于minor，则da等于的major, daf 就等于 1-daf1
                     if (ancAllele.equals(minor)) {
                         cntAnc++;
                         daf = 1 - maf;
@@ -945,7 +1616,7 @@ public class VariantsSum {
                         sb.append(temp).append("\t").append(ancAllele).append("\t").append("NA");
                         bw.write(sb.toString());
                         bw.newLine();
-                        //System.out.println("chr" + PStringUtils.getNDigitNumber(3, chr) + "\t" + pos + " are neither major nor minor.");
+                        //System.out.println("CHR" + PStringUtils.getNDigitNumber(3, CHR) + "\t" + pos + " are neither major nor minor.");
                         cntAncNotMajororMinor++;
                     }
 
@@ -1056,7 +1727,7 @@ public class VariantsSum {
                         String ancAllele = hm.get(pos);
                         double daf = Double.NaN;
                         //如果ancestral allele存在,且等于major，则da等于的minor, daf 就等于maf
-                        //如果ancestral allele存在,且等于minor，则da等于的major, daf 就等于 1-maf
+                        //如果ancestral allele存在,且等于minor，则da等于的major, daf 就等于 1-daf1
                         if (ancAllele.equals(minor)) {
                             cntAnc++;
                             daf = 1 - maf;
@@ -1078,7 +1749,7 @@ public class VariantsSum {
                             sb.append(temp).append("\t").append(ancAllele).append("\t").append("NA");
                             bw.write(sb.toString());
                             bw.newLine();
-                            //System.out.println("chr" + PStringUtils.getNDigitNumber(3, chr) + "\t" + pos + " are neither major nor minor.");
+                            //System.out.println("CHR" + PStringUtils.getNDigitNumber(3, CHR) + "\t" + pos + " are neither major nor minor.");
                             // cntAncNotMajororMinor
 
                         }
@@ -1102,8 +1773,7 @@ public class VariantsSum {
     }
 
     /**
-     * chr005.Dlineage.vcf --> chr005.Dlineage.maf0.005.bi.vcf 过滤D I
-     * 和含有3个等位位点的pos，保留只有一个alt并且maf大于0.005的pos
+     *
      *
      * @param infileDirS
      */

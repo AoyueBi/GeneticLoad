@@ -32,7 +32,7 @@ public class SIFT {
         //this.mvDatabase();
         //this.annotatorVCF("a","b");
         //new CountSites().extractHapPosAllele("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/003_result/test/", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/003_result/test2/");
-        //this.generateSIFT();
+        this.generateSIFT();
         //this.calVariantsType("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/003_result/001_DB_addSIFT/abd/", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/003_result/002_calVariantsType/abd_variantsType.txt");
         //this.calVariantsType("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/003_result/001_DB_addSIFT/ab/", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/003_result/002_calVariantsType/ab_variantsType.txt");
         //this.calVariantsType("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/003_result/001_DB_addSIFT/d/", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/003_result/002_calVariantsType/d_variantsType.txt");
@@ -53,20 +53,18 @@ public class SIFT {
 //        this.mkdis();
 //        this.ifDone("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/007_log_siftAnnotator", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/008_log_summary/log_summary.txt");
 //this.move();
-    
     }
-    
+
     /**
      * 将xls结果移动到同一个文件夹中，以备后续需要
      */
-    public void move(){
-        for(int i=1; i<43;i++){
+    public void move() {
+        for (int i = 1; i < 43; i++) {
             String chr = PStringUtils.getNDigitNumber(3, i);
             System.out.println("mv output" + chr + "/chr" + chr + ".subgenome.maf0.01byPop.SNP_SIFTannotations.xls output/");
-            
+
         }
-        
-        
+
     }
 
     /**
@@ -439,16 +437,21 @@ public class SIFT {
 //        String dbDirS = "/Users/Aoyue/Documents/annoDB";
 //        String outputDirS = "/Users/Aoyue/Documents/annoDB2";
         /*==================================== HPC =============================================*/
+//        String infileS = "/data1/publicData/wheat/gene/v1.1/wheat_v1.1_Lulab.pgf";
+//        String siftDirS = "/data4/home/aoyue/vmap2/analysis/008_sift/result/001_annotatorResult/output/";
+//        String dbDirS = "/data4/home/aoyue/vmap2/analysis/015_annoDB/001_step1/";
+//        String outputDirS = "/data4/home/aoyue/vmap2/analysis/015_annoDB/003_addSIFT/";
+
         String infileS = "/data1/publicData/wheat/gene/v1.1/wheat_v1.1_Lulab.pgf";
-        String siftDirS = "/data4/home/aoyue/vmap2/analysis/008_sift/result/001_annotatorResult/output/";
-        String dbDirS = "/data4/home/aoyue/vmap2/analysis/015_annoDB/001_step1/";
-        String outputDirS = "/data4/home/aoyue/vmap2/analysis/015_annoDB/003_addSIFT/";
+        String siftDirS = "/data4/home/aoyue/vmap2/analysis/008_sift/001_result/001_annotatorResult/output";
+        String dbDirS = "/data4/home/aoyue/vmap2/analysis/015_annoDB/011_step2";
+        String outputDirS = "/data4/home/aoyue/vmap2/analysis/015_annoDB/012_addSIFT";
         //首先建立输出目录文件夹
-        new File(outputDirS).mkdir();
+        new File(outputDirS).mkdirs();
         //先处理pgf文件
         GeneFeature gf = new GeneFeature(infileS);
         int geneNum = gf.getGeneNumber(); //1.获取基因数
-        String[] trans = new String[geneNum]; //2.定义trans数组
+        String[] trans = new String[geneNum]; //2.定义trans数组,一个基因一个最长转录组
         for (int i = 0; i < geneNum; i++) { //循环基因
             int index = gf.getLongestTranscriptIndex(i); //获取最长转录本的索引
             trans[i] = gf.getTranscriptName(i, index); //根据索引，获取对应基因的最长转录本的名字
@@ -458,7 +461,7 @@ public class SIFT {
         File[] fs = new File(siftDirS).listFiles(); //软件计算出的包含SIFT结果的xls文件和VCF文件；
         fs = IOUtils.listFilesEndsWith(fs, "xls");
         List<File> fList = Arrays.asList(fs);
-        fList.parallelStream().forEach(f -> {
+        fList.parallelStream().forEach(f -> { //循环的是xls文件
             int chrIndex = Integer.parseInt(f.getName().substring(3, 6)) - 1; //获取文件的染色体号
             //chr006.Dgenome.bi.pos.txt.gz
             //chr001.ABDgenome.filterMiss.posAllele.txt.gz
@@ -467,16 +470,20 @@ public class SIFT {
 //            String dbFileS = new File(dbDirS, "chr" + PStringUtils.getNDigitNumber(3, chrIndex + 1) + ".ABgenome.filterMiss.posAllele.txt.gz").getAbsolutePath();
 //            String outfileS = new File(outputDirS, "chr" + PStringUtils.getNDigitNumber(3, chrIndex + 1) + ".ABgenome.filterMiss.posAllele.SIFT.txt.gz").getAbsolutePath();
             //chr036.Dlineage.maf0.005.bi.AnnoDB.txt.gz
-            String dbFileS = new File(dbDirS, "chr" + PStringUtils.getNDigitNumber(3, chrIndex + 1) + "." + hml.get(chrIndex + 1) + "lineage.maf0.005.bi.AnnoDB.txt.gz").getAbsolutePath();
-            String outfileS = new File(outputDirS, "chr" + PStringUtils.getNDigitNumber(3, chrIndex + 1) + ".lineage.maf0.005.bi.AnnoDB.addSIFT.txt.gz").getAbsolutePath();
+            //chr001_vmap2.1_AnnoDB_addDAF.txt.gz
+//            String dbFileS = new File(dbDirS, "chr" + PStringUtils.getNDigitNumber(3, chrIndex + 1) + "." + hml.get(chrIndex + 1) + "lineage.maf0.005.bi.AnnoDB.txt.gz").getAbsolutePath();
+//            String outfileS = new File(outputDirS, "chr" + PStringUtils.getNDigitNumber(3, chrIndex + 1) + ".lineage.maf0.005.bi.AnnoDB.addSIFT.txt.gz").getAbsolutePath();
+            String dbFileS = new File(dbDirS, "chr" + PStringUtils.getNDigitNumber(3, chrIndex + 1) + "_vmap2.1_AnnoDB_addDAF.txt.gz").getAbsolutePath();
+            String outfileS = new File(outputDirS, "chr" + PStringUtils.getNDigitNumber(3, chrIndex + 1) + "_vmap2.1_AnnoDB_addDAF_addSIFT.txt.gz").getAbsolutePath();
+
             String header = null;
             try {
                 BufferedReader br = IOUtils.getTextReader(f.getAbsolutePath()); //是xls文件，故不是压缩的
                 String temp = br.readLine(); //read header
-                List<SIFT.SIFTRecord> sList = new ArrayList<>(); //建立sift记录的集合
+                List<SIFT.SIFTRecord> sList = new ArrayList<>(); //建立sift记录的集合；建立sift记录的集合；建立sift记录的集合；建立sift记录的集合；建立sift记录的集合；建立sift记录的集合
                 List<String> l = null;
                 while ((temp = br.readLine()) != null) {
-//CHROM	POS	REF_ALLELE	ALT_ALLELE	TRANSCRIPT_ID	GENE_ID	GENE_NAME	REGION	VARIANT_TYPE	REF_AMINO	ALT_AMINO
+//CHROM	POS	REF_ALLELE	ALT_ALLELE	TRANSCRIPT_ID	GENE_ID	GENE_NAME	REGION	VARIANT_TYPE	REF_AMINO	ALT_AMINO AMINO_POS	SIFT_SCORE	SIFT_MEDIAN	NUM_SEQS	dbSNP	SIFT_PREDICTION
 //6	28419	G	A	TraesCS1D02G374800.1	TraesCS1D02G374800	TraesCS1D02G374800	CDS	NONSYNONYMOUS	M	I
                     l = PStringUtils.fastSplit(temp);
                     int pos = Integer.parseInt(l.get(1));
@@ -484,15 +491,27 @@ public class SIFT {
                     String transcript = l.get(4);
                     String type = l.get(8);
                     String value = l.get(12);
-                    SIFT.SIFTRecord s = new SIFT.SIFTRecord(pos, alt, transcript, type, value);
+                    SIFT.SIFTRecord s = new SIFT.SIFTRecord(pos, alt, transcript, type, value); //将xls文件中的sift结果放入集合中，建立库文件
                     sList.add(s);
                 }
                 br.close();
                 Collections.sort(sList);
 
-                br = IOUtils.getTextGzipReader(dbFileS);
+                //全部修改成根据文件后缀来识别压缩或者非压缩。
+                if (dbFileS.endsWith(".txt")) {
+                    br = IOUtils.getTextReader(dbFileS);
+                } else if (dbFileS.endsWith(".txt.gz")) {
+                    br = IOUtils.getTextGzipReader(dbFileS);
+                }
+
                 header = br.readLine() + "\tVariant_type\tSIFT_score\tTranscript";
-                BufferedWriter bw = IOUtils.getTextGzipWriter(outfileS);
+                BufferedWriter bw = null;
+                if(outfileS.endsWith(".txt")){
+                    bw = IOUtils.getTextWriter(outfileS);
+                }
+                else if(outfileS.endsWith(".txt.gz")){
+                    bw = IOUtils.getTextGzipWriter(outfileS);
+                }
                 bw.write(header);
                 bw.newLine();
                 int index = -1;
@@ -514,8 +533,9 @@ public class SIFT {
                         bw.newLine();
                         continue;
                     }
-                    startIndex = index;
-                    endIndex = index;
+                    //意思是在库中，只有有sift类型的pos才会被列出来，但是在我们的数据库中，所有编码区非编码区都会被列出来，所有我们的数据库中pos一般比sift库中小
+                    startIndex = index; //不是太懂  startIndex = -1;  startIndex - 1 = -2 < -1
+                    endIndex = index; //不是太懂  endIndex = -1;  endIndex + 1 = 0 < sList.size
                     while ((startIndex - 1) > -1 && sList.get(startIndex - 1).isSimilar(pos, alt)) {
                         startIndex--;
                     }
@@ -523,7 +543,7 @@ public class SIFT {
                         endIndex++;
                     }
                     boolean status = false;
-                    for (int i = startIndex; i < endIndex + 1; i++) {
+                    for (int i = startIndex; i < endIndex + 1; i++) { //对sList库的所有点进行循环，注意结果中可能有一个点很多个转录本结果，我们只选最长的转录本
                         if (Arrays.binarySearch(trans, sList.get(i).transcript) >= 0 && sList.get(i).type.equals("NONSYNONYMOUS") || sList.get(i).type.equals("SYNONYMOUS")
                                 || sList.get(i).type.equals("START-LOST") || sList.get(i).type.equals("STOP-GAIN") || sList.get(i).type.equals("STOP-LOSS")
                                 || sList.get(i).type.equals("NONCODING") || sList.get(i).type.equals("FRAMESHIFT INSERTION")) {
@@ -578,8 +598,8 @@ public class SIFT {
         }
 
         @Override
-        public int compareTo(SIFTRecord o) {
-            if (this.pos < o.pos) {
+        public int compareTo(SIFTRecord o) { //
+            if (this.pos < o.pos) { 
                 return -1;
             } else if (this.pos == o.pos) {
                 return this.alt.compareTo(o.alt);

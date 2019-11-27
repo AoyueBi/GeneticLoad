@@ -5,17 +5,26 @@
  */
 package Entrance;
 
-import AoUtils.Bin;
 import AoUtils.CountSites;
-import AoUtils.Script;
+import AoUtils.SplitScript;
+import PopulationAnalysis.PopGenParaWheat;
 import WheatGeneticLoad.FilterVCF;
 import WheatGeneticLoad.SIFT;
 import WheatGeneticLoad.Treetest;
+import WheatGeneticLoad.VariantsSum;
+
+import format.table.RowTable;
+import gnu.trove.list.array.TDoubleArrayList;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import utils.PStringUtils;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import utils.PStringUtils;
+import utils.IOUtils;
 
 /**
  *
@@ -51,18 +60,14 @@ public class GeneticLoadEntrance {
         //new ABvcfProcessor();
         //new DvcfProcessor();
 //        new SIFT();
-        //new CountSites().countSitesinFastCallformat("/data4/home/aoyue/vmap2/genotype/abd/");
-        //new CountSites().mergeTxt("/Users/Aoyue/Documents/d_depth_m", "/Users/Aoyue/Documents/002_chr1D-7D.Dgenome.depth.txt.gz");
-        //new FilterVCF().mergePosList("/Users/Aoyue/Documents/chr036.ABDgenome.filtered0.75.vcf.gz", "/Users/Aoyue/Documents/chr036.Dgenome.filtered0.75.vcf.gz", "/Users/Aoyue/Documents/chr036.posAllele.txt");
-        new CountSites();
+//        new CountSites();
         //new ScriptHapscanner2();
-        //new VariantsSum();
-//        new PopGenPara();
+//        new VariantsSum();
+        new PopGenParaWheat();
         //new SplitScript();
 //        new Script();
 //        new FilterVCF();
 //        new Bin();
-
     }
 
     public static void main(String[] args) {
@@ -70,7 +75,7 @@ public class GeneticLoadEntrance {
         //ChrConvertionRule c = new ChrConvertionRule(Paths.get("/data4/home/aoyue/vmap2/analysis/000_taxaList/chrConvertionRule.txt"));
         //VCF.mergeVCFtoLineage(args[0], args[1], c);
 //        System.out.println("Aoyue Repository --- Here is the entrance of GeneticLoad!\n");
-        System.out.println(new SimpleDateFormat().format(new Date()) + "\tbegin.");
+//        System.out.println(new SimpleDateFormat().format(new Date()) + "\tbegin.");
         new GeneticLoadEntrance();
 //        VCF vcf=new VCF("/data4/home/aoyue/vmap2/analysis/020_subsetvcf_fromMAF0.01byPop/002_mergedbySub/chr.lineageA.vcf.gz");
 //        vcf.addVCF(new VCF("/data4/home/aoyue/vmap2/analysis/020_subsetvcf_fromMAF0.01byPop/002_mergedbySub/chr.lineageB.vcf.gz"));
@@ -85,6 +90,7 @@ public class GeneticLoadEntrance {
         //new CountSites().calSNPHetMissMaf(args[0], args[1]);
 //        new CountSites().countSitesinFastCallformat(args[0]);
         //new CountSites().filterAlleleMaf(args[0], args[1]);
+//        new CountSites().filterAllele(args[0], args[1]);
 //        new CountSites().subsetVCF(args[0], args[1],args[2]);
         //new FilterVCF().statVcfDepth_SD_PValue(args[0], args[1]);
         //new FilterVCF().statVcfDepth_SD_PValue_singlethread(args[0], args[1]);
@@ -100,7 +106,13 @@ public class GeneticLoadEntrance {
 //        new FilterVCF().filterMafbyPopHexaTetra(args[0], args[1]);
 //        new FilterVCF().filterMissbyPopHexaDi(args[0], args[1]);
 //        new FilterVCF().filterMafbyPopHexaTetra(args[0], args[1]);
-        System.out.println(new SimpleDateFormat().format(new Date()) + "\tend.");
+//        new CountSites().cntSitesinMergedVCFtoPop(args[0], args[1]);
+//        new CountSites().extractVCF(args[0], args[1], args[2]);
+//        new VariantsSum().mkSNPsummary_step1(args[0], args[1]);
+//        new VariantsSum().mkSNPsummary_step2(args[0], args[1], args[2]);
+//        new VariantsSum().getCDSannotation(args[0], args[1]);
+//new SplitScript().splitBwaScript(args[0], args[1], Integer.parseInt(args[2]),Integer.parseInt(args[3]));
+//        System.out.println(new SimpleDateFormat().format(new Date()) + "\tend.");
 
         /**
          * ******************************* temporary method
@@ -110,14 +122,16 @@ public class GeneticLoadEntrance {
     }
 
     public void test() {
-
         try {
-            String s = "1\t\t\t53320\t\t\t13443386\t\t\tCompleted : 1/1";
-            List<String> l = PStringUtils.fastSplit(s);
+                
+                
+//                System.out.println(String.valueOf(cnt) + " SNPs output from ");
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
+            }catch (Exception e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
+
+        
     }
 }

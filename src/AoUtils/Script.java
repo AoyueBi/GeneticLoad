@@ -9,6 +9,7 @@ import utils.IOUtils;
 import utils.PStringUtils;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.util.*;
 
@@ -19,11 +20,103 @@ import java.util.*;
 public class Script {
 
     public Script() {
-        this.universalScript();
+        //System.out.println("");
+//        this.splitBwaScript("/Users/Aoyue/Documents/sh_fillterMiss20191120.sh", "sh_filterMiss", 21, 2);
+//        this.universalScript();
         //this.removeBadTaxafromVCF();
+//        this.cp();
+//        this.bgzip_D();
 //        this.bgzip_AB();
 //        this.bgzip_ABD();
+//        this.script_ABD();
+//        this.script_AB();
+//        this.script_D();
+//        this.script_AB_byRef();
 
+//        
+//        this.mergelogTxt("/Users/Aoyue/Documents/log_024", "/Users/Aoyue/Documents/ploidy.txt");
+
+    }
+    
+    public void script_AB_byRef() {
+//        String[] db = {"1D", "2D", "3D", "4D", "5D", "6D", "7D"};
+//        Arrays.sort(db);
+        for (int i = 1; i < 8; i++) {
+            String[] chr = {i+"A", i+"B"};
+            for(int j = 0 ; j<chr.length; j++){
+                System.out.println(chr[j] + "vcftools");
+            }
+        }
+    }
+
+    /**
+     * 目的：将单线程产生的所有log文本合并成一个文件。
+     *
+     * @param infileDirS
+     * @param outfileS
+     */
+    public void mergelogTxt(String infileDirS, String outfileS) {
+        File[] fs = new File(infileDirS).listFiles();
+        for (int i = 0; i < fs.length; i++) {
+            if (fs[i].isHidden()) {
+                fs[i].delete();
+            }
+        }
+        fs = new File(infileDirS).listFiles();
+        Arrays.sort(fs);
+
+        try {
+            String infileS = fs[0].getAbsolutePath();
+            BufferedReader br = null;
+            if (infileS.endsWith(".txt")) {
+                br = IOUtils.getTextReader(infileS);
+            } else if (infileS.endsWith(".txt.gz")) {
+                br = IOUtils.getTextGzipReader(infileS);
+            }
+
+            ///读表头，在第4行
+            int header = 3; //需要进行修改，表头所在行的索引；
+            int deslinenumber = 4; //需要进行修改， 目标行所在的索引；
+            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            for (int i = 0; i < header; i++) { //
+                String temp = br.readLine();
+            }
+            bw.write(br.readLine()); //第四行是表头
+            bw.newLine();
+
+            //读正文部分
+            for (int i = 0; i < fs.length; i++) {
+                infileS = fs[i].getAbsolutePath();
+                if (infileS.endsWith(".txt")) {
+                    br = IOUtils.getTextReader(infileS);
+                } else if (infileS.endsWith(".txt.gz")) {
+                    br = IOUtils.getTextGzipReader(infileS);
+                }
+                String temp = null;
+                //int chrint = Integer.parseInt(fs[i].getName().substring(3, 6));
+                int cnt = 0;
+                String goal = null;
+                for (int j = 0; j < 50; j++) {  //每个log文件有7行，我们只要第5行的数据
+                    temp = br.readLine();
+                    if (j == deslinenumber) { //目标行的索引
+                        StringBuilder sb = new StringBuilder();
+                        goal = temp;
+                        sb.append(goal);
+                        bw.write(sb.toString());
+                        bw.newLine();
+
+                    }
+                }
+                System.out.println(String.valueOf(fs[i].getName()) + "\t" + goal); //print the goal lines
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
     /**
@@ -36,7 +129,7 @@ public class Script {
             String temp = null;
             while ((temp = br.readLine()) != null) {
                 String chr = temp.substring(3, 6);
-                System.out.println("mv "+ temp + " chr" + chr + "_vmap2_subset0.001.vcf.gz");
+                System.out.println("mv " + temp + " chr" + chr + "_vmap2_subset0.001.vcf.gz");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -44,24 +137,205 @@ public class Script {
         }
     }
 
-
-    public void ifchooseD() {
+    public void script_AB() {
+        int[] db = {5, 6, 11, 12, 17, 18, 23, 24, 29, 30, 35, 36, 41, 42};
+        Arrays.sort(db);
         for (int i = 1; i < 43; i++) {
-            int[] db = {5, 6, 11, 12, 17, 18, 23, 24, 29, 30, 35, 36, 41, 42};
-            Arrays.sort(db);
-            if (Arrays.binarySearch(db, i) < 0) { //是属于D的
-                continue;
-            } else { //是属于AB的
-                String chr = PStringUtils.getNDigitNumber(3, i);
-                System.out.println("bgzip -@ 6 chr" + chr + ".vcf && tabix -p vcf chr" + chr + ".vcf.gz &");
+            String chr = PStringUtils.getNDigitNumber(3, i);
+            if (Arrays.binarySearch(db, i) < 0) { //是属于AB的
+//                System.out.println("java -jar 025_cntSitesinMergedVCFtoPop.jar /data4/home/aoyue/vmap2/genotype/mergedVCF/010_miss0.2byPop/chr" + chr + "_vmap2.vcf /data4/home/aoyue/vmap2/analysis/000_taxaList/EmmerWheat_S187.txt > log_025/emmer/log_cntSitesinMergedVCFtoPop_chr" + chr + "_tetraploid.txt 2>&1 &");
+//                System.out.println("java -jar 028_extractVCF.jar  /data4/home/aoyue/vmap2/genotype/mergedVCF/011_VMapII/chr" + chr + "_vmap2.1.vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/012_VCFbyPop/001_byPloid/tetraploid/chr" + chr + "_vmap2.1_tetraploid.vcf /data4/home/aoyue/vmap2/analysis/000_taxaList/EmmerWheat_S187.txt > log_028/log_extractVCF_chr" + chr + "_tetraploid20191107.txt 2>&1");
+//                System.out.println("java -jar 028_extractVCF.jar /data4/home/aoyue/vmap2/genotype/mergedVCF/011_VMapII/chr" + chr + "_vmap2.1.vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/012_VCFbyPop/002_bySubspecies/003_WildEmmer/chr" + chr + "_vmap2.1_WildEmmer.vcf /data4/home/aoyue/vmap2/analysis/000_taxaList/002_bySubspecies/tetraploid/Wild_emmer.txt > log_028/001_subspecies/log_extractVCF_chr" + chr + "_WildEmmer20191107.txt 2>&1");
+//                System.out.println("java -jar 028_extractVCF.jar /data4/home/aoyue/vmap2/genotype/mergedVCF/011_VMapII/chr" + chr + "_vmap2.1.vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/012_VCFbyPop/002_bySubspecies/004_DomesticatedEmmer/chr" + chr + "_vmap2.1_DomesticatedEmmer.vcf /data4/home/aoyue/vmap2/analysis/000_taxaList/002_bySubspecies/tetraploid/Domesticated_emmer.txt > log_028/001_subspecies/log_extractVCF_chr" + chr + "_DomesticatedEmmer20191107.txt 2>&1");
+//                System.out.println("java -jar 028_extractVCF.jar /data4/home/aoyue/vmap2/genotype/mergedVCF/011_VMapII/chr" + chr + "_vmap2.1.vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/012_VCFbyPop/002_bySubspecies/005_FreeThreshingTetraploid/chr" + chr + "_vmap2.1_FreeThreshingTetraploid.vcf /data4/home/aoyue/vmap2/analysis/000_taxaList/002_bySubspecies/tetraploid/Free_threshing_tetraploid.txt > log_028/001_subspecies/log_extractVCF_chr" + chr + "_FreeThreshingTetraploid20191107.txt 2>&1");
+//                this.splitBwaScript("/Users/Aoyue/Documents/sh_extractVCFbySubspecies20191108.sh", "extractVCFbySubspecies", 15, 11);
             }
+        }
+    }
+
+    public void script_D() {
+        int[] db = {5, 6, 11, 12, 17, 18, 23, 24, 29, 30, 35, 36, 41, 42};
+        Arrays.sort(db);
+        for (int i = 1; i < 43; i++) {
+            String chr = PStringUtils.getNDigitNumber(3, i);
+            if (Arrays.binarySearch(db, i) > -1) { //是属于D的
+//                System.out.println("java -jar 025_cntSitesinMergedVCFtoPop.jar /data4/home/aoyue/vmap2/genotype/mergedVCF/010_miss0.2byPop/chr" + chr + "_vmap2.vcf /data4/home/aoyue/vmap2/analysis/000_taxaList/Ae.tauschii_S36.txt > log_025/tauschii/log_cntSitesinMergedVCFtoPop_chr" + chr + "_diploid.txt 2>&1 &");
+//                System.out.println("mv chr" + chr + ".subgenome.vcf ../004_rawMergedVCF_removeBadTaxa_Dsubgenome_threshold1/");
+//                System.out.println("java -jar 028_extractVCF.jar  /data4/home/aoyue/vmap2/genotype/mergedVCF/011_VMapII/chr" + chr + "_vmap2.1.vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/012_VCFbyPop/001_byPloid/diploid/chr" + chr + "_vmap2.1_diploid.vcf /data4/home/aoyue/vmap2/analysis/000_taxaList/Ae.tauschii_S36.txt > log_028/log_extractVCF_chr" + chr + "_diploid20191107.txt 2>&1");
+//                this.splitBwaScript("/Users/Aoyue/Documents/extractVCF20191107.sh", "extractVCF", 18, 3);
+            }
+        }
+    }
+
+    public void script_ABD() {
+        try {
+            String scriptS = "/Users/Aoyue/Documents/AAAAAA.sh";
+            BufferedWriter bw = IOUtils.getTextWriter(scriptS);
+            String cmd = "";
+            for (int i = 1; i < 43; i++) {
+                String chr = PStringUtils.getNDigitNumber(3, i);
+//                cmd = "java -jar 029_mkSNPsummary_step1.jar /data4/home/aoyue/vmap2/genotype/mergedVCF/011_VMapII/chr" + chr + "_vmap2.1.vcf /data4/home/aoyue/vmap2/analysis/015_annoDB/010_step1/chr" + chr + "_vmap2.1_AnnoDB.txt.gz";
+
+                cmd = "java -jar 030_mkSNPsummary_step2.jar /data4/home/aoyue/vmap2/analysis/015_annoDB/010_step1/chr" + chr + "_vmap2.1_AnnoDB.txt.gz /data4/home/aoyue/vmap2/daxing/ancestralAllele/chr" + chr + ".wheat.ancestralAllele.txt /data4/home/aoyue/vmap2/analysis/015_annoDB/011_step2/chr" + chr + "_vmap2.1_AnnoDB_addDAF.txt.gz";
+//                String cmd = "sudo gunzip –c /data1/publicData/wheat/genotype/VMap/VMapII/VMap2.1/chr" + chr + "_vmap2.1.vcf.gz > /data4/home/aoyue/vmap2/genotype/mergedVCF/011_VMapII_empty/chr" + chr + "_vmap2.1.vcf";
+//java -Xms200g -Xmx500g -jar 025_cntSitesinMergedVCFtoPop.jar /data4/home/aoyue/vmap2/genotype/mergedVCF/010_miss0.2byPop/chr036_vmap2.vcf /data4/home/aoyue/vmap2/analysis/000_taxaList/BreadWheat_S419.txt > log_025/log_cntSitesinMergedVCFtoPop_chr036.txt 2>&1 &
+
+                //chr001.lineage.vcf
+//            System.out.println("java -jar 025_cntSitesinMergedVCFtoPop.jar /data4/home/aoyue/vmap2/genotype/mergedVCF/010_miss0.2byPop/chr" + chr + "_vmap2.vcf /data4/home/aoyue/vmap2/analysis/000_taxaList/BreadWheat_S419.txt > log_025/log_cntSitesinMergedVCFtoPop_chr" + chr + ".txt 2>&1 &");
+//            System.out.println("mv chr" + chr + ".lineage.vcf chr" + chr + ".subgenome.vcf");
+//                System.out.println("mv chr" + chr + "_miss0.2.bi.vcf chr" + chr + "_vmap2.1.vcf");
+                // java -Xms50g -Xmx200g -jar 028_extractVCF.jar /data4/home/aoyue/vmap2/genotype/mergedVCF/011_VMapII/chr001_vmap2.1.vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/012_VCFbyPop/001_byPloid/hexaploid/chr001_vmap2.1_hexaploid.vcf /data4/home/aoyue/vmap2/analysis/000_taxaList/BreadWheat_S419.txt > log_028/log_extractVCF_chr001_hexaploid20191107.txt 2>&1 &
+//            System.out.println("java -jar 028_extractVCF.jar  /data4/home/aoyue/vmap2/genotype/mergedVCF/011_VMapII/chr" + chr + "_vmap2.1.vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/012_VCFbyPop/001_byPloid/hexaploid/chr" + chr + "_vmap2.1_hexaploid.vcf /data4/home/aoyue/vmap2/analysis/000_taxaList/BreadWheat_S419.txt > log_028/log_extractVCF_chr" + chr + "_hexaploid20191107.txt 2>&1 &");
+//            System.out.println("java -jar 028_extractVCF.jar /data4/home/aoyue/vmap2/genotype/mergedVCF/011_VMapII/chr" + chr + "_vmap2.1.vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/012_VCFbyPop/002_bySubspecies/001_Landrace/chr" + chr + "_vmap2.1_Landrace.vcf /data4/home/aoyue/vmap2/analysis/000_taxaList/002_bySubspecies/hexaploid/Landrace.txt > /data4/home/aoyue/vmap2/aaPlantGenetics/log_028/001_subspecies/log_extractVCF_chr" + chr + "_Landrace20191107.txt 2>&1");
+//            System.out.println("java -jar 028_extractVCF.jar /data4/home/aoyue/vmap2/genotype/mergedVCF/011_VMapII/chr" + chr + "_vmap2.1.vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/012_VCFbyPop/002_bySubspecies/002_Cultivar/chr" + chr + "_vmap2.1_Cultivar.vcf /data4/home/aoyue/vmap2/analysis/000_taxaList/002_bySubspecies/hexaploid/Cultivar.txt > /data4/home/aoyue/vmap2/aaPlantGenetics/log_028/001_subspecies/log_extractVCF_chr" + chr + "_Cultivar20191107.txt 2>&1");
+                System.out.println(cmd);
+                bw.write(cmd);
+                bw.newLine();
+            }
+            bw.flush();
+            bw.close();
+            this.splitBwaScript(scriptS, "mkAnnotation_step2", 9, 5);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+    }
+
+    public void script_ABorD() {
+        int[] db = {5, 6, 11, 12, 17, 18, 23, 24, 29, 30, 35, 36, 41, 42};
+        Arrays.sort(db);
+        for (int i = 1; i < 43; i++) {
+            String chr = PStringUtils.getNDigitNumber(3, i);
+            if (Arrays.binarySearch(db, i) < 0) { //说明是不属于D的
+                System.out.println("");
+
+            } else { //说明是属于D的
+                System.out.println("");
+
+            }
+        }
+    }
+
+    ///******************************************* 分割线 *************************************  
+    ///******************************************* 分割线 *************************************  
+    ///******************************************* 分割线 *************************************  
+    public void bgzip_D() {
+        List<Integer> l = new ArrayList<>();
+        int j = 5;
+        l.add(j);
+        for (int i = 0; i < 6; i++) {
+            j = j + 6;
+            l.add(j);
+        }
+
+        int k = 6;
+        l.add(k);
+        for (int i = 0; i < 6; i++) {
+            k = k + 6;
+            l.add(k);
+        }
+        Collections.sort(l);
+
+        for (int i = 1; i < 43; i++) {
+            String chr = PStringUtils.getNDigitNumber(3, i);
+            int index = Collections.binarySearch(l, i);
+            if (index > -1) {
+                System.out.println("bgzip -@ 10 chr" + chr + ".Dgenome.filtered0.75.vcf");
+            }
+        }
+    }
+
+    public void bgzip_AB() {
+        List<Integer> l = new ArrayList<>();
+        int j = 5;
+        l.add(j);
+        for (int i = 0; i < 6; i++) {
+            j = j + 6;
+            l.add(j);
+        }
+
+        int k = 6;
+        l.add(k);
+        for (int i = 0; i < 6; i++) {
+            k = k + 6;
+            l.add(k);
+        }
+        Collections.sort(l);
+
+        for (int i = 1; i < 43; i++) {
+            String chr = PStringUtils.getNDigitNumber(3, i);
+            int index = Collections.binarySearch(l, i);
+            if (index < 0) {
+                //System.out.println("bgzip -@ 6 chr" + chr + ".vcf && tabix -p vcf chr" + chr + ".vcf.gz &");
+                //System.out.println("/data1/programs/bcftools-1.8/bcftools reheader --samples /data4/home/aoyue/vmap2/analysis/017_removeBadTaxa/005_test_reheaderVCF/changeTaxaName.txt --threads 10 /data4/home/aoyue/vmap2/genotype/mergedVCF/005_maf0.01SNP/chr" + chr + ".lineage.maf0.01.SNP.vcf -o /data4/home/aoyue/vmap2/genotype/mergedVCF/006_reheader/chr" + chr + ".lineage.maf0.01.SNP.vcf");
+                //System.out.println("rm -f chr" + chr + ".lineage.maf0.01.SNP.vcf");
+                //System.out.println("mv chr" + chr + ".lineage.maf0.01.SNP.vcf ../005_maf0.01SNP/");
+                //System.out.println("java -jar filterMafbyPop.jar /data4/home/aoyue/vmap2/genotype/mergedVCF/004_rawMergedVCF_removeBadTaxa/chr" + chr + ".lineage.vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/008_maf0.01SNPbyPop/chr" + chr + ".subgenome.maf0.01byPop.SNP.vcf &");
+                //System.out.println("java -jar filterMafbyPopHexaTetra.jar /data4/home/aoyue/vmap2/genotype/mergedVCF/004_rawMergedVCF_removeBadTaxa/chr" + chr + ".lineage.vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/008_maf0.01SNPbyPop/chr" + chr + ".subgenome.maf0.01byPop.SNP.vcf");
+//System.out.println("java -jar 008_calDepthSDPvalue_singlethread.jar /data4/home/aoyue/vmap2/analysis/019_rebackDDtauschii/001_fastcall_Dgenome/rawVCF/chr" + chr + ".vcf /data4/home/aoyue/vmap2/analysis/019_rebackDDtauschii/003_filterVCF_Dgenome/001_depthDB/chr" + chr + ".Dgenome.depth.txt.gz > log_008/log_calDepthSDPvalue_chr" + chr + "_20191024.txt &");
+//                System.out.println("java -jar mergePosList.jar /data4/home/aoyue/vmap2/analysis/011_filterVCF/abd/003_filteredVCF/chr" + chr + ".ABDgenome.filtered0.75.vcf /data4/home/aoyue/vmap2/analysis/019_rebackDDtauschii/003_filterVCF_Dgenome/003_filteredVCF/chr" + chr + ".Dgenome.filtered0.75.vcf.gz /data4/home/aoyue/vmap2/analysis/019_rebackDDtauschii/003_filterVCF_Dgenome/004_mergePos/posAllele/chr" + chr + "_PosAllele.txt.gz > log_mergePosList/log_mergePosList_chr" + chr + "_20191025.txt & ");
+//                System.out.println("bgzip -@ 10 chr" + chr + ".ABgenome.filtered0.75.vcf");
+                System.out.println("bgzip -@ 20 chr" + chr + ".subgenome.vcf" );
+            }
+        }
+    }
+
+    /**
+     * chr035.ABDgenome.vcf
+     */
+    public void bgzip_ABD() {
+        for (int i = 1; i < 43; i++) {
+            String chr = PStringUtils.getNDigitNumber(3, i);
+//            System.out.println("bgzip -@ 10 chr" + chr + ".vcf && tabix -p vcf chr" + chr + ".vcf.gz &");
+//            System.out.println("bgzip -c -@ 10 /data4/home/aoyue/vmap2/genotype/mergedVCF/011_VMapII/chr" + chr + "_vmap2.1.vcf > /data4/home/aoyue/vmap2/genotype/mergedVCF/013_bgzip/chr" + chr + "_vmap2.1.vcf.gz && tabix -p vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/013_bgzip/chr" + chr + "_vmap2.1.vcf.gz");
+//            this.splitBwaScript("/Users/Aoyue/Documents/a.txt", "bgzip_vmap2.1_", 4, 11);
+//            System.out.println("bgzip -@ 10 chr" + chr + ".ABDgenome.filtered0.75.vcf");
+//            System.out.println("bgzip -@ 10 chr" + chr + ".subgenome.maf0.01byPop.SNP.vcf");
+            System.out.println("bgzip -@ 10 chr" + chr + "_miss0.2.vcf");
+
+        }
+    }
+    
+    public void cp (){
+        String[] s = {"LLX", "LGD","HRV-L1","HUN-L1","ITA-C1","ITA-L1","MEX-L1"};
+        for(int i =0; i < s.length; i++){
+            System.out.println("cp -Rf /mnt/usb/ABD001/" + s[i] + "_1.fq.gz /data2/sharedData/vmap2/fastq/");
+            System.out.println("cp -Rf /mnt/usb/ABD001/" + s[i] + "_2.fq.gz /data2/sharedData/vmap2/fastq/");
+            
+        }
+        
+    }
+
+    /**
+     * find | cut -f2 -d"/" bgzip -c -@ 10 chr005.vcf > chr005.vcf.gz &
+     * 如果不写路径的话，会直接压缩覆盖原来的文件;如果写路径，则会重新生成一个文件，原来未压缩的文件依旧存在。前提是bgzip 不加 -c参数
+     *
+     * @param infileDirS
+     * @param outfileDirS
+     */
+    public void bgzip_deprecated(String infileDirS, String outfileDirS, String threads) {
+        /**
+         * ** need to modify ***
+         */
+        //===========================
+        String cmd = null;
+        File[] fs = new File(infileDirS).listFiles();
+        fs = IOUtils.listFilesEndsWith(fs, ".vcf");
+        Arrays.sort(fs);
+        for (int i = 0; i < fs.length; i++) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("bgzip -c -@ " + threads + " " + new File(infileDirS, fs[i].getName()).getAbsolutePath() + " > " + new File(outfileDirS, fs[i].getName().replaceFirst(".vcf", ".vcf.gz")).getAbsolutePath() + " &");
+            cmd = sb.toString();
+            System.out.println(cmd);
         }
     }
 
     /**
      * 1 2 3 4 5 6 后缀分别是Alineage Blineage Dlineage chr024.Dlineage.vcf
      */
-    public void bgzip_lineage() {
+    public void bgzip_lineage_deprecated() {
         int[] arra = {1, 2, 7, 8, 13, 14, 19, 20, 25, 26, 31, 32, 37, 38};
         int[] arrb = {3, 4, 9, 10, 15, 16, 21, 22, 27, 28, 33, 34, 39, 40};
         int[] arrd = {5, 6, 11, 12, 17, 18, 23, 24, 29, 30, 35, 36, 41, 42};
@@ -88,104 +362,61 @@ public class Script {
         }
     }
 
-    public void bgzip_AB() {
-        List<Integer> l = new ArrayList<>();
-        int j = 5;
-        l.add(j);
-        for (int i = 0; i < 6; i++) {
-            j = j + 6;
-            l.add(j);
-        }
-
-        int k = 6;
-        l.add(k);
-        for (int i = 0; i < 6; i++) {
-            k = k + 6;
-            l.add(k);
-        }
-        Collections.sort(l);
-
-        for (int i = 1; i < 43; i++) {
-            String chr = PStringUtils.getNDigitNumber(3, i);
-            int index = Collections.binarySearch(l, i);
-            if (index > -1) {
-                //System.out.println("bgzip -@ 6 chr" + chr + ".vcf && tabix -p vcf chr" + chr + ".vcf.gz &");
-                //System.out.println("/data1/programs/bcftools-1.8/bcftools reheader --samples /data4/home/aoyue/vmap2/analysis/017_removeBadTaxa/005_test_reheaderVCF/changeTaxaName.txt --threads 10 /data4/home/aoyue/vmap2/genotype/mergedVCF/005_maf0.01SNP/chr" + chr + ".lineage.maf0.01.SNP.vcf -o /data4/home/aoyue/vmap2/genotype/mergedVCF/006_reheader/chr" + chr + ".lineage.maf0.01.SNP.vcf");
-                //System.out.println("rm -f chr" + chr + ".lineage.maf0.01.SNP.vcf");
-                //System.out.println("mv chr" + chr + ".lineage.maf0.01.SNP.vcf ../005_maf0.01SNP/");
-                //System.out.println("java -jar filterMafbyPop.jar /data4/home/aoyue/vmap2/genotype/mergedVCF/004_rawMergedVCF_removeBadTaxa/chr" + chr + ".lineage.vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/008_maf0.01SNPbyPop/chr" + chr + ".subgenome.maf0.01byPop.SNP.vcf &");
-                //System.out.println("java -jar filterMafbyPopHexaTetra.jar /data4/home/aoyue/vmap2/genotype/mergedVCF/004_rawMergedVCF_removeBadTaxa/chr" + chr + ".lineage.vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/008_maf0.01SNPbyPop/chr" + chr + ".subgenome.maf0.01byPop.SNP.vcf");
-//System.out.println("java -jar 008_calDepthSDPvalue_singlethread.jar /data4/home/aoyue/vmap2/analysis/019_rebackDDtauschii/001_fastcall_Dgenome/rawVCF/chr" + chr + ".vcf /data4/home/aoyue/vmap2/analysis/019_rebackDDtauschii/003_filterVCF_Dgenome/001_depthDB/chr" + chr + ".Dgenome.depth.txt.gz > log_008/log_calDepthSDPvalue_chr" + chr + "_20191024.txt &");
-                System.out.println("java -jar mergePosList.jar /data4/home/aoyue/vmap2/analysis/011_filterVCF/abd/003_filteredVCF/chr" + chr + ".ABDgenome.filtered0.75.vcf /data4/home/aoyue/vmap2/analysis/019_rebackDDtauschii/003_filterVCF_Dgenome/003_filteredVCF/chr" + chr + ".Dgenome.filtered0.75.vcf.gz /data4/home/aoyue/vmap2/analysis/019_rebackDDtauschii/003_filterVCF_Dgenome/004_mergePos/posAllele/chr" + chr + "_PosAllele.txt.gz > log_mergePosList/log_mergePosList_chr" + chr + "_20191025.txt & ");
-
-            }
-        }
-    }
-
     /**
-     * 压缩文件bgzip并建立索引 chr027.Dgenome.vcf
-     */
-    public void bgzip_D() {
-        List<Integer> l = new ArrayList<>();
-        int j = 5;
-        l.add(j);
-        for (int i = 0; i < 6; i++) {
-            j = j + 6;
-            l.add(j);
-        }
-
-        int k = 6;
-        l.add(k);
-        for (int i = 0; i < 6; i++) {
-            k = k + 6;
-            l.add(k);
-        }
-        Collections.sort(l);
-
-        for (int i = 1; i < 43; i++) {
-            String chr = PStringUtils.getNDigitNumber(3, i);
-            int index = Collections.binarySearch(l, i);
-            if (index > -1) {
-                //System.out.println("bgzip -@ 6 chr" + chr + ".vcf && tabix -p vcf chr" + chr + ".vcf.gz &");
-                System.out.println("bgzip -@ 10 chr" + chr + ".Dgenome.vcf");
-            }
-        }
-    }
-
-    /**
-     * chr035.ABDgenome.vcf
-     */
-    public void bgzip_ABD() {
-        for (int i = 1; i < 43; i++) {
-            String chr = PStringUtils.getNDigitNumber(3, i);
-            //System.out.println("bgzip -@ 10 chr" + chr + ".vcf && tabix -p vcf chr" + chr + ".vcf.gz &");
-//            System.out.println("bgzip -@ 10 chr" + chr + ".ABDgenome.vcf");
-            System.out.println("mv chr" + chr + ".subgenome.maf0.01byPop.SNP_bi.subset.vcf.gz chr" + chr + "_vmap2_subset0.001.vcf.gz");
-
-        }
-    }
-
-    /**
-     * find | cut -f2 -d"/" bgzip -c -@ 10 chr005.vcf > chr005.vcf.gz &
-     * 如果不写路径的话，会直接压缩覆盖原来的文件;如果写路径，则会重新生成一个文件，原来未压缩的文件依旧存在。前提是bgzip 不加 -c参数
      *
-     * @param infileDirS
-     * @param outfileDirS
+     * @param infileS
+     * @param nameprefix, the script name you wanna
+     * @param numfile, the file number you wanna split to
+     * @param numcmd, the number of CDM in each file
+     * eg:"/Users/Aoyue/Documents/sh_md5_WheatVMapII_ABgenome_fixmatePosBam.sh",
+     * "md5_WheatVMapII_ABgenome_fixmateBam_", 20, 32
      */
-    public void bgzip_deprecated(String infileDirS, String outfileDirS, String threads) {
-        /**
-         * ** need to modify ***
-         */
-        //===========================
-        String cmd = null;
-        File[] fs = new File(infileDirS).listFiles();
-        fs = IOUtils.listFilesEndsWith(fs, ".vcf");
-        Arrays.sort(fs);
-        for (int i = 0; i < fs.length; i++) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("bgzip -c -@ " + threads + " " + new File(infileDirS, fs[i].getName()).getAbsolutePath() + " > " + new File(outfileDirS, fs[i].getName().replaceFirst(".vcf", ".vcf.gz")).getAbsolutePath() + " &");
-            cmd = sb.toString();
-            System.out.println(cmd);
+    public void splitBwaScript(String infileS, String nameprefix, int numfile, int numcmd) {
+        //String infileS = "/Users/Aoyue/project/wheatVMapII/006_ABandD/000_cleandata/001_bwaScript/bwa_20190705needRERUN.sh";
+        //String outfileDirS = "/Users/Aoyue/project/wheatVMapII/006_ABandD/000_cleandata/001_bwaScript/splitScript";
+        String parentS = new File(infileS).getParent();
+        new File(parentS, "splitScript").mkdirs();
+        String outfileDirS = new File(parentS, "splitScript").getAbsolutePath();
+        String shfileS = new File(parentS, "sh_split.sh").getAbsolutePath();
+
+        try {
+            String[] outfileS = new String[numfile];
+            BufferedReader br = IOUtils.getTextReader(infileS);
+            BufferedWriter[] bw = new BufferedWriter[numfile];
+            for (int i = 0; i < outfileS.length; i++) {
+                String num = PStringUtils.getNDigitNumber(3, i + 1);
+                outfileS[i] = new File(outfileDirS, nameprefix + num + ".sh").getAbsolutePath();
+                bw[i] = IOUtils.getTextWriter(outfileS[i]);
+                String temp;
+                for (int j = 0; j < numcmd; j++) {
+                    if ((temp = br.readLine()) != null) {
+                        bw[i].write(temp);
+                        bw[i].newLine();
+                    }
+                }
+                bw[i].flush();
+                bw[i].close();
+            }
+            br.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        try {
+            File[] fs = new File(outfileDirS).listFiles();
+            fs = IOUtils.listFilesEndsWith(fs, ".sh");
+            Arrays.sort(fs);
+            BufferedWriter bw = IOUtils.getTextWriter(shfileS);
+            for (int i = 0; i < fs.length; i++) {
+                bw.write("sh " + fs[i].getName() + " > log_" + fs[i].getName().split(".sh")[0] + ".txt 2>&1 &");
+                bw.newLine();
+            }
+            bw.flush();
+            bw.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
         }
     }
 

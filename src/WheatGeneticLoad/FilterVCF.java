@@ -20,9 +20,11 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -89,7 +91,7 @@ public class FilterVCF {
 //        this.addGroupforsubsetDepthDB("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/008_cellMethod/003_getHighCumulativePos/d/chrDgenome_bin100_0.75.depthVSsd.txt.gz", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/008_cellMethod/004_subset5000sitefromDepthDB/d/002_chr1D-7D.Dgenome.depth_5049sites.txt", "7", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/008_cellMethod/005_subset.addGroup/d/chrDgenome.depthVSsd.addGroup.bin100_0.75.txt");
 //        this.addGroupforsubsetDepthDB("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/008_cellMethod/003_getHighCumulativePos/d/chrDgenome_bin100_0.85.depthVSsd.txt.gz", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/008_cellMethod/004_subset5000sitefromDepthDB/d/002_chr1D-7D.Dgenome.depth_5049sites.txt", "8", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/008_cellMethod/005_subset.addGroup/d/chrDgenome.depthVSsd.addGroup.bin100_0.85.txt");
 ////
-        //this.mergePosList();
+//        this.mergePosList("", "", "");
         //this.scriptReINFO();
         //this.bgzip_ABD();
         //new SplitScript().splitBwaScript("/Users/Aoyue/Documents/sh_bgzip_Vmap2_20191021.sh", "sh_bgzip_Vmap2_", 6 ,6 );
@@ -136,8 +138,46 @@ public class FilterVCF {
 //    this.scriptFilterMiss();
 //    new SplitScript().splitBwaScript("/Users/Aoyue/Desktop/sh_filterVCFbyMiss20191103.sh","sh_filterVCF",15,3);
 //    this.mergeTxt("/Users/Aoyue/Documents/log_024", "/Users/Aoyue/Documents/lll.txt");
+//        this.mergeVCFandFilter();
+        
+
+    }
+
+    
+    
+    public String getVCFHeaderABD_AB(List<String> taxaList) {
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss.SSS");
+        Date dt = new Date();
+        String S = sdf.format(dt);
+        StringBuilder sb = new StringBuilder();
+        sb.append("##fileformat=VCFv4.1\n"
+                + "##FILTER=<ID=PASS,Description=\"All filters passed\">\n");
+        sb.append("##fileDate=").append(S.split(" ")[0]).append("\n");
+        sb.append("##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">\n"
+                + "##FORMAT=<ID=AD,Number=.,Type=Integer,Description=\"Allelic depths for the reference and alternate alleles in the order listed\">\n"
+                + "##FORMAT=<ID=PL,Number=G,Type=Integer,Description=\"Genotype likelihoods for 0/0, 0/1, 1/1, or  0/0, 0/1, 0/2, 1/1, 1/2, 2/2 if 2 alt alleles\">\n"
+                + "##INFO=<ID=DP,Number=1,Type=Integer,Description=\"Total Depth\">\n"
+                + "##INFO=<ID=NZ,Number=1,Type=Integer,Description=\"Number of taxa with called genotypes\">\n"
+                + "##INFO=<ID=AD,Number=.,Type=Integer,Description=\"Total allelelic depths in order listed starting with REF\">\n"
+                + "##INFO=<ID=AC,Number=.,Type=Integer,Description=\"Numbers of ALT alleles in order listed\">\n"
+                + "##INFO=<ID=GN,Number=.,Type=Integer,Description=\"Number of taxa with genotypes AA,AB,BB or AA,AB,AC,BB,BC,CC if 2 alt alleles\">\n"
+                + "##INFO=<ID=HT,Number=1,Type=Integer,Description=\"Number of heterozygotes\">\n"
+                + "##INFO=<ID=MAF,Number=1,Type=Float,Description=\"Minor allele frequency\">\n"
+                + "##INFO=<ID=AAF_ABD,Number=1,Type=Float,Description=\"Alternative allele frequency on hexaploid bread wheat\">\n"
+                + "##INFO=<ID=AAF_AB,Number=1,Type=Float,Description=\"Alternative allele frequency on tetraploid emmer wheat\">\n"
+                + "##ALT=<ID=D,Description=\"Deletion\">\n"
+                + "##ALT=<ID=I,Description=\"Insertion\">\n"
+                + "##Species=Wheat\n"
+                + "##ReferenceGenome=iwgsc_refseqv1.0\n"
+                + "##VariantsMapVersion=vmap2\n");
+        sb.append("#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT");
+        for (int i = 0; i < taxaList.size(); i++) {
+            sb.append("\t").append(taxaList.get(i));
+        }
+        return sb.toString();
     }
     
+
     public void scriptFilterMiss() {
 
         for (int i = 1; i < 43; i++) {
@@ -145,12 +185,12 @@ public class FilterVCF {
             Arrays.sort(db);
             if (Arrays.binarySearch(db, i) < 0) {
                 String chr = PStringUtils.getNDigitNumber(3, i);//如果没有搜到，说明是不属于D的
-                System.out.println("java -jar 024_filterMissbyPopHexaTetra.jar /data4/home/aoyue/vmap2/genotype/mergedVCF/009_maf0.01SNPbyPop/chr" + chr + ".subgenome.maf0.01byPop.SNP.vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/010_miss0.2byPop/chr" + chr + "_vmap2.vcf > log_024/log_filterMissbyPopHexaDi.chr" + chr + ".txt 2>&1");
+                System.out.println("java -jar 024_filterMissbyPopHexaTetra.jar /data4/home/aoyue/vmap2/genotype/mergedVCF/009_maf0.01SNPbyPopIncludeIndel/chr" + chr + ".subgenome.maf0.01byPop.SNP.vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/010_miss0.2byPop/chr" + chr + "_miss0.2.vcf > log_024/log_filterMissbyPopHexaDi.chr" + chr + ".txt 2>&1");
 
             } else { //说明是属于D的
                 String chr = PStringUtils.getNDigitNumber(3, i);
 //                System.out.println("java -jar 021_filterMafbyPopHexaDi.jar /data4/home/aoyue/vmap2/analysis/019_rebackDDtauschii/006_bcftoolsMerge/chr" + chr + ".subgenome.vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/008_maf0.01SNPbyPop/chr" + chr + ".subgenome.maf0.01byPop.SNP.vcf > log_021/log_filterMafbyPopHexaDi.chr" + chr + ".txt");
-                System.out.println("java -jar 024_filterMissbyPopHexaDi.jar /data4/home/aoyue/vmap2/genotype/mergedVCF/009_maf0.01SNPbyPop/chr" + chr + ".subgenome.maf0.01byPop.SNP.vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/010_miss0.2byPop/chr" + chr + "_vmap2.vcf > log_024/log_filterMissbyPopHexaDi.chr" + chr + ".txt 2>&1");
+                System.out.println("java -jar 024_filterMissbyPopHexaDi.jar /data4/home/aoyue/vmap2/genotype/mergedVCF/009_maf0.01SNPbyPopIncludeIndel/chr" + chr + ".subgenome.maf0.01byPop.SNP.vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/010_miss0.2byPop/chr" + chr + "_miss0.2.vcf > log_024/log_filterMissbyPopHexaDi.chr" + chr + ".txt 2>&1");
 
             }
         }
@@ -561,7 +601,7 @@ public class FilterVCF {
                 if (!temp.startsWith("#")) {
                     l = PStringUtils.fastSplit(temp);
                     String altList = l.get(4);
-                    if(altList.contains("D") || altList.contains("I")) {
+                    if (altList.contains("D") || altList.contains("I")) {
                         System.out.println("Alt allele is " + altList);
                     }
 //                    List<String> lgeno = new ArrayList<>();
@@ -726,7 +766,7 @@ public class FilterVCF {
      * @param infileDirS
      * @param outfileS
      */
-    public void mergeTxt(String infileDirS, String outfileS) {
+    public void mergelogTxt(String infileDirS, String outfileS) {
         File[] fs = new File(infileDirS).listFiles();
         for (int i = 0; i < fs.length; i++) {
             if (fs[i].isHidden()) {
@@ -2266,9 +2306,9 @@ public class FilterVCF {
      */
     /**
      * singleStream下面有parallelStream方法
-     * 
+     *
      * @param infileS
-     * @param outfileS 
+     * @param outfileS
      */
     public void statVcfDepth_SD_PValue_singlethread(String infileS, String outfileS) {
 
@@ -2334,14 +2374,14 @@ public class FilterVCF {
         }
         System.out.println(infileS + " is calculated well done");
     }
-    
+
     // 对抽样的vcf文件进行每个位点深度和sd进行统计和Pvalue获取，制成一个表格，chr pos averageDepth SD PValue
-     // 注意表格不要以#开头，否则被注释，看不到
+    // 注意表格不要以#开头，否则被注释，看不到
     /**
      * parallelStream上面有singleStream方法
-     * 
+     *
      * @param infileDirS
-     * @param outfileDirS 
+     * @param outfileDirS
      */
     public void statVcfDepth_SD_PValue(String infileDirS, String outfileDirS) {
         File[] fs = new File(infileDirS).listFiles();
@@ -2721,8 +2761,6 @@ public class FilterVCF {
 
     }
 
-     
-
     /**
      * 对已经生成的2万行结果进行随机抽样，抽出5000行进行接下来的随机分析
      */
@@ -2911,8 +2949,8 @@ public class FilterVCF {
     }
 
     /**
-     * 对抽样的vcf文件进行每个位点每个taxa的深度统计，制成一个表格，chr pos averageDepth SD taxaDepth
-     * ..... 注意表格不要以#开头，否则被注释，看不到
+     * 对抽样的vcf文件进行每个位点每个taxa的深度统计，制成一个表格，chr pos averageDepth SD taxaDepth .....
+     * 注意表格不要以#开头，否则被注释，看不到
      */
     public void statVcfCoverage() {
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/003_subsetVCF/abd/001_subset/";

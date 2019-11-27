@@ -133,10 +133,8 @@ public class Mode {
         String infileDirS = "";
         String outfileDirS = "";
 
-        
-        
-       //  new CountSites().mergesubsetVCF(args[0], args[1]);
-       // new CountSites().mergesubsetVCF(args[0], args[1], args[2]);
+        //  new CountSites().mergesubsetVCF(args[0], args[1]);
+        // new CountSites().mergesubsetVCF(args[0], args[1], args[2]);
 /*==================================== 测试用 =============================================*/
         try {
             String infileS = "";
@@ -157,7 +155,7 @@ public class Mode {
             e.printStackTrace();
             System.exit(1);
         }
-/*==================================== 测试用 =============================================*/
+        /*==================================== 测试用 =============================================*/
         try {
             String infileS = "";
             String outfileS = "";
@@ -194,7 +192,7 @@ public class Mode {
             BufferedWriter bw = IOUtils.getTextWriter(outfileS);
             String temp = null;
             List<String> l = new ArrayList<>();
-            int cnt =0;
+            int cnt = 0;
             while ((temp = br.readLine()) != null) {
                 cnt++;
 
@@ -205,7 +203,7 @@ public class Mode {
             e.printStackTrace();
             System.exit(1);
         }
-        
+
 //////////////////////////////////////////////////////////////////
         List<ChrPos> l = new ArrayList();
         String chr = null;
@@ -213,4 +211,66 @@ public class Mode {
         l.add(new ChrPos(Short.valueOf(chr), Integer.valueOf(pos)));
 
     }
+
+    public void testifD() {
+        boolean ifd = false;
+        String chr = "chr003.vmap2...".substring(3, 6);
+        //根据染色体号进行AB还是D的判断
+        String[] db = {"5", "6", "11", "12", "17", "18", "23", "24", "29", "30", "35", "36", "41", "42"};
+        Arrays.sort(db);
+        if (Arrays.binarySearch(db, chr) > -1) { //说明是属于D的
+            ifd = true;
+        }
+        try {
+            String infileS = "";
+            String outfileS = "";
+            BufferedReader br = IOUtils.getTextReader(infileS);
+            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+
+            if (ifd == false) {
+                bw.write(temp + "\tAncestral\tDaf\tDaf_ABD\tDaf_AB");
+                bw.newLine();
+            } else if (ifd == true) {
+                bw.write(temp + "\tAncestral\tDaf\tDaf_ABD\tDaf_D");
+                bw.newLine();
+            }
+
+            while ((temp = br.readLine()) != null) {
+                cnt++;
+
+            }
+            br.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+    }
+    
+    /**
+     * 在输出目录中建立相同的子目录
+     */
+    public void mksamedirs() {
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/001_ori";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/002_changeChrPos";
+        File[] fs = new File(infileDirS).listFiles();
+        for(int i = 0; i < fs.length; i++){
+            if(fs[i].isHidden())
+                fs[i].delete();
+        }
+        fs = new File(infileDirS).listFiles();
+        for (int i = 0; i < fs.length; i++) {
+            System.out.println(fs[i]);
+            new File(outfileDirS, fs[i].getName()).mkdirs();
+        }
+        
+        for(int i = 0; i < fs.length; i++){
+            new CountSites().mergefileandChangeChrPos_chr1and2(fs[i].getAbsolutePath(),new File(outfileDirS, fs[i].getName()).getAbsolutePath());
+        }
+    }
+
 }

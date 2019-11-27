@@ -60,7 +60,7 @@ public class Bin {
         RowTable<String> t = new RowTable<>(infileS);
         int count = t.getRowNumber();
         for (int i = 0; i < t.getRowNumber(); i++) {
-            if (t.getCell(i, 1).equals("NA")) {
+            if (t.getCell(i, 1).equals("NA")) { //MAF值所在的那一列
                 continue;
             }
             double value = t.getCellAsDouble(i, 1); //MAF值所在的那一列
@@ -140,10 +140,10 @@ public class Bin {
             RowTable<String> t = new RowTable<>(infileS);
             int count = t.getRowNumber();
             for (int i = 0; i < t.getRowNumber(); i++) {
-                if (t.getCell(i, 0).equals("NA")) { //MAF值所在的那一列
+                if (t.getCell(i, 7).equals("NA")) { //MAF值所在的那一列
                     continue;
                 }
-                double value = t.getCellAsDouble(i, 3); //MAF值所在的那一列
+                double value = t.getCellAsDouble(i, 7); //MAF值所在的那一列
                 mafList.add(value);
                 int index = Arrays.binarySearch(bound, value);
                 if (index < 0) {
@@ -157,14 +157,15 @@ public class Bin {
             for (int i = 0; i < maf.length; i++) {
                 maf[i] = maf[i] / mafList.size();
             }
+            System.out.println(mafList.size()  + "  size");
             //开始写出文件
             try {
                 BufferedWriter bw = IOUtils.getTextWriter(outfileS);
-                bw.write("Maf\tDensity");
+                bw.write("Daf\tDensity");
                 bw.newLine();
                 for (int i = 0; i < bound.length; i++) {
                     StringBuilder sb = new StringBuilder();
-                    sb.append(String.format("%.2f", bound[i] + length / bins / 2)).append("\t").append(String.format("%.4f", maf[i]));
+                    sb.append(String.format("%.3f", (double)bound[i] + (double)(length / bins) / (double)2)).append("\t").append(String.format("%.4f", maf[i]));
                     bw.write(sb.toString());
                     bw.newLine();
                 }
