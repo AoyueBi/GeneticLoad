@@ -27,12 +27,12 @@ public class Wheat200cleanDataProcessor {
 
     public Wheat200cleanDataProcessor() {
         this.GetIDlist();
-        this.mergeIDlist();
-        this.calFastqbp();
+//        this.mergeIDlist();
+//        this.calFastqbp();
         //this.sampleFastQC();
-        this.fastQC();
-        this.mkParameterchr1_42();
-        this.mkJavaCmdchr1_42();
+//        this.fastQC();
+//        this.mkParameterchr1_42();
+//        this.mkJavaCmdchr1_42();
 
     }
     
@@ -367,8 +367,13 @@ public class Wheat200cleanDataProcessor {
         //String infileDirs = "/Volumes/LuLab4T_02/";
         //String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/000_cleandata/000_dataCheck/000_LuLab4T_02.IDlist.txt";
         
-        String infileDirs = "/Volumes/LuLab4T_03/CleanData_15Samples";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/000_cleandata/000_dataCheck/000_LuLab4T_03.IDlist.txt";
+//        String infileDirs = "/Volumes/LuLab4T_03/CleanData_15Samples";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/000_cleandata/000_dataCheck/000_LuLab4T_03.IDlist.txt";
+        
+        String infileDirs = "/Volumes/LuLab4T_04/JiaCe_36-Samples";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/000_cleandata/000_dataCheck/000_LuLab4T_04.IDlist.txt";
+        
+        
         
         File f = new File(infileDirs);
         String[] x = f.list();

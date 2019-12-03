@@ -26,7 +26,7 @@ import utils.PStringUtils;
 public class WheatABandDcleandataProcessor {
 
     public WheatABandDcleandataProcessor() {
-        //this.getIDseqsubsamples();
+        this.getIDseqsubsamples();
         //this.getBWAscript();
         //this.getRmdupscript();
         //this.splitRmdupScript();
@@ -37,7 +37,7 @@ public class WheatABandDcleandataProcessor {
         //this.mergeBamfromSuppleData();
         //this.mergeBamScript();
         //this.mkParameterchr1_42_D();
-        this.mkJavaCmdchr1_42_D();
+//        this.mkJavaCmdchr1_42_D();
         //this.mkParameterchr1_42_AB();
         //this.mkJavaCmdchr1_42_AB();
     }

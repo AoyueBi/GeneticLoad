@@ -5,20 +5,15 @@
  */
 package PopulationAnalysis;
 
-import AoUtils.CountSites;
-import AoUtils.Script;
 import gnu.trove.list.array.TDoubleArrayList;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import utils.IOUtils;
 import utils.PStringUtils;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.util.*;
 
 /**
  *
@@ -37,8 +32,170 @@ public class PopGenParaWheat {
 //        new Script().splitBwaScript("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/002_script_based10kbWindow/002_merge_sh/fst_basedWindow20191126.sh", "fst_basedWindow_", 30, 6);
 
 //        this.mkPiCMDbasedWindow();
-        this.mergeSh("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/002_Pi/001_script_based100kbWindow/001_total", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/002_Pi/001_script_based100kbWindow/002_merge_sh/pi_based100kbWindow20191126.sh");
-    new Script().splitBwaScript("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/002_Pi/001_script_based100kbWindow/002_merge_sh/pi_based100kbWindow20191126.sh","pi_based100kbWindow_",5,18);
+//        this.mergeSh("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/002_Pi/001_script_based100kbWindow/001_total", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/002_Pi/001_script_based100kbWindow/002_merge_sh/pi_based100kbWindow20191126.sh");
+//        new Script().splitBwaScript("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/002_Pi/001_script_based100kbWindow/002_merge_sh/pi_based100kbWindow20191126.sh", "pi_based100kbWindow_", 5, 18);
+//   this.mkTajimaDbasedWindow();
+//   this.mergeSh("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/003_tajimaD/001_script_based100kbWindow/001_total", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/003_tajimaD/001_script_based100kbWindow/02_merge_sh/tajimaD_based100kbWondow20191127.sh");
+//   new Script().splitBwaScript("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/003_tajimaD/001_script_based100kbWindow/02_merge_sh/tajimaD_based100kbWondow20191127.sh", "tajimad100kbWindow_", 50, 2);
+    this.mergeTajimaD();
+//    new CountSites().mergeTxt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/003_tajimaD/002_tajimaD/003_mergeDsub", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/003_tajimaD/002_tajimaD/004_mergAll/tajimaD_all_based100kbWindow.txt");
+    
+    }
+    
+    
+    
+    /**
+     * 
+     * 将TajimaD的结果合并起来，画在一张图上
+     */
+    public void mergeTajimaD() {
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/003_tajimaD/002_tajimaD/001_tajimaD_based100kbWindow_hexa_diploid";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/003_tajimaD/002_tajimaD/003_mergeDsub/Tajima.D_Dsub_based100kbWindow.txt";
+
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/003_tajimaD/002_tajimaD/002_tajimaD_based100kbWindow_hexa_tetraploid";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/003_tajimaD/002_tajimaD/003_mergeDsub/Tajima.D_ABsub_based100kbWindow.txt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/003_tajimaD/002_tajimaD/003_mergeDsub/Tajima.D_Bsub_based100kbWindow.txt";
+
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/002_Pi/002_result/001_pi_based100kbWindow_hexa_diploid";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/002_Pi/002_result/003_merge_sub/Pi_Dsub_based100kbWindow.txt";
+
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/002_Pi/002_result/002_pi_based100kbWindow_hexa_tetraploid";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/002_Pi/002_result/003_merge_sub/Pi_Bsub_based100kbWindow.txt";
+
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/003_result/001_fst_based100kbWindow_hexa_diploid";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/003_result/003_merge_sub/Fst_Dsub_based100kbWindow.txt";
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/003_result/002_fst_based100kbWindow_hexa_tetraploid";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/003_result/003_merge_sub/Fst_Bsub_based100kbWindow.txt";
+
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/003_result/002_fst_based100kbWindow_hexa_tetraploid";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/003_result/003_merge_sub/Fst_Dsub_based100kbWindow.txt";
+
+        File[] fs = new File(infileDirS).listFiles();
+        for (int i = 0; i < fs.length; i++) {
+            if (fs[i].isHidden()) {
+                fs[i].delete();
+            }
+        }
+//        fs = IOUtils.listFilesEndsWith(fs, suffix);
+        fs = new File(infileDirS).listFiles();
+        fs = IOUtils.listFilesContains(fs, "B_");
+        Arrays.sort(fs);
+        try {
+
+            String infileS = fs[0].getAbsolutePath();
+            BufferedReader br = IOUtils.getTextReader(infileS);
+            ///读表头
+            BufferedWriter bw = null;
+            if (outfileS.endsWith(".txt")) {
+                bw = IOUtils.getTextWriter(outfileS);
+            } else if (outfileS.endsWith(".txt.gz")) {
+                bw = IOUtils.getTextGzipWriter(outfileS);
+            }
+            bw.write(br.readLine() + "\tGroup"); //read header
+            bw.newLine();
+
+
+            int cnttotal = 0;
+            //读正文部分
+            for (int i = 0; i < fs.length; i++) {
+                infileS = fs[i].getAbsolutePath();
+                String group = fs[i].getName().split("_chr")[0];
+                br = IOUtils.getTextReader(infileS);
+                String temp; //read header
+                temp = br.readLine();
+                int cnt = 0;
+                while ((temp = br.readLine()) != null) {
+                    cnt++;
+                    cnttotal++;
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(temp).append("\t").append(group);
+                    bw.write(sb.toString());
+                    bw.newLine();
+                }
+                System.out.println(String.valueOf(fs[i].getName()) + "\t" + cnt);
+            }
+            System.out.println("Total lines without header count is " + cnttotal + " at merged file " + outfileS);
+            br.close();
+            bw.flush();
+            bw.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    public void mkTajimaDbasedWindow() {
+        //vcftools --gzvcf /data2/aoyue/maizeData/hmp321_agp4/hmp321_agpv4_chr1.vcf.gz --keep /data2/aoyue/popGene/002_parameters/000_groups/China_specific.txt --TajimaD 10000 --out /data2/aoyue/popGene/002_parameters/003_tajimaD/000_tajimaDBased10Kwindow/China_specific/China_specific_hmp321_agpv4_chr1 &
+//        //脚本文件路径
+//        String ScriptDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/003_tajimaD/001_script_based100kbWindow/hexaTetra";
+//        //本地分组文件路径
+//        String groupDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/000_groups/003_forFst/hexaandTetra";
+//        /*vcftools运行文件路径*/
+//        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/013_VMapIIbyRef/";
+//        String groupFileDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/000_group/002_forPi/001_hexaandTetra";
+//        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/003_tajimaD/002_tajimaD_based100kbWindow_hexa_tetraploid";
+        
+        //脚本文件路径
+        String ScriptDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/003_tajimaD/001_script_based100kbWindow/hexaDi";
+        //本地分组文件路径
+        String groupDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/000_groups/003_forFst/hexaandDi";
+        /*vcftools运行文件路径*/
+        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/013_VMapIIbyRef/";
+        String groupFileDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/000_group/002_forPi/002_hexaandDi";
+        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/003_tajimaD/001_tajimaD_based100kbWindow_hexa_diploid";
+        
+        File[] groupFileS = new File(groupDirS).listFiles();
+        for (int i = 0; i < groupFileS.length; i++) {
+            if (groupFileS[i].isHidden()) {
+                groupFileS[i].delete();
+            }
+        } //注意有隐藏文件，需要进行删除后重新列出文件目录。
+        groupFileS = new File(groupDirS).listFiles();
+
+        //new File(shScriptDirS).mkdir();
+        ArrayList<String> perlList = new ArrayList();
+
+        List<String> scriptList = new ArrayList(); //建立一个集合
+        try {
+            for (int i = 0; i < groupFileS.length; i++) { //对分组进行循环
+                String scriptS = new File(ScriptDirS, groupFileS[i].getName().replaceFirst(".txt", "") + "_tajimaD_based100kbWindow.sh").getAbsolutePath();
+                scriptList.add(scriptS); //将脚本添加到集合中
+                BufferedWriter bw = IOUtils.getTextWriter(scriptS); //开始向脚本中写东西
+
+                String[] chrArr = {"1A", "1B", "1D", "2A", "2B", "2D", "3A", "3B", "3D", "4A", "4B", "4D", "5A", "5B", "5D", "6A", "6B", "6D", "7A", "7B", "7D"};
+                for (int j = 0; j < chrArr.length; j++) {
+                    if (!chrArr[j].contains("D")) { //说明是不属于D的
+//                        String outfileS = new File(outfileDirS, groupFileS[i].getName().replaceFirst(".txt", "_chr" + chrArr[j] + "_based100kbWindow")).getAbsolutePath(); //结果输出的路径
+//                        //vcftools --vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/013_VMapIIbyRef/chr1D_vmap2.1.vcf --keep /data4/home/aoyue/vmap2/analysis/021_popGen/000_group/002_forPi/hexaandDi/Ae.tauschii.txt --window-pi 100000 --window-pi-step 50000 --out /data4/home/aoyue/vmap2/analysis/021_popGen/002_Pi/001_pi_based100kbWindow_hexa_diploid/chr1D_vmap2.1_Ae.tauschii_ & 
+//                        StringBuilder sb = new StringBuilder();
+//                        sb.append("vcftools --vcf ").append(new File(infileDirS, "chr" + chrArr[j] + "_vmap2.1.vcf").getAbsolutePath());
+//                        sb.append(" --keep ").append(new File(groupFileDirS, groupFileS[i].getName()).getAbsolutePath());
+//                        sb.append(" --TajimaD 100000");
+//                        sb.append(" --out ").append(outfileS).append("");
+//                        bw.write(sb.toString());
+//                        bw.newLine();
+                    } else {
+                        String outfileS = new File(outfileDirS, groupFileS[i].getName().replaceFirst(".txt", "_chr" + chrArr[j] + "_based100kbWindow")).getAbsolutePath(); //结果输出的路径
+                        //vcftools --vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/013_VMapIIbyRef/chr1D_vmap2.1.vcf --keep /data4/home/aoyue/vmap2/analysis/021_popGen/000_group/002_forPi/hexaandDi/Ae.tauschii.txt --window-pi 100000 --window-pi-step 50000 --out /data4/home/aoyue/vmap2/analysis/021_popGen/002_Pi/001_pi_based100kbWindow_hexa_diploid/chr1D_vmap2.1_Ae.tauschii_ & 
+                        StringBuilder sb = new StringBuilder();
+                        sb.append("vcftools --vcf ").append(new File(infileDirS, "chr" + chrArr[j] + "_vmap2.1.vcf").getAbsolutePath());
+                        sb.append(" --keep ").append(new File(groupFileDirS, groupFileS[i].getName()).getAbsolutePath());
+                        sb.append(" --TajimaD 100000");
+                        sb.append(" --out ").append(outfileS).append("");
+                        bw.write(sb.toString());
+                        bw.newLine();
+                    }
+
+                }
+                bw.flush();
+                bw.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
     }
 
     public void mkPiCMDbasedWindow() {
@@ -53,7 +210,6 @@ public class PopGenParaWheat {
 //        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/013_VMapIIbyRef/";
 //        String groupFileDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/000_group/002_forPi/001_hexaandTetra";
 //        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/002_Pi/002_pi_based100kbWindow_hexa_tetraploid";
-        
         //脚本文件路径
         String ScriptDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/002_Pi/001_script_based100kbWindow/hexaDi";
         //本地分组文件路径

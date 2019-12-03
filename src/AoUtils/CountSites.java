@@ -1218,7 +1218,7 @@ public class CountSites {
      * @param pos
      * @return
      */
-    public String[] getRefChrPos(int chr, int pos) {
+     public String[] getRefChrPos(int chr, int pos) {
         String[] out = new String[2];
 
         //建立1-44一一对应chr1A的关系,目的：根据chr1找到chr1A

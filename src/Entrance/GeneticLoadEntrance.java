@@ -5,26 +5,8 @@
  */
 package Entrance;
 
-import AoUtils.CountSites;
-import AoUtils.SplitScript;
-import PopulationAnalysis.PopGenParaWheat;
-import WheatGeneticLoad.FilterVCF;
-import WheatGeneticLoad.SIFT;
+import AoUtils.DataStorage;
 import WheatGeneticLoad.Treetest;
-import WheatGeneticLoad.VariantsSum;
-
-import format.table.RowTable;
-import gnu.trove.list.array.TDoubleArrayList;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import utils.PStringUtils;
-
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import utils.IOUtils;
 
 /**
  *
@@ -34,7 +16,16 @@ public class GeneticLoadEntrance {
 
     public GeneticLoadEntrance() {
         this.firstProcess();
+//        this.cp();
         //this.secondProcess();
+
+    }
+
+    public void cp() {
+        String[] sm = {"1586", "1568", "1577", "1599", "1601", "1605"};
+        for (int i = 0; i < sm.length; i++) {
+            System.out.println("cp -Rf BT0" + sm[i] + " /data2/sharedData/vmap2/fastq/");
+        }
 
     }
 
@@ -54,16 +45,17 @@ public class GeneticLoadEntrance {
         /**
          * *************************************
          */
-        //new Wheat200cleanDataProcessor(); //Lu200ABD
+//        new Wheat200cleanDataProcessor(); //Lu200ABD
         //new WheatABandDcleandataProcessor(); //Lu106AB_D
         //new ABDvcfProcessor();
         //new ABvcfProcessor();
         //new DvcfProcessor();
+        new DataStorage();
 //        new SIFT();
 //        new CountSites();
         //new ScriptHapscanner2();
 //        new VariantsSum();
-        new PopGenParaWheat();
+//        new PopGenParaWheat();
         //new SplitScript();
 //        new Script();
 //        new FilterVCF();
@@ -77,6 +69,7 @@ public class GeneticLoadEntrance {
 //        System.out.println("Aoyue Repository --- Here is the entrance of GeneticLoad!\n");
 //        System.out.println(new SimpleDateFormat().format(new Date()) + "\tbegin.");
         new GeneticLoadEntrance();
+
 //        VCF vcf=new VCF("/data4/home/aoyue/vmap2/analysis/020_subsetvcf_fromMAF0.01byPop/002_mergedbySub/chr.lineageA.vcf.gz");
 //        vcf.addVCF(new VCF("/data4/home/aoyue/vmap2/analysis/020_subsetvcf_fromMAF0.01byPop/002_mergedbySub/chr.lineageB.vcf.gz"));
 //        vcf.write("/data4/home/aoyue/vmap2/analysis/020_subsetvcf_fromMAF0.01byPop/003_all/chr.ABsubgenome.vcf.gz");
@@ -113,7 +106,6 @@ public class GeneticLoadEntrance {
 //        new VariantsSum().getCDSannotation(args[0], args[1]);
 //new SplitScript().splitBwaScript(args[0], args[1], Integer.parseInt(args[2]),Integer.parseInt(args[3]));
 //        System.out.println(new SimpleDateFormat().format(new Date()) + "\tend.");
-
         /**
          * ******************************* temporary method
          * *********************************************
@@ -123,15 +115,16 @@ public class GeneticLoadEntrance {
 
     public void test() {
         try {
-                
-                
-//                System.out.println(String.valueOf(cnt) + " SNPs output from ");
-
-            }catch (Exception e) {
-                e.printStackTrace();
-                System.exit(1);
+            String sample = "a  b c    d";
+            String[] arrays = sample.split(" +");
+            for (String s : arrays) {
+                System.out.println(s);
             }
 
-        
+//           System.out.println(String.valueOf(cnt) + " SNPs output from ");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 }

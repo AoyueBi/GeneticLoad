@@ -654,12 +654,12 @@ public class VariantsSum {
                     if (ancAllele.equals(minor)) {
                         cntAnc++;
                         daf = 1 - maf;
-                        if (AAF_ABD > 0.5) {
+                        if (AAF_ABD > 0.5) { //说明AAF_ABD是major， 祖先状态是minor的，所有DAF是major
                             daf_ABD = AAF_ABD;
-                        } else if (AAF_ABD < 0.5) {
+                        } else if (AAF_ABD < 0.5) { //说明AAF_ABD是minor， 祖先状态是minor的，所有DAF是major
                             daf_ABD = 1 - AAF_ABD;
                         }
-                        if (AAF_AB > 0.5) {
+                        if (AAF_AB > 0.5) { 
                             daf_AB = AAF_AB;
                         } else if (AAF_AB < 0.5) {
                             daf_AB = 1 - AAF_AB;
@@ -680,9 +680,9 @@ public class VariantsSum {
                     if (ancAllele.equals(major)) {
                         cntAnc++;
                         daf = maf;
-                        if (AAF_ABD > 0.5) {
+                        if (AAF_ABD > 0.5) { //说明AAF_ABD是major， 祖先状态是major的，所有DAF是minor
                             daf_ABD = 1 - AAF_ABD;
-                        } else if (AAF_ABD < 0.5) {
+                        } else if (AAF_ABD < 0.5) { 
                             daf_ABD = AAF_ABD;
                         }
                         if (AAF_AB > 0.5) {

@@ -303,7 +303,6 @@ public class Script {
         for(int i =0; i < s.length; i++){
             System.out.println("cp -Rf /mnt/usb/ABD001/" + s[i] + "_1.fq.gz /data2/sharedData/vmap2/fastq/");
             System.out.println("cp -Rf /mnt/usb/ABD001/" + s[i] + "_2.fq.gz /data2/sharedData/vmap2/fastq/");
-            
         }
         
     }
