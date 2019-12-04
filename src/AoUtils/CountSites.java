@@ -1294,6 +1294,7 @@ public class CountSites {
      * @param outfileDirS
      */
     public void changechrPosonTxt(String infileDirS, String outfileDirS) {
+        
 
         //建立1-44一一对应chr1A的关系,目的：根据chr1找到chr1A
         String[] chrs = {"1A", "1B", "1D", "2A", "2B", "2D", "3A", "3B", "3D", "4A", "4B", "4D", "5A", "5B", "5D", "6A", "6B", "6D", "7A", "7B", "7D", "Mit", "Chl"};
@@ -1344,7 +1345,7 @@ public class CountSites {
             if (cnts[i] == 43 || (cnts[i] == 44)) {
 
             } else {
-                if (!(i % 2 == 0)) {
+                if (!(i % 2 == 0)) { //i为单数的时候,染色体号为双数
                     hmcntsPOS.put(cnts[i], chrpos[tt]);
                     tt++;
                 }
@@ -1360,7 +1361,9 @@ public class CountSites {
         }
         fs = new File(infileDirS).listFiles();
         List<File> fsList = Arrays.asList(fs);
+        
         fsList.parallelStream().forEach(f -> {
+            String temp = null;
             try {
                 String infileS = f.getAbsolutePath();
                 String outfileS = null;
@@ -1374,7 +1377,8 @@ public class CountSites {
                 }
 
                 BufferedWriter bw = IOUtils.getTextGzipWriter(outfileS);
-                String temp = br.readLine();
+                
+                temp = br.readLine();
                 bw.write(temp);
                 bw.newLine();
                 int a = 0;
@@ -1413,6 +1417,7 @@ public class CountSites {
                 System.out.println(chr + " was finished to change the CHROM and Pos from    " + f.getAbsolutePath());
             } catch (Exception e) {
                 e.printStackTrace();
+                System.out.println(temp);
                 System.exit(1);
             }
         });

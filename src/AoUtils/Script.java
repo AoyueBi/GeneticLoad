@@ -22,7 +22,7 @@ public class Script {
     public Script() {
         //System.out.println("");
 //        this.splitBwaScript("/Users/Aoyue/Documents/sh_fillterMiss20191120.sh", "sh_filterMiss", 21, 2);
-//        this.universalScript();
+        this.universalScript();
         //this.removeBadTaxafromVCF();
 //        this.cp();
 //        this.bgzip_D();
@@ -35,15 +35,14 @@ public class Script {
 
 //        
 //        this.mergelogTxt("/Users/Aoyue/Documents/log_024", "/Users/Aoyue/Documents/ploidy.txt");
-
     }
-    
+
     public void script_AB_byRef() {
 //        String[] db = {"1D", "2D", "3D", "4D", "5D", "6D", "7D"};
 //        Arrays.sort(db);
         for (int i = 1; i < 8; i++) {
-            String[] chr = {i+"A", i+"B"};
-            for(int j = 0 ; j<chr.length; j++){
+            String[] chr = {i + "A", i + "B"};
+            for (int j = 0; j < chr.length; j++) {
                 System.out.println(chr[j] + "vcftools");
             }
         }
@@ -128,8 +127,11 @@ public class Script {
             BufferedReader br = IOUtils.getTextReader(infileS);
             String temp = null;
             while ((temp = br.readLine()) != null) {
-                String chr = temp.substring(3, 6);
-                System.out.println("mv " + temp + " chr" + chr + "_vmap2_subset0.001.vcf.gz");
+//                String chr = temp.substring(3, 6);
+//                System.out.println("mv " + temp + " chr" + chr + "_vmap2_subset0.001.vcf.gz");
+//                System.out.println("bgzip -c -@ 4 " + temp + " > " + "/data4/home/aoyue/vmap2/genotype/mergedVCF/012_VCFbyPop/001_byPloid/007_refHexaploid_bgzip/" + temp + ".gz &");
+                System.out.println("tabix -p vcf " + temp + ".gz &");
+
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -277,7 +279,7 @@ public class Script {
 //System.out.println("java -jar 008_calDepthSDPvalue_singlethread.jar /data4/home/aoyue/vmap2/analysis/019_rebackDDtauschii/001_fastcall_Dgenome/rawVCF/chr" + chr + ".vcf /data4/home/aoyue/vmap2/analysis/019_rebackDDtauschii/003_filterVCF_Dgenome/001_depthDB/chr" + chr + ".Dgenome.depth.txt.gz > log_008/log_calDepthSDPvalue_chr" + chr + "_20191024.txt &");
 //                System.out.println("java -jar mergePosList.jar /data4/home/aoyue/vmap2/analysis/011_filterVCF/abd/003_filteredVCF/chr" + chr + ".ABDgenome.filtered0.75.vcf /data4/home/aoyue/vmap2/analysis/019_rebackDDtauschii/003_filterVCF_Dgenome/003_filteredVCF/chr" + chr + ".Dgenome.filtered0.75.vcf.gz /data4/home/aoyue/vmap2/analysis/019_rebackDDtauschii/003_filterVCF_Dgenome/004_mergePos/posAllele/chr" + chr + "_PosAllele.txt.gz > log_mergePosList/log_mergePosList_chr" + chr + "_20191025.txt & ");
 //                System.out.println("bgzip -@ 10 chr" + chr + ".ABgenome.filtered0.75.vcf");
-                System.out.println("bgzip -@ 20 chr" + chr + ".subgenome.vcf" );
+                System.out.println("bgzip -@ 20 chr" + chr + ".subgenome.vcf");
             }
         }
     }
@@ -297,14 +299,14 @@ public class Script {
 
         }
     }
-    
-    public void cp (){
-        String[] s = {"LLX", "LGD","HRV-L1","HUN-L1","ITA-C1","ITA-L1","MEX-L1"};
-        for(int i =0; i < s.length; i++){
+
+    public void cp() {
+        String[] s = {"LLX", "LGD", "HRV-L1", "HUN-L1", "ITA-C1", "ITA-L1", "MEX-L1"};
+        for (int i = 0; i < s.length; i++) {
             System.out.println("cp -Rf /mnt/usb/ABD001/" + s[i] + "_1.fq.gz /data2/sharedData/vmap2/fastq/");
             System.out.println("cp -Rf /mnt/usb/ABD001/" + s[i] + "_2.fq.gz /data2/sharedData/vmap2/fastq/");
         }
-        
+
     }
 
     /**
@@ -333,6 +335,9 @@ public class Script {
 
     /**
      * 1 2 3 4 5 6 后缀分别是Alineage Blineage Dlineage chr024.Dlineage.vcf
+     */
+    /**
+     * @deprecated
      */
     public void bgzip_lineage_deprecated() {
         int[] arra = {1, 2, 7, 8, 13, 14, 19, 20, 25, 26, 31, 32, 37, 38};

@@ -5,7 +5,6 @@
  */
 package WheatGeneticLoad;
 
-import AoUtils.Bin;
 import AoUtils.CountSites;
 import format.genomeAnnotation.GeneFeature;
 import format.range.Range;
@@ -13,16 +12,13 @@ import format.table.RowTable;
 import gnu.trove.list.array.TByteArrayList;
 import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TIntArrayList;
+import utils.IOUtils;
+import utils.PStringUtils;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import utils.IOUtils;
-import utils.PStringUtils;
+import java.util.*;
 
 /**
  *
@@ -74,8 +70,172 @@ public class VariantsSum {
 //        this.mkBarplotofMAF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/003_mergebySub", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/004_bin/004_maf/001_mkBarplotofMaf","10","0.5");
         //20 bins
 //        this.mkBarplotofDAF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/003_mergebySub", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/004_bin/005_daf_20bins", "20", "1");
+//        this.changeChrPos();
+//this.mergebySub();
+
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/001_genicSNPAnnotation";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/002_changeChrPos";
+
+/**
+ * 新的一批数据，和老师一起写程序得出的结果
+ */
+//        new CountSites().mergefile1and2_chr1and2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/002_changeChrPos","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/003_mergebySub");
+//        new CountSites().changechrPosonTxt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/001_genicSNPAnnotation","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/002_changeChrPos");
+//    this.mkBarplot("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/001_test", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/002_mkBarplot", "20", "1.00001");
+//    new CountSites().mergeTxtbysuffix("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/003_mergebySub", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/004_merge/chr_A.SNP_anno.txt.gz", "A_SNP_anno.changeChrPos.txt.gz");
+//        new CountSites().mergeTxtbysuffix("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/003_mergebySub", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/004_merge/chr_B.SNP_anno.txt.gz", "B_SNP_anno.changeChrPos.txt.gz");
+//    new CountSites().mergeTxtbysuffix("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/003_mergebySub", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/004_merge/chr_D.SNP_anno.txt.gz", "D_SNP_anno.changeChrPos.txt.gz");
+
+//    new CountSites().mergefile1and2_chr1and2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/102_cdsAnnoDB","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/105_from102/001_merge");
+//    new CountSites().changechrPosonTxt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/105_from102/001_merge","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/105_from102/002_changeChrPos");
+//    new CountSites().mergeTxtbysuffix("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/105_from102/002_changeChrPos","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/105_from102/003_mergeSub/chr_A.SNP_anno.txt.gz","A_vmap2.1_AnnoDB_addDAF_addSIFT_CDSregion.changeChrPos.txt.gz");
+//        new CountSites().mergeTxtbysuffix("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/105_from102/002_changeChrPos","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/105_from102/003_mergeSub/chr_B.SNP_anno.txt.gz","B_vmap2.1_AnnoDB_addDAF_addSIFT_CDSregion.changeChrPos.txt.gz");
+//    new CountSites().mergeTxtbysuffix("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/105_from102/002_changeChrPos","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/105_from102/003_mergeSub/chr_D.SNP_anno.txt.gz","D_vmap2.1_AnnoDB_addDAF_addSIFT_CDSregion.changeChrPos.txt.gz");
+
+    /**
+     * l老师新过滤的gene，生成的数据，这里基因数增加
+     * 
+     */
+//    new CountSites().mergefile1and2_chr1and2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/006_genicSNPAnnotation_lowerFilterGene","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/007_changeChrPos");
+//    new CountSites().changechrPosonTxt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/007_changeChrPos","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/008_mergebySub");
+//    new CountSites().mergeTxtbysuffix("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/008_mergebySub","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/009_merge/chr_A.SNP_anno.txt.gz","A_SNP_anno.changeChrPos.txt.gz");
+//       new CountSites().mergeTxtbysuffix("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/008_mergebySub","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/009_merge/chr_B.SNP_anno.txt.gz","B_SNP_anno.changeChrPos.txt.gz");
+//        new CountSites().mergeTxtbysuffix("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/008_mergebySub","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/009_merge/chr_D.SNP_anno.txt.gz","D_SNP_anno.changeChrPos.txt.gz");
+
+    
+    
     }
     
+    /**
+     *目的：想通过annotation库文件直接获得作图的表格，免去中间手动建立EXCEL和合并结果
+     * 
+     * @param infileDirS
+     * @param outfileDirS
+     * @param binNum the number of bins that would be divided
+     */
+    public void mkBarplot(String infileDirS, String outfileDirS, String binNum, String max) {
+        int bins = Integer.parseInt(binNum);
+        double length = Double.parseDouble(max);
+        new File(outfileDirS).mkdirs();
+
+        File[] fs = new File(infileDirS).listFiles();
+        for (int i = 0; i < fs.length; i++) {
+            if (fs[i].isHidden()) {
+                System.out.println(fs[i].getName() + " is hidden");
+                fs[i].delete();
+            }
+        }
+        fs = new File(infileDirS).listFiles();
+        List<File> fsList = Arrays.asList(fs);
+        fsList.stream().forEach(f -> {
+            String infileS = f.getAbsolutePath();
+            String outfileS = null;
+            BufferedReader br = null;
+            if (infileS.endsWith(".txt")) {
+                br = IOUtils.getTextReader(infileS);
+                outfileS = new File(outfileDirS, f.getName().replaceFirst("txt", bins + "bins" + ".Table.txt")).getAbsolutePath();
+            } else if (infileS.endsWith(".txt.gz")) {
+                br = IOUtils.getTextGzipReader(infileS);
+                outfileS = new File(outfileDirS, f.getName().replaceFirst("txt.gz", bins + "bins" + ".Table.txt")).getAbsolutePath();
+            }
+            //先建立bound数组
+            double[] bound = new double[bins];
+            for (int i = 1; i < bound.length; i++) {
+                bound[i] = (double) length / bins * i;
+            }
+
+            //开始计算daf
+            double[] daf1 = new double[bins];
+            TDoubleArrayList dafList1 = new TDoubleArrayList();
+            RowTable<String> t = new RowTable<>(infileS);
+            int count = t.getRowNumber();
+            for (int i = 0; i < t.getRowNumber(); i++) {
+                if (t.getCell(i, 15).startsWith("N")) { //DAF值所在的那一列 DAF_ABD
+                    continue;
+                }
+                double value = t.getCellAsDouble(i, 15); //DAF值所在的那一列 DAF_ABD
+                dafList1.add(value);
+                int index = Arrays.binarySearch(bound, value);
+                if (index < 0) {
+                    index = -index - 2;
+                }
+                //例如 0.112021856在bound搜索结果为-13，则此时index为11，及0.1-0.2范围内。好神奇！！又如0.112394，index也是11.
+                //又如0.21652在bound搜索结果中为-23,这样index=21， 这样就将maf的值按照1-100分布开来。
+                daf1[index]++; //值落入第i种变异的第index个区间的个数
+            }
+            //开始计算每个区间落入点的比例
+            for (int i = 0; i < daf1.length; i++) {
+                daf1[i] = daf1[i] / dafList1.size();
+            }
+            System.out.println(dafList1.size() + "  size");
+
+            //开始计算daf_ABD
+            double[] daf2 = new double[bins];
+            TDoubleArrayList dafList2 = new TDoubleArrayList();
+            for (int i = 0; i < t.getRowNumber(); i++) {
+                if (t.getCell(i, 16).startsWith("N")) { //DAF值所在的那一列
+                    continue;
+                }
+                double value = t.getCellAsDouble(i, 16); //DAF值所在的那一列
+                dafList2.add(value);
+                int index = Arrays.binarySearch(bound, value);
+                if (index < 0) {
+                    index = -index - 2;
+                }
+                //例如 0.112021856在bound搜索结果为-13，则此时index为11，及0.1-0.2范围内。好神奇！！又如0.112394，index也是11.
+                //又如0.21652在bound搜索结果中为-23,这样index=21， 这样就将maf的值按照1-100分布开来。
+                daf2[index]++; //值落入第i种变异的第index个区间的个数
+            }
+            //开始计算每个区间落入点的比例
+            for (int i = 0; i < daf2.length; i++) {
+                daf2[i] = daf2[i] / dafList2.size();
+            }
+            System.out.println(dafList2.size() + "  size");
+
+            //开始计算daf_AB
+            double[] daf3 = new double[bins];
+            TDoubleArrayList dafList3 = new TDoubleArrayList();
+            for (int i = 0; i < t.getRowNumber(); i++) {
+                if (t.getCell(i, 17).equals("NA")) { //DAF值所在的那一列
+                    continue;
+                }
+                double value = t.getCellAsDouble(i, 17); //DAF值所在的那一列
+                dafList3.add(value);
+                int index = Arrays.binarySearch(bound, value);
+                if (index < 0) {
+                    index = -index - 2;
+                }
+                //例如 0.112021856在bound搜索结果为-13，则此时index为11，及0.1-0.2范围内。好神奇！！又如0.112394，index也是11.
+                //又如0.21652在bound搜索结果中为-23,这样index=21， 这样就将maf的值按照1-100分布开来。
+                daf3[index]++; //值落入第i种变异的第index个区间的个数
+            }
+            //开始计算每个区间落入点的比例
+            for (int i = 0; i < daf3.length; i++) {
+                daf3[i] = daf3[i] / dafList3.size();
+            }
+            System.out.println(dafList3.size() + "  size");
+
+            //开始写出文件
+            try {
+                BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+                bw.write("Daf\tDensity_Total\tDensity_ABD\tDensity_AB");
+                bw.newLine();
+                for (int i = 0; i < bound.length; i++) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(String.format("%.3f", (double) bound[i] + (double) (length / bins) / (double) 2)).append("\t").append(String.format("%.4f", daf1[i])).append("\t").append(String.format("%.4f", daf2[i])).append("\t").append(String.format("%.4f", daf3[i]));
+                    bw.write(sb.toString());
+                    bw.newLine();
+                }
+                bw.flush();
+                bw.close();
+                System.out.println(f.getName() + " is completed at " + outfileS);
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
+        });
+    }
+
     /**
      *
      * @param infileDirS
@@ -112,8 +272,7 @@ public class VariantsSum {
             for (int i = 1; i < bound.length; i++) {
                 bound[i] = (double) length / bins * i;
             }
-            
-            
+
             //开始计算daf
             double[] daf1 = new double[bins];
             TDoubleArrayList dafList1 = new TDoubleArrayList();
@@ -137,9 +296,8 @@ public class VariantsSum {
             for (int i = 0; i < daf1.length; i++) {
                 daf1[i] = daf1[i] / dafList1.size();
             }
-            System.out.println(dafList1.size()  + "  size");
-            
-            
+            System.out.println(dafList1.size() + "  size");
+
             //开始计算daf_ABD
             double[] daf2 = new double[bins];
             TDoubleArrayList dafList2 = new TDoubleArrayList();
@@ -162,7 +320,7 @@ public class VariantsSum {
                 daf2[i] = daf2[i] / dafList2.size();
             }
             System.out.println(dafList2.size() + "  size");
-            
+
             //开始计算daf_AB
             double[] daf3 = new double[bins];
             TDoubleArrayList dafList3 = new TDoubleArrayList();
@@ -185,8 +343,7 @@ public class VariantsSum {
                 daf3[i] = daf3[i] / dafList3.size();
             }
             System.out.println(dafList3.size() + "  size");
-            
-            
+
             //开始写出文件
             try {
                 BufferedWriter bw = IOUtils.getTextWriter(outfileS);
@@ -194,7 +351,7 @@ public class VariantsSum {
                 bw.newLine();
                 for (int i = 0; i < bound.length; i++) {
                     StringBuilder sb = new StringBuilder();
-                    sb.append(String.format("%.3f", (double)bound[i] + (double)(length / bins) / (double)2)).append("\t").append(String.format("%.4f", daf1[i])).append("\t").append(String.format("%.4f", daf2[i])).append("\t").append(String.format("%.4f", daf3[i]));
+                    sb.append(String.format("%.3f", (double) bound[i] + (double) (length / bins) / (double) 2)).append("\t").append(String.format("%.4f", daf1[i])).append("\t").append(String.format("%.4f", daf2[i])).append("\t").append(String.format("%.4f", daf3[i]));
                     bw.write(sb.toString());
                     bw.newLine();
                 }
@@ -207,7 +364,7 @@ public class VariantsSum {
             }
         });
     }
-    
+
     /**
      *
      * @param infileDirS
@@ -244,8 +401,7 @@ public class VariantsSum {
             for (int i = 1; i < bound.length; i++) {
                 bound[i] = (double) length / bins * i;
             }
-            
-            
+
             //开始计算daf
             double[] daf1 = new double[bins];
             TDoubleArrayList dafList1 = new TDoubleArrayList();
@@ -269,9 +425,8 @@ public class VariantsSum {
             for (int i = 0; i < daf1.length; i++) {
                 daf1[i] = daf1[i] / dafList1.size();
             }
-            System.out.println(dafList1.size()  + "  size");
-            
-            
+            System.out.println(dafList1.size() + "  size");
+
             //开始计算daf_ABD
             double[] daf2 = new double[bins];
             TDoubleArrayList dafList2 = new TDoubleArrayList();
@@ -294,7 +449,7 @@ public class VariantsSum {
                 daf2[i] = daf2[i] / dafList2.size();
             }
             System.out.println(dafList2.size() + "  size");
-            
+
             //开始计算daf_AB
             double[] daf3 = new double[bins];
             TDoubleArrayList dafList3 = new TDoubleArrayList();
@@ -317,8 +472,7 @@ public class VariantsSum {
                 daf3[i] = daf3[i] / dafList3.size();
             }
             System.out.println(dafList3.size() + "  size");
-            
-            
+
             //开始写出文件
             try {
                 BufferedWriter bw = IOUtils.getTextWriter(outfileS);
@@ -326,7 +480,7 @@ public class VariantsSum {
                 bw.newLine();
                 for (int i = 0; i < bound.length; i++) {
                     StringBuilder sb = new StringBuilder();
-                    sb.append(String.format("%.3f", (double)bound[i] + (double)(length / bins) / (double)2)).append("\t").append(String.format("%.4f", daf1[i])).append("\t").append(String.format("%.4f", daf2[i])).append("\t").append(String.format("%.4f", daf3[i]));
+                    sb.append(String.format("%.3f", (double) bound[i] + (double) (length / bins) / (double) 2)).append("\t").append(String.format("%.4f", daf1[i])).append("\t").append(String.format("%.4f", daf2[i])).append("\t").append(String.format("%.4f", daf3[i]));
                     bw.write(sb.toString());
                     bw.newLine();
                 }
@@ -339,45 +493,51 @@ public class VariantsSum {
             }
         });
     }
-    
-    
-    public void mergebySub(){
+
+    public void mergebySub() {
         String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/002_changeChrPos";
         String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/003_mergebySub";
+        
+        
         File[] fs = new File(infileDirS).listFiles();
-        for(int i = 0; i < fs.length; i++){
-            if(fs[i].isHidden())
+        for (int i = 0; i < fs.length; i++) {
+            if (fs[i].isHidden()) {
                 fs[i].delete();
+            }
         }
         fs = new File(infileDirS).listFiles();
         for (int i = 0; i < fs.length; i++) {
             System.out.println(fs[i]);
             new File(outfileDirS, fs[i].getName()).mkdirs();
         }
-        for(int i = 0; i < fs.length; i++){
+        for (int i = 0; i < fs.length; i++) {
             new CountSites().mergeTxtbysuffix(fs[i].getAbsolutePath(), new File(outfileDirS, fs[i].getName()).getAbsolutePath() + "_A.txt.gz", "A.");
-            new CountSites().mergeTxtbysuffix(fs[i].getAbsolutePath(), new File(outfileDirS, fs[i].getName()).getAbsolutePath()+ "_B.txt.gz", "B.");
-            new CountSites().mergeTxtbysuffix(fs[i].getAbsolutePath(), new File(outfileDirS, fs[i].getName()).getAbsolutePath()+ "_D.txt.gz", "D.");
+            new CountSites().mergeTxtbysuffix(fs[i].getAbsolutePath(), new File(outfileDirS, fs[i].getName()).getAbsolutePath() + "_B.txt.gz", "B.");
+            new CountSites().mergeTxtbysuffix(fs[i].getAbsolutePath(), new File(outfileDirS, fs[i].getName()).getAbsolutePath() + "_D.txt.gz", "D.");
         }
-        
+
     }
 
     public void changeChrPos() {
         String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/001_ori";
         String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/002_changeChrPos";
+
+
         File[] fs = new File(infileDirS).listFiles();
-        for(int i = 0; i < fs.length; i++){
-            if(fs[i].isHidden())
+        for (int i = 0; i < fs.length; i++) {
+            if (fs[i].isHidden()) {
                 fs[i].delete();
+            }
         }
         fs = new File(infileDirS).listFiles();
+
         for (int i = 0; i < fs.length; i++) {
             System.out.println(fs[i]);
             new File(outfileDirS, fs[i].getName()).mkdirs();
         }
-        
-        for(int i = 0; i < fs.length; i++){
-            new CountSites().mergefileandChangeChrPos_chr1and2(fs[i].getAbsolutePath(),new File(outfileDirS, fs[i].getName()).getAbsolutePath());
+
+        for (int i = 0; i < fs.length; i++) {
+            new CountSites().mergefileandChangeChrPos_chr1and2(fs[i].getAbsolutePath(), new File(outfileDirS, fs[i].getName()).getAbsolutePath());
         }
     }
 
@@ -659,7 +819,7 @@ public class VariantsSum {
                         } else if (AAF_ABD < 0.5) { //说明AAF_ABD是minor， 祖先状态是minor的，所有DAF是major
                             daf_ABD = 1 - AAF_ABD;
                         }
-                        if (AAF_AB > 0.5) { 
+                        if (AAF_AB > 0.5) {
                             daf_AB = AAF_AB;
                         } else if (AAF_AB < 0.5) {
                             daf_AB = 1 - AAF_AB;
@@ -682,7 +842,7 @@ public class VariantsSum {
                         daf = maf;
                         if (AAF_ABD > 0.5) { //说明AAF_ABD是major， 祖先状态是major的，所有DAF是minor
                             daf_ABD = 1 - AAF_ABD;
-                        } else if (AAF_ABD < 0.5) { 
+                        } else if (AAF_ABD < 0.5) {
                             daf_ABD = AAF_ABD;
                         }
                         if (AAF_AB > 0.5) {
@@ -901,13 +1061,10 @@ public class VariantsSum {
 //        String countFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/010_bin/synSNP.txt";
 //        String mafDistrubutionFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/010_bin/synSNP/mafSFS.txt";
 //        String dafDistrubutionFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/006_snpClassify/010_bin/synSNP/dafSFS.txt";
-        
         String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/003_mergebySub";
         String countFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/004_bin/synSNP.txt";
         String mafDistrubutionFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/004_bin/mafSFS.txt";
         String dafDistrubutionFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/004_bin/dafSFS.txt";
-        
-        
 
         //int sampleSize = 10000;
         File[] fs = new File(infileDirS).listFiles();

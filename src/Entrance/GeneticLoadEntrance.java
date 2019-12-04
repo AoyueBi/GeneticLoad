@@ -5,8 +5,11 @@
  */
 package Entrance;
 
+import AoUtils.AoMath;
 import AoUtils.DataStorage;
 import WheatGeneticLoad.Treetest;
+import WheatGeneticLoad.VariantsSum;
+import analysis.wheatHapMap.DeleteriousDB;
 
 /**
  *
@@ -50,16 +53,19 @@ public class GeneticLoadEntrance {
         //new ABDvcfProcessor();
         //new ABvcfProcessor();
         //new DvcfProcessor();
-        new DataStorage();
+//        new DataStorage();
 //        new SIFT();
 //        new CountSites();
         //new ScriptHapscanner2();
-//        new VariantsSum();
+        new VariantsSum();
 //        new PopGenParaWheat();
         //new SplitScript();
 //        new Script();
 //        new FilterVCF();
 //        new Bin();
+//        new AoMath();
+
+//new DeleteriousDB();
     }
 
     public static void main(String[] args) {
