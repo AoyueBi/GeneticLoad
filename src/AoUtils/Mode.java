@@ -143,6 +143,7 @@ public class Mode {
             BufferedWriter bw = IOUtils.getTextWriter(outfileS);
             String temp = null;
             int cnt = 0;
+            List<String> l = new ArrayList<>();
             while ((temp = br.readLine()) != null) {
                 StringBuilder sb = new StringBuilder();
                 if (temp.startsWith("#")) {

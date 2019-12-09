@@ -22,13 +22,13 @@ public class Script {
     public Script() {
         //System.out.println("");
 //        this.splitBwaScript("/Users/Aoyue/Documents/sh_fillterMiss20191120.sh", "sh_filterMiss", 21, 2);
-        this.universalScript();
+//        this.universalScript();
         //this.removeBadTaxafromVCF();
 //        this.cp();
 //        this.bgzip_D();
 //        this.bgzip_AB();
 //        this.bgzip_ABD();
-//        this.script_ABD();
+        this.script_ABD();
 //        this.script_AB();
 //        this.script_D();
 //        this.script_AB_byRef();
@@ -190,7 +190,10 @@ public class Script {
 //            System.out.println("java -jar 028_extractVCF.jar  /data4/home/aoyue/vmap2/genotype/mergedVCF/011_VMapII/chr" + chr + "_vmap2.1.vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/012_VCFbyPop/001_byPloid/hexaploid/chr" + chr + "_vmap2.1_hexaploid.vcf /data4/home/aoyue/vmap2/analysis/000_taxaList/BreadWheat_S419.txt > log_028/log_extractVCF_chr" + chr + "_hexaploid20191107.txt 2>&1 &");
 //            System.out.println("java -jar 028_extractVCF.jar /data4/home/aoyue/vmap2/genotype/mergedVCF/011_VMapII/chr" + chr + "_vmap2.1.vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/012_VCFbyPop/002_bySubspecies/001_Landrace/chr" + chr + "_vmap2.1_Landrace.vcf /data4/home/aoyue/vmap2/analysis/000_taxaList/002_bySubspecies/hexaploid/Landrace.txt > /data4/home/aoyue/vmap2/aaPlantGenetics/log_028/001_subspecies/log_extractVCF_chr" + chr + "_Landrace20191107.txt 2>&1");
 //            System.out.println("java -jar 028_extractVCF.jar /data4/home/aoyue/vmap2/genotype/mergedVCF/011_VMapII/chr" + chr + "_vmap2.1.vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/012_VCFbyPop/002_bySubspecies/002_Cultivar/chr" + chr + "_vmap2.1_Cultivar.vcf /data4/home/aoyue/vmap2/analysis/000_taxaList/002_bySubspecies/hexaploid/Cultivar.txt > /data4/home/aoyue/vmap2/aaPlantGenetics/log_028/001_subspecies/log_extractVCF_chr" + chr + "_Cultivar20191107.txt 2>&1");
-                System.out.println(cmd);
+ 
+//vcftools --gzvcf /data4/home/aoyue/vmap2/analysis/002_bivcf/d/chr005.Dgenome.bi.vcf.gz --max-missing 0.1 --recode --recode-INFO-all --stdout | bgzip -c -@ 10 > /data4/home/aoyue/vmap2/analysis/003_filterMiss/d/chr005.Dgenome.filterMiss.vcf.gz &
+
+System.out.println("vcftools --gzvcf chr" + chr + "_vmap2_subset0.001.vcf.gz --max-missing 0.2 --recode --recode-INFO-all --stdout | bgzip -c -@ 10 > /data4/home/aoyue/vmap2/analysis/020_subsetvcf/001_fromMAF0.01byPop/001/chr" + chr + "_vmap2_subset0.001.vcf.gz &");
                 bw.write(cmd);
                 bw.newLine();
             }

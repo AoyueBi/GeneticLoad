@@ -3,28 +3,24 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package WheatGeneticLoad;
+package Plot;
 
 import format.table.RowTable;
+import utils.IOUtils;
+import utils.PStringUtils;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import utils.IOUtils;
-import utils.PStringUtils;
+import java.util.*;
 
 /**
  *
  * @author Aoyue
  */
-public class Treetest {
+public class Tree {
 
-    public Treetest() {
+    public Tree() {
 //        this.colbyType();
        //this.colbyContinent();
 //        this.binarybyType();
@@ -37,17 +33,92 @@ public class Treetest {
         //this.colRangebyPloidy_Dsubgenome();
         //this.prune_removeNA_Dsubgenome();
         //this.colRangebyHexaDiGroup_Dsubgenome();
-        //this.colRangebyHexaDiGroup_ABsubgenome();
+//        this.colRangebyHexaDiGroup_ABsubgenome();
+//        this.removeDot();
+//        this.modifyMegaName();
+//        this.labels_Asub();
+//        this.binarybyContinent();
+
+        /**
+         * 处理学博方法的tree
+         */
+
+//        this.colRangebyHexaTetraGroup_Asubgenome();
+        this.labels_Asub_xuebo();
+//        this.binarybyContinent();
+
 
     }
     
+
     /**
-     * 进行A_B subgenome 的分组
+     * 修改树node的名字,先修改4倍体的名字，再修改六倍体的名字
      */
-    public void colRangebyHexaDiGroup_ABsubgenome() {
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/004_A_Bsubgenome_maf0.01/source/002_subspecies/";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/004_A_Bsubgenome_maf0.01/003_labels/001_colRangebyploidy.A_Bsubgenome.txt";
-        String outfileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/004_A_Bsubgenome_maf0.01/003_labels/001_colBranchbyploidy.A_Bsubgenome.txt";
+    public void labels_Asub_xuebo() {
+
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/source/labelChange_Tetraploid.txt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/006_fromxuebo/002_labels/003_labelcChange.Asub_tetraploid.txt";
+//        String reheaderS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/000_prepareData/001_input/taxaList.txt";
+
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/source/labelChange_Asub_Hexaploid.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/006_fromxuebo/002_labels/003_labelcChange.Asub_hexaploid.txt";
+        String reheaderS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/000_prepareData/001_input/taxaList.txt";
+
+
+        RowTable<String> t = new RowTable<>(reheaderS);
+        HashMap<String,String> hm = new HashMap<>();
+        for (int i = 0; i < t.getRowNumber() ; i++) {
+            String taxa = t.getCell(i,0);
+            String taxaID = t.getCell(i,1);
+            hm.put(taxa,taxaID);
+        }
+
+        try {
+            BufferedReader br = IOUtils.getTextReader(infileS);
+            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            bw.write("LABELS\n");
+            bw.write("SEPARATOR TAB\n");
+            bw.write("DATA\n");
+            String temp = br.readLine(); //read header
+            while ((temp = br.readLine()) != null) {
+                String taxa = PStringUtils.fastSplit(temp).get(0);
+                String taxaID = hm.get(taxa);
+                String country = PStringUtils.fastSplit(temp).get(3);
+                String index = PStringUtils.fastSplit(temp).get(5);
+                bw.write(taxa + "\t" + index );
+                bw.newLine();
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+
+
+
+    /**
+     * 根据学博的方法，进行分组，按照倍性添加颜色
+     */
+    public void colRangebyHexaTetraGroup_Asubgenome() {
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/006_from003";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/006_fromxuebo/002_labels/001_colRangebySubspecies_Asubgenome.txt";
+        String outfileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/006_fromxuebo/002_labels/001_colBranchbySubspecies_Asubgenome.txt";
+
+        String reheaderS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/000_prepareData/001_input/taxaList.txt";
+        RowTable<String> t = new RowTable<>(reheaderS);
+        HashMap<String,String> hmtaxa = new HashMap<>();
+        for (int i = 0; i < t.getRowNumber() ; i++) {
+            String taxa = t.getCell(i,0);
+            String taxaID = t.getCell(i,1);
+            hmtaxa.put(taxa,taxaID);
+        }
+
+
         File f = new File(infileDirS);
         File[] fs = IOUtils.listRecursiveFiles(f);
         for (int i = 0; i < fs.length; i++) {
@@ -59,8 +130,8 @@ public class Treetest {
         fs = IOUtils.listRecursiveFiles(f);
         Arrays.sort(fs);
 
-        String[] groups = {"Ae.tauschii", "Wild emmer","Domesticated emmer","Free-threshing emmer","Not free-threshing emmer","Cultivar","Landrace","Others"};
-        String[] col = { "#87cef9","#ffcf66","#cc8b00","#664601","#b17902","#960505","#fc6e6e","#de0707"};
+        String[] groups = {"Ae.tauschii", "Wild_emmer","Domesticated_emmer","Free_threshing_tetraploid","OtherTetraploid","Cultivar","Landrace","OtherHexaploid"};
+        String[] col = { "#87cef9","#ffd702","#7f5701","#00cd66","#00f3ff","#9900ff","#fc6e6e","#fe63c2"};
         HashMap<String, String> hm = new HashMap<>();
         for (int i = 0; i < groups.length; i++) {
             hm.put(groups[i], col[i]);
@@ -84,8 +155,288 @@ public class Treetest {
                     cnt++;
                     bw[0].write(temp + "\trange\t" + hm.get(group) + "\t" + group);
                     bw[0].newLine();
-                    
+
                     bw[1].write(temp + "\tbranch\t" + hm.get(group) + "\t" + "normal");
+                    bw[1].newLine();
+                }
+                br.close();
+
+            }
+            bw[0].flush();
+            bw[1].flush();
+            bw[0].close();
+            bw[1].close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+
+
+     //根据大洲信息进行 binary标记。
+     // 3种颜色：#FFD700 #87CEFA #FF6A6A 3种标记：HV 2 3 状态：
+     //hm1 为 landrace的状态标记；如果是Traditional cultivar/Landrace，为1，如果是 Landrace，为0，如果是其他，为-1；
+     //hm2 为cultivar的状态标记；如果是 Cultivar，为1，如果是Advanced/improved cultivar，为0；如果是其他，为-1；
+     //hm3 为 breeding material的状态标记；如果是 Breeding/Research Material，为1，如果不是，为-1.
+    public void binarybyContinent() {
+
+        //建立颜色值的hashMap 亚洲      欧洲       美洲      非洲      大洋洲
+        String[] col = {"#82c782","#ff9900","#cf99ff","#7b241c","#5dace2"};
+        String[] shape = {"3","1","2","4","6"};
+//        String[] type = {"Western Asia", "East Asia","South Asia","Central Asia","Western Europe","Eastern Europe","Southern Europe","Southeast Europe","Central Europe","Northern Europe", "North America","South America","Africa","Oceania"};
+        String[] type = {"Asia","Europe","America","Africa","Oceania"};
+
+        for (int i = 0; i < type.length; i++) {
+            System.out.println(type[i]);
+        }
+
+        HashMap<String,String>  hmcol = new HashMap<>();
+        HashMap<String,String>  hmshape = new HashMap<>();
+        for (int i = 0; i < type.length; i++) {
+            if(type[i].contains("Asia")){
+                hmcol.put(type[i],col[0]);
+                hmshape.put(type[i],shape[0]);
+            }
+            if(type[i].contains("Europe")){
+                hmcol.put(type[i],col[1]);
+                hmshape.put(type[i],shape[1]);
+            }
+            if(type[i].contains("America")){
+                hmcol.put(type[i],col[2]);
+                hmshape.put(type[i],shape[2]);
+            }
+            if(type[i].contains("Africa")){
+                hmcol.put(type[i],col[3]);
+                hmshape.put(type[i],shape[3]);
+            }
+            if(type[i].contains("Oceania")){
+                hmcol.put(type[i],col[4]);
+                hmshape.put(type[i],shape[4]);
+            }
+        }
+
+        HashMap<String,String>[]  hms = new HashMap[type.length];
+        for (int i = 0; i < type.length; i++) { //初始化 hashmap
+            hms[i] = new HashMap<>();
+        }
+
+        //System.out.println(type);
+        for (int i = 0; i < type.length; i++) { //从第一种类型开始循环
+            for (int j = 0; j < hms.length; j++) {
+                if(type[j].equals(type[i])){ 
+                    hms[j].put(type[i], "1");
+                }
+                else{
+                    hms[j].put(type[i], "-1");
+                }
+            }
+            //System.out.println(type[4] + " is " + hms[0].get(type[4]) + " "+ hms[1].get(type[4]) + " " + hms[2].get(type[4]) + " " + hms[3].get(type[4]) + " " + hms[4].get(type[4]) + " " + hms[5].get(type[4]));
+        }
+
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/003_labels/004_binarybyType.txt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/003_labels/004_binarybyType_only5continent.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/006_fromxuebo/002_labels/004_binarybyType_only5continent.txt";
+        String reheaderS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/000_prepareData/001_input/taxaList.txt";
+
+        RowTable<String> t = new RowTable<>(reheaderS);
+        HashMap<String,String> hm = new HashMap<>();
+        for (int i = 0; i < t.getRowNumber() ; i++) {
+            String taxa = t.getCell(i,0);
+            String taxaID = t.getCell(i,1);
+            hm.put(taxa,taxaID);
+        }
+        try {
+            BufferedReader br = IOUtils.getTextReader(reheaderS);
+            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            String temp = br.readLine();
+            List<String> l = new ArrayList<>();
+            bw.write("DATASET_BINARY\n");
+            bw.write("SEPARATOR TAB\n");
+            bw.write("DATASET_LABEL\tbinary_data\n");
+            bw.write("COLOR\t#ff0000\n\n");
+            bw.write("FIELD_LABELS");
+            for (int i = 0; i < type.length; i++) {
+                bw.write("\t" + type[i]);
+            }
+            bw.newLine();
+            bw.write("FIELD_COLORS");
+            for (int i = 0; i < type.length; i++) {
+                bw.write("\t" + hmcol.get(type[i]));
+
+            }
+            bw.newLine();
+            bw.write("FIELD_SHAPES");
+            for (int i = 0; i < type.length; i++) {
+                bw.write("\t" + hmshape.get(type[i]));
+            }
+            bw.newLine();
+            bw.write("DATA\n");
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                String taxaID = l.get(0);
+                String status = l.get(3);
+                bw.write(taxaID);
+                for (int i = 0; i < hms.length; i++) {
+                    String num = hms[i].get(status);
+                    bw.write("\t" + num);
+                }
+                bw.newLine();
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+
+    /**
+     * 修改树node的名字
+     */
+    public void labels_Asub() {
+
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/source/labelChange_Tetraploid.txt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/003_labels/003_labelcChange.Asub_tetraploid.txt";
+//        String reheaderS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/000_prepareData/001_input/taxaList.txt";
+        
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/source/labelChange_Asub_Hexaploid.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/003_labels/003_labelcChange.Asub_hexaploid.txt";
+        String reheaderS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/000_prepareData/001_input/taxaList.txt";
+
+        RowTable<String> t = new RowTable<>(reheaderS);
+        HashMap<String,String> hm = new HashMap<>();
+        for (int i = 0; i < t.getRowNumber() ; i++) {
+            String taxa = t.getCell(i,0);
+            String taxaID = t.getCell(i,1);
+            hm.put(taxa,taxaID);
+        }
+
+        try {
+            BufferedReader br = IOUtils.getTextReader(infileS);
+            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            bw.write("LABELS\n");
+            bw.write("SEPARATOR TAB\n");
+            bw.write("DATA\n");
+            String temp = br.readLine(); //read header
+            while ((temp = br.readLine()) != null) {
+                String taxa = PStringUtils.fastSplit(temp).get(0);
+                String taxaID = hm.get(taxa);
+                String country = PStringUtils.fastSplit(temp).get(3);
+                String index = PStringUtils.fastSplit(temp).get(5);
+                bw.write(taxaID + "\t" + index );
+                bw.newLine();
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+
+
+    /**
+     * 目的，将BARLEY中的.....变成空格键，使之能够在mega中使用
+     *
+     */
+    public void removeDot(){
+        try {
+            String infileS = "/Users/Aoyue/Documents/chrAB.subgenome.txt";
+            String outfileS = "/Users/Aoyue/Documents/chrAB.subgenome_RemoveDot.txt";
+            BufferedReader br = IOUtils.getTextReader(infileS);
+            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            String temp = null;
+            int cnt = 0;
+            List<String> l = new ArrayList<>();
+            while ((temp = br.readLine()) != null) {
+                for(int i = 0 ; i < temp.length(); i++){
+                    if(String.valueOf(temp.charAt(i)).equals(".")){
+                        bw.write(" ");
+                    }
+                    else{
+                        bw.write(String.valueOf(temp.charAt(i)));
+                    }
+                }
+                bw.newLine();
+                cnt++;
+            }
+            bw.flush();
+            bw.close();
+            br.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+    }
+    
+    /**
+     * 进行A_B subgenome 的分组
+     */
+    public void colRangebyHexaDiGroup_ABsubgenome() {
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/004_A_Bsubgenome_maf0.01/source/002_subspecies/"; //分组的文件
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/004_A_Bsubgenome_maf0.01/003_labels/001_colRangebyploidy.A_Bsubgenome.txt"; //输出range文件
+//        String outfileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/004_A_Bsubgenome_maf0.01/003_labels/001_colBranchbyploidy.A_Bsubgenome.txt"; //输出branch文件
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/006_from003";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/003_labels/001_colRangebySubspecies_Asubgenome.txt";
+        String outfileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/003_labels/001_colBranchbySubspecies_Asubgenome.txt";
+
+        String reheaderS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/000_prepareData/001_input/taxaList.txt";
+        RowTable<String> t = new RowTable<>(reheaderS);
+        HashMap<String,String> hmtaxa = new HashMap<>();
+        for (int i = 0; i < t.getRowNumber() ; i++) {
+            String taxa = t.getCell(i,0);
+            String taxaID = t.getCell(i,1);
+            hmtaxa.put(taxa,taxaID);
+        }
+
+
+        File f = new File(infileDirS);
+        File[] fs = IOUtils.listRecursiveFiles(f);
+        for (int i = 0; i < fs.length; i++) {
+            if (fs[i].isHidden()) {
+                fs[i].delete();
+            }
+            //System.out.println(fs[i].getName().split(".txt")[0]);
+        }
+        fs = IOUtils.listRecursiveFiles(f);
+        Arrays.sort(fs);
+
+        String[] groups = {"Ae.tauschii", "Wild_emmer","Domesticated_emmer","Free_threshing_tetraploid","OtherTetraploid","Cultivar","Landrace","OtherHexaploid"};
+        String[] col = { "#87cef9","#ffd702","#7f5701","#00cd66","#00f3ff","#9900ff","#fc6e6e","#fe63c2"};
+        HashMap<String, String> hm = new HashMap<>();
+        for (int i = 0; i < groups.length; i++) {
+            hm.put(groups[i], col[i]);
+        }
+        try {
+            BufferedWriter[] bw = new BufferedWriter[2];
+            bw[0] = IOUtils.getTextWriter(outfileS);
+            bw[1] = IOUtils.getTextWriter(outfileS1);
+            //先写表头
+            bw[0].write("TREE_COLORS\nSEPARATOR TAB\nDATA\n");
+            bw[1].write("TREE_COLORS\nSEPARATOR TAB\nDATA\n");
+            //再写内部的分组，注意文件名字必须和HashMap里的分组名保持一致
+            for (int i = 0; i < fs.length; i++) {
+                String infileS = fs[i].getAbsolutePath();
+                String group = fs[i].getName().split(".txt")[0];
+                //if(group.equals("NA")) continue;
+                BufferedReader br = IOUtils.getTextReader(infileS);
+                String temp = null;
+                int cnt = 0;
+                while ((temp = br.readLine()) != null) {
+                    cnt++;
+                    bw[0].write(hmtaxa.get(temp) + "\trange\t" + hm.get(group) + "\t" + group);
+                    bw[0].newLine();
+                    
+                    bw[1].write(hmtaxa.get(temp) + "\tbranch\t" + hm.get(group) + "\t" + "normal");
                     bw[1].newLine();
                 }
                 br.close();
@@ -628,8 +979,12 @@ public class Treetest {
      * 修改树node的名字
      */
     public void labels() {
-        String infileS = "/Users/Aoyue/project/wheatVMapII/001_germplasm/种质信息库/wheatVMapII_AB_S205_germplasmInfo.txt";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/AB/003_tree/002_labelsChange/001_labelschange.ABgenome.txt";
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/001_germplasm/种质信息库/wheatVMapII_AB_S205_germplasmInfo.txt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/AB/003_tree/002_labelsChange/001_labelschange.ABgenome.txt";
+        
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/000_prepareData/001_input/taxaList.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/003_labels/002_labelcChange.Asub.txt";
+        
         try {
             BufferedReader br = IOUtils.getTextReader(infileS);
             BufferedWriter bw = IOUtils.getTextWriter(outfileS);
@@ -639,8 +994,9 @@ public class Treetest {
             String temp = br.readLine(); //read header
             while ((temp = br.readLine()) != null) {
                 String databaseID = PStringUtils.fastSplit(temp).get(0);
-                String taxa = PStringUtils.fastSplit(temp).get(4);
-                bw.write(databaseID + "\t" + databaseID + " " + taxa);
+                String taxaID = PStringUtils.fastSplit(temp).get(1);
+//                bw.write(databaseID + "\t" + databaseID + " " + taxaID);
+                bw.write(taxaID + "\t" + databaseID);
                 bw.newLine();
             }
             br.close();

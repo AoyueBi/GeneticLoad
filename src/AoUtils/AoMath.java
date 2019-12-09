@@ -5,14 +5,15 @@
  */
 package AoUtils;
 
+import utils.IOUtils;
+import utils.PStringUtils;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import utils.IOUtils;
-import utils.PStringUtils;
 
 /**
  *
@@ -21,7 +22,6 @@ import utils.PStringUtils;
 public class AoMath {
 
     public AoMath() {
-        this.filterValue();
 
     }
 
@@ -29,13 +29,10 @@ public class AoMath {
      * 过滤DAF_ABD等于0或者1的位点
      *
      */
-    public void filterValue() {
+    public void filterValue(String infileDirS, String outfileDirS) {
 
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/004_merge";
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/005_filterDAF_ABD";
-
-        //  new CountSites().mergesubsetVCF(args[0], args[1]);
-        // new CountSites().mergesubsetVCF(args[0], args[1], args[2]);
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/004_merge";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/005_filterDAF_ABD";
         File[] fs = new File(infileDirS).listFiles();
         for (int i = 0; i < fs.length; i++) {
             if (fs[i].isHidden()) {
@@ -45,29 +42,52 @@ public class AoMath {
         }
         fs = new File(infileDirS).listFiles();
         List<File> fsList = Arrays.asList(fs);
-        fsList.stream().forEach(f -> {
+        fsList.stream().forEach((File f) -> {
 
             try {
                 String infileS = f.getAbsolutePath();
-                String outfileS = new File(outfileDirS, f.getName().replaceFirst(".txt", "_filterDAF_ABD10.txt")).getAbsolutePath();
-                BufferedReader br = IOUtils.getTextReader(infileS);
-                BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+                String outfileS = new File(outfileDirS, f.getName().replaceFirst(".txt", "_filterGERPandPhyloP.txt")).getAbsolutePath();
+
+                BufferedReader br = null;
+                if (infileS.endsWith(".txt")) {
+                    br = IOUtils.getTextReader(infileS);
+                } else if (infileS.endsWith(".txt.gz")) {
+                    br = IOUtils.getTextGzipReader(infileS);
+                }
+                BufferedWriter bw = null; // IOUtils.getTextGzipWriter(outfileS);
+                if (outfileS.endsWith(".txt")) {
+                    bw = IOUtils.getTextWriter(outfileS);
+                } else if (outfileS.endsWith(".txt.gz")) {
+                    bw = IOUtils.getTextGzipWriter(outfileS);
+                }
                 String temp = null;
-                String header = br.readLine();
+                String header = br.readLine(); //读表头
                 bw.write(header);
                 bw.newLine();
                 int cnt = 0;
                 List<String> l = new ArrayList();
+                String goalValue1 = null;
+                String goalValue2 = null;
                 while ((temp = br.readLine()) != null) {
                     l = PStringUtils.fastSplit(temp);
                     StringBuilder sb = new StringBuilder();
                     cnt++;
-                    String DAF_ABD = l.get(15);
-                    if (DAF_ABD.startsWith("N")) {
+//ID	Chr	Pos	Ref	Alt	Major	Minor	Maf	AAF_ABD	AAF_AB	Transcript	Region	Variant_type	SIFT_score	Ancestral	DAF	DAF_ABD	DAF_AB	Gerp	PhyloP
+                    goalValue1 = l.get(18); //此处需要修改，目标值
+                    goalValue2 = l.get(19);
+                    if (goalValue1.startsWith("N")) {
                         continue;
                     }
-                    double daf_abd = Double.parseDouble(DAF_ABD);
-                    if (daf_abd == 0 || (daf_abd == 1)) {
+                    if (goalValue2.startsWith("N")) {
+                        continue;
+                    }
+
+                    double value1 = Double.parseDouble(goalValue1);
+                    double value2 = Double.parseDouble(goalValue2);
+//                    if (value1 == 0 || (value1 == 1)) {
+//                        continue;
+//                    }
+                    if (value1 < 1 || (value2 < 0.5)) {
                         continue;
                     }
                     bw.write(temp);
@@ -77,7 +97,7 @@ public class AoMath {
                 bw.flush();
                 bw.close();
                 br.close();
-                System.out.println();
+                System.out.println(f.getAbsolutePath() + " is completed");
             } catch (Exception e) {
                 e.printStackTrace();
                 System.exit(1);

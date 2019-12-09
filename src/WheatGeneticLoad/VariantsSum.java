@@ -102,8 +102,113 @@ public class VariantsSum {
 //       new CountSites().mergeTxtbysuffix("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/008_mergebySub","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/009_merge/chr_B.SNP_anno.txt.gz","B_SNP_anno.changeChrPos.txt.gz");
 //        new CountSites().mergeTxtbysuffix("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/008_mergebySub","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/009_merge/chr_D.SNP_anno.txt.gz","D_SNP_anno.changeChrPos.txt.gz");
 
+    /**
+     * 最新的一批数据，添加了gerp和phyloP的结果
+     * 
+     */
     
-    
+//    new AoMath().filterValue("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/010_genicSNPAnnotation_addGERPandPhyloP","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/011_filterGERPandPhylop");
+//    new CountSites().mergefile1and2_chr1and2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/010_genicSNPAnnotation_addGERPandPhyloP","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/012_changeChrPos");
+//        new CountSites().changechrPosonTxt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/012_changeChrPos","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/013_mergebySub");
+//        new CountSites().mergeTxtbysuffix("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/013_mergebySub","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/014_merge/chr_A.SNP_anno.txt.gz","A_SNP_anno.changeChrPos.txt.gz");
+//        new CountSites().mergeTxtbysuffix("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/013_mergebySub","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/014_merge/chr_B.SNP_anno.txt.gz","B_SNP_anno.changeChrPos.txt.gz");
+//        new CountSites().mergeTxtbysuffix("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/013_mergebySub","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/014_merge/chr_D.SNP_anno.txt.gz","D_SNP_anno.changeChrPos.txt.gz");
+
+        this.addSIFTGroup("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/014_merge","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/015_addSIFTgroup");
+    }
+
+    /**
+     * 根据GERP值和PhyloP的值，还有SIFT值判断，再文件最后再添加一列分组信息 Synonymous  Nonsynonymous_tolerent Deleterious
+     *
+     */
+    public void addSIFTGroup(String infileDirS, String outfileDirS){
+        File[] fs = new File(infileDirS).listFiles();
+        for (int i = 0; i < fs.length; i++) {
+            if (fs[i].isHidden()) {
+                System.out.println(fs[i].getName() + " is hidden");
+                fs[i].delete();
+            }
+        }
+        fs = new File(infileDirS).listFiles();
+        List<File> fsList = Arrays.asList(fs);
+        fsList.stream().forEach(f -> {
+            try{
+                String infileS = f.getAbsolutePath();
+                String outfileS = null;
+                BufferedReader br = null;
+                if (infileS.endsWith(".txt")) {
+                    br = IOUtils.getTextReader(infileS);
+                    outfileS = new File(outfileDirS, f.getName().replaceFirst(".txt","_addSIFTgroup.txt.gz")).getAbsolutePath();
+                } else if (infileS.endsWith(".txt.gz")) {
+                    br = IOUtils.getTextGzipReader(infileS);
+                    outfileS = new File(outfileDirS, f.getName().replaceFirst(".txt.gz","_addSIFTgroup.txt.gz")).getAbsolutePath();
+                }
+
+                BufferedWriter bw = null;
+                if (outfileS.endsWith(".txt")) {
+                    bw = IOUtils.getTextWriter(outfileS);
+                } else if (outfileS.endsWith(".txt.gz")) {
+                    bw = IOUtils.getTextGzipWriter(outfileS);
+                }
+
+                double sift = Double.NaN;
+                double gerp = Double.NaN;
+                double phylop = Double.NaN;
+                String temp = null;
+                String header = br.readLine();
+                bw.write(header + "\tSIFTgroup");
+                bw.newLine();
+                List<String> l = new ArrayList();
+                StringBuilder sb = new StringBuilder();
+                while ((temp = br.readLine()) != null) {
+                    sb.setLength(0);
+                    //0ID	1Chr	2Pos	3Ref	4Alt	5Major	6Minor	7Maf	8AAF_ABD	9AAF_AB	10Transcript	11Region	12Variant_type	13SIFT_score	14Ancestral	15DAF	16DAF_ABD	17DAF_AB	18Gerp	19PhyloP
+                    l = PStringUtils.fastSplit(temp);
+                    String type = l.get(11);
+                    String siftscore = l.get(12);
+                    String gerpscore = l.get(17);
+                    String phylopscore = l.get(18);
+                    //如果变异类型是同义突变，那么就不用做任何判断；直接加上分组 Synonymous 并写入
+                    //如果变异类型是非同义突变，且SIFT值存在，且SIFT值小于0.5，gerp和phylop存在，且gerp大于1，且phylop大于0.5；那么加上分组 Deleterious 并写入； gerp 值和 phylop值不满足条件的，那么就不进行分组
+                    //如果变异类型是非同义突变，且SIFT值存在，且SIFT值大于0.5，那么加上分组 Nonsynonymous_tolerent 并写入
+                    //如果变异类型是非同义突变，SIFT值不存在，那么不分组 不写入
+                    if(type.equals("SYNONYMOUS")){
+                        sb.append(temp).append("\tSynonymous");
+                        bw.write(sb.toString());
+                    bw.newLine();
+                    }
+                    if(type.equals("NONSYNONYMOUS")){
+                        if(!siftscore.startsWith("N")){
+                            sift = Double.parseDouble(siftscore);
+                            if(sift < 0.5){
+                                if(!gerpscore.startsWith("N") && (!phylopscore.startsWith("N"))){ //均有值存在
+                                    gerp = Double.parseDouble(gerpscore);
+                                    phylop = Double.parseDouble(phylopscore);
+                                    if(gerp > 1 && (phylop > 0.5)){
+                                        sb.append(temp).append("\tDeleterious");
+                                        bw.write(sb.toString());
+                    bw.newLine();
+                                    }
+                                }
+                            }
+                            else{ //sift值大于等于0.5
+                                sb.append(temp).append("\tNonsynonymous_tolerent");bw.write(sb.toString());
+                    bw.newLine();
+                            }
+                        }
+                    }
+                }
+                bw.flush();
+                bw.close();
+                br.close();
+                System.out.println(f.getAbsolutePath() + " is completed");
+            }
+            catch(Exception e){
+                e.printStackTrace();
+                System.exit(1);
+            }
+        });
+
     }
     
     /**

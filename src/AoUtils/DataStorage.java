@@ -34,6 +34,7 @@ public class DataStorage {
 //        this.mkGSADB();
 //        this.mergeTxt();
         this.countCaseInGroup();
+
         
 
     }
@@ -43,9 +44,11 @@ public class DataStorage {
      * 
      */
     public void countCaseInGroup(){
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/000_cleandata/006_subfile/LuLab4T_18_subfileList.txt";
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/000_cleandata/006_subfile/LuLab4T_18_subfileList.txt";
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/015_addSIFTgroup/chr_D.SNP_anno_addSIFTgroup.txt.gz";
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/000_prepareData/001_input/taxaList.txt";
         RowTable<String> t = new RowTable<>(infileS);
-        List<String> l = t.getColumn(0);
+        List<String> l = t.getColumn(2);
         System.out.println(l.size() + " list个数");
         Set<String> s = new HashSet<>(l);
         System.out.println(s.size() + " set个数");

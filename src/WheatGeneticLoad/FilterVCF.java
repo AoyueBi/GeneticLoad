@@ -145,37 +145,7 @@ public class FilterVCF {
 
     
     
-    public String getVCFHeaderABD_AB(List<String> taxaList) {
-        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss.SSS");
-        Date dt = new Date();
-        String S = sdf.format(dt);
-        StringBuilder sb = new StringBuilder();
-        sb.append("##fileformat=VCFv4.1\n"
-                + "##FILTER=<ID=PASS,Description=\"All filters passed\">\n");
-        sb.append("##fileDate=").append(S.split(" ")[0]).append("\n");
-        sb.append("##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">\n"
-                + "##FORMAT=<ID=AD,Number=.,Type=Integer,Description=\"Allelic depths for the reference and alternate alleles in the order listed\">\n"
-                + "##FORMAT=<ID=PL,Number=G,Type=Integer,Description=\"Genotype likelihoods for 0/0, 0/1, 1/1, or  0/0, 0/1, 0/2, 1/1, 1/2, 2/2 if 2 alt alleles\">\n"
-                + "##INFO=<ID=DP,Number=1,Type=Integer,Description=\"Total Depth\">\n"
-                + "##INFO=<ID=NZ,Number=1,Type=Integer,Description=\"Number of taxa with called genotypes\">\n"
-                + "##INFO=<ID=AD,Number=.,Type=Integer,Description=\"Total allelelic depths in order listed starting with REF\">\n"
-                + "##INFO=<ID=AC,Number=.,Type=Integer,Description=\"Numbers of ALT alleles in order listed\">\n"
-                + "##INFO=<ID=GN,Number=.,Type=Integer,Description=\"Number of taxa with genotypes AA,AB,BB or AA,AB,AC,BB,BC,CC if 2 alt alleles\">\n"
-                + "##INFO=<ID=HT,Number=1,Type=Integer,Description=\"Number of heterozygotes\">\n"
-                + "##INFO=<ID=MAF,Number=1,Type=Float,Description=\"Minor allele frequency\">\n"
-                + "##INFO=<ID=AAF_ABD,Number=1,Type=Float,Description=\"Alternative allele frequency on hexaploid bread wheat\">\n"
-                + "##INFO=<ID=AAF_AB,Number=1,Type=Float,Description=\"Alternative allele frequency on tetraploid emmer wheat\">\n"
-                + "##ALT=<ID=D,Description=\"Deletion\">\n"
-                + "##ALT=<ID=I,Description=\"Insertion\">\n"
-                + "##Species=Wheat\n"
-                + "##ReferenceGenome=iwgsc_refseqv1.0\n"
-                + "##VariantsMapVersion=vmap2\n");
-        sb.append("#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT");
-        for (int i = 0; i < taxaList.size(); i++) {
-            sb.append("\t").append(taxaList.get(i));
-        }
-        return sb.toString();
-    }
+    
     
 
     public void scriptFilterMiss() {

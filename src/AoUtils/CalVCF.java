@@ -5,11 +5,17 @@
  */
 package AoUtils;
 
+import format.table.RowTable;
+import utils.IOUtils;
+import utils.PStringUtils;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-import utils.PStringUtils;
 
 /**
  *
@@ -18,7 +24,147 @@ import utils.PStringUtils;
 public class CalVCF {
 
     public CalVCF() {
-        this.siteMeanDepth();
+//        this.siteMeanDepth();
+//        this.reheader();
+        this.mkPhylipFormat();
+
+
+    }
+
+    /**
+     * 根据barley的fasta格式，写出phylip格式，连续型的
+     */
+    public void mkPhylipFormat(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/000_prepareData/001_input/A_subgenome.fasta.txt";
+        String outfileS ="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/000_prepareData/001_input/chrA_sub_barley_phylip.txt";
+
+        try {
+            BufferedReader br = IOUtils.getTextReader(infileS);
+            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            String temp = null;
+            List<String> fasta = new ArrayList<>();
+            List<String> l = new ArrayList<>();
+
+            while ((temp = br.readLine()) != null) {
+                if (temp.startsWith(">")) {
+                    continue;
+                }
+                else {
+                    for (int i = 0; i < temp.length(); i++) {
+                        fasta.add(temp.substring(i,i+1));
+                    }
+                }
+            }
+            br.close();
+
+            //确定要写几行
+            int lines = Integer.MIN_VALUE;
+            if(fasta.size()%50 == 0){
+                lines = fasta.size()/50;
+            }
+            else{
+                lines = fasta.size()/50 + 1;
+            }
+
+            //先写第一行
+            int k = -1;
+            bw.write("Barley");
+            int space = 15 - "Barley".length();
+            for (int i = 0; i < space; i++) {
+                bw.write(" ");
+            }
+            for (int i = 0; i < 50; i++) {
+                k++;
+                bw.write(fasta.get(k));
+            }
+            bw.newLine();
+
+            for (int i = 1; i < lines; i++) {
+                //开始写第二行
+                for (int j = 0; j < 65; j++) {
+                    if(j<15){
+                        bw.write(" ");
+                    }
+                    else{
+                        k++;
+                        if(k<fasta.size()){
+                            bw.write(fasta.get(k));
+                        }
+                    }
+                }
+                bw.newLine();
+            }
+            bw.flush();
+            bw.close();
+            System.out.println(infileS + " is completed at " + outfileS);
+
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+    /**
+     * 改变VCF的taxa名字
+     *
+     */
+    public void reheader(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/000_prepareData/001_input/chr.Asubgenome.vcf.gz";
+        String outfileS= "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/000_prepareData/chr.Asubgenome_reheader.vcf.gz";
+        String reheaderS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/000_prepareData/001_input/taxaList.txt";
+
+        RowTable<String> t = new RowTable<>(reheaderS);
+        HashMap<String,String> hm = new HashMap<>();
+        for (int i = 0; i < t.getRowNumber() ; i++) {
+            String taxa = t.getCell(i,0);
+            String taxaID = t.getCell(i,1);
+            hm.put(taxa,taxaID);
+        }
+
+        try {
+            BufferedReader br = IOUtils.getTextGzipReader(infileS);
+            BufferedWriter bw = IOUtils.getTextGzipWriter(outfileS);
+            String temp = null;
+            List<String> taxaList = new ArrayList<>();
+            List<String> l = new ArrayList<>();
+
+            while ((temp = br.readLine()) != null) {
+                if (temp.startsWith("##")) {
+                    bw.write(temp);
+                    bw.newLine();
+                }
+                else if(temp.startsWith("#C")){
+                    l = PStringUtils.fastSplit(temp);
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 0; i < 9; i++) {
+                        sb.append(l.get(i)).append("\t");
+                    }
+                    sb.deleteCharAt(sb.length() - 1);
+                    for (int i = 9; i < l.size(); i++) {
+                        String taxa = l.get(i);
+                        taxa = hm.get(taxa);
+                        sb.append("\t").append(taxa);
+                    }
+                    bw.write(sb.toString());
+                    bw.newLine();
+                }
+                else if(!temp.startsWith("#")) { //
+                    bw.write(temp);
+                    bw.newLine();
+
+                }//
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println(infileS + " is completed at " + outfileS);
+
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 

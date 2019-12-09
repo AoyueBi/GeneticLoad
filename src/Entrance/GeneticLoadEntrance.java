@@ -5,11 +5,12 @@
  */
 package Entrance;
 
-import AoUtils.AoMath;
+import AoUtils.CalVCF;
 import AoUtils.DataStorage;
-import WheatGeneticLoad.Treetest;
-import WheatGeneticLoad.VariantsSum;
-import analysis.wheatHapMap.DeleteriousDB;
+import Plot.Tree;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  *
@@ -18,24 +19,17 @@ import analysis.wheatHapMap.DeleteriousDB;
 public class GeneticLoadEntrance {
 
     public GeneticLoadEntrance() {
-        this.firstProcess();
-//        this.cp();
-        //this.secondProcess();
+//        this.firstProcess();
+        this.secondProcess();
 
     }
 
-    public void cp() {
-        String[] sm = {"1586", "1568", "1577", "1599", "1601", "1605"};
-        for (int i = 0; i < sm.length; i++) {
-            System.out.println("cp -Rf BT0" + sm[i] + " /data2/sharedData/vmap2/fastq/");
-        }
 
-    }
 
     public void secondProcess() {
         //new CalVCF()
         //new Circos();
-        new Treetest();
+        new Tree();
 
     }
 
@@ -57,23 +51,25 @@ public class GeneticLoadEntrance {
 //        new SIFT();
 //        new CountSites();
         //new ScriptHapscanner2();
-        new VariantsSum();
+//        new VariantsSum();
 //        new PopGenParaWheat();
         //new SplitScript();
 //        new Script();
 //        new FilterVCF();
 //        new Bin();
 //        new AoMath();
+//        new TreePreparation();
+//        new CalVCF();
 
 //new DeleteriousDB();
     }
 
     public static void main(String[] args) {
         //ChrConvertionRule c=new ChrConvertionRule(Paths.get("/Users/Aoyue/Documents/Data/wheat/chrConvertionRule.txt"));
-        //ChrConvertionRule c = new ChrConvertionRule(Paths.get("/data4/home/aoyue/vmap2/analysis/000_taxaList/chrConvertionRule.txt"));
-        //VCF.mergeVCFtoLineage(args[0], args[1], c);
-//        System.out.println("Aoyue Repository --- Here is the entrance of GeneticLoad!\n");
-//        System.out.println(new SimpleDateFormat().format(new Date()) + "\tbegin.");
+//        ChrConvertionRule c = new ChrConvertionRule(Paths.get("/data4/home/aoyue/vmap2/analysis/000_taxaList/chrConvertionRule.txt"));
+//        VCF.mergeVCFtoLineage(args[0], args[1], c);
+        System.out.println("Aoyue Repository --- Here is the entrance of GeneticLoad!\n");
+        System.out.println(new SimpleDateFormat().format(new Date()) + "\tbegin.");
         new GeneticLoadEntrance();
 
 //        VCF vcf=new VCF("/data4/home/aoyue/vmap2/analysis/020_subsetvcf_fromMAF0.01byPop/002_mergedbySub/chr.lineageA.vcf.gz");
@@ -111,7 +107,7 @@ public class GeneticLoadEntrance {
 //        new VariantsSum().mkSNPsummary_step2(args[0], args[1], args[2]);
 //        new VariantsSum().getCDSannotation(args[0], args[1]);
 //new SplitScript().splitBwaScript(args[0], args[1], Integer.parseInt(args[2]),Integer.parseInt(args[3]));
-//        System.out.println(new SimpleDateFormat().format(new Date()) + "\tend.");
+        System.out.println(new SimpleDateFormat().format(new Date()) + "\tend.");
         /**
          * ******************************* temporary method
          * *********************************************
