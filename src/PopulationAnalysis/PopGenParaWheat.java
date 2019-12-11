@@ -43,7 +43,8 @@ public class PopGenParaWheat {
 //        this.mkPiCMDbasedWindow();
 //        this.mergeandsplitSh("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/002_Pi/003_script_based100kbWindow_byPloidy/001_total", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/002_Pi/003_script_based100kbWindow_byPloidy/002_merge_sh/pi_based100kbWindow20191211.sh", 6, 7);
 
-        this.mkFstCommandbasedwinndow();
+//        this.mkFstCommandbasedwinndow();
+        this.mergeandsplitSh("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/004_script_based10KbWindow_byPloidy/001_total", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/004_script_based10KbWindow_byPloidy/002_merge_sh/fst_basedWindow20191211.sh", 7, 3);
 
     }
     
@@ -396,7 +397,7 @@ public class PopGenParaWheat {
         new File(parentS, "splitScript").mkdirs();
         String outfileDirS = new File(parentS, "splitScript").getAbsolutePath();
         String shfileS = new File(parentS, "sh_split.sh").getAbsolutePath();
-        String nameprefix = new File(outfileS).getName().replaceFirst(".sh", "");
+        String nameprefix = new File(outfileS).getName().replaceFirst(".sh", "_");
 
         try {
             String[] outS = new String[numfile];
@@ -440,19 +441,37 @@ public class PopGenParaWheat {
     }
 
     public void mkFstCommandbasedwinndow() {
+//        //local path
+//        String groupHexaandTetraDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/000_groups/003_forFst/hexaandTetra";
+//        String groupHexaandDiDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/000_groups/003_forFst/hexaandDi";
+//        String shScriptDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/002_script_based10kbWindow/hexaTetra";
+//        String shScript2DirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/002_script_based10kbWindow/hexaDi";
+//
+//        //HPC Path
+//        String group1FileDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/000_group/000_hexaploidandTetraploid";
+//        String group2FileDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/000_group/001_hexaploidandDiploid";
+//
+//        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/013_VMapIIbyRef";
+//        String outputDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/001_Fst/004_fst_based100kbWindow_hexa_tetraploid";
+//        String output2DirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/001_Fst/005_fst_based100kbWindow_hexa_diploid";
+        
+        
         //local path
-        String groupHexaandTetraDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/000_groups/003_forFst/hexaandTetra";
-        String groupHexaandDiDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/000_groups/003_forFst/hexaandDi";
-        String shScriptDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/002_script_based10kbWindow/hexaTetra";
-        String shScript2DirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/002_script_based10kbWindow/hexaDi";
+        String groupHexaandTetraDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/007_byPloidy_forPop/hexaandTetra_forPi";
+        String groupHexaandDiDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/007_byPloidy_forPop/hexaandDi_forPi";
+        String shScriptDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/004_script_based10KbWindow_byPloidy/hexaTetra";
+        String shScript2DirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/004_script_based10KbWindow_byPloidy/hexaDi";
 
         //HPC Path
-        String group1FileDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/000_group/000_hexaploidandTetraploid";
-        String group2FileDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/000_group/001_hexaploidandDiploid";
+        String group1FileDirS = "/data4/home/aoyue/vmap2/analysis/000_taxaList/003_byPloidy_forPop/hexaandTetra_forPi";
+        String group2FileDirS = "/data4/home/aoyue/vmap2/analysis/000_taxaList/003_byPloidy_forPop/hexaandDi_forPi";
 
         String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/013_VMapIIbyRef";
-        String outputDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/001_Fst/004_fst_based100kbWindow_hexa_tetraploid";
-        String output2DirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/001_Fst/005_fst_based100kbWindow_hexa_diploid";
+        String outputDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/001_Fst/006_fst_based100kbWindow_hexaandTetra_byPloidy";
+        String output2DirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/001_Fst/007_fst_based100kbWindow_hexaandDi_byPloidy";
+        
+        
+        
 
         File[] group1FileS = new File(groupHexaandTetraDirS).listFiles();
         for (int i = 0; i < group1FileS.length; i++) {
@@ -472,7 +491,7 @@ public class PopGenParaWheat {
 
 
 
-        new File(shScriptDirS).mkdir();
+        new File(shScriptDirS).mkdirs();
         ArrayList<String> perlList = new ArrayList(); //在循环外建立perlList集合， 每个集合包含多个字符串，一个字符串代表一个文件。
         for (int i = 0; i < group1FileS.length - 1; i++) {
             String group1 = group1FileS[i].getName().replace(".txt", "");
