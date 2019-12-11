@@ -5,9 +5,8 @@
  */
 package Entrance;
 
-import AoUtils.CalVCF;
-import AoUtils.DataStorage;
 import Plot.Tree;
+import PopulationAnalysis.PopGenParaWheat;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -19,8 +18,8 @@ import java.util.Date;
 public class GeneticLoadEntrance {
 
     public GeneticLoadEntrance() {
-//        this.firstProcess();
-        this.secondProcess();
+        this.firstProcess();
+//        this.secondProcess();
 
     }
 
@@ -52,7 +51,7 @@ public class GeneticLoadEntrance {
 //        new CountSites();
         //new ScriptHapscanner2();
 //        new VariantsSum();
-//        new PopGenParaWheat();
+        new PopGenParaWheat();
         //new SplitScript();
 //        new Script();
 //        new FilterVCF();

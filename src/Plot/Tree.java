@@ -33,7 +33,7 @@ public class Tree {
         //this.colRangebyPloidy_Dsubgenome();
         //this.prune_removeNA_Dsubgenome();
         //this.colRangebyHexaDiGroup_Dsubgenome();
-//        this.colRangebyHexaDiGroup_ABsubgenome();
+        this.colRangebyHexaDiGroup_ABsubgenome();
 //        this.removeDot();
 //        this.modifyMegaName();
 //        this.labels_Asub();
@@ -44,7 +44,7 @@ public class Tree {
          */
 
 //        this.colRangebyHexaTetraGroup_Asubgenome();
-        this.labels_Asub_xuebo();
+//        this.labels_Asub_xuebo();
 //        this.binarybyContinent();
 
 
@@ -411,7 +411,7 @@ public class Tree {
         Arrays.sort(fs);
 
         String[] groups = {"Ae.tauschii", "Wild_emmer","Domesticated_emmer","Free_threshing_tetraploid","OtherTetraploid","Cultivar","Landrace","OtherHexaploid"};
-        String[] col = { "#87cef9","#ffd702","#7f5701","#00cd66","#00f3ff","#9900ff","#fc6e6e","#fe63c2"};
+        String[] col = { "#87cef9","#ffd702","#7f5701","#016699","#00f3ff","#9900ff","#fc6e6e","#fe63c2"};
         HashMap<String, String> hm = new HashMap<>();
         for (int i = 0; i < groups.length; i++) {
             hm.put(groups[i], col[i]);

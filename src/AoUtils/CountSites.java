@@ -922,10 +922,16 @@ public class CountSites {
             }
 
             ///读表头
-            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            BufferedWriter bw = null;
+            if (outfileS.endsWith(".txt")) {
+                bw = IOUtils.getTextWriter(outfileS);
+            } else if (outfileS.endsWith(".txt.gz")) {
+                bw = IOUtils.getTextGzipWriter(outfileS);
+            }
             bw.write(br.readLine());
             bw.newLine();
 
+            int cnttotal = 0;
             //读正文部分
             for (int i = 0; i < fs.length; i++) {
                 infileS = fs[i].getAbsolutePath();
@@ -940,6 +946,7 @@ public class CountSites {
                 int cnt = 0;
                 while ((temp = br.readLine()) != null) {
                     cnt++;
+                    cnttotal++;
                     StringBuilder sb = new StringBuilder();
                     sb.append(temp);
                     bw.write(sb.toString());
@@ -947,6 +954,7 @@ public class CountSites {
                 }
                 System.out.println(String.valueOf(fs[i].getName()) + "\t" + cnt);
             }
+            System.out.println("Total lines without header count is " + cnttotal + " at merged file " + outfileS );
             br.close();
             bw.flush();
             bw.close();
