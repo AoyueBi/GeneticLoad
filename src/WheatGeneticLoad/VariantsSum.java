@@ -5,6 +5,7 @@
  */
 package WheatGeneticLoad;
 
+import AoUtils.AoFile;
 import AoUtils.CountSites;
 import format.genomeAnnotation.GeneFeature;
 import format.range.Range;
@@ -72,62 +73,83 @@ public class VariantsSum {
 //        this.mkBarplotofDAF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/003_mergebySub", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/004_bin/005_daf_20bins", "20", "1");
 //        this.changeChrPos();
 //this.mergebySub();
-
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/001_genicSNPAnnotation";
 //        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/002_changeChrPos";
-
-/**
- * 新的一批数据，和老师一起写程序得出的结果
- */
+        /**
+         * 新的一批数据，和老师一起写程序得出的结果
+         */
 //        new CountSites().mergefile1and2_chr1and2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/002_changeChrPos","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/003_mergebySub");
 //        new CountSites().changechrPosonTxt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/001_genicSNPAnnotation","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/002_changeChrPos");
 //    this.mkBarplot("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/001_test", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/002_mkBarplot", "20", "1.00001");
 //    new CountSites().mergeTxtbysuffix("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/003_mergebySub", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/004_merge/chr_A.SNP_anno.txt.gz", "A_SNP_anno.changeChrPos.txt.gz");
 //        new CountSites().mergeTxtbysuffix("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/003_mergebySub", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/004_merge/chr_B.SNP_anno.txt.gz", "B_SNP_anno.changeChrPos.txt.gz");
 //    new CountSites().mergeTxtbysuffix("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/003_mergebySub", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/004_merge/chr_D.SNP_anno.txt.gz", "D_SNP_anno.changeChrPos.txt.gz");
-
 //    new CountSites().mergefile1and2_chr1and2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/102_cdsAnnoDB","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/105_from102/001_merge");
 //    new CountSites().changechrPosonTxt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/105_from102/001_merge","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/105_from102/002_changeChrPos");
 //    new CountSites().mergeTxtbysuffix("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/105_from102/002_changeChrPos","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/105_from102/003_mergeSub/chr_A.SNP_anno.txt.gz","A_vmap2.1_AnnoDB_addDAF_addSIFT_CDSregion.changeChrPos.txt.gz");
 //        new CountSites().mergeTxtbysuffix("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/105_from102/002_changeChrPos","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/105_from102/003_mergeSub/chr_B.SNP_anno.txt.gz","B_vmap2.1_AnnoDB_addDAF_addSIFT_CDSregion.changeChrPos.txt.gz");
 //    new CountSites().mergeTxtbysuffix("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/105_from102/002_changeChrPos","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/105_from102/003_mergeSub/chr_D.SNP_anno.txt.gz","D_vmap2.1_AnnoDB_addDAF_addSIFT_CDSregion.changeChrPos.txt.gz");
-
-    /**
-     * l老师新过滤的gene，生成的数据，这里基因数增加
-     * 
-     */
+        /**
+         * l老师新过滤的gene，生成的数据，这里基因数增加
+         *
+         */
 //    new CountSites().mergefile1and2_chr1and2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/006_genicSNPAnnotation_lowerFilterGene","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/007_changeChrPos");
 //    new CountSites().changechrPosonTxt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/007_changeChrPos","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/008_mergebySub");
 //    new CountSites().mergeTxtbysuffix("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/008_mergebySub","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/009_merge/chr_A.SNP_anno.txt.gz","A_SNP_anno.changeChrPos.txt.gz");
 //       new CountSites().mergeTxtbysuffix("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/008_mergebySub","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/009_merge/chr_B.SNP_anno.txt.gz","B_SNP_anno.changeChrPos.txt.gz");
 //        new CountSites().mergeTxtbysuffix("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/008_mergebySub","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/009_merge/chr_D.SNP_anno.txt.gz","D_SNP_anno.changeChrPos.txt.gz");
-
-    /**
-     * 最新的一批数据，添加了gerp和phyloP的结果
-     * 
-     */
-    
+        /**
+         * 最新的一批数据，添加了gerp和phyloP的结果
+         *
+         */
 //    new AoMath().filterValue("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/010_genicSNPAnnotation_addGERPandPhyloP","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/011_filterGERPandPhylop");
 //    new CountSites().mergefile1and2_chr1and2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/010_genicSNPAnnotation_addGERPandPhyloP","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/012_changeChrPos");
 //        new CountSites().changechrPosonTxt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/012_changeChrPos","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/013_mergebySub");
 //        new CountSites().mergeTxtbysuffix("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/013_mergebySub","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/014_merge/chr_A.SNP_anno.txt.gz","A_SNP_anno.changeChrPos.txt.gz");
 //        new CountSites().mergeTxtbysuffix("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/013_mergebySub","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/014_merge/chr_B.SNP_anno.txt.gz","B_SNP_anno.changeChrPos.txt.gz");
 //        new CountSites().mergeTxtbysuffix("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/013_mergebySub","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/014_merge/chr_D.SNP_anno.txt.gz","D_SNP_anno.changeChrPos.txt.gz");
-
-        this.addSIFTGroup("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/014_merge","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/015_addSIFTgroup");
-
+//        this.addSIFTGroup("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/014_merge","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/015_addSIFTgroup");
+//        new CountSites().mergeTxt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/015_addSIFTgroupbasedGerpPhyloP","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/015_merge015/chrAll_SNP_anno_group_basedGerpPhyloP.txt.gz");
 //        this.addGroup_basedSIFTvalue();
 //        new CountSites().mergeTxt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/016_addSIFTgroupbasedSIFTvalue","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/017_merge016/chrAll_SNP_anno_group_basedSIFTvalue.txt.gz");
+//        this.countDeleteriousSNPs_basedCHR();
+//        this.countDeleteriousSNPs_basedSubgenome();
+//        new AoMath().countValue("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/014_merge014");
+        /**
+         * 计算CDS区域，所有变异的类型个数
+         *
+         */
+
+//        new CountSites().mergeTxt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/014_merge","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/014_merge014/chrAll_anno_original.txt.gz");
+//        this.countDeleteriousSNPs_basedSubgenome();
+
+        /**
+         * 检查原文件中有没有 同义突变是值小于0.05的   有！！！
+         */
+//        new AoMath().countValue("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/009_output/000_xls");
+//        this.getTranscriptSum();
+//        this.addSIFTGroup_basedGERP();
+
+        /**
+         * 计算CDS区域，所有变异的类型个数,这里分组是只有GERP大于1
+         *
+         */
+        this.countDeleteriousSNPs_basedSubgenome();
+
+
         
+
+
     }
 
     /**
-     * 根据GERP值和PhyloP的值，还有SIFT值判断，再文件最后再添加一列分组信息 Synonymous  Nonsynonymous_tolerent Deleterious
+     * 根据GERP值和PhyloP的值，还有SIFT值判断，再文件最后再添加一列分组信息 Synonymous
+     * Nonsynonymous_tolerent Deleterious
      *
      */
-    public void addGroup_basedSIFTvalue(){
-        String infileDirS="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/014_merge";
-        String outfileDirS="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/016_addSIFTgroupbasedSIFTvalue";
+    public void addSIFTGroup_basedGERP() {
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/014_merge014";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/021_addSIFTgroupbasedGERP";
         File[] fs = new File(infileDirS).listFiles();
         for (int i = 0; i < fs.length; i++) {
             if (fs[i].isHidden()) {
@@ -138,16 +160,376 @@ public class VariantsSum {
         fs = new File(infileDirS).listFiles();
         List<File> fsList = Arrays.asList(fs);
         fsList.stream().forEach(f -> {
-            try{
+            try {
                 String infileS = f.getAbsolutePath();
                 String outfileS = null;
                 BufferedReader br = null;
                 if (infileS.endsWith(".txt")) {
                     br = IOUtils.getTextReader(infileS);
-                    outfileS = new File(outfileDirS, f.getName().replaceFirst(".txt","_group_basedSIFTvalue.txt.gz")).getAbsolutePath();
+                    outfileS = new File(outfileDirS, f.getName().replaceFirst(".txt", "_addSIFTgroup_basedGERP.txt.gz")).getAbsolutePath();
                 } else if (infileS.endsWith(".txt.gz")) {
                     br = IOUtils.getTextGzipReader(infileS);
-                    outfileS = new File(outfileDirS, f.getName().replaceFirst(".txt.gz","_group_basedSIFTvalue.txt.gz")).getAbsolutePath();
+                    outfileS = new File(outfileDirS, f.getName().replaceFirst(".txt.gz", "_addSIFTgroup_basedGERP.txt.gz")).getAbsolutePath();
+                }
+
+                BufferedWriter bw = null;
+                if (outfileS.endsWith(".txt")) {
+                    bw = IOUtils.getTextWriter(outfileS);
+                } else if (outfileS.endsWith(".txt.gz")) {
+                    bw = IOUtils.getTextGzipWriter(outfileS);
+                }
+
+                double sift = Double.NaN;
+                double gerp = Double.NaN;
+                double phylop = Double.NaN;
+                String temp = null;
+                String header = br.readLine();
+                bw.write(header + "\tgroup_GERPvalue");
+                bw.newLine();
+                List<String> l = new ArrayList();
+                StringBuilder sb = new StringBuilder();
+                while ((temp = br.readLine()) != null) {
+                    sb.setLength(0);
+                    //0ID	1Chr	2Pos	3Ref	4Alt	5Major	6Minor	7Maf	8AAF_ABD	9AAF_AB	10Transcript	11Region	12Variant_type	13SIFT_score	14Ancestral	15DAF	16DAF_ABD	17DAF_AB	18Gerp	19PhyloP
+                    l = PStringUtils.fastSplit(temp);
+                    String type = l.get(11);
+                    String siftscore = l.get(12);
+                    String gerpscore = l.get(17);
+                    String phylopscore = l.get(18);
+                    //如果变异类型是同义突变，那么就不用做任何判断；直接加上分组 Synonymous 并写入
+                    //如果变异类型是非同义突变，且SIFT值存在，且SIFT值小于0.05，gerp和phylop存在，且gerp大于1，且phylop大于0.5；那么加上分组 Deleterious 并写入； gerp 值和 phylop值不满足条件的，那么就不进行分组
+                    //如果变异类型是非同义突变，且SIFT值存在，且SIFT值大于0.05，那么加上分组 Nonsynonymous_tolerent 并写入
+                    //如果变异类型是非同义突变，SIFT值不存在，那么不分组 不写入
+                    if (type.equals("SYNONYMOUS")) {
+                        sb.append(temp).append("\tSynonymous");
+                        bw.write(sb.toString());
+                        bw.newLine();
+                    }
+                    if (type.equals("NONSYNONYMOUS")) {
+                        if (!siftscore.startsWith("N")) {
+                            sift = Double.parseDouble(siftscore);
+                            if (sift < 0.05) {
+                                if (!gerpscore.startsWith("N")) { //均有值存在
+                                    gerp = Double.parseDouble(gerpscore);
+                                    if (gerp > 1) {
+                                        sb.append(temp).append("\tDeleterious");
+                                        bw.write(sb.toString());
+                                        bw.newLine();
+                                    }
+                                }
+                            } else { //sift值大于等于0.05
+                                sb.append(temp).append("\tNonsynonymous_tolerant");
+                                bw.write(sb.toString());
+                                bw.newLine();
+                            }
+                        }
+                    }
+                }
+                bw.flush();
+                bw.close();
+                br.close();
+                System.out.println(f.getAbsolutePath() + " is completed at " + outfileS);
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
+        });
+
+    }
+
+
+    /**
+     *
+     */
+    public void getTranscriptSum(){
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/010_genicSNPAnnotation_addGERPandPhyloP";
+        String geneFeatureFileS = "/Users/Aoyue/Documents/Data/wheat/gene/v1.1/wheat_v1.1_Lulab.pgf";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/020_transcriptSum/transcriptSummary.txt";
+
+        double gerpCut = 0; // ???????????????????
+        File[] fs = new File(infileDirS).listFiles();
+        for (int i = 0; i < fs.length; i++) {
+            if (fs[i].isHidden()) {
+                System.out.println(fs[i].getName() + " is hidden");
+                fs[i].delete();
+            }
+        }
+        fs = new File(infileDirS).listFiles();
+
+
+        int chrNum = fs.length;
+        HashMap<Integer, ArrayList<String>>[] posGeneMap = new HashMap[chrNum];
+        int[][] snpPos = new int[chrNum][];
+        byte[][] snps = new byte[chrNum][];
+        byte[][] snpAnc = new byte[chrNum][];
+        for (int i = 0; i < chrNum; i++) {
+            posGeneMap[i] = new HashMap();
+        }
+        //下面这一段将posGeneMap建立完整，使每个位点对应哪些基因名字，都装进这个map里
+        GeneFeature gf = new GeneFeature(geneFeatureFileS);
+        HashMap<String, Integer> geneCDSLengthMap = new HashMap();
+        /*将所有基因的名字进行for循环输入到数组genes中，对应于每一个基因，我们通过getTranscriptName得到转录本的名字，通过getCDSList方法得到编码序列的起始位点*/
+        List<String> genesList = new ArrayList<>();
+        //String[] genes = new String[gf.getGeneNumber()];
+        int cntchr11and12 = 0;
+        int cntchr1to10 = 0;
+
+        //*********************************** START1 ***********************************//
+        //该段代码的作用是，通过读取每个基因，得到最长转录本的名字，计算该转录本的长度。
+        for (int i = 0; i < gf.getGeneNumber(); i++) {
+            int chrIndex = gf.getGeneChromosome(i)-1;
+            /*这个地方是先过滤数据，将定位在11号12号染色体上的基因过滤掉，并且跳出循环*/
+            if (chrIndex >9) {
+                cntchr11and12++;
+                continue;
+            }
+            cntchr1to10++; //能够得到1-10号染色体的基因数目
+            int longTransIndex = gf.getLongestTranscriptIndex(i);
+            String geneName = gf.getTranscriptName(i, longTransIndex); //得到最长的转录本的名字
+            //genes[i] = geneName;
+            genesList.add(geneName);
+            List<Range> cdsList = gf.getCDSList(i, longTransIndex); /*得到基因的最长转录本的CDSList*/
+            int cnt = 0;
+
+
+            /*对于每一个基因的编码序列，还有很多个cds片段，即cdsList；我们对cdsList进行for循环，得到每个cds的起始和终止位置，从而计算出总长*/
+            for (int j = 0; j < cdsList.size(); j++) {
+                int rStart = cdsList.get(j).start;
+                int rEnd = cdsList.get(j).end;
+                for (int k = rStart; k < rEnd; k++) {
+                    /*posGeneMap是一个HashMap数组，一条染色体对应一个String类型的ArrayList；
+                    故得到该位点的所属基因名字列表，如果该位点不含基因名，就将 genename赋值给该位点，完善posGeneMap
+                    否则，如果该位点含有其他基因的基因名字，依旧把genename赋值给该位点*/
+                    ArrayList<String> geneNameList = posGeneMap[chrIndex].get(k); //建立map的关系，那个位点对应哪个list HashMap<Integer, ArrayList<String>>[] posGeneMap = new HashMap[chrNum];
+                    if (geneNameList == null) {
+                        geneNameList = new ArrayList();
+                        geneNameList.add(geneName);
+                        posGeneMap[chrIndex].put(k, geneNameList);
+                    }
+                    else {
+                        geneNameList.add(geneName);
+                        posGeneMap[chrIndex].put(k, geneNameList); /*最终将posGeneMap绘图完成*/
+                    }
+                    cnt++; /*每一个CDS位点相加，最终得到这个cds的长度。*/
+                }
+
+                // 最终cnt是一个基因的所有cdslist中，每个cds的每个位点包含的基因数目的总和
+            } //该循环是一个基因的所有cds循环
+            geneCDSLengthMap.put(geneName, cnt); //
+        }
+        //*********************************** END1 ***********************************//
+
+
+    }
+
+    /**
+     *
+     * 根据库文件生成的表格，进行每条染色体，每个类型的计数，输出表格
+     */
+    public void countDeleteriousSNPs_basedSubgenome() {
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/015_merge015";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/017_merge016";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/019_countCase";
+
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/014_merge014";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/019_countCase";
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/021_addSIFTgroupbasedGERP";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/019_countCase";
+//        new AoFile().readheader("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/014_merge014/chrAll_anno_original.txt.gz");
+        new AoFile().readheader("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/021_addSIFTgroupbasedGERP/chrAll_anno_original_addSIFTgroup_basedGERP.txt.gz");
+//如何将1A 1B 1D 2A 2B 2D 建立subgenome set联系起来？？？
+        HashMap<String,String> hm = new HashMap<>();
+        for (int i = 1; i < 8; i++) {
+            hm.put(String.valueOf(i) + "A", "Asub");
+            hm.put(String.valueOf(i) + "B", "Bsub");
+            hm.put(String.valueOf(i) + "D", "Dsub");
+        }
+        List<String> subgenomeSet = new ArrayList<String>(new HashSet<String>(hm.values()));
+        Collections.sort(subgenomeSet);
+
+
+        File[] fs = new File(infileDirS).listFiles();
+        for (int i = 0; i < fs.length; i++) {
+            if (fs[i].isHidden()) {
+                System.out.println(fs[i].getName() + " is hidden");
+                fs[i].delete();
+            }
+        }
+        fs = new File(infileDirS).listFiles();
+        List<File> fsList = Arrays.asList(fs);
+        fsList.stream().forEach(f -> {
+            try {
+                String infileS = f.getAbsolutePath();
+                String outfileS = null;
+                BufferedReader br = null;
+                if (infileS.endsWith(".txt")) {
+                    br = IOUtils.getTextReader(infileS);
+                    outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "_countCase_bySub_basedonlyGERP.txt").getAbsolutePath();
+                } else if (infileS.endsWith(".txt.gz")) {
+                    br = IOUtils.getTextGzipReader(infileS);
+                    outfileS = new File(outfileDirS, f.getName().split(".txt.gz")[0] + "_countCase_bySub_basedonlyGERP.txt").getAbsolutePath();
+                }
+                BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+
+                RowTable<String> t = new RowTable<>(infileS);
+                List<String> chr = t.getColumn(0);
+                List<String> group = t.getColumn(19);
+                List<String> chrSet = new ArrayList<>(new HashSet<>(chr));
+                List<String> groupSet = new ArrayList<>(new HashSet<String>(group));
+                Collections.sort(groupSet);
+                Collections.sort(chrSet);
+                int[][] ss = new int[subgenomeSet.size()][groupSet.size()];
+
+
+                String temp = br.readLine();
+                while ((temp = br.readLine()) != null) {
+                    List<String> l = PStringUtils.fastSplit(temp);
+                    String chrp = l.get(0);
+                    String sub = hm.get(chrp);
+                    String typep = l.get(19);
+                    int index1 = Collections.binarySearch(subgenomeSet, sub);
+                    int index2 = Collections.binarySearch(groupSet, typep);
+                    ss[index1][index2]++;
+                }
+
+                //先写表头
+                bw.write("Chr");
+                for (int i = 0; i < groupSet.size(); i++) {
+                    String type = groupSet.get(i);
+                    bw.write("\t" + type);
+                }
+                bw.newLine();
+                //再写统计的数目
+                for (int i = 0; i < ss.length; i++) {
+                    bw.write(subgenomeSet.get(i));
+                    for (int j = 0; j < ss[0].length; j++) {
+                        String count = Integer.toString(ss[i][j]);
+                        bw.write("\t" + count);
+                    }
+                    bw.newLine();
+                }
+
+                bw.flush();
+                bw.close();
+                br.close();
+                System.out.println(f.getName() + "\tis completed at " + outfileS);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        });
+
+    }
+
+
+    /**
+     *
+     * 根据库文件生成的表格，进行每条染色体，每个类型的计数，输出表格
+     */
+    public void countDeleteriousSNPs_basedCHR() {
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/015_merge015";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/019_countCase";
+        
+        File[] fs = new File(infileDirS).listFiles();
+        for (int i = 0; i < fs.length; i++) {
+            if (fs[i].isHidden()) {
+                System.out.println(fs[i].getName() + " is hidden");
+                fs[i].delete();
+            }
+        }
+        fs = new File(infileDirS).listFiles();
+        List<File> fsList = Arrays.asList(fs);
+        fsList.stream().forEach(f -> {
+            try {
+                String infileS = f.getAbsolutePath();
+                String outfileS = null;
+                BufferedReader br = null;
+                if (infileS.endsWith(".txt")) {
+                    br = IOUtils.getTextReader(infileS);
+                    outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "_countCase_byChr.txt").getAbsolutePath();
+                } else if (infileS.endsWith(".txt.gz")) {
+                    br = IOUtils.getTextGzipReader(infileS);
+                    outfileS = new File(outfileDirS, f.getName().split(".txt.gz")[0] + "_countCase_byChr.txt").getAbsolutePath();
+                }
+                BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+
+                RowTable<String> t = new RowTable<>(infileS);
+                List<String> chr = t.getColumn(0);
+                List<String> group = t.getColumn(19);
+                List<String> chrSet = new ArrayList<>(new HashSet<>(chr));
+                List<String> groupSet = new ArrayList<>(new HashSet<String>(group));
+                Collections.sort(groupSet);
+                Collections.sort(chrSet);
+                int[][] ss = new int[chrSet.size()][groupSet.size()];
+
+                String temp = br.readLine();
+                while ((temp = br.readLine()) != null) {
+                    List<String> l = PStringUtils.fastSplit(temp);
+                    String chrp = l.get(0);
+                    String typep = l.get(19);
+                    int index1 = Collections.binarySearch(chrSet, chrp);
+                    int index2 = Collections.binarySearch(groupSet, typep);
+                    ss[index1][index2]++;
+                }
+
+                //先写表头
+                bw.write("Chr");
+                for (int i = 0; i < groupSet.size(); i++) {
+                    String type = groupSet.get(i);
+                    bw.write("\t" + type);
+                }
+                bw.newLine();
+                //再写统计的数目
+                for (int i = 0; i < ss.length; i++) {
+                    bw.write(chrSet.get(i));
+                    for (int j = 0; j < ss[0].length; j++) {
+                        String count = Integer.toString(ss[i][j]);
+                        bw.write("\t" + count);
+                    }
+                    bw.newLine();
+                }
+
+                bw.flush();
+                bw.close();
+                br.close();
+                System.out.println(f.getName() + "\tis completed at " + outfileS);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        });
+
+    }
+
+    /**
+     * 根据GERP值和PhyloP的值，还有SIFT值判断，再文件最后再添加一列分组信息 Synonymous
+     * Nonsynonymous_tolerent Deleterious
+     *
+     */
+    public void addGroup_basedSIFTvalue() {
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/014_merge";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/016_addSIFTgroupbasedSIFTvalue";
+        File[] fs = new File(infileDirS).listFiles();
+        for (int i = 0; i < fs.length; i++) {
+            if (fs[i].isHidden()) {
+                System.out.println(fs[i].getName() + " is hidden");
+                fs[i].delete();
+            }
+        }
+        fs = new File(infileDirS).listFiles();
+        List<File> fsList = Arrays.asList(fs);
+        fsList.stream().forEach(f -> {
+            try {
+                String infileS = f.getAbsolutePath();
+                String outfileS = null;
+                BufferedReader br = null;
+                if (infileS.endsWith(".txt")) {
+                    br = IOUtils.getTextReader(infileS);
+                    outfileS = new File(outfileDirS, f.getName().replaceFirst(".txt", "_group_basedSIFTvalue.txt.gz")).getAbsolutePath();
+                } else if (infileS.endsWith(".txt.gz")) {
+                    br = IOUtils.getTextGzipReader(infileS);
+                    outfileS = new File(outfileDirS, f.getName().replaceFirst(".txt.gz", "_group_basedSIFTvalue.txt.gz")).getAbsolutePath();
                 }
 
                 BufferedWriter bw = null;
@@ -174,21 +556,21 @@ public class VariantsSum {
                     //如果变异类型是非同义突变，且SIFT值存在，且SIFT值小于0.5，gerp和phylop存在，且gerp大于1，且phylop大于0.5；那么加上分组 Deleterious 并写入； gerp 值和 phylop值不满足条件的，那么就不进行分组
                     //如果变异类型是非同义突变，且SIFT值存在，且SIFT值大于0.5，那么加上分组 Nonsynonymous_tolerent 并写入
                     //如果变异类型是非同义突变，SIFT值不存在，那么不分组 不写入
-                    if(type.equals("SYNONYMOUS")){
+                    if (type.equals("SYNONYMOUS")) {
                         sb.append(temp).append("\tSynonymous");
                         bw.write(sb.toString());
                         bw.newLine();
                     }
-                    if(type.equals("NONSYNONYMOUS")){
-                        if(!siftscore.startsWith("N")){
+                    if (type.equals("NONSYNONYMOUS")) {
+                        if (!siftscore.startsWith("N")) {
                             sift = Double.parseDouble(siftscore);
-                            if(sift < 0.05){
-                                        sb.append(temp).append("\tDeleterious");
-                                        bw.write(sb.toString());
-                                        bw.newLine();
-                            }
-                            else{ //sift值大于等于0.05
-                                sb.append(temp).append("\tNonsynonymous_tolerent");bw.write(sb.toString());
+                            if (sift < 0.05) {
+                                sb.append(temp).append("\tDeleterious");
+                                bw.write(sb.toString());
+                                bw.newLine();
+                            } else { //sift值大于等于0.05
+                                sb.append(temp).append("\tNonsynonymous_tolerent");
+                                bw.write(sb.toString());
                                 bw.newLine();
                             }
                         }
@@ -198,8 +580,7 @@ public class VariantsSum {
                 bw.close();
                 br.close();
                 System.out.println(f.getAbsolutePath() + " is completed");
-            }
-            catch(Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
                 System.exit(1);
             }
@@ -208,10 +589,11 @@ public class VariantsSum {
     }
 
     /**
-     * 根据GERP值和PhyloP的值，还有SIFT值判断，再文件最后再添加一列分组信息 Synonymous  Nonsynonymous_tolerent Deleterious
+     * 根据GERP值和PhyloP的值，还有SIFT值判断，再文件最后再添加一列分组信息 Synonymous
+     * Nonsynonymous_tolerent Deleterious
      *
      */
-    public void addSIFTGroup(String infileDirS, String outfileDirS){
+    public void addSIFTGroup(String infileDirS, String outfileDirS) {
         File[] fs = new File(infileDirS).listFiles();
         for (int i = 0; i < fs.length; i++) {
             if (fs[i].isHidden()) {
@@ -222,16 +604,16 @@ public class VariantsSum {
         fs = new File(infileDirS).listFiles();
         List<File> fsList = Arrays.asList(fs);
         fsList.stream().forEach(f -> {
-            try{
+            try {
                 String infileS = f.getAbsolutePath();
                 String outfileS = null;
                 BufferedReader br = null;
                 if (infileS.endsWith(".txt")) {
                     br = IOUtils.getTextReader(infileS);
-                    outfileS = new File(outfileDirS, f.getName().replaceFirst(".txt","_addSIFTgroup.txt.gz")).getAbsolutePath();
+                    outfileS = new File(outfileDirS, f.getName().replaceFirst(".txt", "_addSIFTgroup.txt.gz")).getAbsolutePath();
                 } else if (infileS.endsWith(".txt.gz")) {
                     br = IOUtils.getTextGzipReader(infileS);
-                    outfileS = new File(outfileDirS, f.getName().replaceFirst(".txt.gz","_addSIFTgroup.txt.gz")).getAbsolutePath();
+                    outfileS = new File(outfileDirS, f.getName().replaceFirst(".txt.gz", "_addSIFTgroup.txt.gz")).getAbsolutePath();
                 }
 
                 BufferedWriter bw = null;
@@ -259,31 +641,31 @@ public class VariantsSum {
                     String gerpscore = l.get(17);
                     String phylopscore = l.get(18);
                     //如果变异类型是同义突变，那么就不用做任何判断；直接加上分组 Synonymous 并写入
-                    //如果变异类型是非同义突变，且SIFT值存在，且SIFT值小于0.5，gerp和phylop存在，且gerp大于1，且phylop大于0.5；那么加上分组 Deleterious 并写入； gerp 值和 phylop值不满足条件的，那么就不进行分组
-                    //如果变异类型是非同义突变，且SIFT值存在，且SIFT值大于0.5，那么加上分组 Nonsynonymous_tolerent 并写入
+                    //如果变异类型是非同义突变，且SIFT值存在，且SIFT值小于0.05，gerp和phylop存在，且gerp大于1，且phylop大于0.5；那么加上分组 Deleterious 并写入； gerp 值和 phylop值不满足条件的，那么就不进行分组
+                    //如果变异类型是非同义突变，且SIFT值存在，且SIFT值大于0.05，那么加上分组 Nonsynonymous_tolerent 并写入
                     //如果变异类型是非同义突变，SIFT值不存在，那么不分组 不写入
-                    if(type.equals("SYNONYMOUS")){
+                    if (type.equals("SYNONYMOUS")) {
                         sb.append(temp).append("\tSynonymous");
                         bw.write(sb.toString());
-                    bw.newLine();
+                        bw.newLine();
                     }
-                    if(type.equals("NONSYNONYMOUS")){
-                        if(!siftscore.startsWith("N")){
+                    if (type.equals("NONSYNONYMOUS")) {
+                        if (!siftscore.startsWith("N")) {
                             sift = Double.parseDouble(siftscore);
-                            if(sift < 0.05){
-                                if(!gerpscore.startsWith("N") && (!phylopscore.startsWith("N"))){ //均有值存在
+                            if (sift < 0.05) {
+                                if (!gerpscore.startsWith("N") && (!phylopscore.startsWith("N"))) { //均有值存在
                                     gerp = Double.parseDouble(gerpscore);
                                     phylop = Double.parseDouble(phylopscore);
-                                    if(gerp > 0.5 && (phylop > 0.15)){
+                                    if (gerp > 1 && (phylop > 0.5)) {
                                         sb.append(temp).append("\tDeleterious");
                                         bw.write(sb.toString());
-                    bw.newLine();
+                                        bw.newLine();
                                     }
                                 }
-                            }
-                            else{ //sift值大于等于0.05
-                                sb.append(temp).append("\tNonsynonymous_tolerent");bw.write(sb.toString());
-                    bw.newLine();
+                            } else { //sift值大于等于0.05
+                                sb.append(temp).append("\tNonsynonymous_tolerent");
+                                bw.write(sb.toString());
+                                bw.newLine();
                             }
                         }
                     }
@@ -292,18 +674,17 @@ public class VariantsSum {
                 bw.close();
                 br.close();
                 System.out.println(f.getAbsolutePath() + " is completed at " + outfileS);
-            }
-            catch(Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
                 System.exit(1);
             }
         });
 
     }
-    
+
     /**
-     *目的：想通过annotation库文件直接获得作图的表格，免去中间手动建立EXCEL和合并结果
-     * 
+     * 目的：想通过annotation库文件直接获得作图的表格，免去中间手动建立EXCEL和合并结果
+     *
      * @param infileDirS
      * @param outfileDirS
      * @param binNum the number of bins that would be divided
@@ -692,8 +1073,7 @@ public class VariantsSum {
     public void mergebySub() {
         String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/002_changeChrPos";
         String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/003_mergebySub";
-        
-        
+
         File[] fs = new File(infileDirS).listFiles();
         for (int i = 0; i < fs.length; i++) {
             if (fs[i].isHidden()) {
@@ -716,7 +1096,6 @@ public class VariantsSum {
     public void changeChrPos() {
         String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/001_ori";
         String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/002_changeChrPos";
-
 
         File[] fs = new File(infileDirS).listFiles();
         for (int i = 0; i < fs.length; i++) {
@@ -1086,9 +1465,8 @@ public class VariantsSum {
     /**
      * 目的：1.将vmap2的chr pos 提取出来，建立数据库；
      *
-     * @param infileDirS
-     * @param infile2DirS
-     * @param outfileDirS
+     * @param infileS
+     * @param outfileS
      */
     public void mkSNPsummary_step1(String infileS, String outfileS) {
         //Chr	Pos	Ref	Alt	Major	Minor	Maf	AAF_ABD	AAF_AB

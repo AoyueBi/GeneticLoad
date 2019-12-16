@@ -5,8 +5,8 @@
  */
 package Entrance;
 
-import AoUtils.Bin;
 import Plot.Tree;
+import WheatGeneticLoad.VariantsSum;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -50,12 +50,12 @@ public class GeneticLoadEntrance {
 //        new SIFT();
 //        new CountSites();
         //new ScriptHapscanner2();
-//        new VariantsSum();
+        new VariantsSum();
 //        new PopGenParaWheat();
         //new SplitScript();
 //        new Script();
 //        new FilterVCF();
-        new Bin();
+//        new Bin();
 //        new AoMath();
 //        new TreePreparation();
 //        new CalVCF();

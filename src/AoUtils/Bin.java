@@ -42,7 +42,8 @@ public class Bin {
 //        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/018_getDAFtablefrom014";
 //        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/018_getDAFtablefrom014/002_basedGerpPhyloP";
         
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/018_getDAFtablefrom014/003_basedSIFT_ratio";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/018_getDAFtablefrom014/003_basedSIFT_ratio";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/018_getDAFtablefrom014/005_basedonlyGERP";
         new File(outfileDirS).mkdirs();
 
         File[] fs = new File(infileDirS).listFiles();
@@ -126,24 +127,25 @@ public class Bin {
                             sift = Double.parseDouble(siftscore);
                             if (sift < 0.05) {
                                 //添加gerp phyloP分组信息
-                                if (!gerpscore.startsWith("N") && (!phylopscore.startsWith("N"))) { //均有值存在
-                                    gerp = Double.parseDouble(gerpscore);
-                                    phylop = Double.parseDouble(phylopscore);
-                                    if (gerp > 1 && (phylop > 0.5)) {
-                                        if (!DAF.startsWith("N")) { //说明是有值的
-                                            double value = Double.parseDouble(DAF);
-                                            daf[0].add(value);
-                                        }
-                                        if (!DAF_ABD.startsWith("N")) { //说明是有值的
-                                            double value = Double.parseDouble(DAF_ABD);
-                                            dafABD[0].add(value);
-                                        }
-                                        if (!DAF_AB.startsWith("N")) { //说明是有值的
-                                            double value = Double.parseDouble(DAF_AB);
-                                            dafAB[0].add(value);
-                                        }
-                                    }
-                                
+//                                if (!gerpscore.startsWith("N") && (!phylopscore.startsWith("N"))) { //均有值存在
+//                                    gerp = Double.parseDouble(gerpscore);
+//                                    phylop = Double.parseDouble(phylopscore);
+//                                    if (gerp > 1 && (phylop > 0.5)) {
+//                                        if (!DAF.startsWith("N")) { //说明是有值的
+//                                            double value = Double.parseDouble(DAF);
+//                                            daf[0].add(value);
+//                                        }
+//                                        if (!DAF_ABD.startsWith("N")) { //说明是有值的
+//                                            double value = Double.parseDouble(DAF_ABD);
+//                                            dafABD[0].add(value);
+//                                        }
+//                                        if (!DAF_AB.startsWith("N")) { //说明是有值的
+//                                            double value = Double.parseDouble(DAF_AB);
+//                                            dafAB[0].add(value);
+//                                        }
+//                                    }
+//                                }
+
 
                                 //不添加gerp phyloP分组信息
 //**************************** 可供选择 *********************************************** //
@@ -158,8 +160,27 @@ public class Bin {
 //                                if (!DAF_AB.startsWith("N")) { //说明是有值的
 //                                    double value = Double.parseDouble(DAF_AB);
 //                                    dafAB[0].add(value);
-                                }
+
 //**************************** 可供选择 *********************************************** //
+
+                                if (!gerpscore.startsWith("N")) { //均有值存在
+                                    gerp = Double.parseDouble(gerpscore);
+                                    if (gerp > 1) {
+                                        if (!DAF.startsWith("N")) { //说明是有值的
+                                            double value = Double.parseDouble(DAF);
+                                            daf[0].add(value);
+                                        }
+                                        if (!DAF_ABD.startsWith("N")) { //说明是有值的
+                                            double value = Double.parseDouble(DAF_ABD);
+                                            dafABD[0].add(value);
+                                        }
+                                        if (!DAF_AB.startsWith("N")) { //说明是有值的
+                                            double value = Double.parseDouble(DAF_AB);
+                                            dafAB[0].add(value);
+                                        }
+                                    }
+                                }
+
                             } else { //sift值大于等于0.05
 
                                 if (!DAF.startsWith("N")) { //说明是有值的
@@ -192,36 +213,36 @@ public class Bin {
                 List[] l8 = this.mkBarplotofDAF(daf[1], 20);
                 List[] l9 = this.mkBarplotofDAF(daf[2], 20);
                 //************************************ 第四阶段，开始写出文件 ************************//
-//                bw.write("Xaxes\tDAF_ABD\tDAF_AB\tDAF\tGroup");
-//                bw.newLine();
-//                for (int i = 0; i < l1[0].size(); i++) {
-//                    bw.write(String.valueOf(l1[0].get(i)) + "\t" + String.valueOf(l1[1].get(i)) + "\t" + String.valueOf(l4[1].get(i))+ "\t" + String.valueOf(l7[1].get(i)) + "\t" + group[0]);
-//                    bw.newLine();
-//                }
-//                for (int i = 0; i < l1[0].size(); i++) {
-//                    bw.write(String.valueOf(l1[0].get(i))+ "\t" + String.valueOf(l2[1].get(i)) + "\t" + String.valueOf(l5[1].get(i))+ "\t" + String.valueOf(l8[1].get(i))+ "\t" + group[1]);
-//                    bw.newLine();
-//                }
-//                for (int i = 0; i < l1[0].size(); i++) {
-//                    bw.write(String.valueOf(l1[0].get(i)) + "\t"+ String.valueOf(l3[1].get(i)) + "\t" + String.valueOf(l6[1].get(i))+ "\t" + String.valueOf(l9[1].get(i))+ "\t" + group[2]);
-//                    bw.newLine();
-//                }
-                
-
-                bw.write("Xaxes\tDeleterious_SNPs\tNonsynonymous_tolerant_SNPs\tSynonymous_SNPs\tGroup");
+                bw.write("Xaxes\tDAF_ABD\tDAF_AB\tDAF\tGroup");
                 bw.newLine();
                 for (int i = 0; i < l1[0].size(); i++) {
-                    bw.write(String.valueOf(l1[0].get(i)) + "\t" + String.valueOf(l1[1].get(i)) + "\t" + String.valueOf(l2[1].get(i))+ "\t" + String.valueOf(l3[1].get(i)) + "\t" + "Hexaploid");
+                    bw.write(String.valueOf(l1[0].get(i)) + "\t" + String.valueOf(l1[1].get(i)) + "\t" + String.valueOf(l4[1].get(i))+ "\t" + String.valueOf(l7[1].get(i)) + "\t" + group[0]);
                     bw.newLine();
                 }
                 for (int i = 0; i < l1[0].size(); i++) {
-                    bw.write(String.valueOf(l1[0].get(i))+ "\t" + String.valueOf(l4[1].get(i)) + "\t" + String.valueOf(l5[1].get(i))+ "\t" + String.valueOf(l6[1].get(i))+ "\t" + "Tetraploid");
+                    bw.write(String.valueOf(l1[0].get(i))+ "\t" + String.valueOf(l2[1].get(i)) + "\t" + String.valueOf(l5[1].get(i))+ "\t" + String.valueOf(l8[1].get(i))+ "\t" + group[1]);
                     bw.newLine();
                 }
                 for (int i = 0; i < l1[0].size(); i++) {
-                    bw.write(String.valueOf(l1[0].get(i)) + "\t"+ String.valueOf(l7[1].get(i)) + "\t" + String.valueOf(l8[1].get(i))+ "\t" + String.valueOf(l9[1].get(i))+ "\t" + "Diploid");
+                    bw.write(String.valueOf(l1[0].get(i)) + "\t"+ String.valueOf(l3[1].get(i)) + "\t" + String.valueOf(l6[1].get(i))+ "\t" + String.valueOf(l9[1].get(i))+ "\t" + group[2]);
                     bw.newLine();
                 }
+                
+
+//                bw.write("Xaxes\tDeleterious_SNPs\tNonsynonymous_tolerant_SNPs\tSynonymous_SNPs\tGroup");
+//                bw.newLine();
+//                for (int i = 0; i < l1[0].size(); i++) {
+//                    bw.write(String.valueOf(l1[0].get(i)) + "\t" + String.valueOf(l1[1].get(i)) + "\t" + String.valueOf(l2[1].get(i))+ "\t" + String.valueOf(l3[1].get(i)) + "\t" + "Hexaploid");
+//                    bw.newLine();
+//                }
+//                for (int i = 0; i < l1[0].size(); i++) {
+//                    bw.write(String.valueOf(l1[0].get(i))+ "\t" + String.valueOf(l4[1].get(i)) + "\t" + String.valueOf(l5[1].get(i))+ "\t" + String.valueOf(l6[1].get(i))+ "\t" + "Tetraploid");
+//                    bw.newLine();
+//                }
+//                for (int i = 0; i < l1[0].size(); i++) {
+//                    bw.write(String.valueOf(l1[0].get(i)) + "\t"+ String.valueOf(l7[1].get(i)) + "\t" + String.valueOf(l8[1].get(i))+ "\t" + String.valueOf(l9[1].get(i))+ "\t" + "Diploid");
+//                    bw.newLine();
+//                }
                 
                 bw.flush();
                 bw.close();

@@ -891,7 +891,7 @@ public class CountSites {
     }
 
     /**
-     * 目的：将所有txt文本的chr pos位点信息合并成一个文件。
+     * 目的：将所有txt文本的chr pos位点等信息合并成一个文件。
      *
      * @param infileDirS
      * @param outfileS
@@ -904,14 +904,7 @@ public class CountSites {
             }
         }
         fs = new File(infileDirS).listFiles();
-        //fs = IOUtils.listFilesEndsWith(fs, "D.delSNP.changeChrPos.txt.gz");
-        //fs = IOUtils.listFilesEndsWith(fs, "D.nonsyTolerantSNP.changeChrPos.txt.gz");
-        //fs = IOUtils.listFilesEndsWith(fs, "D.synSNP.changeChrPos.txt.gz");
-        // fs = IOUtils.listFilesEndsWith(fs, "B.delSNP.changeChrPos.1M.binTable.txt");
-        //fs = IOUtils.listFilesEndsWith(fs, ".txt");
         Arrays.sort(fs);
-        //System.out.println("Chr\tSNP_Num");
-
         try {
             String infileS = fs[0].getAbsolutePath();
             BufferedReader br = null;
@@ -942,7 +935,6 @@ public class CountSites {
                 }
                 String temp = br.readLine(); //read header
 //                String temp = null; //not read header
-                //int chrint = Integer.parseInt(fs[i].getName().substring(3, 6));
                 int cnt = 0;
                 while ((temp = br.readLine()) != null) {
                     cnt++;
