@@ -26,14 +26,86 @@ import utils.PStringUtils;
 public class Wheat200cleanDataProcessor {
 
     public Wheat200cleanDataProcessor() {
-        this.GetIDlist();
+//        this.GetIDlist();
 //        this.mergeIDlist();
 //        this.calFastqbp();
         //this.sampleFastQC();
 //        this.fastQC();
 //        this.mkParameterchr1_42();
 //        this.mkJavaCmdchr1_42();
+        this.dealwithbadSAMPLE();
 
+    }
+    
+    /**
+     * 随机挑选一个样品，进行fastq文件的reads数统计，并计算符合 10X 样品的size大小，从而确定数据量不够的样品。
+     */
+    
+    public void dealwithbadSAMPLE(){
+        String infileDirS = "/Users/Aoyue/Documents/test";
+        String outfileDirS = "/Users/Aoyue/Documents/out";
+        File f = new File(infileDirS);
+        File[] fs = IOUtils.listRecursiveFiles(f);
+        fs = IOUtils.listFilesEndsWith(fs, ".clean.fq.gz");
+        int cntReads = 0;
+        /************************* Method1:单线程运行 *****************************************/
+//        try{
+//            for(int i=0; i<fs.length; i++){
+//                String infileS = fs[i].getAbsolutePath();
+//                BufferedReader br = IOUtils.getTextGzipReader(infileS);
+//                String temp = null;
+//                while((temp=br.readLine()) != null){
+//                    cntReads++;
+//                    br.readLine();br.readLine();br.readLine();
+//                }
+//                br.close();
+//                cntReads += cntReads;
+//            }
+//            System.out.println( f.getName() + " totalreads count is  " + cntReads);
+//        }
+//        catch (Exception e) {
+//            e.printStackTrace();
+//            System.exit(1);
+//        }
+
+        /************************* Methods2:多线程运行 *****************************************/
+        List<File> fList = Arrays.asList(fs);
+        fList.parallelStream().forEach(p -> {
+            try{
+                String infileS = p.getAbsolutePath();
+                String outfileS = new File(outfileDirS,p.getName()).getAbsolutePath();
+                BufferedReader br = IOUtils.getTextGzipReader(infileS);
+                BufferedWriter bw = IOUtils.getTextGzipWriter(outfileS);
+                String temp = null;
+                int cnt = 0;
+                for(int i=1; i< 280187;i++){
+                    StringBuilder sb = new StringBuilder();
+                    String temp1 = br.readLine(); 
+                    String temp2 = br.readLine();
+                    String temp3 = br.readLine();
+                    sb.append(temp).append("\n").append(temp1).append("\n").append(temp2).append("\n").append(temp3);
+                    bw.write(sb.toString());
+                    bw.newLine();
+                    cnt++;
+                    if(i%10000 == 0){
+                        System.out.println("Reads count is  " + i);
+                    }
+                    
+                }
+                br.close();
+                bw.flush();
+                bw.close();
+                System.out.println(p.getName() + "  reads count is  " + cnt);
+            }
+            catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+            }
+        });
+        
+        int totalReads = 1666383652;
+        int wheatGenome = 145000000; //这里将bp替换成了reads,除以100
+        
     }
     
     /**
@@ -201,9 +273,10 @@ public class Wheat200cleanDataProcessor {
     
     public void calFastqbp(){
         //String infileDirS = "/Volumes/LuLab4T_03/CleanData_15Samples/BT01411";
-        String infileDirS = "/Volumes/LuLab4T_03/CleanData_15Samples/BT01407";
+//        String infileDirS = "/Volumes/LuLab4T_03/CleanData_15Samples/BT01407";
+        String infileDirS = "/Users/Aoyue/Documents/test";
       
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/000_cleandata/002_countReads/";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/000_cleandata/002_countReads/count.txt";
         File f = new File(infileDirS);
         File[] fs = IOUtils.listRecursiveFiles(f);
         fs = IOUtils.listFilesEndsWith(fs, "_1.clean.fq.gz");
@@ -237,8 +310,11 @@ public class Wheat200cleanDataProcessor {
                 String temp = null;
                 int cnt = 0;
                 while((temp=br.readLine()) != null){
-                    cnt++;
                     br.readLine();br.readLine();br.readLine();
+                    cnt++;
+                    if(cnt==280186){
+                        System.out.println(p.getName() + "  reads count is more than  " + cnt);
+                    }
                 }
                 br.close();
                 System.out.println(p.getName() + "  reads count is  " + cnt);

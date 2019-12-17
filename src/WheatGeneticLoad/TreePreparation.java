@@ -36,6 +36,8 @@ public class TreePreparation {
 
 
 
+
+
     /**
      * 改变方针策略：先进行随机抽取barleyde 文件的pos和ATGC，然后在vmap2里边进行寻找
      *

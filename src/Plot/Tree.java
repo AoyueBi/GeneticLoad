@@ -33,7 +33,7 @@ public class Tree {
         //this.colRangebyPloidy_Dsubgenome();
         //this.prune_removeNA_Dsubgenome();
         //this.colRangebyHexaDiGroup_Dsubgenome();
-        this.colRangebyHexaDiGroup_ABsubgenome();
+//        this.colRangebyHexaDiGroup_ABsubgenome();
 //        this.removeDot();
 //        this.modifyMegaName();
 //        this.labels_Asub();
@@ -43,11 +43,139 @@ public class Tree {
          * 处理学博方法的tree
          */
 
-//        this.colRangebyHexaTetraGroup_Asubgenome();
+        this.colRangebyHexaTetraGroup_Asubgenome();
 //        this.labels_Asub_xuebo();
 //        this.binarybyContinent();
 
+//        this.colRange_gerp();
+//        this.textLabel_gerp();
 
+
+    }
+
+    /**
+     * 将分组信息添加到树的外面
+     */
+    public void textLabel_gerp(){
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/006_GERP/source/group";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/006_GERP/002_label/002_textLabelbySubfamily_Asubgenome.txt";
+
+        File f = new File(infileDirS);
+        File[] fs = IOUtils.listRecursiveFiles(f);
+        for (int i = 0; i < fs.length; i++) {
+            if (fs[i].isHidden()) {
+                fs[i].delete();
+            }
+            //System.out.println(fs[i].getName().split(".txt")[0]);
+        }
+        fs = IOUtils.listRecursiveFiles(f);
+        Arrays.sort(fs);
+        //凤梨科          竹亚科          虎尾草牙科       稻亚科        黍亚科         早熟禾亚科
+        String[] groups = {"Bambusoideae", "Bromeliaceae","Chloridoideae","Oryzoideae","Panicoideae","Pooideae"};
+        String[] col = { "#00cc00","#0500ec","#33ccff","#ffcc00","#FFA07A","#EE82EE"};
+        HashMap<String, String> hm = new HashMap<>();
+        for (int i = 0; i < groups.length; i++) {
+            hm.put(groups[i], col[i]);
+        }
+        try {
+            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            //先写表头
+            bw.write("DATASET_TEXT\nSEPARATOR TAB\nDATASET_LABEL\texample text dataset\nCOLOR\t#ff0000\nDATA\n");
+            //再写内部的分组，注意文件名字必须和HashMap里的分组名保持一致
+            for (int i = 0; i < fs.length; i++) {
+                String infileS = fs[i].getAbsolutePath();
+                String group = fs[i].getName().split(".txt")[0];
+                //if(group.equals("NA")) continue;
+                BufferedReader br = IOUtils.getTextReader(infileS);
+                String temp = null;
+                int cnt = 0;
+                while ((temp = br.readLine()) != null) {
+                    cnt++;
+                    bw.write(temp + "\t" + group + "\t-1\t"+ hm.get(group) + "\tnormal\t1\t90"  );
+                    bw.newLine();
+                }
+                br.close();
+
+            }
+            bw.flush();
+            bw.flush();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    /**
+     * 对GERP中的树进行颜色调整
+     */
+    public void colRange_gerp(){
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/006_GERP/source/group";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/006_GERP/002_label/001_colRangebySubfamily_Asubgenome.txt";
+        String outfileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/006_GERP/002_label/001_colBranchbySubfamily_Asubgenome.txt";
+
+        String reheaderS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/000_prepareData/001_input/taxaList.txt";
+        RowTable<String> t = new RowTable<>(reheaderS);
+        HashMap<String,String> hmtaxa = new HashMap<>();
+        for (int i = 0; i < t.getRowNumber() ; i++) {
+            String taxa = t.getCell(i,0);
+            String taxaID = t.getCell(i,1);
+            hmtaxa.put(taxa,taxaID);
+        }
+
+
+        File f = new File(infileDirS);
+        File[] fs = IOUtils.listRecursiveFiles(f);
+        for (int i = 0; i < fs.length; i++) {
+            if (fs[i].isHidden()) {
+                fs[i].delete();
+            }
+            //System.out.println(fs[i].getName().split(".txt")[0]);
+        }
+        fs = IOUtils.listRecursiveFiles(f);
+        Arrays.sort(fs);
+                            //凤梨科          竹亚科          虎尾草牙科       稻亚科        黍亚科         早熟禾亚科
+        String[] groups = {"Bambusoideae", "Bromeliaceae","Chloridoideae","Oryzoideae","Panicoideae","Pooideae"};
+        String[] col = { "#00cc00","#0500ec","#33ccff","#ffcc00","#FFA07A","#EE82EE"};
+        HashMap<String, String> hm = new HashMap<>();
+        for (int i = 0; i < groups.length; i++) {
+            hm.put(groups[i], col[i]);
+        }
+        try {
+            BufferedWriter[] bw = new BufferedWriter[2];
+            bw[0] = IOUtils.getTextWriter(outfileS);
+            bw[1] = IOUtils.getTextWriter(outfileS1);
+            //先写表头
+            bw[0].write("TREE_COLORS\nSEPARATOR TAB\nDATA\n");
+            bw[1].write("TREE_COLORS\nSEPARATOR TAB\nDATA\n");
+            //再写内部的分组，注意文件名字必须和HashMap里的分组名保持一致
+            for (int i = 0; i < fs.length; i++) {
+                String infileS = fs[i].getAbsolutePath();
+                String group = fs[i].getName().split(".txt")[0];
+                //if(group.equals("NA")) continue;
+                BufferedReader br = IOUtils.getTextReader(infileS);
+                String temp = null;
+                int cnt = 0;
+                while ((temp = br.readLine()) != null) {
+                    cnt++;
+                    bw[0].write(temp + "\trange\t" + hm.get(group) + "\t" + group);
+                    bw[0].newLine();
+
+                    bw[1].write(temp+ "\tbranch\t" + hm.get(group) + "\t" + "normal");
+                    bw[1].newLine();
+                }
+                br.close();
+
+            }
+            bw[0].flush();
+            bw[1].flush();
+            bw[0].close();
+            bw[1].close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
     
 
@@ -131,7 +259,7 @@ public class Tree {
         Arrays.sort(fs);
 
         String[] groups = {"Ae.tauschii", "Wild_emmer","Domesticated_emmer","Free_threshing_tetraploid","OtherTetraploid","Cultivar","Landrace","OtherHexaploid"};
-        String[] col = { "#87cef9","#ffd702","#7f5701","#00cd66","#00f3ff","#9900ff","#fc6e6e","#fe63c2"};
+        String[] col = { "#87cef9","#ffd702","#7f5701","#016699","#00f3ff","#9900ff","#fc6e6e","#fe63c2"};
         HashMap<String, String> hm = new HashMap<>();
         for (int i = 0; i < groups.length; i++) {
             hm.put(groups[i], col[i]);
