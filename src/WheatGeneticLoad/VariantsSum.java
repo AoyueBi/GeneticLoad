@@ -134,13 +134,172 @@ public class VariantsSum {
          * 计算CDS区域，所有变异的类型个数,这里分组是只有GERP大于1
          *
          */
-        this.countDeleteriousSNPs_basedSubgenome();
+//        this.countDeleteriousSNPs_basedSubgenome();
+
+        /**
+         * 计算原文件中，个体VCF的delterious占 DAF common和rare 的比例
+         */
+
+        this.calIndivDeleteriousProportion();
 
 
-        
 
 
     }
+
+    public void calIndivDeleteriousProportion(){
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/022_indivDeleteriousProportion/001_indivcf/";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/022_indivDeleteriousProportion/002_proportion/001_hexaploid_deleteriousProportion.txt";
+        String annoS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/013_mergebySub/chr1A_SNP_anno.changeChrPos.txt.gz";
+        new AoFile().readheader(annoS);
+        File[] fs = new File(infileDirS).listFiles();
+        for (int i = 0; i < fs.length; i++) {
+            if (fs[i].isHidden()) {
+                System.out.println(fs[i].getName() + " is hidden");
+                fs[i].delete();
+            }
+        }
+        fs = new File(infileDirS).listFiles();
+        List<File> fsList = Arrays.asList(fs);
+        try {
+            BufferedWriter bw = null;
+            if (outfileS.endsWith(".txt")) {
+                bw = IOUtils.getTextWriter(outfileS);
+            } else if (outfileS.endsWith(".txt.gz")) {
+                bw = IOUtils.getTextGzipWriter(outfileS);
+            }
+//            String header = "Individual\tTotalDeleteriousSNPs\tCommonModerate\tCommonLarge\tCommonExtreme\tRareModerate\tRareLarge\tRareExtreme";
+            String header = "Indi\tProportion\tEffect";
+            bw.write(header);
+            bw.newLine();
+            for (int i = 0; i < fs.length; i++) {
+                String infileS = fs[i].getAbsolutePath();
+
+                BufferedReader br = null;
+                if (annoS.endsWith(".txt")) {
+                    br = IOUtils.getTextReader(annoS);
+                } else if (annoS.endsWith(".txt.gz")) {
+                    br = IOUtils.getTextGzipReader(annoS);
+                }
+
+                TIntArrayList poslist = new AoFile().getNumList(infileS,1); //引用别的方法
+                TDoubleArrayList CommonModerate = new TDoubleArrayList();
+                TDoubleArrayList CommonLarge = new TDoubleArrayList();
+                TDoubleArrayList CommonExtreme = new TDoubleArrayList();
+                TDoubleArrayList RareModerate = new TDoubleArrayList();
+                TDoubleArrayList RareLarge = new TDoubleArrayList();
+                TDoubleArrayList RareExtreme = new TDoubleArrayList();
+                int cntall = 0;
+                int cntCommonModerate = 0;
+                int cntCommonLarge = 0;
+                int cntCommonExtreme = 0;
+                int cntRareModerate = 0;
+                int cntRareLarge = 0;
+                int cntRareExtreme = 0;
+
+                double sift = Double.NaN;
+                double gerp = Double.NaN;
+                double phylop = Double.NaN;
+                double daf = Double.NaN;
+                String temp = br.readLine();
+                List<String> l = new ArrayList();
+                while ((temp = br.readLine()) != null) {
+                    l = PStringUtils.fastSplit(temp);
+                    int pos = Integer.parseInt(l.get(1));
+                    String type = l.get(11);
+                    String siftscore = l.get(12);
+                    String dafABD = l.get(15);
+                    String gerpscore = l.get(17);
+                    String phylopscore = l.get(18);
+                    int index = poslist.binarySearch(pos);
+                    if (index < 0) continue;
+                    if (type.equals("SYNONYMOUS"))continue;
+                    if (type.equals("NONSYNONYMOUS")) {
+                        if (!siftscore.startsWith("N")) {
+                            sift = Double.parseDouble(siftscore);
+                            if (sift < 0.05) {
+                                if (!gerpscore.startsWith("N")) { //均有值存在
+                                    gerp = Double.parseDouble(gerpscore);
+                                    if (gerp > 1 && gerp < 2.5) {
+                                        if (!dafABD.startsWith("N")){
+                                            daf = Double.parseDouble(dafABD);
+                                            if (daf >= 0.05){//common allele
+                                                cntCommonModerate++;
+                                                cntall++;
+                                            }
+                                            else{
+                                                cntRareModerate++;
+                                                cntall++;
+                                            }
+                                        }
+                                    }
+                                    if(gerp >= 2.5 && gerp <3.6){
+                                        if (!dafABD.startsWith("N")){
+                                            daf = Double.parseDouble(dafABD);
+                                            if (daf >= 0.05){//common allele
+                                                cntCommonLarge++;
+                                                cntall++;
+                                            }
+                                            else{
+                                                cntRareLarge++;
+                                                cntall++;
+                                            }
+                                        }
+
+                                    }
+                                    if(gerp >= 3.6){ //max 3.5
+                                        if (!dafABD.startsWith("N")){
+                                            daf = Double.parseDouble(dafABD);
+                                            if (daf >= 0.05){//common allele
+                                                cntCommonExtreme++;
+                                                cntall++;
+                                            }
+                                            else{
+                                                cntRareExtreme++;
+                                                cntall++;
+                                            }
+                                        }
+                                    }
+                                } //有值存在
+                            }
+                        }
+                    }
+                }
+                br.close();
+                int all = cntCommonModerate + cntCommonLarge + cntCommonExtreme + cntRareModerate + cntRareLarge + cntRareExtreme;
+                double r1 = (double)cntCommonModerate/(double) cntall;
+                double r2 = (double)cntCommonLarge/(double) cntall;
+                double r3 = (double)cntCommonExtreme/(double) cntall;
+                double r4 = (double)cntRareModerate/(double) cntall;
+                double r5 = (double)cntRareLarge/(double) cntall;
+                double r6 = (double)cntRareExtreme/(double) cntall;
+
+                bw.write(fs[i].getName().split("_")[2] + "\t" + String.format("%.3f",r1) + "\tCommonModerate\n");
+                bw.write(fs[i].getName().split("_")[2] + "\t" + String.format("%.3f",r2) + "\tCommonLarge\n");
+//                bw.write(fs[i].getName().split("_")[2] + "\t" + String.format("%.3f",r3) + "\tCommonExtreme\n");
+                bw.write(fs[i].getName().split("_")[2] + "\t" + String.format("%.3f",r4) + "\tRareModerate\n");
+                bw.write(fs[i].getName().split("_")[2] + "\t" + String.format("%.3f",r5) + "\tRareLarge\n");
+//                bw.write(fs[i].getName().split("_")[2] + "\t" + String.format("%.3f",r6) + "\tRareExtreme\n");
+
+//                bw.write(fs[i].getName().split("_")[2] + "\t" + cntall + "\t" + String.format("%.3f",r1)+ "\t" + String.format("%.3f",r2)+ "\t" + String.format("%.3f",r3)
+//                        + "\t" + String.format("%.3f",r4)+ "\t" + String.format("%.3f",r5)+ "\t" + String.format("%.3f",r6));
+//                bw.newLine();
+                System.out.println(cntall + "   " + all);
+
+                System.out.println(fs[i].getAbsolutePath() + " is completed at " + outfileS);
+                System.out.println(fs[i].getName().split("_")[2] + " have " + cntall + " deleterious SNPs");
+            }
+            bw.flush();
+            bw.close();
+
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+
 
     /**
      * 根据GERP值和PhyloP的值，还有SIFT值判断，再文件最后再添加一列分组信息 Synonymous

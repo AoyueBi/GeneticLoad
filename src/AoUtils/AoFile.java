@@ -5,11 +5,13 @@
  */
 package AoUtils;
 
+import gnu.trove.list.array.TIntArrayList;
 import utils.IOUtils;
 import utils.PStringUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,6 +21,53 @@ import java.util.List;
 public class AoFile {
     public AoFile(){
         
+    }
+
+
+    /**
+     *
+     * @param infileS
+     * @param columnIndex
+     * @return
+     */
+    public TIntArrayList getNumList(String infileS, int columnIndex){
+        TIntArrayList ll = new TIntArrayList();
+
+        try {
+            BufferedReader br = null;
+            if (infileS.endsWith(".txt")) {
+                br = IOUtils.getTextReader(infileS);
+            } else if (infileS.endsWith(".txt.gz")) {
+                br = IOUtils.getTextGzipReader(infileS);
+            }else if (infileS.endsWith(".vcf.gz")) {
+                br = IOUtils.getTextGzipReader(infileS);
+            }else if(infileS.endsWith(".vcf")) {
+                br = IOUtils.getTextReader(infileS);
+            }
+
+            String temp = null;
+            List<String> l = new ArrayList();
+            StringBuilder sb = new StringBuilder();
+            TIntArrayList posList = new TIntArrayList();
+            int cnttotal = 0;
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                if (!temp.startsWith("#")) {
+                    cnttotal++;
+                    l = PStringUtils.fastSplit(temp);
+                    String goal = l.get(columnIndex);
+                    if (goal.startsWith("N")) continue;
+                    ll.add(Integer.parseInt(goal));
+                    cnt++;
+                }
+            }
+            br.close();
+            System.out.println("Total num in the list is    " + cnt + "\t" + ll.size());
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ll;
     }
 
     /**

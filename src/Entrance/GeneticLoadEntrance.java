@@ -6,6 +6,7 @@
 package Entrance;
 
 import Plot.Tree;
+import WheatGeneticLoad.VariantsSum;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -17,8 +18,8 @@ import java.util.Date;
 public class GeneticLoadEntrance {
 
     public GeneticLoadEntrance() {
-//        this.firstProcess();
-        this.secondProcess();
+        this.firstProcess();
+//        this.secondProcess();
 
     }
 
@@ -49,7 +50,7 @@ public class GeneticLoadEntrance {
 //        new SIFT();
 //        new CountSites();
         //new ScriptHapscanner2();
-//        new VariantsSum();
+        new VariantsSum();
 //        new PopGenParaWheat();
         //new SplitScript();
 //        new Script();
