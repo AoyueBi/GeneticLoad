@@ -37,14 +37,19 @@ public class PopGenParaWheat {
 //   this.mkTajimaDbasedWindow();
 //   this.mergeSh("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/003_tajimaD/001_script_based100kbWindow/001_total", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/003_tajimaD/001_script_based100kbWindow/02_merge_sh/tajimaD_based100kbWondow20191127.sh");
 //   new Script().splitBwaScript("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/003_tajimaD/001_script_based100kbWindow/02_merge_sh/tajimaD_based100kbWondow20191127.sh", "tajimad100kbWindow_", 50, 2);
-//    this.mergeTajimaD();
+//    this.mergePopfile();
 //    new CountSites().mergeTxt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/003_tajimaD/002_tajimaD/003_mergeDsub", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/003_tajimaD/002_tajimaD/004_mergAll/tajimaD_all_based100kbWindow.txt");
 
 //        this.mkPiCMDbasedWindow();
 //        this.mergeandsplitSh("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/002_Pi/003_script_based100kbWindow_byPloidy/001_total", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/002_Pi/003_script_based100kbWindow_byPloidy/002_merge_sh/pi_based100kbWindow20191211.sh", 6, 7);
 
 //        this.mkFstCommandbasedwinndow();
-        this.mergeandsplitSh("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/004_script_based10KbWindow_byPloidy/001_total", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/004_script_based10KbWindow_byPloidy/002_merge_sh/fst_basedWindow20191211.sh", 7, 3);
+//        this.mergeandsplitSh("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/004_script_based10KbWindow_byPloidy/001_total", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/004_script_based10KbWindow_byPloidy/002_merge_sh/fst_basedWindow20191211.sh", 7, 3);
+
+        /**
+         * 按照倍性，将AABBDD AABB DD的文件合并在一起
+         */
+        this.mergePopfile();
 
     }
     
@@ -52,9 +57,9 @@ public class PopGenParaWheat {
     
     /**
      * 
-     * 将TajimaD的结果合并起来，画在一张图上
+     * 将TajimaD等参数的结果合并起来，画在一张图上
      */
-    public void mergeTajimaD() {
+    public void mergePopfile() {
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/003_tajimaD/002_tajimaD/001_tajimaD_based100kbWindow_hexa_diploid";
 //        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/003_tajimaD/002_tajimaD/003_mergeDsub/Tajima.D_Dsub_based100kbWindow.txt";
 
@@ -71,13 +76,23 @@ public class PopGenParaWheat {
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/003_result/001_fst_based100kbWindow_hexa_diploid";
 //        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/003_result/003_merge_sub/Fst_Dsub_based100kbWindow.txt";
 
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/003_result/002_fst_based100kbWindow_hexa_tetraploid";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/003_result/003_merge_sub/Fst_Bsub_based100kbWindow.txt";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/003_result/002_fst_based100kbWindow_hexa_tetraploid";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/003_result/003_merge_sub/Fst_Asub_based100kbWindow.txt";
 
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/003_result/002_fst_based100kbWindow_hexa_tetraploid";
-//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/003_result/003_merge_sub/Fst_Dsub_based100kbWindow.txt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/003_result/003_merge_sub/Fst_Bsub_based100kbWindow.txt";
 
-        File[] fs = new File(infileDirS).listFiles();
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/002_Pi/002_result/004_pi_based100kbWindow_byPloidy";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/002_Pi/002_result/005_merge_sub_byPloidy/Pi_Asub_based100kbWindow_byPloid.txt.gz";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/002_Pi/002_result/005_merge_sub_byPloidy/Pi_Bsub_based100kbWindow_byPloid.txt.gz";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/002_Pi/002_result/005_merge_sub_byPloidy/Pi_Dsub_based100kbWindow_byPloid.txt.gz";
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/003_result/004_fst_based100kbWindow_byPloidy";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/003_result/005_merge_sub_byPloidy/Fst_Asub_based100kbWindow_byPloidy.txt.gz";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/003_result/005_merge_sub_byPloidy/Fst_Bsub_based100kbWindow_byPloidy.txt.gz";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/003_result/005_merge_sub_byPloidy/Fst_Dsub_based100kbWindow_byPloidy.txt.gz";
+
+                File[] fs = new File(infileDirS).listFiles();
         for (int i = 0; i < fs.length; i++) {
             if (fs[i].isHidden()) {
                 fs[i].delete();
@@ -85,7 +100,7 @@ public class PopGenParaWheat {
         }
 //        fs = IOUtils.listFilesEndsWith(fs, suffix);
         fs = new File(infileDirS).listFiles();
-        fs = IOUtils.listFilesContains(fs, "B_");
+        fs = IOUtils.listFilesContains(fs, "A_");
         Arrays.sort(fs);
         try {
 
@@ -106,7 +121,7 @@ public class PopGenParaWheat {
             //读正文部分
             for (int i = 0; i < fs.length; i++) {
                 infileS = fs[i].getAbsolutePath();
-                String group = fs[i].getName().split("_chr")[0];
+                String group = fs[i].getName().split("_S")[0];
                 br = IOUtils.getTextReader(infileS);
                 String temp; //read header
                 temp = br.readLine();
