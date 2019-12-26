@@ -49,7 +49,7 @@ public class PopGenParaWheat {
         /**
          * 按照倍性，将AABBDD AABB DD的文件合并在一起
          */
-        this.mergePopfile();
+//        this.mergePopfile();
 
     }
     

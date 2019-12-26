@@ -5,6 +5,7 @@
  */
 package Plot;
 
+import AoUtils.AoFile;
 import format.table.RowTable;
 import utils.IOUtils;
 import utils.PStringUtils;
@@ -43,14 +44,29 @@ public class Tree {
          * 处理学博方法的tree
          */
 
-        this.colRangebyHexaTetraGroup_Asubgenome();
+//        this.colRangebyHexaTetraGroup_Asubgenome();
 //        this.labels_Asub_xuebo();
 //        this.binarybyContinent();
 
 //        this.colRange_gerp();
 //        this.textLabel_gerp();
+        this.test();
+//        new AoMath().countCaseInGroup("/Users/Aoyue/Documents/test.txt",0);
 
 
+    }
+
+    public void test(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/006_fromxuebo/002_labels/trash.txt";
+        String infile2S = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/006_fromxuebo/002_labels/key.txt";
+        HashMap<String, String> hm = new AoFile().getHashMap(infileS,1,0);
+        List<String> l = new AoFile().getStringList(infile2S,0);
+        for (int i = 0; i < l.size(); i++) {
+            System.out.println(l.get(i) + "\t" + hm.get(l.get(i)));
+        }
+        String a = hm.get("hhhhh");
+        int j = 0;
+        System.out.println(a + " test when there is no key");
     }
 
     /**
@@ -186,11 +202,15 @@ public class Tree {
 
 //        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/source/labelChange_Tetraploid.txt";
 //        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/006_fromxuebo/002_labels/003_labelcChange.Asub_tetraploid.txt";
+        String reheaderS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/000_prepareData/001_input/taxaList.txt";
+        
+
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/source/labelChange_Asub_Hexaploid.txt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/006_fromxuebo/002_labels/003_labelcChange.Asub_hexaploid.txt";
 //        String reheaderS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/000_prepareData/001_input/taxaList.txt";
 
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/source/labelChange_Asub_Hexaploid.txt";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/006_fromxuebo/002_labels/003_labelcChange.Asub_hexaploid.txt";
-        String reheaderS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/000_prepareData/001_input/taxaList.txt";
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/000_prepareData/001_input/taxaList.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/006_fromxuebo/002_labels/005_labelcChange.Asub.txt";
 
 
         RowTable<String> t = new RowTable<>(reheaderS);
@@ -211,9 +231,10 @@ public class Tree {
             while ((temp = br.readLine()) != null) {
                 String taxa = PStringUtils.fastSplit(temp).get(0);
                 String taxaID = hm.get(taxa);
-                String country = PStringUtils.fastSplit(temp).get(3);
-                String index = PStringUtils.fastSplit(temp).get(5);
-                bw.write(taxa + "\t" + index );
+                String country = PStringUtils.fastSplit(temp).get(2);
+                String partContinent = PStringUtils.fastSplit(temp).get(3);
+                String index = PStringUtils.fastSplit(temp).get(6);
+                bw.write(taxa + "\t" + index + " " + taxa + " " +  country + " " + partContinent);
                 bw.newLine();
             }
             br.close();

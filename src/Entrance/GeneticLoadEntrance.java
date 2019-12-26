@@ -5,8 +5,8 @@
  */
 package Entrance;
 
+import GermplasmInfo.GermplasmInfo;
 import Plot.Tree;
-import PopulationAnalysis.PopGenParaWheat;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -18,11 +18,17 @@ import java.util.Date;
 public class GeneticLoadEntrance {
 
     public GeneticLoadEntrance() {
-        this.firstProcess();
+//        this.firstProcess();
 //        this.secondProcess();
+        this.infoDB();
+
 
     }
 
+    public void infoDB(){
+        new GermplasmInfo();
+
+    }
 
 
     public void secondProcess() {
@@ -51,7 +57,7 @@ public class GeneticLoadEntrance {
 //        new CountSites();
         //new ScriptHapscanner2();
 //        new VariantsSum();
-        new PopGenParaWheat();
+//        new PopGenParaWheat();
         //new SplitScript();
 //        new Script();
 //        new FilterVCF();
@@ -59,7 +65,6 @@ public class GeneticLoadEntrance {
 //        new AoMath();
 //        new TreePreparation();
 //        new CalVCF();
-
 //new DeleteriousDB();
     }
 

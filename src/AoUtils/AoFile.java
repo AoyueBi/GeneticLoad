@@ -5,6 +5,7 @@
  */
 package AoUtils;
 
+import format.table.RowTable;
 import gnu.trove.list.array.TIntArrayList;
 import utils.IOUtils;
 import utils.PStringUtils;
@@ -12,6 +13,8 @@ import utils.PStringUtils;
 import java.io.BufferedReader;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -23,8 +26,113 @@ public class AoFile {
         
     }
 
+    public HashMap<String,String> getHashMapwithFilename(String infileDirS){
+        File[] fs = new File(infileDirS).listFiles();
+        for (int i = 0; i < fs.length; i++) {
+            if (fs[i].isHidden()) {
+                System.out.println(fs[i].getName() + " is hidden");
+                fs[i].delete();
+            }
+        }
+        fs = new File(infileDirS).listFiles();
+        Arrays.sort(fs);
+        int cnttotal = 0;
+        HashMap<String,String> hm = new HashMap<>();
+        try{
+            for (int i = 0; i < fs.length; i++) {
+                String infileS = fs[i].getAbsolutePath();
+                String group = fs[i].getName().replaceFirst(".txt","");
+                BufferedReader br = IOUtils.getTextReader(infileS);
+                String temp = null; //do not read header
+                int cnt = 0;
+                while((temp = br.readLine()) != null){
+                    cnttotal++;
+                    cnt++;
+                    hm.put(temp,group);
+                }
+                br.close();
+                System.out.println(fs[i].getName() + "\tHashMap size is\t" + cnt);
+            }
+            System.out.println("Total HashMap size is " + cnttotal);
+        }
+        catch(Exception e){
+            System.exit(1);
+            e.printStackTrace();
+        }
+
+
+
+
+
+
+        System.out.println("HashMap contains " + hm.size() + " pairs");
+
+
+        return hm;
+    }
+
+
 
     /**
+     *return a hashmap from a file
+     *
+     * @param infileS
+     * @param keycolummIndex
+     * @param valuecolumnIndex
+     * @return
+     */
+    public HashMap<String,String> getHashMap(String infileS, int keycolummIndex, int valuecolumnIndex){
+        String out = null;
+        RowTable<String> t = new RowTable<>(infileS);
+        HashMap<String,String> hm = new HashMap<>();
+        for (int i = 0; i < t.getRowNumber() ; i++) {
+            String key = t.getCell(i,keycolummIndex);
+            String value = t.getCell(i,valuecolumnIndex);
+            hm.put(key,value);
+        }
+        System.out.println("HashMap contains " + hm.size() + " pairs");
+
+        
+        return hm;
+    }
+
+    /**
+     *
+     * get String list from a txt file
+     * @param infileS
+     * @param columnIndex
+     * @return
+     */
+    public List<String> getStringList(String infileS, int columnIndex){
+        List<String> out = new ArrayList<>();
+        try {
+            BufferedReader br = null;
+            if (infileS.endsWith(".txt")) {
+                br = IOUtils.getTextReader(infileS);
+            } else if (infileS.endsWith(".txt.gz")) {
+                br = IOUtils.getTextGzipReader(infileS);
+            }
+
+            String temp = br.readLine(); //read header
+            List<String> l = new ArrayList();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                    l = PStringUtils.fastSplit(temp);
+                    String goal = l.get(columnIndex);
+                    out.add(goal);
+                    cnt++;
+            }
+            br.close();
+            System.out.println("Total num in the list is    " + cnt + "\t" + out.size());
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return out;
+    }
+
+    /**
+     * get the pos database from txt file
      *
      * @param infileS
      * @param columnIndex
@@ -39,7 +147,42 @@ public class AoFile {
                 br = IOUtils.getTextReader(infileS);
             } else if (infileS.endsWith(".txt.gz")) {
                 br = IOUtils.getTextGzipReader(infileS);
-            }else if (infileS.endsWith(".vcf.gz")) {
+            }
+            String temp = br.readLine(); //read header
+            List<String> l = new ArrayList();
+            int cnttotal = 0;
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                    cnttotal++;
+                    l = PStringUtils.fastSplit(temp);
+                    String goal = l.get(columnIndex);
+                    if (goal.startsWith("N")) continue;
+                    ll.add(Integer.parseInt(goal));
+                    cnt++;
+            }
+            br.close();
+            System.out.println("Total num in the list is    " + cnt + "\t" + ll.size());
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ll;
+    }
+
+
+    /**
+     * get the pos database from VCF file
+     *
+     * @param infileS
+     * @param columnIndex
+     * @return
+     */
+    public TIntArrayList getNumListfromVCF(String infileS, int columnIndex){
+        TIntArrayList ll = new TIntArrayList();
+
+        try {
+            BufferedReader br = null;
+            if (infileS.endsWith(".vcf.gz")) {
                 br = IOUtils.getTextGzipReader(infileS);
             }else if(infileS.endsWith(".vcf")) {
                 br = IOUtils.getTextReader(infileS);
@@ -47,8 +190,6 @@ public class AoFile {
 
             String temp = null;
             List<String> l = new ArrayList();
-            StringBuilder sb = new StringBuilder();
-            TIntArrayList posList = new TIntArrayList();
             int cnttotal = 0;
             int cnt = 0;
             while ((temp = br.readLine()) != null) {

@@ -12,8 +12,10 @@ import utils.PStringUtils;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  *
@@ -26,12 +28,11 @@ public class Mode {
 
     }
 
-    /**
-     *
-     * @param infileDirS
-     * @param outfileDirS
-     */
-    public void vcfParallel(String infileDirS, String outfileDirS, String extractRatio) {
+
+    public void vcfParallel() {
+        double extractRatio = 0;
+        String infileDirS = "";
+        String outfileDirS = "";
 
         File[] fs = new File(infileDirS).listFiles();
         for (int i = 0; i < fs.length; i++) {
@@ -65,7 +66,7 @@ public class Mode {
                     } else {
                         cnttotal++;
                         double r = Math.random();
-                        double ratio = Double.parseDouble(extractRatio);
+                        double ratio = extractRatio;
                         if (r > ratio) {
                             continue; //返回带正号的 double 值，该值大于等于 0.0 且小于 1.0。返回值是一个伪随机选择的数，在该范围内（近似）均匀分布
                         }
@@ -129,13 +130,9 @@ public class Mode {
         });
     }
 
-    public void mode() {
-        String infileDirS = "";
-        String outfileDirS = "";
+    public void vcfSinglethread() {
 
-        //  new CountSites().mergesubsetVCF(args[0], args[1]);
-        // new CountSites().mergesubsetVCF(args[0], args[1], args[2]);
-/*==================================== 测试用 =============================================*/
+
         try {
             String infileS = "";
             String outfileS = "";
@@ -151,41 +148,24 @@ public class Mode {
                 }
                 cnt++;
             }
+            br.close();
+            bw.flush();
+            bw.close();
             System.out.println();
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
         }
-        /*==================================== 测试用 =============================================*/
-        try {
-            String infileS = "";
-            String outfileS = "";
-            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
 
-            StringBuilder sb = new StringBuilder();
-            sb.append("##fileformat=VCFv4.1\n");
-            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss.SSS");
-            Date dt = new Date();
-            String S = sdf.format(dt);
-            sb.append("##fileDate=").append(S.split(" ")[0]).append("\n");
-            //sb.append("##reference=").append(referenceFileS).append("\n");
-            sb.append("##INFO=<ID=DP,Number=1,Type=Integer,Description=\"").append("Total depth").append("\">\n");
-            sb.append("##INFO=<ID=AD,Number=2+,Type=Integer,Description=\"").append("Total allelelic depths in order listed starting with REF").append("\">\n");
-            sb.append("##INFO=<ID=NZ,Number=1,Type=Integer,Description=\"").append("Number of individuals with alleles present").append("\">\n");
-            sb.append("##INFO=<ID=AP,Number=2+,Type=Integer,Description=\"").append("Number of individuals in which an allele is present").append("\">\n");
-            sb.append("##INFO=<ID=PV,Number=1+,Type=Float,Description=\"").append("Segreagation test P-Value of alternative alleles").append("\">\n");
-            sb.append("##INFO=<ID=DI,Number=2,Type=Integer,Description=\"").append("Number of deletion and insertion type").append("\">\n");
-            sb.append("##FORMAT=<ID=GT,Number=1,Type=String,Description=\"").append("Genotype").append("\">\n");
-            sb.append("##FORMAT=<ID=AD,Number=.,Type=Integer,Description=\"").append("Allelic depths for the reference and alternate alleles in the order listed").append("\">\n");
-            sb.append("##FORMAT=<ID=PL,Number=G,Type=Integer,Description=\"").append("Genotype likelihoods for 0/0, 0/1, 1/1, or 0/0, 0/1, 0/2, 1/1, 1/2, 2/2 if 2 alt alleles").append("\">\n");
-            //return sb.toString();
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
+        List<ChrPos> l = new ArrayList();
+        String chr = null;
+        String pos = null;
+        l.add(new ChrPos(Short.valueOf(chr), Integer.valueOf(pos)));
 
-        //////////////////////
+    }
+
+    public void txtSinglethread(){
         try {
             String infileS = "";
             String outfileS = "";
@@ -195,21 +175,18 @@ public class Mode {
             List<String> l = new ArrayList<>();
             int cnt = 0;
             while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
                 cnt++;
 
             }
             br.close();
+            bw.flush();
+            bw.close();
             System.out.println();
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
         }
-
-//////////////////////////////////////////////////////////////////
-        List<ChrPos> l = new ArrayList();
-        String chr = null;
-        String pos = null;
-        l.add(new ChrPos(Short.valueOf(chr), Integer.valueOf(pos)));
 
     }
 
@@ -248,29 +225,6 @@ public class Mode {
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
-        }
-
-    }
-    
-    /**
-     * 在输出目录中建立相同的子目录
-     */
-    public void mksamedirs() {
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/001_ori";
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/002_changeChrPos";
-        File[] fs = new File(infileDirS).listFiles();
-        for(int i = 0; i < fs.length; i++){
-            if(fs[i].isHidden())
-                fs[i].delete();
-        }
-        fs = new File(infileDirS).listFiles();
-        for (int i = 0; i < fs.length; i++) {
-            System.out.println(fs[i]);
-            new File(outfileDirS, fs[i].getName()).mkdirs();
-        }
-        
-        for(int i = 0; i < fs.length; i++){
-            new CountSites().mergefileandChangeChrPos_chr1and2(fs[i].getAbsolutePath(),new File(outfileDirS, fs[i].getName()).getAbsolutePath());
         }
     }
 
