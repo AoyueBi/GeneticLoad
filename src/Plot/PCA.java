@@ -5,13 +5,16 @@
  */
 package Plot;
 
+import AoUtils.AoFile;
 import format.table.RowTable;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.util.HashMap;
-import java.util.List;
 import utils.IOUtils;
 import utils.PStringUtils;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  *
@@ -20,13 +23,53 @@ import utils.PStringUtils;
 public class PCA {
     
     public PCA(){
+        this.addGrouptoPCA();
         
     }
-    
-    
-    public void addGrouptoMDS_AandBsubgenome(){
-        
-        
+
+
+    //对ABsub的PCA结果添加2列信息，一列subspecies分组，一列大洲信息
+    public void addGrouptoPCA(){
+
+        String groupDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/008_treeValidatedGroup_bySubspecies";
+        HashMap<String,String> hm = new AoFile().getHashMapwithFilename(groupDirS);
+        String continentS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/000_prepareData/001_input/taxaList.txt";
+        HashMap<String,String> hm2 = new AoFile().getHashMap(continentS,0,5);
+
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/006_fromxuebo/05_PCA/000_PC_ABsubgenome_maf0.1.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/006_fromxuebo/05_PCA/001_PC_ABsubgenome_maf0.1_addGroup.txt";
+
+        try {
+            BufferedReader br = IOUtils.getTextReader(infileS);
+            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            String temp = br.readLine();
+            bw.write(temp + "\tGroup\tContinent");
+            bw.newLine();
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                String taxa = l.get(0);
+                cnt++;
+                String group = hm.get(taxa);
+                String con = hm2.get(taxa);
+                if (con == null || con == "") { //indicated there is no con
+                    bw.write(temp + "\t" + "NA" + "\t" + "NA");
+                    bw.newLine();
+                } else {//indicated that id for VMap2
+                    bw.write(temp + "\t" + group + "\t" + con);
+                    bw.newLine();
+                }
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
     }
             
     

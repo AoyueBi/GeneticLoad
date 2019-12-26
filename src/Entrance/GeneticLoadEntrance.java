@@ -6,7 +6,8 @@
 package Entrance;
 
 import GermplasmInfo.GermplasmInfo;
-import Plot.Tree;
+import Plot.PCA;
+import WheatGeneticLoad.DeleteriousBiologyAoyue;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -20,8 +21,14 @@ public class GeneticLoadEntrance {
     public GeneticLoadEntrance() {
 //        this.firstProcess();
 //        this.secondProcess();
-        this.infoDB();
+//        this.infoDB();
+        this.DBdeleterious();
 
+
+    }
+
+    public void DBdeleterious(){
+        new DeleteriousBiologyAoyue();
 
     }
 
@@ -34,7 +41,8 @@ public class GeneticLoadEntrance {
     public void secondProcess() {
         //new CalVCF()
         //new Circos();
-        new Tree();
+//        new Tree();
+        new PCA();
 
     }
 
