@@ -17,13 +17,79 @@ public class DeleteriousBiologyAoyue {
 
     public DeleteriousBiologyAoyue() {
 //        this.mergeDelgenicSNPAnnotation();
-//        this.countDeleteriousVMapII();
+        this.countDeleteriousVMapII();
 //        this.mkDepthOfVMapII();
 //        this.mkDepthSummary();
-        this.mergeDepthSummary();
+//        this.mergeDepthSummary();
+//        this.countDeleteriousVMapIIHighDepth();
 
 
 
+    }
+
+    private void countDeleteriousVMapIIHighDepth () {
+        String taxaSummaryFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/002_VMapIIDepth/taxaDepth_summary.txt";
+        String addInfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/001_delCount/additiveDeleterious_vmap2.txt";
+        String addOutfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/003_delCount_highDepth/additiveDeleterious_vmap2_highDepth.txt";
+        String recInfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/001_delCount/recessiveDeleterious_vmap2.txt";
+        String recOutfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/003_delCount_highDepth/recessiveDeleterious_vmap2_highDepth.txt";
+        String taxaGroupFileS = "/Users/Aoyue/project/wheatVMapII/001_germplasm/GermplasmDB/001_toFeiLu/004_wheatVMapII_germplasmInfoAddSubspecies_20191225.txt";
+        //1.54=3x, 2.75 = 5x
+        new AoFile().readheader(taxaGroupFileS);
+        double depthCut = 3;
+        RowTable t = new RowTable (taxaSummaryFileS);
+        ArrayList<String> taxaList = new ArrayList();
+        for (int i = 0; i < t.getRowNumber(); i++) {
+            if (t.getCellAsDouble(i, 2) < depthCut) continue;
+            taxaList.add(t.getCellAsString(i, 0));
+        }
+        String[] taxa = taxaList.toArray(new String[taxaList.size()]);
+        Arrays.sort(taxa);
+        t = new RowTable (taxaGroupFileS);
+        HashMap<String, String> taxaGroupMap = new HashMap();
+        HashMap<String, String> taxaSubMap = new HashMap();
+        for (int i = 0; i < t.getRowNumber(); i++) {
+            taxaGroupMap.put(t.getCellAsString(i, 4), t.getCellAsString(i, 26));
+            taxaSubMap.put(t.getCellAsString(i, 4), t.getCellAsString(i, 27));
+        }
+        t = new RowTable (addInfileS);
+        try {
+            BufferedWriter bw = IOUtils.getTextWriter(addOutfileS);
+            bw.write("Taxa\tDeleteriousCountPerHaplotype\tSiteCountWithMinDepth\tGroup\tSubspecies\tRatio");
+            bw.newLine();
+            for (int i = 0; i < t.getRowNumber(); i++) {
+                int index = Arrays.binarySearch(taxa, t.getCellAsString(i, 0));
+                if (index < 0) continue;
+                double ratio = Double.valueOf(t.getCellAsDouble(i, 1))/Double.valueOf(t.getCellAsDouble(i, 2));
+                bw.write(taxa[index]+"\t"+t.getCellAsString(i, 1)+"\t"+t.getCellAsString(i, 2)+"\t"+taxaGroupMap.get(taxa[index])
+                        +"\t"+taxaSubMap.get(taxa[index])
+                        +"\t"+String.format("%.3f",ratio));
+                bw.newLine();
+            }
+            bw.close();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        t = new RowTable (recInfileS);
+        try {
+            BufferedWriter bw = IOUtils.getTextWriter(recOutfileS);
+            bw.write("Taxa\tDeleteriousCountPerLine\tSiteCountWithMinDepth\tGroup\tRatio");
+            bw.newLine();
+            for (int i = 0; i < t.getRowNumber(); i++) {
+                int index = Arrays.binarySearch(taxa, t.getCellAsString(i, 0));
+                if (index < 0) continue;
+                double ratio = Double.valueOf(t.getCellAsDouble(i, 1))/Double.valueOf(t.getCellAsDouble(i, 2));
+                bw.write(taxa[index]+"\t"+t.getCellAsString(i, 1)+"\t"+t.getCellAsString(i, 2)+"\t"+taxaGroupMap.get(taxa[index])
+                        +"\t"+taxaSubMap.get(taxa[index])
+                        +"\t"+String.format("%.3f",ratio));
+                bw.newLine();
+            }
+            bw.close();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void mergeDepthSummary(){
@@ -40,20 +106,36 @@ public class DeleteriousBiologyAoyue {
             s.addAll(hm2.keySet());
         }
         System.out.println(s.size());
+        List<String> l = new ArrayList<>(s);
+        Collections.sort(l);
+
+        List<String> l1 = new ArrayList<>(hm1.keySet());
+        List<String> l2 = new ArrayList<>(hm2.keySet());
+        Collections.sort(l1);
+        Collections.sort(l2);
 
         try {
             BufferedWriter bw = IOUtils.getTextWriter(outfileS);
             bw.write("Taxa\tID\tMeanDepth");
             bw.newLine();
             String temp = null;
-            List<String> l = new ArrayList<>();
             int cnt = 0;
             String value = null;
-            for (int i = 0; i < s.size(); i++) {
-
-
-
-
+            for (int i = 0; i < l.size(); i++) {
+                int index1 = Collections.binarySearch(l1,l.get(i));
+                int index2 = Collections.binarySearch(l2,l.get(i));
+                if(index1 > -1 && (index2 > -1)){ //2个文件都存在，就写第一个文件
+                    bw.write(l.get(i) + "\t" + (i+1) + "\t" + hm1.get(l.get(i)));
+                    bw.newLine();
+                }
+                if(index1 > -1 && (index2 < 0)){
+                    bw.write(l.get(i) + "\t" + (i+1) + "\t" + hm1.get(l.get(i)));
+                    bw.newLine();
+                }
+                if(index1 < 0 && (index2 > -1)){
+                    bw.write(l.get(i) + "\t" + (i+1) + "\t" + hm2.get(l.get(i)));
+                    bw.newLine();
+                }
             }
 
             bw.flush();
@@ -63,10 +145,6 @@ public class DeleteriousBiologyAoyue {
             e.printStackTrace();
             System.exit(1);
         }
-
-
-
-
     }
 
     public void mkDepthSummary () {
@@ -179,7 +257,7 @@ public class DeleteriousBiologyAoyue {
         String delVCFDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/002_vcf/del";
         String deleFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/001_snp/del_merged/chr_SNP_anno_del.txt.gz";
         String addCountFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/001_delCount/additiveDeleterious_vmap2.txt";
-        String recCountFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/001_delCount/reccesiveDeleterious_vmap2.txt";
+        String recCountFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/001_delCount/recessiveDeleterious_vmap2.txt";
         int minDepth = 2;//inclusive
         int chrNum = 42;
         ArrayList<Integer> chrList = new ArrayList();
