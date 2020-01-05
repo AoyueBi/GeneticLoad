@@ -28,10 +28,11 @@ public class Script {
 //        this.bgzip_D();
 //        this.bgzip_AB();
 //        this.bgzip_ABD();
-        this.script_ABD();
+//        this.script_ABD();
 //        this.script_AB();
 //        this.script_D();
 //        this.script_AB_byRef();
+        this.script_ABD_file();
 
 //        
 //        this.mergelogTxt("/Users/Aoyue/Documents/log_024", "/Users/Aoyue/Documents/ploidy.txt");
@@ -169,17 +170,29 @@ public class Script {
         }
     }
 
-    public void script_ABD() {
+    public void script_ABD(){
+        for (int i = 1; i < 43; i++) {
+            String chr = PStringUtils.getNDigitNumber(3, i);
+            System.out.println();
+
+
+        }
+    }
+
+    public void script_ABD_file() {
         try {
-            String scriptS = "/Users/Aoyue/Documents/AAAAAA.sh";
+            String scriptS = "/Users/Aoyue/Documents/AAAAAA.sh"; //将命令写到脚本中，直接可以执行
             BufferedWriter bw = IOUtils.getTextWriter(scriptS);
             String cmd = "";
             for (int i = 1; i < 43; i++) {
                 String chr = PStringUtils.getNDigitNumber(3, i);
 //                cmd = "java -jar 029_mkSNPsummary_step1.jar /data4/home/aoyue/vmap2/genotype/mergedVCF/011_VMapII/chr" + chr + "_vmap2.1.vcf /data4/home/aoyue/vmap2/analysis/015_annoDB/010_step1/chr" + chr + "_vmap2.1_AnnoDB.txt.gz";
 
-                cmd = "java -jar 030_mkSNPsummary_step2.jar /data4/home/aoyue/vmap2/analysis/015_annoDB/010_step1/chr" + chr + "_vmap2.1_AnnoDB.txt.gz /data4/home/aoyue/vmap2/daxing/ancestralAllele/chr" + chr + ".wheat.ancestralAllele.txt /data4/home/aoyue/vmap2/analysis/015_annoDB/011_step2/chr" + chr + "_vmap2.1_AnnoDB_addDAF.txt.gz";
-//                String cmd = "sudo gunzip –c /data1/publicData/wheat/genotype/VMap/VMapII/VMap2.1/chr" + chr + "_vmap2.1.vcf.gz > /data4/home/aoyue/vmap2/genotype/mergedVCF/011_VMapII_empty/chr" + chr + "_vmap2.1.vcf";
+//                cmd = "java -jar 030_mkSNPsummary_step2.jar /data4/home/aoyue/vmap2/analysis/015_annoDB/010_step1/chr" + chr + "_vmap2.1_AnnoDB.txt.gz /data4/home/aoyue/vmap2/daxing/ancestralAllele/chr" + chr + ".wheat.ancestralAllele.txt /data4/home/aoyue/vmap2/analysis/015_annoDB/011_step2/chr" + chr + "_vmap2.1_AnnoDB_addDAF.txt.gz";
+//                cmd = "chr" + chr + "_exon_vmap2.1_reverseRefAlt.vcf";
+                cmd = "chr" + chr + "_exon_vmap2.1.vcf";
+
+                //                String cmd = "sudo gunzip –c /data1/publicData/wheat/genotype/VMap/VMapII/VMap2.1/chr" + chr + "_vmap2.1.vcf.gz > /data4/home/aoyue/vmap2/genotype/mergedVCF/011_VMapII_empty/chr" + chr + "_vmap2.1.vcf";
 //java -Xms200g -Xmx500g -jar 025_cntSitesinMergedVCFtoPop.jar /data4/home/aoyue/vmap2/genotype/mergedVCF/010_miss0.2byPop/chr036_vmap2.vcf /data4/home/aoyue/vmap2/analysis/000_taxaList/BreadWheat_S419.txt > log_025/log_cntSitesinMergedVCFtoPop_chr036.txt 2>&1 &
 
                 //chr001.lineage.vcf
@@ -190,10 +203,8 @@ public class Script {
 //            System.out.println("java -jar 028_extractVCF.jar  /data4/home/aoyue/vmap2/genotype/mergedVCF/011_VMapII/chr" + chr + "_vmap2.1.vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/012_VCFbyPop/001_byPloid/hexaploid/chr" + chr + "_vmap2.1_hexaploid.vcf /data4/home/aoyue/vmap2/analysis/000_taxaList/BreadWheat_S419.txt > log_028/log_extractVCF_chr" + chr + "_hexaploid20191107.txt 2>&1 &");
 //            System.out.println("java -jar 028_extractVCF.jar /data4/home/aoyue/vmap2/genotype/mergedVCF/011_VMapII/chr" + chr + "_vmap2.1.vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/012_VCFbyPop/002_bySubspecies/001_Landrace/chr" + chr + "_vmap2.1_Landrace.vcf /data4/home/aoyue/vmap2/analysis/000_taxaList/002_bySubspecies/hexaploid/Landrace.txt > /data4/home/aoyue/vmap2/aaPlantGenetics/log_028/001_subspecies/log_extractVCF_chr" + chr + "_Landrace20191107.txt 2>&1");
 //            System.out.println("java -jar 028_extractVCF.jar /data4/home/aoyue/vmap2/genotype/mergedVCF/011_VMapII/chr" + chr + "_vmap2.1.vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/012_VCFbyPop/002_bySubspecies/002_Cultivar/chr" + chr + "_vmap2.1_Cultivar.vcf /data4/home/aoyue/vmap2/analysis/000_taxaList/002_bySubspecies/hexaploid/Cultivar.txt > /data4/home/aoyue/vmap2/aaPlantGenetics/log_028/001_subspecies/log_extractVCF_chr" + chr + "_Cultivar20191107.txt 2>&1");
- 
 //vcftools --gzvcf /data4/home/aoyue/vmap2/analysis/002_bivcf/d/chr005.Dgenome.bi.vcf.gz --max-missing 0.1 --recode --recode-INFO-all --stdout | bgzip -c -@ 10 > /data4/home/aoyue/vmap2/analysis/003_filterMiss/d/chr005.Dgenome.filterMiss.vcf.gz &
-
-System.out.println("vcftools --gzvcf chr" + chr + "_vmap2_subset0.001.vcf.gz --max-missing 0.2 --recode --recode-INFO-all --stdout | bgzip -c -@ 10 > /data4/home/aoyue/vmap2/analysis/020_subsetvcf/001_fromMAF0.01byPop/001/chr" + chr + "_vmap2_subset0.001.vcf.gz &");
+//System.out.println("vcftools --gzvcf chr" + chr + "_vmap2_subset0.001.vcf.gz --max-missing 0.2 --recode --recode-INFO-all --stdout | bgzip -c -@ 10 > /data4/home/aoyue/vmap2/analysis/020_subsetvcf/001_fromMAF0.01byPop/001/chr" + chr + "_vmap2_subset0.001.vcf.gz &");
                 bw.write(cmd);
                 bw.newLine();
             }

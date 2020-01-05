@@ -26,7 +26,7 @@ public class CalVCF {
     public CalVCF() {
 //        this.siteMeanDepth();
 //        this.reheader();
-        this.mkPhylipFormat();
+//        this.mkPhylipFormat();
 
 
     }
@@ -110,10 +110,10 @@ public class CalVCF {
      * 改变VCF的taxa名字
      *
      */
-    public void reheader(){
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/000_prepareData/001_input/chr.Asubgenome.vcf.gz";
-        String outfileS= "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/000_prepareData/chr.Asubgenome_reheader.vcf.gz";
-        String reheaderS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/000_prepareData/001_input/taxaList.txt";
+    public void reheader(String infileS, String outfileS, String reheaderS){
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/000_prepareData/001_input/chr.Asubgenome.vcf.gz";
+//        String outfileS= "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/000_prepareData/chr.Asubgenome_reheader.vcf.gz";
+//        String reheaderS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/000_prepareData/001_input/taxaList.txt";
 
         RowTable<String> t = new RowTable<>(reheaderS);
         HashMap<String,String> hm = new HashMap<>();

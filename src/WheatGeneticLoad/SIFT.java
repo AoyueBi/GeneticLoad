@@ -5,7 +5,6 @@
  */
 package WheatGeneticLoad;
 
-import AoUtils.SplitScript;
 import format.genomeAnnotation.GeneFeature;
 import utils.IOUtils;
 import utils.PStringUtils;
@@ -32,7 +31,7 @@ public class SIFT {
         //this.mvDatabase();
         //this.annotatorVCF("a","b");
         //new CountSites().extractHapPosAllele("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/003_result/test/", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/003_result/test2/");
-        this.generateSIFT();
+//        this.generateSIFT();
         //this.calVariantsType("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/003_result/001_DB_addSIFT/abd/", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/003_result/002_calVariantsType/abd_variantsType.txt");
         //this.calVariantsType("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/003_result/001_DB_addSIFT/ab/", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/003_result/002_calVariantsType/ab_variantsType.txt");
         //this.calVariantsType("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/003_result/001_DB_addSIFT/d/", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/003_result/002_calVariantsType/d_variantsType.txt");
@@ -53,6 +52,88 @@ public class SIFT {
 //        this.mkdis();
 //        this.ifDone("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/007_log_siftAnnotator", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/008_log_summary/log_summary.txt");
 //this.move();
+
+        /**
+         * for new test when rever the ref and alt
+         */
+//        this.reverseRefAltallelebyExonVCF();
+//        this.annotatorVCF2("/data4/home/aoyue/vmap2/analysis/008_sift/001_result/002_annotatorResult/001_reversedRefAltVCF","/data4/home/aoyue/vmap2/analysis/008_sift/001_result/002_annotatorResult");
+//        new SplitScript().splitScript("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/010_exonVCF_reverseRefAlt/002_script/sh_vcfAnnotator20200103.sh","vcfAnnotator",7,6);
+//        this.mkdis();
+        this.move();
+
+//        this.annotatorVCF2("/data4/home/aoyue/vmap2/analysis/008_sift/002_result_exonVCF/001_annotatorResult/001_exonVCF","/data4/home/aoyue/vmap2/analysis/008_sift/002_result_exonVCF/001_annotatorResult");
+//        new SplitScript().splitScript("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/010_exonVCF_reverseRefAlt/002_script/sh_vcfAnnotator20200105.sh","vcfAnnotator",7,6);
+
+//        this.annotatorVCF2("/data4/home/aoyue/vmap2/analysis/008_sift/002_result_exonVCF/002_annotatorResult/001_reversedRefAltVCF","/data4/home/aoyue/vmap2/analysis/008_sift/002_result_exonVCF/002_annotatorResult");
+//        new SplitScript().splitScript("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/010_exonVCF_reverseRefAlt/002_script/sh_vcfAnnotator20200105_2.sh","vcfAnnotator",7,6);
+    }
+
+
+
+    /**
+     * 为了检查ref allele 和 alt allele 互换顺序后，进行SIFT计算，有无其他结果。
+     */
+    public void reverseRefAltallelebyExonVCF(String infileDirS,String outfileDirS){
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/003_exonSNPVCF";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/010_exonVCF_reverseRefAlt/001_reverseRefAltallelebyExonVCF";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/010_exonVCF_reverseRefAlt/003_convertAltAlleletoRefAllelebyExonVCF";
+        File[] fs = new File(infileDirS).listFiles();
+        for (int i = 0; i < fs.length; i++) {
+            if (fs[i].isHidden()) {
+                fs[i].delete();
+            }
+        }
+        fs = new File(infileDirS).listFiles();
+        List<File> fsList = Arrays.asList(fs);
+        Collections.sort(fsList);
+        fsList.parallelStream().forEach(f -> {
+            try {
+                String infileS = f.getAbsolutePath();
+                String outfileS = null;
+                BufferedReader br = null;
+                if (infileS.endsWith(".vcf")) {
+                    br = IOUtils.getTextReader(infileS);
+                    outfileS = new File(outfileDirS, f.getName().split(".vcf")[0] + "_reverseRefAlt.vcf").getAbsolutePath();
+                } else if (infileS.endsWith(".vcf.gz")) {
+                    br = IOUtils.getTextGzipReader(infileS);
+                    outfileS = new File(outfileDirS, f.getName().split(".vcf.gz")[0] + "_reverseRefAlt.vcf").getAbsolutePath();
+                }
+                BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+                String temp = null;
+                int cnttotal = 0;
+                int cntsubset = 0;
+                while ((temp = br.readLine()) != null) {
+                    if (temp.startsWith("#")) {
+                        bw.write(temp);
+                        bw.newLine();
+                    } else {
+                        cnttotal++;
+                        List<String> l = PStringUtils.fastSplit(temp);
+                        if (l.get(3).contains(",")) {
+                            continue; // 第3列是alt的信息，若有2个等位基因，则去除这一行
+                        }
+                        // 写出的时候 3和4 互换位置
+                        String ref = l.get(3);
+                        String alt = l.get(4);
+
+//                        bw.write(l.get(0)+ "\t"+l.get(1)+ "\t"+l.get(2)+ "\t"+l.get(4)+ "\t"+l.get(3));
+                        bw.write(l.get(0)+ "\t"+l.get(1)+ "\t"+l.get(2)+ "\t"+l.get(3)+ "\t"+l.get(3));
+                        for (int i = 5; i < l.size(); i++) {
+                            bw.write("\t" + l.get(i));
+                        }
+                        bw.newLine();
+                        cntsubset++;
+                    }
+                }
+                bw.flush();
+                bw.close();
+                br.close();
+                System.out.println(f.getName() + "\twith " + cnttotal + " bp has a subset of\t" + cntsubset + "\tis completed at " + outfileS);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     /**
@@ -61,7 +142,9 @@ public class SIFT {
     public void move() {
         for (int i = 1; i < 43; i++) {
             String chr = PStringUtils.getNDigitNumber(3, i);
-            System.out.println("mv output" + chr + "/chr" + chr + ".subgenome.maf0.01byPop.SNP_SIFTannotations.xls output/");
+//            System.out.println("mv output" + chr + "/chr" + chr + ".subgenome.maf0.01byPop.SNP_SIFTannotations.xls output/");
+//            System.out.println("mv output" + chr + "/chr" + chr + "_exon_vmap2.1_reverseRefAlt_SIFTannotations.xls output/");
+            System.out.println("mv output" + chr + "/chr" + chr + "_exon_vmap2.1_SIFTannotations.xls output/");
 
         }
 
@@ -268,7 +351,10 @@ public class SIFT {
 
         try {
 //            String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_chrList/list_chrlineage.txt";
-            String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_chrList/list_chrMerged.txt";
+//            String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_chrList/list_chrMerged.txt";
+            String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_chrList/list_chrMergedReverse.txt";
+//            String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_chrList/list_Exon.txt";
+
             BufferedReader br = IOUtils.getTextReader(infileS);
             String temp = null;
             while ((temp = br.readLine()) != null) {
@@ -294,8 +380,8 @@ public class SIFT {
      * StartLostDeleteriousMutation StartLostTolerentMutation
      * FrameshiftInsertionMutation	StopGainMutation StopLossMutation
      *
-     * @param infoleDirS
-     * @param outfileDirS
+     * @param infileDirS
+     * @param outfileS
      */
     public void calVariantsType(String infileDirS, String outfileS) {
 

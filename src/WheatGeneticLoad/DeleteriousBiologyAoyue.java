@@ -254,7 +254,8 @@ public class DeleteriousBiologyAoyue {
     }
 
     public void countDeleteriousVMapII() {
-        String delVCFDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/002_vcf/del";
+        //delVCFDirS
+        String delVCFDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/002_vcf/del"; //
         String deleFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/001_snp/del_merged/chr_SNP_anno_del.txt.gz";
         String addCountFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/001_delCount/additiveDeleterious_vmap2.txt";
         String recCountFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/001_delCount/recessiveDeleterious_vmap2.txt";

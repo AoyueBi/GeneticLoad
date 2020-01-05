@@ -5,12 +5,13 @@
  */
 package AoUtils;
 
+import utils.IOUtils;
+import utils.PStringUtils;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.util.Arrays;
-import utils.IOUtils;
-import utils.PStringUtils;
 
 /**
  *
@@ -19,9 +20,9 @@ import utils.PStringUtils;
 public class SplitScript {
     
     public SplitScript(){
-        this.splitScript("/Users/Aoyue/Documents/sh_removeBadTaxaFromMergeVCF_notGZ20191015.sh", "sh_removeBadTaxaFromMergeVCF_notGZ_", 10, 4);
-        this.splitScript("/Users/Aoyue/Documents/sh_filterMafbyPopHexaTetra20191023.sh", "sh_filterMafbyPopHexaTetra", 10, 3);
-        this.splitScript("/Users/Aoyue/Documents/sh_filterMafbyPopHexaTetra20191026.sh", "sh_filterMafbyPopHexaTetra", 9, 3);
+//        this.splitScript("/Users/Aoyue/Documents/sh_removeBadTaxaFromMergeVCF_notGZ20191015.sh", "sh_removeBadTaxaFromMergeVCF_notGZ_", 10, 4);
+//        this.splitScript("/Users/Aoyue/Documents/sh_filterMafbyPopHexaTetra20191023.sh", "sh_filterMafbyPopHexaTetra", 10, 3);
+//        this.splitScript("/Users/Aoyue/Documents/sh_filterMafbyPopHexaTetra20191026.sh", "sh_filterMafbyPopHexaTetra", 9, 3);
         
     }
     

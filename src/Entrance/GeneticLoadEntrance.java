@@ -119,6 +119,7 @@ public class GeneticLoadEntrance {
 //        new VariantsSum().mkSNPsummary_step2(args[0], args[1], args[2]);
 //        new VariantsSum().getCDSannotation(args[0], args[1]);
 //new SplitScript().splitBwaScript(args[0], args[1], Integer.parseInt(args[2]),Integer.parseInt(args[3]));
+//        new SIFT().reverseRefAltallelebyExonVCF(args[0], args[1]);
         System.out.println(new SimpleDateFormat().format(new Date()) + "\tend.");
         /**
          * ******************************* temporary method
