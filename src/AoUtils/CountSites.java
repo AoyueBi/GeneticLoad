@@ -39,6 +39,8 @@ public class CountSites {
 //        mergefileandChangeChrPos_chr1and2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/001_ori/delSNP","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/002_changeChrPos");
     }
 
+
+
     /**
      * 根据合并后的VCF文件，进行群体内部的计数，为了得到群体的SNP和Indel以及未分离的位点数目。
      *

@@ -81,6 +81,29 @@ public class AoFile {
      * @param valuecolumnIndex
      * @return
      */
+    public HashMap<Integer,String> getHashMap2(String infileS, int keycolummIndex, int valuecolumnIndex){
+        String out = null;
+        RowTable<String> t = new RowTable<>(infileS);
+        HashMap<Integer,String> hm = new HashMap<>();
+        for (int i = 0; i < t.getRowNumber() ; i++) {
+            int key = Integer.parseInt(t.getCell(i,keycolummIndex));
+            String value = t.getCell(i,valuecolumnIndex);
+            hm.put(key,value);
+        }
+        System.out.println("HashMap contains " + hm.size() + " pairs");
+
+
+        return hm;
+    }
+
+    /**
+     *return a hashmap from a file
+     *
+     * @param infileS
+     * @param keycolummIndex
+     * @param valuecolumnIndex
+     * @return
+     */
     public HashMap<String,String> getHashMap(String infileS, int keycolummIndex, int valuecolumnIndex){
         String out = null;
         RowTable<String> t = new RowTable<>(infileS);

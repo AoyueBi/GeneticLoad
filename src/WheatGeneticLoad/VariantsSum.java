@@ -121,7 +121,7 @@ public class VariantsSum {
          */
 
 //        new CountSites().mergeTxt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/014_merge","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/014_merge014/chrAll_anno_original.txt.gz");
-//        this.countDeleteriousSNPs_basedSubgenome();
+        this.countDeleteriousSNPs_basedSubgenome();
 
         /**
          * 检查原文件中有没有 同义突变是值小于0.05的   有！！！
@@ -506,8 +506,6 @@ public class VariantsSum {
         }
         List<String> subgenomeSet = new ArrayList<String>(new HashSet<String>(hm.values()));
         Collections.sort(subgenomeSet);
-
-
         File[] fs = new File(infileDirS).listFiles();
         for (int i = 0; i < fs.length; i++) {
             if (fs[i].isHidden()) {
@@ -578,7 +576,6 @@ public class VariantsSum {
             }
 
         });
-
     }
 
 
