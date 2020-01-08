@@ -12,10 +12,7 @@ import utils.PStringUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  *
@@ -147,6 +144,158 @@ public class AoFile {
             }
             br.close();
             System.out.println("Total num in the list is    " + cnt + "\t" + out.size());
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return out;
+    }
+
+//######################################
+    //##################################
+    public class Record implements Comparable<Record>{
+        public String taxa;
+        public String sub;
+
+        public Record(String taxa, String sub) {
+            this.taxa = taxa;
+            this.sub = sub;
+
+        }
+        public boolean isSimilar(int pos, String alt) {
+            if (taxa.equals(this.taxa) && sub.equals(this.sub)) {
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public int compareTo(Record o) {
+            if (this.taxa.compareTo(o.taxa)< 0){
+                return -1;
+
+            }else if (this.taxa.compareTo(o.taxa)==0){
+                return this.sub.compareTo(o.sub);
+            }else{
+                return 1;
+            }
+        }
+    }
+
+    /**
+     *
+     * get HashMap list from a txt file
+     * @param infileS
+     * @param columnIndex1
+     * @param columnIndex2
+     * @return
+     */
+    public List<Record> getRecordList(String infileS, int columnIndex1, int columnIndex2){
+        List<Record> out = new ArrayList<>();
+        try {
+            BufferedReader br = null;
+            if (infileS.endsWith(".txt")) {
+                br = IOUtils.getTextReader(infileS);
+            } else if (infileS.endsWith(".txt.gz")) {
+                br = IOUtils.getTextGzipReader(infileS);
+            }
+
+            String temp = br.readLine(); //read header
+            List<String> l = new ArrayList();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                String goal1 = l.get(columnIndex1);
+                String goal2 = l.get(columnIndex2);
+                Record r = new Record(goal1,goal2);
+                out.add(r);
+                cnt++;
+            }
+            br.close();
+            System.out.println("Total num in the list is    " + cnt + "\t" + out.size());
+            for (int i = 0; i < out.size(); i++) {
+                System.out.println(out.get(i));
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return out;
+    }
+
+    //##################################
+    //##################################
+
+    /**
+     *
+     * get HashMap list from a txt file
+     * @param infileS
+     * @param columnIndex1
+     * @param columnIndex2
+     * @return
+     */
+    public List<HashMap<String,String>> getHashMapList(String infileS, int columnIndex1, int columnIndex2){
+        List<HashMap<String,String>> out = new ArrayList<>();
+        try {
+            BufferedReader br = null;
+            if (infileS.endsWith(".txt")) {
+                br = IOUtils.getTextReader(infileS);
+            } else if (infileS.endsWith(".txt.gz")) {
+                br = IOUtils.getTextGzipReader(infileS);
+            }
+
+            String temp = br.readLine(); //read header
+            List<String> l = new ArrayList();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                String goal1 = l.get(columnIndex1);
+                String goal2 = l.get(columnIndex2);
+                HashMap<String,String> hm = new HashMap<>();
+                hm.put(goal1,goal2);
+                out.add(hm);
+                cnt++;
+            }
+            br.close();
+            System.out.println("Total num in the list is    " + cnt + "\t" + out.size());
+            for (int i = 0; i < out.size(); i++) {
+                System.out.println(out.get(i));
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return out;
+    }
+
+    /**
+     *
+     * get String set from a txt file
+     * @param infileS
+     * @param columnIndex
+     * @return
+     */
+    public Set<String> getStringSet(String infileS, int columnIndex){
+        Set<String> out = new HashSet<>();
+        try {
+            BufferedReader br = null;
+            if (infileS.endsWith(".txt")) {
+                br = IOUtils.getTextReader(infileS);
+            } else if (infileS.endsWith(".txt.gz")) {
+                br = IOUtils.getTextGzipReader(infileS);
+            }
+
+            String temp = br.readLine(); //read header
+            List<String> l = new ArrayList();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                String goal = l.get(columnIndex);
+                out.add(goal);
+                cnt++;
+            }
+            br.close();
+            System.out.println("Total num in the set is " + out.size());
         }
         catch (Exception e) {
             e.printStackTrace();

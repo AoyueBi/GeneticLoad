@@ -1,0 +1,128 @@
+package WheatGeneticLoad;
+
+import AoUtils.SplitScript;
+import utils.IOUtils;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+
+public class BadMutations {
+
+    public BadMutations(){
+//        this.getGeneNameList();
+//        this.script();
+        this.limitThreads();
+
+    }
+
+    public void limitThreads(){
+        String infile1S = "/Users/Aoyue/PycharmProjects/SelfFile/vmap2/001_script/sh_vmap2_align_badmutations_20200107.sh";
+        new SplitScript().splitScript(infile1S,"align_",100,832);
+    }
+
+    public void script (){
+        //程序运行时，输入输出路径设置
+        //输入文件是2个目录，一个目录是fasta 一个目录是 sub
+        String fastaDirS = "/data4/home/aoyue/vmap2/daxing/analysis/017_badMutation/002_geneFa";
+        String subDirS = "/data4/home/aoyue/vmap2/daxing/analysis/017_badMutation/003_subs";
+        String configS = "/data4/home/aoyue/vmap2/analysis/015_annoDB/015_BAD_Mutations/wheat_Config.txt";
+        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/015_annoDB/015_BAD_Mutations/Output_Dir";
+        String predictDirS = "/data4/home/aoyue/vmap2/analysis/015_annoDB/015_BAD_Mutations/Predictions_Dir";
+        String logPredictDirS = "/data4/home/aoyue/vmap2/analysis/015_annoDB/015_BAD_Mutations/log_Dir/predictlog";
+        String logAlignmentDirS = "/data4/home/aoyue/vmap2/analysis/015_annoDB/015_BAD_Mutations/log_Dir/alignmentlog";
+        String logcompileDirS = "/data4/home/aoyue/vmap2/analysis/015_annoDB/015_BAD_Mutations/log_Dir/compilelog";
+
+        //脚本路径输出
+        String script1S = "/Users/Aoyue/PycharmProjects/SelfFile/vmap2/001_srcipt/sh_vmap2_align_badmutations_20200107.sh";
+        String script2S = "/Users/Aoyue/PycharmProjects/SelfFile/vmap2/001_srcipt/sh_vmap2_predict_badmutations_20200107.sh";
+        String script3S = "/Users/Aoyue/PycharmProjects/SelfFile/vmap2/001_srcipt/sh_vmap2_compile_badmutations_20200107.sh";
+
+        //本地其他文件
+        String genelistS = "/Users/Aoyue/PycharmProjects/SelfFile/vmap2/genelist_forBadMutations20200107.txt"; //no header
+
+        //align
+        try {
+            BufferedReader br = IOUtils.getTextReader(genelistS);
+            BufferedWriter bw = IOUtils.getTextWriter(script1S);
+            String temp = null;
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                cnt++;
+                temp = temp.replaceFirst(".fasta","").replaceFirst("./","");
+                String fastaS = new File(fastaDirS,temp+ ".fasta").getAbsolutePath();
+                String subS = new File(subDirS,temp + ".subs").getAbsolutePath();
+                String logS = new File(logAlignmentDirS,temp + "_Alignment.log").getAbsolutePath();
+                StringBuilder sb = new StringBuilder();
+                sb.append("/data1/home/aoyue/biosoftware/BAD_Mutations/BAD_Mutations.py -v DEBUG align -c ").
+                        append(configS).append(" -f ").append(fastaS).append(" -o ").append(outfileDirS).
+                        append(" 2> ").append(logS);
+                bw.write(sb.toString());
+                bw.newLine();
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println(cnt +"\tgenes in align cmd");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+
+        //predict
+        try {
+            BufferedReader br = IOUtils.getTextReader(genelistS);
+            BufferedWriter bw = IOUtils.getTextWriter(script2S);
+            String temp = null;
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                cnt++;
+                temp = temp.replaceFirst(".fasta","").replaceFirst("./","");
+                String fastaS = new File(fastaDirS,temp+ ".fasta").getAbsolutePath();
+                String subS = new File(subDirS,temp + ".subs").getAbsolutePath();
+                String logS = new File(logPredictDirS,temp + "_Predictions.log").getAbsolutePath();
+                String msaS = new File(outfileDirS,temp + "_MSA.fasta").getAbsolutePath();
+                String treeS = new File(outfileDirS,temp + ".tree").getAbsolutePath();
+                StringBuilder sb = new StringBuilder();
+                sb.append("/data1/home/aoyue/biosoftware/BAD_Mutations/BAD_Mutations.py -v DEBUG predict -c ").
+                        append(configS).append(" -f ").append(fastaS).append(" -o ").append(predictDirS).
+                        append(" -a ").append(msaS).append(" -r ").append(treeS).append(" -s ").append(subS).
+                        append(" 2> ").append(logS);
+                bw.write(sb.toString());
+                bw.newLine();
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println(cnt +"\tgenes in predict cmd");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        //compile in py2 env, only this step in py2 env
+        try {
+            BufferedReader br = IOUtils.getTextReader(genelistS);
+            BufferedWriter bw = IOUtils.getTextWriter(script3S);
+            String logS = new File(logcompileDirS,"Compile.log").getAbsolutePath();
+            StringBuilder sb = new StringBuilder();
+            sb.append("/data1/home/aoyue/biosoftware/BAD_Mutations-1.0/BAD_Mutations.py -v DEBUG compile -p ").
+                    append(predictDirS).append(" 2> ").append(logS);
+            bw.write(sb.toString());
+            bw.newLine();
+
+            br.close();
+            bw.flush();
+            bw.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    public void getGeneNameList(){
+        System.out.println("ls *.fasta > /data4/home/aoyue/vmap2/analysis/015_annoDB/015_BAD_Mutations/genelist_forBadMutations20200107.txt");
+    //find ./ -name '*.fasta' > /data4/home/aoyue/vmap2/analysis/015_annoDB/015_BAD_Mutations/genelist_forBadMutations20200107.txt &
+    }
+}

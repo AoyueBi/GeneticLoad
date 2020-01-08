@@ -73,7 +73,7 @@ public class GeneticLoadEntrance {
 //        new AoMath();
 //        new TreePreparation();
 //        new CalVCF();
-//new DeleteriousDB();
+//        new BadMutations();
     }
 
     public static void main(String[] args) {

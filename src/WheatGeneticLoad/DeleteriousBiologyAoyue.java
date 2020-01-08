@@ -18,21 +18,188 @@ import java.util.*;
 public class DeleteriousBiologyAoyue {
 
     public DeleteriousBiologyAoyue() {
-//        this.mergeDelgenicSNPAnnotation();
-//        this.countDeleteriousVMapII();
-//        this.countDeleteriousVMapII_byChr();
+        ///Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/001_snp/README.txt you can read and make yoursel clear
+
+//        this.mergeDelgenicSNPAnnotation(); //step1
+//        this.countDeleteriousVMapII(); //这是算出所有的总和
+//        this.countDeleteriousVMapII_byChr(); //step2
+
 //        this.mkDepthOfVMapII();
 //        this.mkDepthSummary();
 //        this.mergeDepthSummary();
-//        this.countDeleteriousVMapIIHighDepth();
-        this.countDeleteriousVMapIIHighDepth_old();
-//        this.mergeFinalfilebySub();
+
+//        this.countDeleteriousVMapIIHighDepth(); //step3
+//        this.countDeleteriousVMapIIHighDepth_old();
+//        this.mergeFinalfilebySub(); //step4
+
+
 //        this.mkIndexforBurden();
+        this.delRatioVSsynRatio();
 
 
 
     }
 
+    public void delBurdenVSsynBurden(){
+
+    }
+
+
+    public class Record implements Comparable<Record>{
+        public String taxa;
+        public String sub;
+
+        public Record(String taxa, String sub) {
+            this.taxa = taxa;
+            this.sub = sub;
+
+        }
+        public boolean isSimilar(int pos, String alt) {
+            if (taxa.equals(this.taxa) && sub.equals(this.sub)) {
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public int compareTo(Record o) {
+            if (this.taxa.compareTo(o.taxa)< 0){
+                return -1;
+
+            }else if (this.taxa.compareTo(o.taxa)==0){
+                return this.sub.compareTo(o.sub);
+            }else{
+                return 1;
+            }
+        }
+
+    }
+
+    /**
+     *
+     * get HashMap list from a txt file
+     * @param infileS
+     * @param columnIndex1
+     * @param columnIndex2
+     * @return
+     */
+    public List<Record> getRecordList(String infileS, int columnIndex1, int columnIndex2){
+        List<Record> out = new ArrayList<>();
+        try {
+            BufferedReader br = null;
+            if (infileS.endsWith(".txt")) {
+                br = IOUtils.getTextReader(infileS);
+            } else if (infileS.endsWith(".txt.gz")) {
+                br = IOUtils.getTextGzipReader(infileS);
+            }
+
+            String temp = br.readLine(); //read header
+            List<String> l = new ArrayList();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                String goal1 = l.get(columnIndex1);
+                String goal2 = l.get(columnIndex2);
+                Record r = new Record(goal1,goal2);
+                out.add(r);
+                cnt++;
+            }
+            br.close();
+            System.out.println("Total num in the list is    " + cnt + "\t" + out.size());
+//            for (int i = 0; i < out.size(); i++) {
+//                System.out.println(out.get(i));
+//            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return out;
+    }
+
+
+    /**
+     * 本方法目的是为了查看有害突变的burden和同义突变的burden相对的比率，为了标准化。
+     */
+
+    public void delRatioVSsynRatio(){
+        //no change this file: means synonymous deriverd allele burden
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/003_delCount_highDepth/003_/additiveDeleterious_vmap2_highDepth_bysub.txt";
+
+        //cna change
+//        String delfileS = "";
+//        String outfileS = "";
+
+//        String delfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/003_delCount_highDepth/000_/additiveDeleterious_vmap2_highDepth_bysub.txt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/004_ratiotest/delVSsynratio.txt";
+
+//        String delfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/003_delCount_highDepth/001_/additiveDeleterious_vmap2_highDepth_bysub.txt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/004_ratiotest/delDerivedSIFTVSsynratio.txt";
+
+        String delfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/003_delCount_highDepth/002_/additiveDeleterious_vmap2_highDepth_bysub.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/004_ratiotest/delNonsynonymousVSsynonymous.txt";
+
+        List<Record> taxasubl = this.getRecordList(infileS,0,1);
+        Collections.sort(taxasubl);
+
+        //建立 1 based 的 hashmap,根据行数找到对应的 synonymous 的 ratio
+        Map<Integer,String> hmratio = new HashMap<>();
+        RowTable<String> t = new RowTable<>(infileS);
+        for (int i = 0; i < t.getRowNumber(); i++) {
+            String ratio = t.getCellAsString(i,7);
+            hmratio.put(i+1,ratio);
+        }
+
+        String taxaGroupFileS = "/Users/Aoyue/project/wheatVMapII/001_germplasm/GermplasmDB/001_toFeiLu/004_wheatVMapII_germplasmInfoAddSubspecies_20191225.txt";
+        String taxaGroup2FileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/000_prepareData/001_input/taxaList.txt";
+        t = new RowTable (taxaGroupFileS);
+        HashMap<String, String> taxaGroupMap = new HashMap();
+        HashMap<String, String> taxaSubMap = new HashMap();
+        HashMap<String, String> taxaGroupIDMap = new HashMap();
+        for (int i = 0; i < t.getRowNumber(); i++) {
+            taxaGroupMap.put(t.getCellAsString(i, 4), t.getCellAsString(i, 26));
+            taxaSubMap.put(t.getCellAsString(i, 4), t.getCellAsString(i, 27));
+        }
+        t = new RowTable (taxaGroup2FileS);
+        for (int i = 0; i < t.getRowNumber(); i++) {
+            taxaGroupIDMap.put(t.getCellAsString(i, 0), t.getCellAsString(i, 7));
+        }
+
+        try {
+            BufferedReader br = IOUtils.getTextReader(delfileS);
+            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            bw.write("Taxa\tSub\tRatio\tGroup\tSubspecies\tGroupID");
+            bw.newLine();
+            String temp = br.readLine();
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) { //读的是有害突变那一列
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+                String taxa = l.get(0);
+                String sub = l.get(1);
+                String ratiodel = l.get(7);
+                Record r = new Record(taxa,sub);
+               int index = Collections.binarySearch(taxasubl,r);
+               if(index > -1){
+                   double ratiosyn = Double.parseDouble(hmratio.get(cnt));
+                   double rr = (double)Double.parseDouble(ratiodel)/ratiosyn;
+                   bw.write(taxa + "\t" + sub + "\t" + String.format("%.3f",rr)+"\t"+taxaGroupMap.get(taxa)+"\t"+taxaSubMap.get(taxa)+"\t"+taxaGroupIDMap.get(taxa));
+                   bw.newLine();
+               }
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    /**
+     * 在taxaList文件中添加index，便于查看最详细的亚群（如 云南小麦 西藏半野生小麦的 mutation burden）
+     */
     public void mkIndexforBurden(){
         try {
             String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/000_prepareData/001_input/taxaList.txt";
@@ -66,7 +233,14 @@ public class DeleteriousBiologyAoyue {
     }
     //根据最终生成的文件，进行 A B D sub的合并
     public void mergeFinalfilebySub(){
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/003_delCount_highDepth/001_/additiveDeleterious_vmap2_highDepth_bychr.txt";
+        //change
+//        String infileS = "";
+
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/003_delCount_highDepth/001_/additiveDeleterious_vmap2_highDepth_bychr.txt";
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/003_delCount_highDepth/002_/additiveDeleterious_vmap2_highDepth_bychr.txt";
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/003_delCount_highDepth/003_/additiveDeleterious_vmap2_highDepth_bychr.txt";
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/003_delCount_highDepth/000_/additiveDeleterious_vmap2_highDepth_bychr.txt";
+
         String splitDirS = new File(infileS).getParent()+"/split";
         new File(splitDirS).mkdirs();
 
@@ -112,8 +286,7 @@ public class DeleteriousBiologyAoyue {
         }
 
 
-
-
+        //不变的
         String taxaGroupFileS = "/Users/Aoyue/project/wheatVMapII/001_germplasm/GermplasmDB/001_toFeiLu/004_wheatVMapII_germplasmInfoAddSubspecies_20191225.txt";
         String taxaGroup2FileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/000_prepareData/001_input/taxaList.txt";
         t = new RowTable (taxaGroupFileS);
@@ -124,7 +297,6 @@ public class DeleteriousBiologyAoyue {
             taxaGroupMap.put(t.getCellAsString(i, 4), t.getCellAsString(i, 26));
             taxaSubMap.put(t.getCellAsString(i, 4), t.getCellAsString(i, 27));
         }
-
         t = new RowTable (taxaGroup2FileS);
         for (int i = 0; i < t.getRowNumber(); i++) {
             taxaGroupIDMap.put(t.getCellAsString(i, 0), t.getCellAsString(i, 7));
@@ -134,9 +306,6 @@ public class DeleteriousBiologyAoyue {
         h.put("A",0);
         h.put("B",1);
         h.put("D",2);
-
-
-
 
         String outDirS = null;
         for (int i = 0; i < taxa.length; i++) {
@@ -238,15 +407,34 @@ public class DeleteriousBiologyAoyue {
 
 
     private void countDeleteriousVMapIIHighDepth () {
+        //不变的文件
         String taxaSummaryFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/002_VMapIIDepth/taxaDepth_summary.txt";
-//        String addInfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/001_delCount/additiveDeleterious_vmap2.txt";
-        String addInfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/001_delCount/001_/additiveDeleterious_vmap2_bychr.txt";
-        String addOutfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/003_delCount_highDepth/001_/additiveDeleterious_vmap2_highDepth_bychr.txt";
-        String recInfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/001_delCount/001_/recessiveDeleterious_vmap2_bychr.txt";
-        String recOutfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/003_delCount_highDepth/001_/recessiveDeleterious_vmap2_highDepth_bychr.txt";
         String taxaGroupFileS = "/Users/Aoyue/project/wheatVMapII/001_germplasm/GermplasmDB/001_toFeiLu/004_wheatVMapII_germplasmInfoAddSubspecies_20191225.txt";
         String taxaGroup2FileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/000_prepareData/001_input/taxaList.txt";
-        //1.54=3x, 2.75 = 5x
+
+        //可变的文件
+//        String addInfileS = "";
+//        String addOutfileS = "";
+
+//        String addInfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/001_delCount/002_/additiveDeleterious_vmap2_bychr.txt";
+//        String addOutfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/003_delCount_highDepth/002_/additiveDeleterious_vmap2_highDepth_bychr.txt";
+
+//        String addInfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/001_delCount/003_/additiveDeleterious_vmap2_bychr.txt";
+//        String addOutfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/003_delCount_highDepth/003_/additiveDeleterious_vmap2_highDepth_bychr.txt";
+
+        String addInfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/001_delCount/000_/additiveDeleterious_vmap2_bychr.txt";
+        String addOutfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/003_delCount_highDepth/000_/additiveDeleterious_vmap2_highDepth_bychr.txt";
+
+
+
+//        String addInfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/001_delCount/additiveDeleterious_vmap2.txt";
+//        String addInfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/001_delCount/001_/additiveDeleterious_vmap2_bychr.txt";
+//        String addOutfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/003_delCount_highDepth/001_/additiveDeleterious_vmap2_highDepth_bychr.txt";
+//        String recInfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/001_delCount/001_/recessiveDeleterious_vmap2_bychr.txt";
+//        String recOutfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/003_delCount_highDepth/001_/recessiveDeleterious_vmap2_highDepth_bychr.txt";
+//        String taxaGroupFileS = "/Users/Aoyue/project/wheatVMapII/001_germplasm/GermplasmDB/001_toFeiLu/004_wheatVMapII_germplasmInfoAddSubspecies_20191225.txt";
+//        String taxaGroup2FileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/000_prepareData/001_input/taxaList.txt";
+
 
 //        String taxaSummaryFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/002_VMapIIDepth/taxaDepth_summary.txt";
 //        String addInfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/001_delCount/additiveSyn_vmap2.txt";
@@ -255,7 +443,9 @@ public class DeleteriousBiologyAoyue {
 //        String recOutfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/003_delCount_highDepth/recessiveSyn_vmap2_highDepth.txt";
 //        String taxaGroupFileS = "/Users/Aoyue/project/wheatVMapII/001_germplasm/GermplasmDB/001_toFeiLu/004_wheatVMapII_germplasmInfoAddSubspecies_20191225.txt";
 //        String taxaGroup2FileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/000_prepareData/001_input/taxaList.txt";
-        //1.54=3x, 2.75 = 5x
+
+
+
         new AoFile().readheader(taxaGroupFileS);
         double depthCut = 3;
         RowTable t = new RowTable (taxaSummaryFileS);
@@ -563,15 +753,31 @@ public class DeleteriousBiologyAoyue {
      * 新的数据库分析，添加了dirivedSIFT的列信息,并且将每条染色体的情况都统计下来
      */
     public void countDeleteriousVMapII_byChr() {
-        String delVCFDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/002_vcf/001_/del"; //有害变异的VCF文件路径
-        String deleFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/001_snp/001_/del_merged/chr_SNP_anno_del.txt.gz"; //有害变异信息库
-        String addCountFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/001_delCount/001_/additiveDeleterious_vmap2_bychr.txt"; //有害变异加性模型输出文件
-        String recCountFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/001_delCount/001_/recessiveDeleterious_vmap2_bychr.txt"; //有害变异隐形模型输出文件
 
-//        String delVCFDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/002_vcf/syn"; //有害变异的VCF文件路径
-//        String deleFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/001_snp/syn_merged/chr_SNP_anno_syn.txt.gz"; //有害变异信息库
-//        String addCountFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/001_delCount/additiveSyn_vmap2.txt"; //有害变异加性模型输出文件
-//        String recCountFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/001_delCount/recessiveSyn_vmap2.txt"; //有害变异隐形模型输出文件
+//        String delVCFDirS = ""; //有害变异的VCF文件路径
+//        String deleFileS = ""; //有害变异信息库
+//        String addCountFileS = ""; //有害变异加性模型输出文件
+//        String recCountFileS = ""; //有害变异隐形模型输出文件
+
+//        String delVCFDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/002_vcf/001_/del"; //有害变异的VCF文件路径
+//        String deleFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/001_snp/001_/del_merged/chr_SNP_anno_del.txt.gz"; //有害变异信息库
+//        String addCountFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/001_delCount/001_/additiveDeleterious_vmap2_bychr.txt"; //有害变异加性模型输出文件
+//        String recCountFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/001_delCount/001_/recessiveDeleterious_vmap2_bychr.txt"; //有害变异隐形模型输出文件
+
+//        String delVCFDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/002_vcf/002_/del"; //有害变异的VCF文件路径
+//        String deleFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/001_snp/002_/del_merged/chr_SNP_anno_del.txt.gz"; //有害变异信息库
+//        String addCountFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/001_delCount/002_/additiveDeleterious_vmap2_bychr.txt"; //有害变异加性模型输出文件
+//        String recCountFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/001_delCount/002_/recessiveDeleterious_vmap2_bychr.txt"; //有害变异隐形模型输出文件
+
+//        String delVCFDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/002_vcf/003_/syn"; //有害变异的VCF文件路径
+//        String deleFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/001_snp/003_/syn_merged/chr_SNP_anno_syn.txt.gz"; //有害变异信息库
+//        String addCountFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/001_delCount/003_/additiveDeleterious_vmap2_bychr.txt"; //有害变异加性模型输出文件
+//        String recCountFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/001_delCount/003_/recessiveDeleterious_vmap2_bychr.txt"; //有害变异隐形模型输出文件
+
+        String delVCFDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/002_vcf/000_/del"; //有害变异的VCF文件路径
+        String deleFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/001_snp/000_/del_merged/chr_SNP_anno_del.txt.gz"; //有害变异信息库
+        String addCountFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/001_delCount/000_/additiveDeleterious_vmap2_bychr.txt"; //有害变异加性模型输出文件
+        String recCountFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/001_delCount/000_/recessiveDeleterious_vmap2_bychr.txt"; //有害变异隐形模型输出文件
 
 
         int minDepth = 2;//inclusive
@@ -593,7 +799,7 @@ public class DeleteriousBiologyAoyue {
         String derivedAllele = null;
         for (int i = 0; i < t.getRowNumber(); i++) {
             int index = t.getCellAsInteger(i, 1) - 1; //染色体号的索引
-            String ancestralAllele = t.getCell(i, 15);
+            String ancestralAllele = t.getCell(i, 15); //不同的数据库，这一列的信息不一样，千万要注意
             String majorAllele = t.getCell(i, 5);
             String minorAllele = t.getCell(i, 6);
             if (ancestralAllele.equals(majorAllele)) {
@@ -654,7 +860,6 @@ public class DeleteriousBiologyAoyue {
                             taxainVCFfile[i - 9] = l.get(i);
                             hmtaxainVCFindex.put(taxainVCFfile[i - 9], i); //第0个taxa的genotype在第9行，第一个taxa的genotype在第10行，依次类推；
                         }
-
                         // ************** 在总的taxa中，搜索VCF文件中的taxa的index
                         for (int i = 0; i < taxainVCFfile.length; i++) { //找到taxa
                             int index = Arrays.binarySearch(taxa, taxainVCFfile[i]);
