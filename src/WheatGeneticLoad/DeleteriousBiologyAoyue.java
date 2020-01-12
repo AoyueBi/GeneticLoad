@@ -34,7 +34,7 @@ public class DeleteriousBiologyAoyue {
 
 
 //        this.mkIndexforBurden();
-        this.delRatioVSsynRatio();
+//        this.delRatioVSsynRatio();
 
 
 
