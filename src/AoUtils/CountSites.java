@@ -37,6 +37,10 @@ public class CountSites {
 //        this.mergeChr1and2txt("/Users/Aoyue/Documents/a.txt", "/Users/Aoyue/Documents/b.txt");
 //        this.getRefChrPos(2, 2);
 //        mergefileandChangeChrPos_chr1and2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/001_ori/delSNP","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/002_changeChrPos");
+
+
+//        this.changechrPosOnVCF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/002_exonSNPVCF","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/008_VCF/001_exonVCF/000_exonVCF");
+//    this.mergeVCFfile1and2_chr1and2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/008_VCF/001_exonVCF/000_exonVCF","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/008_VCF/001_exonVCF/001_mergeVCF");
     }
 
 
@@ -715,6 +719,114 @@ public class CountSites {
 
         }
 
+    }
+
+    /**
+     * 将改变位置的VCF文件 chr5和chr6文本文件合并成1D一个文件， chr11,chr12两个文件合并成2D一个文件。自动识别染色体序号并进行合并。
+     * 针对Txt文件
+     *
+     * @param infileDirS
+     * @param outfileDirS
+     */
+    public void mergeVCFfile1and2_chr1and2(String infileDirS, String outfileDirS) {
+
+        //建立1-44一一对应chr1A的关系,目的：根据chr1找到chr1A
+        String[] chrs = {"1A", "1B", "1D", "2A", "2B", "2D", "3A", "3B", "3D", "4A", "4B", "4D", "5A", "5B", "5D", "6A", "6B", "6D", "7A", "7B", "7D", "Mit", "Chl"};
+        int[] cnts = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44};
+        HashMap<Integer, String> hmcntchr = new HashMap<>();
+
+        int cnt = 0;
+        for (int i = 0; i < chrs.length; i++) {
+            if (cnt == 43) {
+                hmcntchr.put(43, "Mit");
+            }
+            if (cnt == 44) {
+                hmcntchr.put(44, "Chl");
+            } else {
+                hmcntchr.put(cnts[cnt], chrs[i]);
+                cnt++;
+                hmcntchr.put(cnts[cnt], chrs[i]);
+                cnt++;
+            }
+        }
+
+        File[] fs = new File(infileDirS).listFiles();
+        for (int i = 0; i < fs.length; i++) {
+            if (fs[i].isHidden()) {
+                fs[i].delete();
+            }
+        }
+        fs = new File(infileDirS).listFiles();
+        Arrays.sort(fs);
+
+        try {
+            for (int i = 0; i < fs.length; i++) {
+                int chr = Integer.valueOf(fs[i].getName().substring(3, 6)); //先对文件的题目进行处理，获取染色体号，进行判断
+                for (int j = 1; j < 43; j++) {
+                    if (!(j % 2 == 0)) { // j只进行奇数判断，如只进行 chr1 3 5 7 9判断
+                        ///******************内部开始写*******************************//
+                        if (chr == j) {
+                            //读入文件
+                            String infileS = fs[i].getAbsolutePath();
+                            BufferedReader br = null;
+                            String outfileS = null;
+                            if (infileS.endsWith(".vcf")) {
+                                br = IOUtils.getTextReader(infileS);
+                                outfileS = new File(outfileDirS, "chr" + hmcntchr.get(chr) + fs[i].getName().substring(6) + ".gz").getAbsolutePath();
+                            } else if (infileS.endsWith(".vcf.gz")) {
+                                br = IOUtils.getTextGzipReader(infileS);
+                                outfileS = new File(outfileDirS, "chr" + hmcntchr.get(chr) + fs[i].getName().substring(6)).getAbsolutePath();
+                            }
+
+                            //确定输出文件的路径，并读入header
+                            String secondchr = PStringUtils.getNDigitNumber(3, chr + 1);
+                            //名字变一下：
+
+                            BufferedWriter bw = IOUtils.getTextGzipWriter(outfileS);
+
+                            //读注释信息部分
+                            String temp = null;
+                            while ((temp = br.readLine()) != null) {
+                                bw.write(temp);
+                                bw.newLine();
+                            }
+
+                            ///开始合并文件1和2
+
+                            br.close();
+
+                            //开始读入第2个文件
+                            infileS = new File(fs[i].getParent(), fs[i].getName().replaceFirst(PStringUtils.getNDigitNumber(3, chr), secondchr)).getAbsolutePath();
+                            if (infileS.endsWith(".vcf")) {
+                                br = IOUtils.getTextReader(infileS);
+                            } else if (infileS.endsWith(".vcf.gz")) {
+                                br = IOUtils.getTextGzipReader(infileS);
+                            }
+
+//                            temp = br.readLine(); //read header
+                            while ((temp = br.readLine()) != null) {
+                                if (temp.startsWith("#")) {
+                                    continue;
+
+                                }
+                                StringBuilder sb = new StringBuilder();
+                                sb.append(temp);
+                                bw.write(sb.toString());
+                                bw.newLine();
+                            }
+                            br.close();
+                            bw.flush();
+                            bw.close();
+
+                        }
+                        ///********************内部写出结束*****************************//
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
     /**

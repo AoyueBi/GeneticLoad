@@ -121,7 +121,7 @@ public class VariantsSum {
          */
 
 //        new CountSites().mergeTxt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/014_merge","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/014_merge014/chrAll_anno_original.txt.gz");
-        this.countDeleteriousSNPs_basedSubgenome();
+//        this.countDeleteriousSNPs_basedSubgenome();
 
         /**
          * 检查原文件中有没有 同义突变是值小于0.05的   有！！！
@@ -140,12 +140,20 @@ public class VariantsSum {
          * 计算原文件中，个体VCF的delterious占 DAF common和rare 的比例
          */
 
-        this.calIndivDeleteriousProportion();
+//        this.calIndivDeleteriousProportion();
+
+
+        /**
+         * 根据est-sfs计算的ancestral文件，向 anno 数据库中添加一列信息
+         */
 
 
 
 
     }
+
+
+
 
     public void calIndivDeleteriousProportion(){
         String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/022_indivDeleteriousProportion/001_indivcf/";

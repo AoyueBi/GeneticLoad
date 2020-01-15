@@ -7,7 +7,6 @@ package Entrance;
 
 import GermplasmInfo.GermplasmInfo;
 import Plot.PCA;
-import WheatGeneticLoad.BadMutations;
 import WheatGeneticLoad.DeleteriousBiologyAoyue;
 
 import java.text.SimpleDateFormat;
@@ -20,9 +19,9 @@ import java.util.Date;
 public class GeneticLoadEntrance {
 
     public GeneticLoadEntrance() {
-        this.firstProcess();
+//        this.firstProcess();
 //        this.secondProcess();
-//        this.infoDB();
+        this.infoDB();
 //        this.DBdeleterious();
 
 
@@ -30,6 +29,7 @@ public class GeneticLoadEntrance {
 
     public void DBdeleterious(){
         new DeleteriousBiologyAoyue();
+//        new EstSFS();
 
     }
 
@@ -74,7 +74,8 @@ public class GeneticLoadEntrance {
 //        new AoMath();
 //        new TreePreparation();
 //        new CalVCF();
-        new BadMutations();
+//        new BadMutations();
+
     }
 
     public static void main(String[] args) {

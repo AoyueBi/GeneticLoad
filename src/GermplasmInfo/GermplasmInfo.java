@@ -25,8 +25,38 @@ public class GermplasmInfo {
     public GermplasmInfo() {
 //        this.addIftaxaonVMap2Anno();
 //        this.addTreeValidatedGroupbyPloid();
-        this.addTreeValidatedGroupbySuspecies();
+//        this.addTreeValidatedGroupbySuspecies();
+        this.addInfo();
 
+    }
+
+    /**
+     *
+     */
+    public void getWild_emmer_South2(){
+
+    }
+
+    /**
+     * add info to taxaList file, the info db file from /Users/Aoyue/project/wheatVMapII/001_germplasm/GermplasmDB/001_toFeiLu/wheatVMapII_germplasmInfo_20191225.txt
+     */
+    public void addInfo(){
+        String dbfileS ="/Users/Aoyue/project/wheatVMapII/001_germplasm/GermplasmDB/001_toFeiLu/wheatVMapII_germplasmInfo_20191225.txt";
+        String taxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/000_prepareData/001_input/taxaList.txt";
+//        HashMap<String,String> hm = new AoFile().getHashMap(dbfileS,4,5);
+//        new AoFile().addColumbyString(taxaFileS,0,hm,"Ploidy");
+
+//        HashMap<String,String> hm = new AoFile().getHashMap(dbfileS,4,24);
+//        new AoFile().addColumbyString(taxaFileS,0,hm,"PCA_group");
+
+//        HashMap<String,String> hm = new AoFile().getHashMap(dbfileS,4,24);
+//        new AoFile().addColumbyString(taxaFileS,0,hm,"PCA_group");
+
+//                HashMap<String,String> hm = new AoFile().getHashMap(dbfileS,4,26);
+//        new AoFile().addColumbyString(taxaFileS,0,hm,"TreeValidatedGroupbyPloidy");
+
+        HashMap<String,String> hm = new AoFile().getHashMap(dbfileS,4,27);
+        new AoFile().addColumbyString(taxaFileS,0,hm,"TreeValidatedGroupbySubspecies");
     }
 
     //
@@ -67,8 +97,6 @@ public class GermplasmInfo {
             e.printStackTrace();
             System.exit(1);
         }
-
-
     }
 
     /**
@@ -116,8 +144,6 @@ public class GermplasmInfo {
             e.printStackTrace();
             System.exit(1);
         }
-
-
     }
 
     public void addIftaxaonVMap2Anno() {

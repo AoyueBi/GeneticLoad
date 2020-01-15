@@ -93,15 +93,7 @@ public class Mode {
     public void txtParallel() {
         String infileDirS = "";
         String outfileDirS = "";
-        File[] fs = new File(infileDirS).listFiles();
-        for (int i = 0; i < fs.length; i++) {
-            if (fs[i].isHidden()) {
-                fs[i].delete();
-            }
-        }
-        fs = new File(infileDirS).listFiles();
-        List<File> fsList = Arrays.asList(fs);
-        Collections.sort(fsList);
+        List<File> fsList = IOUtils.getVisibleFileListInDir(infileDirS);
         fsList.parallelStream().forEach(f -> {
             try {
                 String infileS = f.getAbsolutePath();
@@ -116,8 +108,9 @@ public class Mode {
                 }
                 BufferedWriter bw = IOUtils.getTextGzipWriter(outfileS);
                 String temp = null;
+                List<String> l = new ArrayList<>();
                 while ((temp = br.readLine()) != null) {
-                    List<String> l = PStringUtils.fastSplit(temp);
+                    l = PStringUtils.fastSplit(temp);
 
                 }
                 bw.flush();

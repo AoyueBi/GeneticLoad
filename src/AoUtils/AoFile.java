@@ -11,6 +11,7 @@ import utils.IOUtils;
 import utils.PStringUtils;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.util.*;
 
@@ -21,6 +22,95 @@ import java.util.*;
 public class AoFile {
     public AoFile(){
         
+    }
+
+    /**
+     * add colum to a file
+     */
+    public void addColumbyString(String infileS,int keyIDindex, HashMap<String,String> hm,String headername){
+        String outfileS = null;
+        String outfileDirS = new File(infileS).getParent(); //获取输入文件的父目录
+        outfileDirS = new File(outfileDirS).getParent(); //根据输入文件的父目录获取上一级父目录；
+        outfileDirS = outfileDirS + "/A_out"; //根据父目录路径 创建输出文件目录
+        new File(outfileDirS).mkdirs(); //创建输出文件目录
+        outfileS = new File(outfileDirS,new File(infileS).getName()).getAbsolutePath();
+
+        try{
+            BufferedReader br = null;
+            BufferedWriter bw = null;
+            if(infileS.endsWith(".txt")){
+                br=IOUtils.getTextReader(infileS);
+                bw = IOUtils.getTextWriter(outfileS);
+            }else if(infileS.endsWith(".txt.gz")){
+                br=IOUtils.getTextGzipReader(infileS);
+                bw=IOUtils.getTextGzipWriter(outfileS);
+            }
+
+            String temp = br.readLine(); //read header
+            bw.write(temp + "\t" + headername);
+            bw.newLine();
+            List<String> l = new ArrayList<>();
+            while((temp=br.readLine()) != null){
+                l = PStringUtils.fastSplit(temp);
+                String key = l.get(keyIDindex); //注意，如果string类型不能转化为pos,这里也不会报错
+                String value = hm.get(key);
+                bw.write(temp + "\t" + value);
+                bw.newLine();
+            }
+            bw.flush();
+            bw.close();
+            br.close();
+            System.out.println(infileS + "\tis completed at\t" + outfileS);
+        }
+        catch(Exception e){
+            System.exit(1);
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
+     * add colum to a file
+     */
+    public void addColumbyint(String infileS,int keyIDindex, HashMap<Integer,String> hm,String headername){
+        String outfileS = null;
+        String outfileDirS = new File(infileS).getParent(); //获取输入文件的父目录
+        outfileDirS = new File(outfileDirS).getParent(); //根据输入文件的父目录获取上一级父目录；
+        outfileDirS = outfileDirS + "/A_out"; //根据父目录路径 创建输出文件目录
+        new File(outfileDirS).mkdirs(); //创建输出文件目录
+        outfileS = new File(outfileDirS,new File(infileS).getName()).getAbsolutePath();
+
+        try{
+            BufferedReader br = null;
+            BufferedWriter bw = null;
+            if(infileS.endsWith(".txt")){
+                br=IOUtils.getTextReader(infileS);
+                bw = IOUtils.getTextWriter(outfileS);
+            }else if(infileS.endsWith(".txt.gz")){
+                br=IOUtils.getTextGzipReader(infileS);
+                bw=IOUtils.getTextGzipWriter(outfileS);
+            }
+
+            String temp = br.readLine(); //read header
+            bw.write(temp + "\t" + headername);
+            bw.newLine();
+            List<String> l = new ArrayList<>();
+            while((temp=br.readLine()) != null){
+                l = PStringUtils.fastSplit(temp);
+                int key = Integer.parseInt(l.get(keyIDindex)); //注意，如果string类型不能转化为pos,这里也不会报错
+                String value = hm.get(key);
+                bw.write(temp + "\t" + value);
+                bw.newLine();
+            }
+            bw.flush();
+            bw.close();
+            br.close();
+            System.out.println(infileS + "\tis completed at\t" + outfileS);
+        }
+        catch(Exception e){
+            System.exit(1);
+            e.printStackTrace();
+        }
     }
 
     public HashMap<String,String> getHashMapwithFilename(String infileDirS){
@@ -56,11 +146,6 @@ public class AoFile {
             System.exit(1);
             e.printStackTrace();
         }
-
-
-
-
-
 
         System.out.println("HashMap contains " + hm.size() + " pairs");
 

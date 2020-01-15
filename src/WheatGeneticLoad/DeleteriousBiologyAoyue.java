@@ -18,7 +18,7 @@ import java.util.*;
 public class DeleteriousBiologyAoyue {
 
     public DeleteriousBiologyAoyue() {
-        ///Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/001_snp/README.txt you can read and make yoursel clear
+        ///Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/001_snp/README.txt you can read and make you clear
 
 //        this.mergeDelgenicSNPAnnotation(); //step1
 //        this.countDeleteriousVMapII(); //这是算出所有的总和
@@ -34,7 +34,7 @@ public class DeleteriousBiologyAoyue {
 
 
 //        this.mkIndexforBurden();
-//        this.delRatioVSsynRatio();
+        this.delRatioVSsynRatio();
 
 
 
@@ -60,7 +60,6 @@ public class DeleteriousBiologyAoyue {
             }
             return false;
         }
-
         @Override
         public int compareTo(Record o) {
             if (this.taxa.compareTo(o.taxa)< 0){
@@ -72,7 +71,6 @@ public class DeleteriousBiologyAoyue {
                 return 1;
             }
         }
-
     }
 
     /**
@@ -106,9 +104,6 @@ public class DeleteriousBiologyAoyue {
             }
             br.close();
             System.out.println("Total num in the list is    " + cnt + "\t" + out.size());
-//            for (int i = 0; i < out.size(); i++) {
-//                System.out.println(out.get(i));
-//            }
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -123,9 +118,12 @@ public class DeleteriousBiologyAoyue {
 
     public void delRatioVSsynRatio(){
         //no change this file: means synonymous deriverd allele burden
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/003_delCount_highDepth/003_/additiveDeleterious_vmap2_highDepth_bysub.txt";
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/003_delCount_highDepth/003_/additiveDeleterious_vmap2_highDepth_bysub.txt";
 
-        //cna change
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/005_VMap2.1DelCount/002_delCount_highDepth/003_/additiveDeleterious_vmap2_highDepth_bysub.txt";
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/005_VMap2.1DelCount/002_delCount_highDepth/006_synonymousGerp1/additiveDeleterious_vmap2_highDepth_bysub.txt";
+
+        //can change
 //        String delfileS = "";
 //        String outfileS = "";
 
@@ -135,8 +133,24 @@ public class DeleteriousBiologyAoyue {
 //        String delfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/003_delCount_highDepth/001_/additiveDeleterious_vmap2_highDepth_bysub.txt";
 //        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/004_ratiotest/delDerivedSIFTVSsynratio.txt";
 
-        String delfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/003_delCount_highDepth/002_/additiveDeleterious_vmap2_highDepth_bysub.txt";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/004_ratiotest/delNonsynonymousVSsynonymous.txt";
+//        String delfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/003_delCount_highDepth/002_/additiveDeleterious_vmap2_highDepth_bysub.txt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/004_ratiotest/delNonsynonymousVSsynonymous.txt";
+
+
+        // est-sfs
+//        String delfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/005_VMap2.1DelCount/002_delCount_highDepth/000_/additiveDeleterious_vmap2_highDepth_bysub.txt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/005_VMap2.1DelCount/003_ratiotest/delVSsynratio.txt"; //正常sift计算出来的结果
+
+
+//        String delfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/005_VMap2.1DelCount/002_delCount_highDepth/001_/additiveDeleterious_vmap2_highDepth_bysub.txt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/005_VMap2.1DelCount/003_ratiotest/delRefaltSIFTVSsynratio.txt"; //正常sift计算出来的结果
+//
+        String delfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/005_VMap2.1DelCount/002_delCount_highDepth/002_/additiveDeleterious_vmap2_highDepth_bysub.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/005_VMap2.1DelCount/003_ratiotest/delNonsynonymousVSsynonymous.txt"; //正常sift计算出来的结果
+
+
+//        String delfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/005_VMap2.1DelCount/002_delCount_highDepth/005_nonsynonymousGerp1/additiveDeleterious_vmap2_highDepth_bysub.txt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/005_VMap2.1DelCount/003_ratiotest/nonsynonymousGerp1VSsynratio.txt";
 
         List<Record> taxasubl = this.getRecordList(infileS,0,1);
         Collections.sort(taxasubl);
@@ -228,8 +242,6 @@ public class DeleteriousBiologyAoyue {
             e.printStackTrace();
             System.exit(1);
         }
-
-
     }
     //根据最终生成的文件，进行 A B D sub的合并
     public void mergeFinalfilebySub(){
@@ -931,9 +943,7 @@ public class DeleteriousBiologyAoyue {
                             }
                             siteWithMinDepthCount[chrIndex][taxaIndex]++; //taxa有多少个有害突变位点
                         }
-
                     }
-
                 }
                 br.close();
             } catch (Exception e) {
@@ -1372,6 +1382,13 @@ public class DeleteriousBiologyAoyue {
     }
 
     public void mergeDelgenicSNPAnnotation() {
+
+        //change
+//        String infileDirS = "";
+//        String outfileS = "";
+//        new CountSites().mergeTxtbysuffix(infileDirS, outfileS, ".txt.gz");
+
+
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/001_snp/del";
 //        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/001_snp/del_merged/chr_SNP_anno_del.txt.gz";
 //        new CountSites().mergeTxtbysuffix(infileDirS, outfileS, ".txt.gz");
