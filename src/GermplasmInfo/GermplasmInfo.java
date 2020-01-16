@@ -11,10 +11,7 @@ import utils.PStringUtils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  *
@@ -26,14 +23,93 @@ public class GermplasmInfo {
 //        this.addIftaxaonVMap2Anno();
 //        this.addTreeValidatedGroupbyPloid();
 //        this.addTreeValidatedGroupbySuspecies();
-        this.addInfo();
+//        this.addInfo();
+//        this.getWild_emmer_South2();
+        this.getEuropeanLandrace();
 
     }
 
     /**
-     *
+     *  there 12 taxa (European materials) clustered on Asia branch, we need to remove that.
+     */
+    public void getEuropeanLandrace(){
+
+        String landrace_exclusionEuropean = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/009_treeValidatedFroup_byRegion/002_Landrace_European/Landrace_exclusionEuropean.txt";
+        List<String> lonAsia = new AoFile().getStringListwithoutHeader(landrace_exclusionEuropean,0);
+        try {
+            String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/000_prepareData/001_input/taxaList.txt";
+            String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/009_treeValidatedFroup_byRegion/002_Landrace_European/Landrace_European.txt";
+            new AoFile().readheader(infileS);
+            BufferedReader br = IOUtils.getTextReader(infileS);
+            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            String temp = br.readLine();
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+                String taxa = l.get(0);
+                String continent = l.get(4);
+                String subspecies = l.get(11);
+                if(subspecies.equals("Landrace")){
+                    if(continent.equals("Europe")){
+                        int index = Collections.binarySearch(lonAsia,taxa);
+                        if (index < 0){
+                            bw.write(taxa);
+                            bw.newLine();
+                        }
+                    }
+
+                }
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    /**
+     * based the tree, I divide the wild emmer group into Wild_emmer_North  Wild_emmer_South1  Wild_emmer_South2
      */
     public void getWild_emmer_South2(){
+
+        HashMap<String,String> hm = new AoFile().getHashMapwithFileDirs("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/009_Wild_emmer");
+        List<String> we = new ArrayList<>(hm.keySet());
+        Collections.sort(we);
+        try {
+            String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/000_prepareData/001_input/taxaList.txt";
+            String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/009_Wild_emmer/Wild_emmer_South2.txt";
+            new AoFile().readheader(infileS);
+            BufferedReader br = IOUtils.getTextReader(infileS);
+            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            String temp = br.readLine();
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+                String taxa = l.get(0);
+                String subspecies = l.get(11);
+                if(subspecies.equals("Wild_emmer")){
+                    int index = Collections.binarySearch(we,taxa);
+                    if (index < 0){
+                        bw.write(taxa);
+                        bw.newLine();
+                    }
+                }
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
 
     }
 
@@ -62,7 +138,7 @@ public class GermplasmInfo {
     //
     public void addTreeValidatedGroupbySuspecies(){
         String groupDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/008_treeValidatedGroup_bySubspecies";
-        HashMap<String,String> hm = new AoFile().getHashMapwithFilename(groupDirS);
+        HashMap<String,String> hm = new AoFile().getHashMapwithFileDirs(groupDirS);
 
         String outfileS = "/Users/Aoyue/project/wheatVMapII/001_germplasm/GermplasmDB/001_toFeiLu/004_wheatVMapII_germplasmInfoAddSubspecies_20191225.txt";
         String infileS = "/Users/Aoyue/project/wheatVMapII/001_germplasm/GermplasmDB/001_toFeiLu/003_wheatVMapII_germplasmInfoAddPloidy_20191225.txt";
@@ -111,7 +187,7 @@ public class GermplasmInfo {
      */
     public void addTreeValidatedGroupbyPloid() {
         String groupDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/008_treeValidatedGroup_byPloidy";
-        HashMap<String,String> hm = new AoFile().getHashMapwithFilename(groupDirS);
+        HashMap<String,String> hm = new AoFile().getHashMapwithFileDirs(groupDirS);
 
         String infileS = "/Users/Aoyue/project/wheatVMapII/001_germplasm/GermplasmDB/001_toFeiLu/002_wheatVMapII_germplasmInfo_20191225.txt";
         String outfileS = "/Users/Aoyue/project/wheatVMapII/001_germplasm/GermplasmDB/001_toFeiLu/003_wheatVMapII_germplasmInfoAddPloidy_20191225.txt";

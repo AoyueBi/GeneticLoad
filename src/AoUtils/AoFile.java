@@ -54,6 +54,9 @@ public class AoFile {
                 l = PStringUtils.fastSplit(temp);
                 String key = l.get(keyIDindex); //注意，如果string类型不能转化为pos,这里也不会报错
                 String value = hm.get(key);
+                if(value == null || value == ""){  //!!!!! if there is no value, we should set the value as "NA".
+                    value = "NA";
+                }
                 bw.write(temp + "\t" + value);
                 bw.newLine();
             }
@@ -113,7 +116,45 @@ public class AoFile {
         }
     }
 
-    public HashMap<String,String> getHashMapwithFilename(String infileDirS){
+
+    /**
+     * return a hashmap from a file, the value is the file name
+     *
+     * @param infileS
+     * @return
+     */
+    public HashMap<String,String> getHashMapwithFilename(String infileS){
+        HashMap<String,String> hm = new HashMap<>();
+        try{
+            String group = new File(infileS).getName().replaceFirst(".txt","");
+            BufferedReader br = IOUtils.getTextReader(infileS);
+            String temp = null; //do not read header
+            int cnt = 0;
+            while((temp = br.readLine()) != null){
+                cnt++;
+                hm.put(temp,group);
+            }
+            br.close();
+            System.out.println(new File(infileS).getName() + "\tHashMap size is\t" + cnt);
+            System.out.println("Total HashMap size is " + cnt);
+        }
+        catch(Exception e){
+            System.exit(1);
+            e.printStackTrace();
+        }
+
+        System.out.println("HashMap contains " + hm.size() + " pairs");
+
+        return hm;
+    }
+
+    /**
+     * return a hashmap from a file dirs
+     *
+     * @param infileDirS
+     * @return
+     */
+    public HashMap<String,String> getHashMapwithFileDirs(String infileDirS){
         File[] fs = new File(infileDirS).listFiles();
         for (int i = 0; i < fs.length; i++) {
             if (fs[i].isHidden()) {
@@ -199,41 +240,6 @@ public class AoFile {
 
         
         return hm;
-    }
-
-    /**
-     *
-     * get String list from a txt file
-     * @param infileS
-     * @param columnIndex
-     * @return
-     */
-    public List<String> getStringListwithoutHeader(String infileS, int columnIndex){
-        List<String> out = new ArrayList<>();
-        try {
-            BufferedReader br = null;
-            if (infileS.endsWith(".txt")) {
-                br = IOUtils.getTextReader(infileS);
-            } else if (infileS.endsWith(".txt.gz")) {
-                br = IOUtils.getTextGzipReader(infileS);
-            }
-
-            String temp = null; //read header
-            List<String> l = new ArrayList();
-            int cnt = 0;
-            while ((temp = br.readLine()) != null) {
-                l = PStringUtils.fastSplit(temp);
-                String goal = l.get(columnIndex);
-                out.add(goal);
-                cnt++;
-            }
-            br.close();
-            System.out.println("Total num in the list is    " + cnt + "\t" + out.size());
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        return out;
     }
 
 //######################################
@@ -388,6 +394,43 @@ public class AoFile {
         return out;
     }
 
+
+    /**
+     * get String list from a txt file
+     *
+     * @param infileS
+     * @param columnIndex
+     * @return
+     */
+    public List<String> getStringListwithoutHeader(String infileS, int columnIndex){
+        List<String> out = new ArrayList<>();
+        try {
+            BufferedReader br = null;
+            if (infileS.endsWith(".txt")) {
+                br = IOUtils.getTextReader(infileS);
+            } else if (infileS.endsWith(".txt.gz")) {
+                br = IOUtils.getTextGzipReader(infileS);
+            }
+
+            String temp = null; //read header
+            List<String> l = new ArrayList();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                String goal = l.get(columnIndex);
+                out.add(goal);
+                cnt++;
+            }
+            br.close();
+            System.out.println("Total num in the list is    " + cnt + "\t" + out.size());
+            Collections.sort(out);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return out;
+    }
+
     /**
      *
      * get String list from a txt file
@@ -416,6 +459,7 @@ public class AoFile {
             }
             br.close();
             System.out.println("Total num in the list is    " + cnt + "\t" + out.size());
+            Collections.sort(out);
         }
         catch (Exception e) {
             e.printStackTrace();
