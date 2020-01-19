@@ -187,13 +187,6 @@ public class CalVCF {
             }
             tempList = PStringUtils.fastSplit(genoArray[i], ":"); //tempList是包含基因型AD还有PL的集合
 
-            //先计算深度
-            temList = PStringUtils.fastSplit(tempList.get(1), ","); //temList是AD所有的深度集合
-            for (int j = 0; j < temList.size(); j++) {
-                int c = Integer.parseInt(temList.get(j)); //c是第j个allele的深度值。注意AD的第一个是ref，第二个是次等位位点的深度，第三个是最小等位位点的深度
-                dp += c; //dp是总深度
-            }
-
             //再计算基因型
             temList = PStringUtils.fastSplit(tempList.get(0), "/"); //temList是包含基因型拆分后的集合
             for (int j = 0; j < temList.size(); j++) { //0/0:13,0:0,4,25
