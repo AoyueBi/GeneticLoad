@@ -20,11 +20,9 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -169,8 +167,8 @@ public class FilterVCF {
     /**
      * 计算每个群体的缺失率，若都大于0.2，则过滤该位点
      *
-     * @param infileDirS
-     * @param outfileDirS
+     * @param infileS
+     * @param outfileS
      */
     public void filterMissbyPopHexaTetra(String infileS, String outfileS) {
 
@@ -362,8 +360,8 @@ public class FilterVCF {
     /**
      * 计算每个群体的缺失率，若都大于0.2，则过滤该位点
      *
-     * @param infileDirS
-     * @param outfileDirS
+     * @param infileS
+     * @param outfileS
      */
     public void filterMissbyPopHexaDi(String infileS, String outfileS) {
 //        String hexaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/removeBadTaxa/BreadWheat_S419.txt";
