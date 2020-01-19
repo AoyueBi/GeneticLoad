@@ -1847,7 +1847,7 @@ public class CountSites {
     public void calSNPSitesHeter(String infileDirS, String outfileDirS) {
         //String infileDirS = "/Users/Aoyue/project/wheatVMapII/005_preTest/fastCall/004_fastV2_JiaoDataParameters/003_testvcf/000_sampleVCF";
         //String outfileDirS = "/Users/Aoyue/Documents/test/";
-        File[] fs = new File(infileDirS).listFiles();
+        File[] fs = new File(infileDirS).listFiles();   
         for (int i = 0; i < fs.length; i++) {
             if (fs[i].isHidden()) {
                 fs[i].delete();

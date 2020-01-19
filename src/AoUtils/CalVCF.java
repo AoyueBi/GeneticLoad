@@ -6,6 +6,7 @@
 package AoUtils;
 
 import format.table.RowTable;
+import gnu.trove.list.array.TDoubleArrayList;
 import utils.IOUtils;
 import utils.PStringUtils;
 
@@ -24,7 +25,7 @@ import java.util.List;
 public class CalVCF {
 
     public CalVCF() {
-//        this.siteMeanDepth();
+//        this.calSiteMeanDepth();
 //        this.reheader();
 //        this.mkPhylipFormat();
 
@@ -168,14 +169,24 @@ public class CalVCF {
 
     }
 
+
+    public TDoubleArrayList calSNPSitesHeter(List<String> vcf){
+        TDoubleArrayList out = new TDoubleArrayList();
+
+
+
+
+        return out;
+    }
+
 //vcftools --gzvcf hmp321_agpv4_chr1.vcf.gz --weir-fst-pop China_specific.txt --weir-fst-pop Mixed.txt --out China_specificVSMixed_chr001 &
 //vcftools --gzvcf hmp321_agpv4_chr1.vcf.gz --weir-fst-pop Non_stiff_stalk.txt --weir-fst-pop China_specific.txt --fst-window-size 10000 --fst-window-step 2000 --out Non_stiff_stalkVSChina_specific_chr001 &
 //vcftools --gzvcf hmp321_agpv4_chr10.vcf.gz --keep China_specific.txt --site-pi --out China_specific_hmp321_agpv4_chr10 &
 //vcftools --gzvcf hmp321_agpv4_chr10.vcf.gz --keep China_specific.txt --window-pi 10000 --out China_specific_hmp321_agpv4_chr10 &
-//vcftools --site-mean-depth --gzvcf /data4/home/aoyue/vmap2/analysis/013_subsetvcf/singleChr/chr036.Dlineage.maf0.005.bi_subset.vcf.gz & 
-    //vcftools --depth --gzvcf /data4/home/aoyue/vmap2/analysis/013_subsetvcf/singleChr/chr036.Dlineage.maf0.005.bi_subset.vcf.gz --out chr036.Dlineage.maf0.005.bi_subset & 
+//vcftools --site-mean-depth --gzvcf /data4/home/aoyue/vmap2/analysis/013_subsetvcf/singleChr/chr036.Dlineage.maf0.005.bi_subset.vcf.gz &
+// vcftools --depth --gzvcf /data4/home/aoyue/vmap2/analysis/013_subsetvcf/singleChr/chr036.Dlineage.maf0.005.bi_subset.vcf.gz --out chr036.Dlineage.maf0.005.bi_subset &
     
-    public void siteMeanDepth() {
+    public void calSiteMeanDepth() {
         String infileDirS = "";
         String outfileDirS = "";
         List<Integer> lA = new ArrayList<>();

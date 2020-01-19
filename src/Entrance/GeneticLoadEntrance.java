@@ -20,8 +20,8 @@ public class GeneticLoadEntrance {
 
     public GeneticLoadEntrance() {
 //        this.firstProcess();
-//        this.secondProcess();
-        this.infoDB();
+        this.secondProcess();
+//        this.infoDB();
 //        this.DBdeleterious();
 
 

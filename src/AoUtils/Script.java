@@ -22,7 +22,7 @@ public class Script {
     public Script() {
         //System.out.println("");
 //        this.splitBwaScript("/Users/Aoyue/Documents/sh_fillterMiss20191120.sh", "sh_filterMiss", 21, 2);
-//        this.universalScript();
+        this.universalScript();
         //this.removeBadTaxafromVCF();
 //        this.cp();
 //        this.bgzip_D();
@@ -32,7 +32,7 @@ public class Script {
 //        this.script_AB();
 //        this.script_D();
 //        this.script_AB_byRef();
-        this.script_ABD_file();
+//        this.script_ABD_file();
 
 //        
 //        this.mergelogTxt("/Users/Aoyue/Documents/log_024", "/Users/Aoyue/Documents/ploidy.txt");
@@ -131,7 +131,8 @@ public class Script {
 //                String chr = temp.substring(3, 6);
 //                System.out.println("mv " + temp + " chr" + chr + "_vmap2_subset0.001.vcf.gz");
 //                System.out.println("bgzip -c -@ 4 " + temp + " > " + "/data4/home/aoyue/vmap2/genotype/mergedVCF/012_VCFbyPop/001_byPloid/007_refHexaploid_bgzip/" + temp + ".gz &");
-                System.out.println("tabix -p vcf " + temp + ".gz &");
+//                System.out.println("tabix -p vcf " + temp + ".gz &");
+                System.out.println("cp -f /data2/aoyue/vmap2_AB_project/003_mergefile/AB/" + temp + ".rmdup.bam /mnt/usb/wheatVMapII_ABgenome_merge_rmdupBam_001_1-31/ && cp -f /data2/aoyue/vmap2_AB_project/003_mergefile/AB/" + temp + ".rmdup.bam.bai /mnt/usb/wheatVMapII_ABgenome_merge_rmdupBam_001_1-31/");
 
             }
         } catch (Exception e) {

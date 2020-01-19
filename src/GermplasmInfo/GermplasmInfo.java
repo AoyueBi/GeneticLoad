@@ -29,6 +29,8 @@ public class GermplasmInfo {
 
     }
 
+
+
     /**
      *  there 12 taxa (European materials) clustered on Asia branch, we need to remove that.
      */
@@ -59,7 +61,6 @@ public class GermplasmInfo {
                             bw.newLine();
                         }
                     }
-
                 }
             }
             br.close();
