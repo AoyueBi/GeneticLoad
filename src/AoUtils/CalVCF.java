@@ -6,7 +6,6 @@
 package AoUtils;
 
 import format.table.RowTable;
-import gnu.trove.list.array.TDoubleArrayList;
 import utils.IOUtils;
 import utils.PStringUtils;
 
@@ -170,42 +169,32 @@ public class CalVCF {
     }
 
 
-    public TDoubleArrayList calSNPSitesHeter(String[] genoArray){
-        TDoubleArrayList out = new TDoubleArrayList();
-
-
-        int dp = 0; //总深度
+    /**
+     * return the site heterozygosity from vcf
+     *
+     * @param genoArray
+     * @return
+     */
+    public Double calSNPSitesHeter(String[] genoArray){
+        Double out = Double.MIN_VALUE;
         int nz = 0; //有基因型的个体数
-
         int ht = 0;
         List<String> tempList = null;
         List<String> temList = null;
         for (int i = 0; i < genoArray.length; i++) {
-            if (genoArray[i].startsWith(".")) {
+            if (!genoArray[i].startsWith(".")) {
                 nz++;
-                continue;
-            }
-            tempList = PStringUtils.fastSplit(genoArray[i], ":"); //tempList是包含基因型AD还有PL的集合
-
-            //再计算基因型
-            temList = PStringUtils.fastSplit(tempList.get(0), "/"); //temList是包含基因型拆分后的集合
-            for (int j = 0; j < temList.size(); j++) { //0/0:13,0:0,4,25
-                int c = Integer.parseInt(temList.get(j)); // c是基因型0 1 2 其中的一个
-            }
-            int index1 = Integer.parseInt(temList.get(0)); //0/0基因型的
-            int index2 = Integer.parseInt(temList.get(1));
-            if (index1 != index2) {
-                ht++;
+                tempList = PStringUtils.fastSplit(genoArray[i], ":"); //tempList是包含基因型AD还有PL的集合
+                //再计算基因型
+                temList = PStringUtils.fastSplit(tempList.get(0), "/"); //temList是包含基因型拆分后的集合 0/0的集合
+                int index1 = Integer.parseInt(temList.get(0)); //0/0基因型的
+                int index2 = Integer.parseInt(temList.get(1));
+                if (index1 != index2) {
+                    ht++;
+                }
             }
         }
-        nz = genoArray.length - nz;
-
-        StringBuilder sb = new StringBuilder();
-        sb.append(";HT=").append(ht).append(";MAF=");
-
-
-
-
+        out = (double) ht/nz;
         return out;
     }
 
