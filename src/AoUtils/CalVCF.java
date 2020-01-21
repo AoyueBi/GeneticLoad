@@ -12,10 +12,7 @@ import utils.PStringUtils;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  *
@@ -166,6 +163,136 @@ public class CalVCF {
             e.printStackTrace();
         }
 
+    }
+
+    /**
+     * 根据提供的taxa列表，从总的VCF文件中提取所需的VCF文件，并对没有分离的位点进行去除,没有分离位点包括全部都是./.的位点
+     *
+     * @param infileS
+     * @param outfileS
+     * @param taxalist 没有header，一行一个taxa名字
+     */
+    public void getSNPHeter(String infileS, String outfileS, String taxalist) {
+        List<Integer> indexHexa = new ArrayList<>();
+        List<String> lhexa = new AoFile().getStringListwithoutHeader(taxalist,0); //六倍体的taxa名集合
+        String[] hexaArray = lhexa.toArray(new String[lhexa.size()]);
+        Arrays.sort(hexaArray);
+        System.out.println("Chr\tNum_MergedFileVariants\tNum_KeptVariants\tNum_RemovedSites\tNum_NosegregationSites\tNum_NogenotypeSites");
+        try {
+            BufferedReader br = null;
+            BufferedWriter bw = null;
+            if (infileS.endsWith(".vcf")) {
+                br = IOUtils.getTextReader(infileS);
+            } else if (infileS.endsWith(".vcf.gz")) {
+                br = IOUtils.getTextGzipReader(infileS);
+            }
+            if (outfileS.endsWith(".txt")) {
+                bw = IOUtils.getTextWriter(outfileS);
+            } else if (outfileS.endsWith(".txt.gz")) {
+                bw = IOUtils.getTextGzipWriter(outfileS);
+            }
+            String temp = null;
+            List<String> l = new ArrayList<>();
+
+            int cntRaw = 0; //1.总共的SNP数量
+            int cntKept = 0; //2.提取后保留的SNP数量
+            int cntRemoved = 0;  //3.去除的SNP数量
+            int cntNosegregation = 0; //4.没有分离位点的sites
+            int cntSiteNogeno = 0; //5.没有基因型的sites
+
+            while ((temp = br.readLine()) != null) {
+                int cntNogenotype = 0;
+                //***********************************************************//
+                if (temp.startsWith("##")) continue;//
+                //***********************************************************//
+                //开始处理taxa的问题，先把所有taxa放入array中，记住在temp中的index
+                if (temp.startsWith("#CHROM")) {
+                    l = PStringUtils.fastSplit(temp);
+                    for (int i = 9; i < l.size(); i++) {
+                        String taxon = l.get(i);
+                        int index1 = Arrays.binarySearch(hexaArray, taxon);
+                        if (index1 > -1) { //当找到列表中的taxa时，写列表中的taxa信息
+                            indexHexa.add(i);
+                        }
+                    }
+                    Collections.sort(indexHexa);
+                }
+                if (!temp.startsWith("#")) {
+                    cntRaw++;
+                    l = PStringUtils.fastSplit(temp);
+                    List<String> lHexaGeno = new ArrayList<>();
+                    String altList = l.get(4);
+                    for (int i = 0; i < indexHexa.size(); i++) { //无论有无基因型，都加进去了
+                        lHexaGeno.add(l.get(indexHexa.get(i)));
+                    }
+
+                    for (int i = 0; i < lHexaGeno.size(); i++) { //判断没有基因型的taxa数目
+                        if (lHexaGeno.get(i).startsWith(".")) {
+                            cntNogenotype++;
+                        }
+                    }
+
+                    if (cntNogenotype == lHexaGeno.size()) { //过滤 所有taxa都没有基因型的位点
+                        cntSiteNogeno++;
+                        continue;
+                    } //若不过滤，则全是./.的位点在下面的分离测试中会统计到
+                    String[] hexaGenoArray = lHexaGeno.toArray(new String[lHexaGeno.size()]);
+                    boolean segregation = this.ifSegregation(hexaGenoArray, altList);
+                    if (segregation == false) { //过滤没有分离的位点
+                        cntNosegregation++;
+                        continue;
+                    }
+                    cntKept++;
+                    double h = this.calSNPSitesHeter(hexaGenoArray);
+                    bw.write(l.get(0)+"\t"+l.get(1)+"\t");
+                    bw.write(String.format("%.3f",h));
+                    bw.newLine();
+                } //
+            }
+            cntRemoved = cntSiteNogeno + cntNosegregation;
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println(new File(infileS).getName().substring(3, 6) + "\t" + cntRaw + "\t" + cntKept + "\t" + cntRemoved + "\t" + cntNosegregation + "\t" + cntSiteNogeno);
+            System.out.println(infileS + " is completed at " + outfileS + "\tActual taxa size: " + indexHexa.size() + "\tGoal taxa size : " + lhexa.size());
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    /**
+     * 判断该群体在一个位点是否有分离，若有分离则返回true,若无分离则返回false,只针对有1个alt的情况
+     *
+     * @param genoArray
+     * @param altList
+     * @return
+     */
+    public boolean ifSegregation(String[] genoArray, String altList) {
+        int nAlt = PStringUtils.fastSplit(altList, ",").size();
+        int[] acCnt = new int[1 + nAlt]; //所有包括ref和alt的个数
+        List<String> tempList = null;
+        List<String> temList = null;
+        for (int i = 0; i < genoArray.length; i++) {
+            if (genoArray[i].startsWith(".")) {
+                continue;
+            }
+            tempList = PStringUtils.fastSplit(genoArray[i], ":"); //tempList是包含基因型AD还有PL的集合
+//            temList = PStringUtils.fastSplit(tempList.get(1), ","); //temList是AD所有的深度集合
+            temList = PStringUtils.fastSplit(tempList.get(0), "/"); //temList是包含基因型拆分后的集合
+            for (int j = 0; j < temList.size(); j++) {
+                int c = Integer.parseInt(temList.get(j)); // c是基因型第j个数值
+                acCnt[c]++; //acCnt[c] 是所有taxa基因型某一数值如0 1 2的总和
+            }
+        }
+        //判断该群体在一个位点是否有分离，若有分离则返回true,若无分离则返回false
+        boolean a = false;
+        if ((acCnt[0] == 0 && acCnt[1] > 0) || (acCnt[0] > 0 && acCnt[1] == 0)) {
+            a = false;
+        } else {
+            a = true;
+        }
+        return a;
     }
 
 

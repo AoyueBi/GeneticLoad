@@ -5,6 +5,8 @@
  */
 package Entrance;
 
+import AoUtils.CalVCF;
+import AoUtils.CountSites;
 import GermplasmInfo.GermplasmInfo;
 import Plot.PCA;
 import WheatGeneticLoad.DeleteriousBiologyAoyue;
@@ -20,7 +22,7 @@ public class GeneticLoadEntrance {
 
     public GeneticLoadEntrance() {
 //        this.firstProcess();
-        this.secondProcess();
+//        this.secondProcess();
 //        this.infoDB();
 //        this.DBdeleterious();
 
@@ -75,6 +77,12 @@ public class GeneticLoadEntrance {
 //        new TreePreparation();
 //        new CalVCF();
 //        new BadMutations();
+        String infileS="/Users/Aoyue/Documents/chr002.subgenome.maf0.01.SNP_bi.subset.vcf";
+        String outfileS="/Users/Aoyue/Documents/chr002.subgenome.maf0.01.SNP_bi.subset.vcf";
+        String taxaList="";
+        new CalVCF().getSNPHeter(infileS,outfileS,taxaList);
+
+        new CountSites().extractVCF(infileS,outfileS,taxaList);
 
     }
 
