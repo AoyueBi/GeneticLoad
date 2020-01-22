@@ -256,7 +256,7 @@ public class CalVCF {
             bw.flush();
             bw.close();
             System.out.println(new File(infileS).getName().substring(3, 6) + "\t" + cntRaw + "\t" + cntKept + "\t" + cntRemoved + "\t" + cntNosegregation + "\t" + cntSiteNogeno);
-            System.out.println(infileS + " is completed at " + outfileS + "\tActual taxa size: " + indexHexa.size() + "\tGoal taxa size : " + lhexa.size());
+            System.out.println(infileS + " is completed at " + outfileS + "\tActual taxa size: " + indexHexa.size() + "\tGoal taxa size : " + lhexa.size()+ ".");
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
