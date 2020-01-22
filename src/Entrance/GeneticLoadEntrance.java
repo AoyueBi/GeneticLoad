@@ -6,7 +6,6 @@
 package Entrance;
 
 import AoUtils.CalVCF;
-import AoUtils.CountSites;
 import GermplasmInfo.GermplasmInfo;
 import Plot.PCA;
 import WheatGeneticLoad.DeleteriousBiologyAoyue;
@@ -77,12 +76,6 @@ public class GeneticLoadEntrance {
 //        new TreePreparation();
 //        new CalVCF();
 //        new BadMutations();
-        String infileS="/Users/Aoyue/Documents/chr002.subgenome.maf0.01.SNP_bi.subset.vcf";
-        String outfileS="/Users/Aoyue/Documents/chr002.subgenome.maf0.01.SNP_bi.subset.vcf";
-        String taxaList="";
-        new CalVCF().getSNPHeter(infileS,outfileS,taxaList);
-
-        new CountSites().extractVCF(infileS,outfileS,taxaList);
 
     }
 
@@ -130,6 +123,15 @@ public class GeneticLoadEntrance {
 //        new VariantsSum().getCDSannotation(args[0], args[1]);
 //new SplitScript().splitBwaScript(args[0], args[1], Integer.parseInt(args[2]),Integer.parseInt(args[3]));
 //        new SIFT().reverseRefAltallelebyExonVCF(args[0], args[1]);
+
+//        String infileS="/Users/Aoyue/Documents/chr002.subgenome.maf0.01.SNP_bi.subset.vcf";
+//        String outfileS="/Users/Aoyue/Documents/chr002.subgenome.maf0.01.SNP_bi.cultivar.vcf.txt";
+//        String taxaList="/Users/Aoyue/Documents/Cultivar.txt";
+//        new CalVCF().getSNPHeter(infileS,outfileS,taxaList);
+        new CalVCF().getSNPHeter(args[0], args[1], args[2]);
+
+//        new CountSites().extractVCF(infileS,outfileS,taxaList);
+
         System.out.println(new SimpleDateFormat().format(new Date()) + "\tend.");
         /**
          * ******************************* temporary method

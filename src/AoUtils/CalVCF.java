@@ -191,6 +191,8 @@ public class CalVCF {
             } else if (outfileS.endsWith(".txt.gz")) {
                 bw = IOUtils.getTextGzipWriter(outfileS);
             }
+            bw.write("Chr\tPos\tHetProportion");
+            bw.newLine();
             String temp = null;
             List<String> l = new ArrayList<>();
 
@@ -245,7 +247,7 @@ public class CalVCF {
                     cntKept++;
                     double h = this.calSNPSitesHeter(hexaGenoArray);
                     bw.write(l.get(0)+"\t"+l.get(1)+"\t");
-                    bw.write(String.format("%.3f",h));
+                    bw.write(String.format("%.4f",h));
                     bw.newLine();
                 } //
             }
