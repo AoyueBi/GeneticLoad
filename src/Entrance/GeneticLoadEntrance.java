@@ -5,9 +5,9 @@
  */
 package Entrance;
 
-import AoUtils.CalVCF;
 import GermplasmInfo.GermplasmInfo;
 import Plot.PCA;
+import PopulationAnalysis.Heterozygosity;
 import WheatGeneticLoad.DeleteriousBiologyAoyue;
 
 import java.text.SimpleDateFormat;
@@ -20,7 +20,7 @@ import java.util.Date;
 public class GeneticLoadEntrance {
 
     public GeneticLoadEntrance() {
-//        this.firstProcess();
+        this.firstProcess();
 //        this.secondProcess();
 //        this.infoDB();
 //        this.DBdeleterious();
@@ -74,8 +74,10 @@ public class GeneticLoadEntrance {
 //        new Bin();
 //        new AoMath();
 //        new TreePreparation();
-        new CalVCF();
+//        new CalVCF();
 //        new BadMutations();
+        new Heterozygosity();
+
 
     }
 
@@ -128,7 +130,7 @@ public class GeneticLoadEntrance {
 //        String outfileS="/Users/Aoyue/Documents/chr002.subgenome.maf0.01.SNP_bi.cultivar.vcf.txt";
 //        String taxaList="/Users/Aoyue/Documents/Cultivar.txt";
 //        new CalVCF().getSNPHeter(infileS,outfileS,taxaList);
-        new CalVCF().getSNPHeter(args[0], args[1], args[2]);
+//        new CalVCF().getSNPHeter(args[0], args[1], args[2]);
 
 //        new CountSites().extractVCF(infileS,outfileS,taxaList);
 
