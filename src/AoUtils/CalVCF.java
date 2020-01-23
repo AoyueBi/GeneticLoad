@@ -24,8 +24,18 @@ public class CalVCF {
 //        this.calSiteMeanDepth();
 //        this.reheader();
 //        this.mkPhylipFormat();
+//        this.mkdirs();
 
 
+    }
+
+    public void mkdirs(){
+        String infileS = "/Users/Aoyue/Documents/";
+        String outfileS = "";
+        for (int i = 0; i < 1000; i++) {
+            File a = new File(infileS,String.valueOf(i));
+            a.mkdirs();
+        }
     }
 
     /**

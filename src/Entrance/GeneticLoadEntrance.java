@@ -74,7 +74,7 @@ public class GeneticLoadEntrance {
 //        new Bin();
 //        new AoMath();
 //        new TreePreparation();
-//        new CalVCF();
+        new CalVCF();
 //        new BadMutations();
 
     }
