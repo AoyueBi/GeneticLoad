@@ -33,6 +33,18 @@ public class Bin {
         this.getDAFtable();
     }
 
+
+    /**
+     * 根据 chr pos 和 value 来确定
+     *
+     * @param chr
+     * @param hm
+     */
+    public void cal(String chr, HashMap<Integer,String> hm){
+
+
+    }
+
     /**
      * 根据数据库动态创建分组，将该分组内的所有数字建立list，进行bin的统计，并返回每个bin的比例
      *
@@ -492,7 +504,7 @@ public class Bin {
             int[][] bound = PArrayUtils.getSubsetsIndicesBySubsetSize(chrlength, binSize);
             int count[] = new int[bound.length];
             int[] bounds = new int[bound.length];
-            for (int i = 0; i < bound.length; i++) {
+            for (int i = 0; i < bound.length; i++) { //每个bound的左边
                 bounds[i] = bound[i][0];
             }
             for (int i = 0; i < t.getRowNumber(); i++) {
