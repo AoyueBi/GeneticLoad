@@ -2,6 +2,7 @@ package PopulationAnalysis;
 
 
 import AoUtils.AoFile;
+import AoUtils.Bin;
 import AoUtils.SplitScript;
 import utils.IOUtils;
 
@@ -18,7 +19,15 @@ import java.util.List;
  */
 public class Heterozygosity {
     public Heterozygosity(){
-        this.scriptSNPbased();
+//        this.scriptSNPbased();
+        this.windowCal();
+    }
+
+    public void windowCal(){
+        String infileS= "/Users/Aoyue/Documents/chr002.subgenome.maf0.01.SNP_bi.cultivar.vcf.txt";
+        HashMap<Integer,String> hm = new AoFile().getHashMap2(infileS,1,2);
+        new Bin().cal("2",hm,1000000);
+
     }
 
     public void scriptSNPbased(){

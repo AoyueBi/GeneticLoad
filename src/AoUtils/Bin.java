@@ -14,10 +14,7 @@ import utils.PStringUtils;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  *
@@ -30,7 +27,7 @@ public class Bin {
 
 //        this.mkBarplotofMAF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/023_rebackDDtauschii/002_subsetVCFandMAF/009_calMAF_newData","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/023_rebackDDtauschii/002_subsetVCFandMAF/010_bintable","25","0.5");
 //    this.mkBarplotofMAF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/023_rebackDDtauschii/002_subsetVCFandMAF/012_calMAF_bySub","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/023_rebackDDtauschii/002_subsetVCFandMAF/013_bintable_bySub","25","0.5");
-        this.getDAFtable();
+//        this.getDAFtable();
     }
 
 
@@ -40,7 +37,36 @@ public class Bin {
      * @param chr
      * @param hm
      */
-    public void cal(String chr, HashMap<Integer,String> hm){
+    public void cal(String chr, HashMap<Integer,String> hm, int window){
+        // 1.将pos转为为list,找到最大值，根据最大值确定bin的数目
+        // 2.建立count数目和list数组，对pos进行循环，找到每个bin的左边的数目和value的集合，求这个集合的平均值，最大值，方差等
+        // 3.输出，每个bin的值
+        //************************
+
+        List<Integer> posl= new ArrayList<Integer>(hm.keySet());
+        Collections.sort(posl);
+        int posmax = Collections.max(posl);
+
+        int[][] bound = PArrayUtils.getSubsetsIndicesBySubsetSize(posmax, window);
+        int count[] = new int[bound.length]; //查看每个bin里面的变异个数
+        List<Double>[] value = new ArrayList[bound.length]; //每个Bin里面的值的集合 List
+        int[] bounds = new int[bound.length]; //只看左边的bound
+        for (int i = 0; i < bound.length; i++) { //每个bound的左边
+            bounds[i] = bound[i][0];
+            value[i] = new ArrayList<>(); //对每一个bin中的List进行初始化
+        }
+        for (int i = 0; i < posl.size(); i++) {
+            double v = Double.parseDouble(hm.get(posl.get(i)));
+            int index = Arrays.binarySearch(bounds, posl.get(i));
+            if (index < 0) {
+                index = -index - 2;
+            }
+            count[index]++; //每个Bin 里面的变异个数
+            value[index].add(v); //每个bin里面的值的集合
+        }
+
+
+
 
 
     }
