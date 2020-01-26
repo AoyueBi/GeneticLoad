@@ -6,6 +6,8 @@
 package AoUtils;
 
 import format.table.RowTable;
+import gnu.trove.list.array.TDoubleArrayList;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import utils.IOUtils;
 import utils.PStringUtils;
 
@@ -22,6 +24,18 @@ public class AoMath {
 
     public AoMath() {
 
+    }
+
+
+    public String descriptiveStatistics(TDoubleArrayList value){
+        String out = null;
+        double[] array = value.toArray();
+        DescriptiveStatistics d = new DescriptiveStatistics(array);
+        double relativeMean = d.getMean(); //平均值
+        double sd = d.getStandardDeviation(); //标准偏差
+        double median = d.getPercentile(50); //中位数
+        out = String.format("%.4f", relativeMean);
+        return out;
     }
 
 

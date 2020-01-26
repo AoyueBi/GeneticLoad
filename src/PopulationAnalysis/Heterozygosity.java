@@ -25,8 +25,9 @@ public class Heterozygosity {
 
     public void windowCal(){
         String infileS= "/Users/Aoyue/Documents/chr002.subgenome.maf0.01.SNP_bi.cultivar.vcf.txt";
+        String outfileS = "";
         HashMap<Integer,String> hm = new AoFile().getHashMap2(infileS,1,2);
-        new Bin().cal("2",hm,1000000);
+        new Bin().cal("2",hm,1000000,outfileS);
 
     }
 

@@ -37,7 +37,7 @@ public class Bin {
      * @param chr
      * @param hm
      */
-    public void cal(String chr, HashMap<Integer,String> hm, int window){
+    public void cal(String chr, HashMap<Integer,String> hm, int window,String outfileS){
         // 1.将pos转为为list,找到最大值，根据最大值确定bin的数目
         // 2.建立count数目和list数组，对pos进行循环，找到每个bin的左边的数目和value的集合，求这个集合的平均值，最大值，方差等
         // 3.输出，每个bin的值
@@ -46,8 +46,9 @@ public class Bin {
         List<Integer> posl= new ArrayList<Integer>(hm.keySet());
         Collections.sort(posl);
         int posmax = Collections.max(posl);
-
         int[][] bound = PArrayUtils.getSubsetsIndicesBySubsetSize(posmax, window);
+
+
         int count[] = new int[bound.length]; //查看每个bin里面的变异个数
         List<Double>[] value = new ArrayList[bound.length]; //每个Bin里面的值的集合 List
         int[] bounds = new int[bound.length]; //只看左边的bound
@@ -55,6 +56,8 @@ public class Bin {
             bounds[i] = bound[i][0];
             value[i] = new ArrayList<>(); //对每一个bin中的List进行初始化
         }
+
+
         for (int i = 0; i < posl.size(); i++) {
             double v = Double.parseDouble(hm.get(posl.get(i)));
             int index = Arrays.binarySearch(bounds, posl.get(i));
@@ -65,10 +68,23 @@ public class Bin {
             value[index].add(v); //每个bin里面的值的集合
         }
 
-
-
-
-
+        try {
+            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            bw.write("CHROM\tBIN_START\tBIN_END\tN_VARIANTS\tHETEROZYGOSITY");
+            bw.newLine();
+            for (int i = 0; i < bound.length; i++) {
+                StringBuilder sb = new StringBuilder();
+                sb.append(chr).append("\t").append(bound[i][0]).append("\t").append(bound[i][1]).append("\t").append(count[i]);
+                bw.write(sb.toString());
+                bw.newLine();
+            }
+            bw.flush();
+            bw.close();
+            System.out.println( "It is completed at "+ outfileS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
     /**
