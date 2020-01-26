@@ -27,6 +27,15 @@ public class AoMath {
     }
 
 
+    public String getRelativeMean(TDoubleArrayList value){
+        String out = null;
+        double[] array = value.toArray();
+        DescriptiveStatistics d = new DescriptiveStatistics(array);
+        double relativeMean = d.getMean(); //平均值
+        out = String.format("%.4f", relativeMean);
+        return out;
+    }
+
     public String descriptiveStatistics(TDoubleArrayList value){
         String out = null;
         double[] array = value.toArray();
