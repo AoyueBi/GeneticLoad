@@ -50,11 +50,11 @@ public class Bin {
 
 
         int count[] = new int[bound.length]; //查看每个bin里面的变异个数
-        List<Double>[] value = new ArrayList[bound.length]; //每个Bin里面的值的集合 List
+        TDoubleArrayList[] value = new TDoubleArrayList[bound.length]; //每个Bin里面的值的集合 List
         int[] bounds = new int[bound.length]; //只看左边的bound
         for (int i = 0; i < bound.length; i++) { //每个bound的左边
             bounds[i] = bound[i][0];
-            value[i] = new ArrayList<>(); //对每一个bin中的List进行初始化
+            value[i] = new TDoubleArrayList(); //对每一个bin中的List进行初始化
         }
 
 
@@ -68,13 +68,21 @@ public class Bin {
             value[index].add(v); //每个bin里面的值的集合
         }
 
+        //计算每个Bin里面的平均值
+        String[] mean = new String[bound.length];
+        for (int i = 0; i < value.length; i++) {
+            mean[i] = new AoMath().getRelativeMean(value[i]);
+        }
+
+
         try {
             BufferedWriter bw = IOUtils.getTextWriter(outfileS);
             bw.write("CHROM\tBIN_START\tBIN_END\tN_VARIANTS\tHETEROZYGOSITY");
             bw.newLine();
             for (int i = 0; i < bound.length; i++) {
                 StringBuilder sb = new StringBuilder();
-                sb.append(chr).append("\t").append(bound[i][0]).append("\t").append(bound[i][1]).append("\t").append(count[i]);
+                sb.append(chr).append("\t").append(bound[i][0]).append("\t").append(bound[i][1]).append("\t").append(count[i])
+                .append("\t").append(mean[i]);
                 bw.write(sb.toString());
                 bw.newLine();
             }

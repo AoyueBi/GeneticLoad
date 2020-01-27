@@ -36,6 +36,20 @@ public class AoMath {
         return out;
     }
 
+
+    public String getStandardDeviation(TDoubleArrayList value){
+        String out = null;
+        double[] array = value.toArray();
+        DescriptiveStatistics d = new DescriptiveStatistics(array);
+        double sd = d.getStandardDeviation(); //标准偏差
+        out = String.format("%.4f", sd);
+        return out;
+    }
+
+
+
+
+
     public String descriptiveStatistics(TDoubleArrayList value){
         String out = null;
         double[] array = value.toArray();
