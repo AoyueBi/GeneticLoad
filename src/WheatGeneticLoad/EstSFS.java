@@ -19,7 +19,7 @@ public class EstSFS {
 
     public EstSFS(){
 //        this.sampleOutdata();
-//        this.addAnc();
+        this.addAnc();
 
 //        this.mergeDelgenicSNPAnnotation();
 //        this.countDeleteriousVMapII_byChr();

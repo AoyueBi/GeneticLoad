@@ -22,7 +22,7 @@ public class Script {
     public Script() {
         //System.out.println("");
 //        this.splitBwaScript("/Users/Aoyue/Documents/sh_fillterMiss20191120.sh", "sh_filterMiss", 21, 2);
-        this.universalScript();
+//        this.universalScript();
         //this.removeBadTaxafromVCF();
 //        this.cp();
 //        this.bgzip_D();
@@ -31,11 +31,26 @@ public class Script {
 //        this.script_ABD();
 //        this.script_AB();
 //        this.script_D();
+
 //        this.script_AB_byRef();
-//        this.script_ABD_file();
+        this.script_ABD_byRef();
+
 
 //        
 //        this.mergelogTxt("/Users/Aoyue/Documents/log_024", "/Users/Aoyue/Documents/ploidy.txt");
+    }
+
+
+//vcftools --gzvcf /data4/home/aoyue/vmap2/analysis/013_subsetvcf/all/chr.ABsubgenome.maf0.005.bi_subset.vcf.gz --keep /data4/home/aoyue/vmap2/analysis/013_subsetvcf/all/BreadWheat_S424.txt --recode --recode-INFO-all --stdout | bgzip -c -@ 40 > /data4/home/aoyue/vmap2/analysis/013_subsetvcf/all/chrA_Bsubgenome.breadWheat_S424.vcf.gz &
+
+
+    public void script_ABD_byRef() {
+        for (int i = 1; i < 8; i++) {
+            String[] chr = {i + "A", i + "B",i+"D"};
+            for (int j = 0; j < chr.length; j++) {
+                System.out.println("vcftools --vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/013_VMapIIbyRef/chr" + chr[j] + "_vmap2.1.vcf --indv PI205738 --recode --stdout | bgzip -c -@ 4 > chr" + chr[j] + "_vmap2.1_heter_SNPbased_Cultivar.vcf.gz &" );
+            }
+        }
     }
 
     public void script_AB_byRef() {
