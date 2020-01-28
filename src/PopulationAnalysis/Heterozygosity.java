@@ -3,6 +3,7 @@ package PopulationAnalysis;
 
 import AoUtils.AoFile;
 import AoUtils.Bin;
+import AoUtils.CountSites;
 import AoUtils.SplitScript;
 import utils.IOUtils;
 
@@ -23,21 +24,33 @@ public class Heterozygosity {
 //        this.windowCal();
 //        this.scriptforIndi_Hexaploid();
         this.script_calWindowStep();
+//        this.mergeTxt();
 
+
+    }
+
+    public void mergeTxt(){
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/004_heterogozysity/003_indi_test/003_cal2MWindow_1Mstep";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/004_heterogozysity/003_indi_test/004_merge/heter_cultivar_indi_2Mwindow_1Mstep.txt";
+        new CountSites().mergeTxt(infileDirS,outfileS);
 
     }
 
 
     /**
-     *
+     * 根据点的数值，计算 滑窗的数值
      */
     public void script_calWindowStep(){
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/004_heterogozysity/003_indi_test/002_out";
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/004_heterogozysity/003_indi_test/003_cal2MWindow_1Mstep";
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/004_heterogozysity/003_indi_test/002_out2";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/004_heterogozysity/003_indi_test/003_cal2MWindow_1Mstep_2";
         String[] chrArr = {"1A", "1B", "1D", "2A", "2B", "2D", "3A", "3B", "3D", "4A", "4B", "4D", "5A", "5B", "5D", "6A", "6B", "6D", "7A", "7B", "7D"};
         for (int i = 0; i < chrArr.length; i++) {
-            String infileS = new File(infileDirS,"chr" + chrArr[i] + "_vmap2.1_heter_SNPbased_Cultivar.txt.gz").getAbsolutePath();
-            String outfileS = new File(outfileDirS,"chr" + chrArr[i] + "_vmap2.1_heter_SNPbased_Cultivar_2Mwindow_1Mstep.txt").getAbsolutePath();
+//            String infileS = new File(infileDirS,"chr" + chrArr[i] + "_vmap2.1_heter_SNPbased_Cultivar.txt.gz").getAbsolutePath();
+//            String outfileS = new File(outfileDirS,"chr" + chrArr[i] + "_vmap2.1_heter_SNPbased_Cultivar_2Mwindow_1Mstep.txt").getAbsolutePath();
+
+            String infileS = new File(infileDirS,"chr" + chrArr[i] + "_vmap2.1_heter_SNPbased_Landrace.txt.gz").getAbsolutePath();
+            String outfileS = new File(outfileDirS,"chr" + chrArr[i] + "_vmap2.1_heter_SNPbased_Landrace_2Mwindow_1Mstep.txt").getAbsolutePath();
+
             HashMap<Integer,String> hm = new AoFile().getHashMap2(infileS,1,2);
             new Bin().calwindowstep(chrArr[i],hm,2000000,1000000,outfileS);
         }
