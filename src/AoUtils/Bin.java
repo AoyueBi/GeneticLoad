@@ -31,6 +31,87 @@ public class Bin {
 //        this.getDAFtable();
     }
 
+
+    /**
+     * 根据 chr pos 和 value 来确定,返回 每个window内的变异个数，以及 残余杂合度 Residual Heterozygosity
+     *
+     * @param chr
+     * @param hm
+     */
+    public void calwindowstep_ResidualHeterozygosity(String chr, HashMap<Integer,String> hm, int window, int step, String outfileS){
+        // 1.将pos转为为list,找到最大值，根据最大值确定bin的数目
+        // 2.建立count数目和list数组，对pos进行循环，找到每个bin的左边的数目和value的集合，求这个集合的平均值，最大值，方差等
+        // 3.输出，每个bin的值
+        //************************
+        List<Integer> posl= new ArrayList<Integer>(hm.keySet());
+        Collections.sort(posl);
+        int posmax = Collections.max(posl);
+        int[][] bound = this.initializeWindowStep(posmax, window,step);
+
+        int count[] = new int[bound.length]; //查看每个bin里面的变异个数
+        TDoubleArrayList[] value = new TDoubleArrayList[bound.length]; //每个Bin里面的值的集合 List
+        int[] boundright = new int[bound.length]; //只看左边的bound
+        int[] boundleft = new int[bound.length]; //右边的bound
+        for (int i = 0; i < bound.length; i++) { //每个bound的左边
+            boundleft[i] = bound[i][0];
+            boundright[i] = bound[i][1];
+            value[i] = new TDoubleArrayList(); //对每一个bin中的List进行初始化
+        }
+
+
+        for (int i = 0; i < posl.size(); i++) {
+            double v = Double.parseDouble(hm.get(posl.get(i)));
+
+            int indexleft = Arrays.binarySearch(boundleft, posl.get(i));
+            if (indexleft < 0) {
+                indexleft = -indexleft - 2 +1;
+            }
+            else if (indexleft > -1) {
+                indexleft = indexleft +1;
+            }
+
+
+            int indexright = Arrays.binarySearch(boundright, posl.get(i));
+            if (indexright < 0){
+                indexright = -indexright-1;
+            }
+            else if (indexright > -1){
+                indexright = indexright +1;
+            }
+
+
+            for (int j = indexright; j < indexleft ; j++) {
+                count[j]++; //每个Bin 里面的变异个数
+                value[j].add(v); //每个bin里面的值的集合
+            }
+        }
+
+        //计算每个Bin里面的平均值
+        String[] mean = new String[bound.length];
+        for (int i = 0; i < value.length; i++) {
+            mean[i] = new AoMath().getRelativeMean(value[i]);
+        }
+
+        try {
+            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            bw.write("CHROM\tBIN_START\tBIN_END\tN_VARIANTS\tHETEROZYGOSITY");
+            bw.newLine();
+            for (int i = 0; i < bound.length; i++) {
+                StringBuilder sb = new StringBuilder();
+                sb.append(chr).append("\t").append(bound[i][0]).append("\t").append(bound[i][1]).append("\t").append(count[i])
+                        .append("\t").append(mean[i]);
+                bw.write(sb.toString());
+                bw.newLine();
+            }
+            bw.flush();
+            bw.close();
+            System.out.println( "It is completed at "+ outfileS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
     /**
      * 根据 chr pos 和 value 来确定,返回 每个window内的变异个数，以及pos对应值的集合的平均值
      *

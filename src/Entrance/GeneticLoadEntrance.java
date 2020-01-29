@@ -20,7 +20,7 @@ import java.util.Date;
 public class GeneticLoadEntrance {
 
     public GeneticLoadEntrance() {
-        this.firstProcess();
+//        this.firstProcess();
 //        this.secondProcess();
 //        this.infoDB();
 //        this.DBdeleterious();
@@ -134,7 +134,7 @@ public class GeneticLoadEntrance {
 
 //        new CountSites().extractVCF(infileS,outfileS,taxaList);
 
-//        new Heterozygosity().mkGenotype(args[0], args[1]);
+        new Heterozygosity().mkGenotype(args[0], args[1]);
 
         System.out.println(new SimpleDateFormat().format(new Date()) + "\tend.");
         /**
