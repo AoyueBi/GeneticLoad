@@ -1857,10 +1857,10 @@ public class CountSites {
         List<File> fsList = Arrays.asList(fs);
         Collections.sort(fsList);
         fsList.stream().forEach(f -> {
-            //Start to cal the time beginning
+            //Start to calwindow the time beginning
             //long startTime = System.nanoTime();
             //System.out.println("******************************************************");
-            //Start to cal heterozygous
+            //Start to calwindow heterozygous
             try {
                 String infileS = f.getAbsolutePath();
                 String siteoutfileS = null;

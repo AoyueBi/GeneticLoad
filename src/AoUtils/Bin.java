@@ -32,7 +32,7 @@ public class Bin {
     }
 
     /**
-     * 根据 chr pos 和 value 来确定
+     * 根据 chr pos 和 value 来确定,返回 每个window内的变异个数，以及pos对应值的集合的平均值
      *
      * @param chr
      * @param hm
@@ -42,7 +42,6 @@ public class Bin {
         // 2.建立count数目和list数组，对pos进行循环，找到每个bin的左边的数目和value的集合，求这个集合的平均值，最大值，方差等
         // 3.输出，每个bin的值
         //************************
-
         List<Integer> posl= new ArrayList<Integer>(hm.keySet());
         Collections.sort(posl);
         int posmax = Collections.max(posl);
@@ -61,7 +60,6 @@ public class Bin {
 
         for (int i = 0; i < posl.size(); i++) {
             double v = Double.parseDouble(hm.get(posl.get(i)));
-
 
             int indexleft = Arrays.binarySearch(boundleft, posl.get(i));
             if (indexleft < 0) {
@@ -113,7 +111,14 @@ public class Bin {
         }
     }
 
-    //int[][] bound = PArrayUtils.getSubsetsIndicesBySubsetSize(posmax, window);
+    /**
+     * return the bound needed
+     *
+     * @param chrLength
+     * @param windowSize
+     * @param windowStep
+     * @return
+     */
     private int[][] initializeWindowStep (int chrLength, int windowSize, int windowStep) {
 
         TIntArrayList startList = new TIntArrayList();
@@ -142,7 +147,7 @@ public class Bin {
      * @param chr
      * @param hm
      */
-    public void cal(String chr, HashMap<Integer,String> hm, int window,String outfileS){
+    public void calwindow(String chr, HashMap<Integer,String> hm, int window, String outfileS){
         // 1.将pos转为为list,找到最大值，根据最大值确定bin的数目
         // 2.建立count数目和list数组，对pos进行循环，找到每个bin的左边的数目和value的集合，求这个集合的平均值，最大值，方差等
         // 3.输出，每个bin的值

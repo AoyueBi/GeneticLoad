@@ -391,7 +391,7 @@ public class Wheat120bamProcessor {
             //开始处理文件，计时
             long startTime = System.nanoTime();
             Calendar cal = Calendar.getInstance();
-            //cal.set(Calendar.HOUR_OF_DAY, 23);
+            //calwindow.set(Calendar.HOUR_OF_DAY, 23);
             int hour = cal.get(Calendar.HOUR_OF_DAY);
             int minute = cal.get(Calendar.MINUTE);
             int second = cal.get(Calendar.SECOND);

@@ -6,7 +6,9 @@ import AoUtils.Bin;
 import AoUtils.CountSites;
 import AoUtils.SplitScript;
 import utils.IOUtils;
+import utils.PStringUtils;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.util.ArrayList;
@@ -23,17 +25,90 @@ public class Heterozygosity {
 //        this.scriptSNPbased();
 //        this.windowCal();
 //        this.scriptforIndi_Hexaploid();
-        this.script_calWindowStep();
+//        this.script_calWindowStep();
 //        this.mergeTxt();
+
+        this.mkGenotype("","");
+
+
 
 
     }
 
-    public void mergeTxt(){
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/004_heterogozysity/003_indi_test/003_cal2MWindow_1Mstep";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/004_heterogozysity/003_indi_test/004_merge/heter_cultivar_indi_2Mwindow_1Mstep.txt";
-        new CountSites().mergeTxt(infileDirS,outfileS);
+    /**
+     * 将单个样品的VCF文件转化为可以计算片段杂合度的文件格式；
+     * 0/0 为0； 0/1为1； 1/1 为2； ./. 为NA
+     *
+     */
+    public void mkGenotype(String infileS, String outfileS){
+//        String infileS= "/Users/Aoyue/Documents/0/chr1A_vmap2.1_heter_SNPbased_Cultivar.vcf.gz";
+//        String outfileS = "/Users/Aoyue/Documents/1/chr1A_vmap2.1_heter_SNPbased_Cultivar_heter.txt.gz";
 
+        try {
+            BufferedReader br = null;
+            BufferedWriter bw = null;
+            if (infileS.endsWith(".vcf")) {
+                br = IOUtils.getTextReader(infileS);
+            }else if (infileS.endsWith(".vcf.gz")) {
+                br = IOUtils.getTextGzipReader(infileS);
+            }
+
+            if(outfileS.endsWith(".txt")){
+                bw = IOUtils.getTextWriter(outfileS);
+            }else if(outfileS.endsWith(".txt.gz")){
+                bw = IOUtils.getTextGzipWriter(outfileS);
+            }
+            bw.write("Chr\tPos\tGenotype");
+            bw.newLine();
+
+            String temp = null;
+            int cnt =0;
+            List<String> l = new ArrayList<>();
+            while ((temp = br.readLine()) != null) {
+                if (temp.startsWith("#")) {
+                } else {
+                    l= PStringUtils.fastSplit(temp);
+                    String chr = l.get(0);
+                    String pos = l.get(1);
+                    String genoArray = l.get(9);
+                    String geno = PStringUtils.fastSplit(genoArray,":").get(0);
+                    System.out.println(geno);
+                    if(geno.equals("0/0")){
+                        bw.write(chr + "\t" + pos + "\t0");
+                        bw.newLine();
+                        cnt++;
+                    }
+                    if(geno.equals("0/1")){
+                        bw.write(chr + "\t" + pos + "\t1");
+                        bw.newLine();
+                        cnt++;
+                    }
+                    if(geno.equals("1/1")){
+                        bw.write(chr + "\t" + pos + "\t2");
+                        bw.newLine();
+                        cnt++;
+                    }
+                    if(geno.equals("./.")){
+                        bw.write(chr + "\t" + pos + "\tNA");
+                        bw.newLine();
+                        cnt++;
+                    }
+
+                }
+            }
+            bw.flush();
+            bw.close();
+            br.close();
+            System.out.println(infileS + " is completed at " + outfileS);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void mergeTxt(){
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/004_heterogozysity/003_indi_test/003_cal2MWindow_1Mstep_2";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/004_heterogozysity/003_indi_test/004_merge2/heter_cultivar_indi_2Mwindow_1Mstep.txt";
+        new CountSites().mergeTxt(infileDirS,outfileS);
     }
 
 
@@ -41,57 +116,56 @@ public class Heterozygosity {
      * 根据点的数值，计算 滑窗的数值
      */
     public void script_calWindowStep(){
+
+        //方法1：循环法
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/004_heterogozysity/003_indi_test/002_out2";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/004_heterogozysity/003_indi_test/003_cal2MWindow_1Mstep_2";
+//        String[] chrArr = {"1A", "1B", "1D", "2A", "2B", "2D", "3A", "3B", "3D", "4A", "4B", "4D", "5A", "5B", "5D", "6A", "6B", "6D", "7A", "7B", "7D"};
+//        for (int i = 0; i < chrArr.length; i++) {
+////            String infileS = new File(infileDirS,"chr" + chrArr[i] + "_vmap2.1_heter_SNPbased_Cultivar.txt.gz").getAbsolutePath();
+////            String outfileS = new File(outfileDirS,"chr" + chrArr[i] + "_vmap2.1_heter_SNPbased_Cultivar_2Mwindow_1Mstep.txt").getAbsolutePath();
+//
+//            String infileS = new File(infileDirS,"chr" + chrArr[i] + "_vmap2.1_heter_SNPbased_Landrace.txt.gz").getAbsolutePath();
+//            String outfileS = new File(outfileDirS,"chr" + chrArr[i] + "_vmap2.1_heter_SNPbased_Landrace_2Mwindow_1Mstep.txt").getAbsolutePath();
+//
+//            HashMap<Integer,String> hm = new AoFile().getHashMap2(infileS,1,2);
+//            new Bin().calwindowstep(chrArr[i],hm,2000000,1000000,outfileS);
+//        }
+
+
+        //方法2：列表法
+
         String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/004_heterogozysity/003_indi_test/002_out2";
         String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/004_heterogozysity/003_indi_test/003_cal2MWindow_1Mstep_2";
-        String[] chrArr = {"1A", "1B", "1D", "2A", "2B", "2D", "3A", "3B", "3D", "4A", "4B", "4D", "5A", "5B", "5D", "6A", "6B", "6D", "7A", "7B", "7D"};
-        for (int i = 0; i < chrArr.length; i++) {
-//            String infileS = new File(infileDirS,"chr" + chrArr[i] + "_vmap2.1_heter_SNPbased_Cultivar.txt.gz").getAbsolutePath();
-//            String outfileS = new File(outfileDirS,"chr" + chrArr[i] + "_vmap2.1_heter_SNPbased_Cultivar_2Mwindow_1Mstep.txt").getAbsolutePath();
+        List<File> fsList = IOUtils.getVisibleFileListInDir(infileDirS);
+        fsList.parallelStream().forEach(f -> {
+            try {
+                String infileS = f.getAbsolutePath();
+                String outfileS = null;
+                BufferedReader br = null;
+                if (infileS.endsWith(".txt")) {
+                    br = IOUtils.getTextReader(infileS);
+                    outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "_2Mwindow_1Mstep.txt").getAbsolutePath();
+                } else if (infileS.endsWith(".txt.gz")) {
+                    br = IOUtils.getTextGzipReader(infileS);
+                    outfileS = new File(outfileDirS, f.getName().split(".txt.gz")[0] + "_2Mwindow_1Mstep.txt").getAbsolutePath();
+                }
 
-            String infileS = new File(infileDirS,"chr" + chrArr[i] + "_vmap2.1_heter_SNPbased_Landrace.txt.gz").getAbsolutePath();
-            String outfileS = new File(outfileDirS,"chr" + chrArr[i] + "_vmap2.1_heter_SNPbased_Landrace_2Mwindow_1Mstep.txt").getAbsolutePath();
+                String chr = f.getName().substring(3,5);
+                HashMap<Integer,String> hm = new AoFile().getHashMap2(infileS,1,2);
+                new Bin().calwindowstep(chr,hm,2000000,1000000,outfileS);
 
-            HashMap<Integer,String> hm = new AoFile().getHashMap2(infileS,1,2);
-            new Bin().calwindowstep(chrArr[i],hm,2000000,1000000,outfileS);
-        }
-
-
+                System.out.println(f.getName() + "\tis completed at " + outfileS);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
-    public void scriptforIndi_Diploid(){
-        //程序运行时，输入输出路径设置
-        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/013_VMapIIbyRef";
-        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/002_out";
-        String taxafileS = "/data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/001_taxalist/Cultivar.txt";
-        String group = "Cultivar";
-        String logDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/log/002";
 
-        String[] chrArr = {"1D","2D", "3D", "4D", "5D", "6D","7D"};
-        for (int j = 0; j < chrArr.length; j++) {
-            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_vmap2.1.vcf").getAbsolutePath();
-            String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_" + group + ".txt.gz").getAbsolutePath();
-            String logfileS = new File(logDirS,"log_chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_" + group + ".txt").getAbsolutePath();
-            System.out.println("java -jar 033_getSNPHeterbySite.jar " + infileS + " " + outfileS + " " + taxafileS + " > " + logfileS  + " &" );
-        }
-    }
-
-    public void scriptforIndi_Tetraploid(){
-        //程序运行时，输入输出路径设置
-        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/013_VMapIIbyRef";
-        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/002_out";
-        String taxafileS = "/data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/001_taxalist/Cultivar.txt";
-        String group = "Cultivar";
-        String logDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/log/002";
-
-        String[] chrArr = {"1A", "1B", "2A", "2B", "3A", "3B", "4A", "4B", "5A", "5B", "6A", "6B", "7A", "7B"};
-        for (int j = 0; j < chrArr.length; j++) {
-            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_vmap2.1.vcf").getAbsolutePath();
-            String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_" + group + ".txt.gz").getAbsolutePath();
-            String logfileS = new File(logDirS,"log_chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_" + group + ".txt").getAbsolutePath();
-            System.out.println("java -jar 033_getSNPHeterbySite.jar " + infileS + " " + outfileS + " " + taxafileS + " > " + logfileS  + " &" );
-        }
-    }
-
+    /**
+     * 提取个体的0/1位点信息，以及杂合度标记为1
+     */
     public void scriptforIndi_Hexaploid(){
         //程序运行时，输入输出路径设置
         String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/013_VMapIIbyRef";
@@ -111,17 +185,41 @@ public class Heterozygosity {
             String logfileS = new File(logDirS,"log_chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_" + group + ".txt").getAbsolutePath();
             System.out.println("java -jar 033_getSNPHeterbySite.jar " + infileS + " " + outfileS + " " + taxafileS + " > " + logfileS  + " &" );
         }
+
+//        String[] chrArr = {"1A", "1B", "2A", "2B", "3A", "3B", "4A", "4B", "5A", "5B", "6A", "6B", "7A", "7B"};
+//        for (int j = 0; j < chrArr.length; j++) {
+//            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_vmap2.1.vcf").getAbsolutePath();
+//            String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_" + group + ".txt.gz").getAbsolutePath();
+//            String logfileS = new File(logDirS,"log_chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_" + group + ".txt").getAbsolutePath();
+//            System.out.println("java -jar 033_getSNPHeterbySite.jar " + infileS + " " + outfileS + " " + taxafileS + " > " + logfileS  + " &" );
+//        }
+
+//        String[] chrArr = {"1D","2D", "3D", "4D", "5D", "6D","7D"};
+//        for (int j = 0; j < chrArr.length; j++) {
+//            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_vmap2.1.vcf").getAbsolutePath();
+//            String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_" + group + ".txt.gz").getAbsolutePath();
+//            String logfileS = new File(logDirS,"log_chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_" + group + ".txt").getAbsolutePath();
+//            System.out.println("java -jar 033_getSNPHeterbySite.jar " + infileS + " " + outfileS + " " + taxafileS + " > " + logfileS  + " &" );
+//        }
+
+
     }
 
+    /**
+     * 进行window step的小测试
+     */
     public void windowCal(){
         String infileS= "/Users/Aoyue/Documents/chr002.subgenome.maf0.01.SNP_bi.cultivar.vcf.txt";
         String outfileS = "/Users/Aoyue/Documents/chr002_Cultivar_100kwindow50kstep.txt";
         HashMap<Integer,String> hm = new AoFile().getHashMap2(infileS,1,2);
-//        new Bin().cal("2",hm,1000000,outfileS);
+//        new Bin().calwindow("2",hm,1000000,outfileS);
         new Bin().calwindowstep("2",hm,100000,50000,outfileS);
 
     }
 
+    /**
+     * 计算不同倍性的小麦的杂合子，只保留没有分离的位点。
+     */
     public void scriptSNPbased(){
 
         //***************************** step one : 确定其倍性，根据倍性计算 ****************************//
