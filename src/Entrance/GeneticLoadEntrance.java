@@ -20,7 +20,7 @@ import java.util.Date;
 public class GeneticLoadEntrance {
 
     public GeneticLoadEntrance() {
-//        this.firstProcess();
+        this.firstProcess();
 //        this.secondProcess();
 //        this.infoDB();
 //        this.DBdeleterious();
@@ -133,8 +133,8 @@ public class GeneticLoadEntrance {
 //        new CalVCF().getSNPHeter(args[0], args[1], args[2]);
 
 //        new CountSites().extractVCF(infileS,outfileS,taxaList);
-
-        new Heterozygosity().mkGenotype(args[0], args[1]);
+//        new Heterozygosity().mkGenotype(args[0], args[1]);
+//        new Bin().calwindowstep_ResidualHeterozygosity(args[0], Integer.parseInt(args[1]),Integer.parseInt(args[2]), args[3]);
 
         System.out.println(new SimpleDateFormat().format(new Date()) + "\tend.");
         /**
@@ -146,7 +146,7 @@ public class GeneticLoadEntrance {
 
     public void test() {
         try {
-            String sample = "a  b c    d";
+            String sample = "a  b c  d";
             String[] arrays = sample.split(" +");
             for (String s : arrays) {
                 System.out.println(s);

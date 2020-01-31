@@ -35,34 +35,38 @@ public class Bin {
     /**
      * 根据 chr pos 和 value 来确定,返回 每个window内的变异个数，以及 残余杂合度 Residual Heterozygosity
      *
-     * @param chr
-     * @param hm
      */
-    public void calwindowstep_ResidualHeterozygosity(String chr, HashMap<Integer,String> hm, int window, int step, String outfileS){
+    public void calwindowstep_ResidualHeterozygosity(String infileS, int window, int step, String outfileS){
         // 1.将pos转为为list,找到最大值，根据最大值确定bin的数目
         // 2.建立count数目和list数组，对pos进行循环，找到每个bin的左边的数目和value的集合，求这个集合的平均值，最大值，方差等
         // 3.输出，每个bin的值
         //************************
-        List<Integer> posl= new ArrayList<Integer>(hm.keySet());
-        Collections.sort(posl);
-        int posmax = Collections.max(posl);
-        int[][] bound = this.initializeWindowStep(posmax, window,step);
+
+        //先求最大值,即染色体长度
+        RowTable<String> t = new RowTable(infileS);
+        int chrlength = Integer.valueOf(t.getCell(t.getRowNumber() - 1, 1)); //t.getRowNumber()是文件的行数，不包括header。 这里getCell得到的是索引         //染色体的长度是最后一行pos的位置
+        String chr = t.getCell(0, 0);
+        System.out.println(new File(infileS).getName().substring(0,5) + " length is " + chrlength);
+
+        int[][] bound = this.initializeWindowStep(chrlength, window,step);
 
         int count[] = new int[bound.length]; //查看每个bin里面的变异个数
-        TDoubleArrayList[] value = new TDoubleArrayList[bound.length]; //每个Bin里面的值的集合 List
+        List<String>[] value = new ArrayList[bound.length]; //每个Bin里面的值的集合 List
+
         int[] boundright = new int[bound.length]; //只看左边的bound
         int[] boundleft = new int[bound.length]; //右边的bound
         for (int i = 0; i < bound.length; i++) { //每个bound的左边
             boundleft[i] = bound[i][0];
             boundright[i] = bound[i][1];
-            value[i] = new TDoubleArrayList(); //对每一个bin中的List进行初始化
+            value[i] = new ArrayList(); //对每一个bin中的List进行初始化
         }
 
 
-        for (int i = 0; i < posl.size(); i++) {
-            double v = Double.parseDouble(hm.get(posl.get(i)));
+        for (int i = 0; i < t.getRowNumber(); i++) {
+            int pos = Integer.parseInt(t.getCell(i,1));
+            String va = t.getCell(i,2);
 
-            int indexleft = Arrays.binarySearch(boundleft, posl.get(i));
+            int indexleft = Arrays.binarySearch(boundleft, pos);
             if (indexleft < 0) {
                 indexleft = -indexleft - 2 +1;
             }
@@ -71,7 +75,7 @@ public class Bin {
             }
 
 
-            int indexright = Arrays.binarySearch(boundright, posl.get(i));
+            int indexright = Arrays.binarySearch(boundright, pos);
             if (indexright < 0){
                 indexright = -indexright-1;
             }
@@ -82,18 +86,24 @@ public class Bin {
 
             for (int j = indexright; j < indexleft ; j++) {
                 count[j]++; //每个Bin 里面的变异个数
-                value[j].add(v); //每个bin里面的值的集合
+                value[j].add(va); //每个bin里面的值的集合
             }
         }
 
-        //计算每个Bin里面的平均值
+        //计算每个Bin里面的0 1 2 NA 的个数
         String[] mean = new String[bound.length];
         for (int i = 0; i < value.length; i++) {
-            mean[i] = new AoMath().getRelativeMean(value[i]);
+            mean[i] = new AoMath().getResidualHeterozygosity(value[i]);
         }
 
         try {
-            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            BufferedWriter bw = null;
+            if (outfileS.endsWith(".txt")){
+                bw = IOUtils.getTextWriter(outfileS);
+            }
+            if (outfileS.endsWith(".txt.gz")){
+                bw = IOUtils.getTextGzipWriter(outfileS);
+            }
             bw.write("CHROM\tBIN_START\tBIN_END\tN_VARIANTS\tHETEROZYGOSITY");
             bw.newLine();
             for (int i = 0; i < bound.length; i++) {
@@ -105,7 +115,7 @@ public class Bin {
             }
             bw.flush();
             bw.close();
-            System.out.println( "It is completed at "+ outfileS);
+            System.out.println( "Bin calculation is completed at "+ outfileS);
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);

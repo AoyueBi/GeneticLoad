@@ -47,9 +47,6 @@ public class AoMath {
     }
 
 
-
-
-
     public String descriptiveStatistics(TDoubleArrayList value){
         String out = null;
         double[] array = value.toArray();
@@ -58,6 +55,42 @@ public class AoMath {
         double sd = d.getStandardDeviation(); //标准偏差
         double median = d.getPercentile(50); //中位数
         out = String.format("%.4f", relativeMean);
+        return out;
+    }
+
+
+    /**
+     * return the RH value from 0(0/0) 1(0/1) 2(1/1) NA(./.)
+     *
+     * @param l
+     * @return
+     */
+    public String getResidualHeterozygosity(List<String> l){
+        String out = null;
+        int cnt0 = 0;
+        int cnt1 = 0;
+        int cnt2 = 0;
+        int cntNA = 0;
+
+        for (int i = 0; i < l.size(); i++) {
+            String v = l.get(i);
+            if (v.equals("0")){
+                cnt0++;
+            }
+            else if (v.equals("1")){
+                cnt1++;
+            }
+            else if (v.equals("2")){
+                cnt2++;
+            }
+            else if (v.equals("NA")){
+                cntNA++;
+            }
+        }
+        int cnt = cnt0 + cnt1 + cnt2;
+        Double a = (double) cnt1/cnt;
+        out = String.format("%.4f",a);
+
         return out;
     }
 

@@ -28,6 +28,45 @@ public class Mode {
 
     }
 
+    public void mergeTxt(){
+        String infileDirS = "";
+        String outfileS = "";
+        new CountSites().mergeTxt(infileDirS,outfileS);
+    }
+
+    public void runJarParallele(){
+        String infileDirS = "";
+        String outfileDirS ="";
+        String logDirS = "";
+        String[] chrArr = {"1A", "1B", "1D", "2A", "2B", "2D", "3A", "3B", "3D", "4A", "4B", "4D", "5A", "5B", "5D", "6A", "6B", "6D", "7A", "7B", "7D"};
+//        String[] chrArr = {"1A", "1B", "2A", "2B", "3A", "3B", "4A", "4B", "5A", "5B", "6A", "6B", "7A", "7B"};
+//        String[] chrArr = {"1D","2D", "3D", "4D", "5D", "6D","7D"};
+        for (int j = 0; j < chrArr.length; j++) {
+            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_Cultivar.vcf.gz").getAbsolutePath();
+            String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_Cultivar_chrposGenotype.txt.gz").getAbsolutePath();
+            String logfileS = new File(logDirS,"log_chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_Cultivar_chrposGenotype.txt").getAbsolutePath();
+            System.out.println("nohup java -jar 034_mkindividualVCFtoChrPosGenotype.jar " + infileS + " " + outfileS + " > " + logfileS  + " 2>&1 &" );
+        }
+
+    }
+
+    public void txtlistFile(){
+        String infileDirS = "";
+        String outfileDirS = "";
+        List<File> fsList = IOUtils.getVisibleFileListInDir(infileDirS);
+        fsList.parallelStream().forEach(f -> {
+            String infileS = f.getAbsolutePath();
+            String outfileS = null;
+            if (infileS.endsWith(".txt")) {
+                outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "_RH_2Mwindow_1Mstep.txt.gz").getAbsolutePath();
+            } else if (infileS.endsWith(".txt.gz")) {
+                outfileS = new File(outfileDirS, f.getName().split(".txt.gz")[0] + "_RH_2Mwindow_1Mstep.txt.gz").getAbsolutePath();
+            }
+            new Bin().calwindowstep_ResidualHeterozygosity(infileS,2000000,1000000,outfileS);
+            System.out.println(f.getName() + "\tis completed at " + outfileS);
+        });
+    }
+
 
     public void vcfParallel() {
         double extractRatio = 0;
