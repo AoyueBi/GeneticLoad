@@ -29,11 +29,11 @@ public class Heterozygosity {
 //        this.mergeTxt();
 
 //        this.mkGenotype("/Users/Aoyue/Documents/ok/chr7B_vmap2.1_heter_SNPbased_Cultivar.vcf.gz","/Users/Aoyue/Documents/out/chr7B_vmap2.1_heter_SNPbased_Cultivar_chrposGenotype.txt.gz");
-        this.script_mkGenotype();
+//        this.script_mkGenotype();
 
-//        this.calWindowStep_RH_indivi();
+//        this.calWindowStep_RH_indivi(); //也是多线程
 //        this.runJarParallele();
-//        this.mergeTxt_calWindowStep_RH_indivi();
+        this.mergeTxt_calWindowStep_RH_indivi();
 
 
 
@@ -44,20 +44,31 @@ public class Heterozygosity {
         String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/004_heterogozysity/004_indi_RH/001_out";
         String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/004_heterogozysity/004_indi_RH/002_merge/Heter_SNPbased_Cultivar_chrposGenotype_RH_2Mwindow_1Mstep.txt";
         new CountSites().mergeTxt(infileDirS,outfileS);
+
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/004_heterogozysity/004_indi_RH/003_out_DD";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/004_heterogozysity/004_indi_RH/004_merge/heter_SNPbased_Ae.tauschii_AE1211_chrposGenotype_RH_2Mwindow_1Mstep.txt";
+//        new CountSites().mergeTxt(infileDirS,outfileS);
+
+
     }
 
 
     public void runJarParallele(){
         String infileDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/005_003_trans";
-        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/006_005_bin";
+        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/006_005_bin/DD";
         String logDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/log/004";
-        String[] chrArr = {"1A", "1B", "1D", "2A", "2B", "2D", "3A", "3B", "3D", "4A", "4B", "4D", "5A", "5B", "5D", "6A", "6B", "6D", "7A", "7B", "7D"};
+//        String[] chrArr = {"1A", "1B", "1D", "2A", "2B", "2D", "3A", "3B", "3D", "4A", "4B", "4D", "5A", "5B", "5D", "6A", "6B", "6D", "7A", "7B", "7D"};
 //        String[] chrArr = {"1A", "1B", "2A", "2B", "3A", "3B", "4A", "4B", "5A", "5B", "6A", "6B", "7A", "7B"};
-//        String[] chrArr = {"1D","2D", "3D", "4D", "5D", "6D","7D"};
+        String[] chrArr = {"1D","2D", "3D", "4D", "5D", "6D","7D"};
         for (int j = 0; j < chrArr.length; j++) {
-            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_Cultivar_chrposGenotype.txt.gz").getAbsolutePath();
-            String outfileS = new File(outfileDirS,"chr" + chrArr[j] +"_vmap2.1_heter_SNPbased_Cultivar_chrposGenotype_RH_2Mwindow_1Mstep.txt").getAbsolutePath();
-            String logfileS = new File(logDirS,"log_chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_Cultivar_chrposGenotype_RH_2Mwindow_1Mstep.txt").getAbsolutePath();
+//            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_Cultivar_chrposGenotype.txt.gz").getAbsolutePath();
+//            String outfileS = new File(outfileDirS,"chr" + chrArr[j] +"_vmap2.1_heter_SNPbased_Cultivar_chrposGenotype_RH_2Mwindow_1Mstep.txt").getAbsolutePath();
+//            String logfileS = new File(logDirS,"log_chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_Cultivar_chrposGenotype_RH_2Mwindow_1Mstep.txt").getAbsolutePath();
+
+            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_Ae.tauschii_AE1211_chrposGenotype.txt.gz").getAbsolutePath();
+            String outfileS = new File(outfileDirS,"chr" + chrArr[j] +"_vmap2.1_heter_SNPbased_Ae.tauschii_AE1211_chrposGenotype_RH_2Mwindow_1Mstep.txt").getAbsolutePath();
+            String logfileS = new File(logDirS,"log_chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_Ae.tauschii_AE1211_chrposGenotype_RH_2Mwindow_1Mstep.txt").getAbsolutePath();
+
             System.out.println("nohup java -jar 035_calWindowStep_RH_indivi.jar " + infileS + " 2000000 1000000 " + outfileS + " > " + logfileS  + " 2>&1 &" );
         }
 
@@ -130,13 +141,14 @@ public class Heterozygosity {
 //            String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_Cultivar_chrposGenotype.txt.gz").getAbsolutePath();
 //            String logfileS = new File(logDirS,"log_chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_Cultivar_chrposGenotype.txt").getAbsolutePath();
 
-            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_Cultivar.vcf.gz").getAbsolutePath();
-            String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_Cultivar_chrposGenotype.txt.gz").getAbsolutePath();
-            String logfileS = new File(logDirS,"log_chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_Cultivar_chrposGenotype.txt").getAbsolutePath();
+            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_Ae.tauschii_AE1211.vcf.gz").getAbsolutePath();
+            String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_Ae.tauschii_AE1211_chrposGenotype.txt.gz").getAbsolutePath();
+            String logfileS = new File(logDirS,"log_chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_Ae.tauschii_AE1211_chrposGenotype.txt").getAbsolutePath();
 
             System.out.println("nohup java -jar 034_mkindividualVCFtoChrPosGenotype.jar " + infileS + " " + outfileS + " > " + logfileS  + " 2>&1 &" );
         }
 
+        //AABBDD 一个cultivar个体的运行
 //        nohup java -jar 034_mkindividualVCFtoChrPosGenotype.jar /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/003_indiVCF/chr1B_vmap2.1_heter_SNPbased_Cultivar.vcf.gz /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/005_003_trans/chr1B_vmap2.1_heter_SNPbased_Cultivar_chrposGenotype.txt.gz > /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/log/003/log_chr1B_vmap2.1_heter_SNPbased_Cultivar_chrposGenotype.txt 2>&1 &
 //        nohup java -jar 034_mkindividualVCFtoChrPosGenotype.jar /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/003_indiVCF/chr2A_vmap2.1_heter_SNPbased_Cultivar.vcf.gz /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/005_003_trans/chr2A_vmap2.1_heter_SNPbased_Cultivar_chrposGenotype.txt.gz > /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/log/003/log_chr2A_vmap2.1_heter_SNPbased_Cultivar_chrposGenotype.txt 2>&1 &
 //        nohup java -jar 034_mkindividualVCFtoChrPosGenotype.jar /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/003_indiVCF/chr2B_vmap2.1_heter_SNPbased_Cultivar.vcf.gz /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/005_003_trans/chr2B_vmap2.1_heter_SNPbased_Cultivar_chrposGenotype.txt.gz > /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/log/003/log_chr2B_vmap2.1_heter_SNPbased_Cultivar_chrposGenotype.txt 2>&1 &
@@ -161,7 +173,14 @@ public class Heterozygosity {
         //nohup java -jar 034_mkindividualVCFtoChrPosGenotype.jar /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/003_indiVCF/chr6D_vmap2.1_heter_SNPbased_Cultivar.vcf.gz /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/005_003_trans/chr6D_vmap2.1_heter_SNPbased_Cultivar_chrposGenotype.txt.gz > /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/log/003/log_chr6D_vmap2.1_heter_SNPbased_Cultivar_chrposGenotype.txt 2>&1 &
         //nohup java -jar 034_mkindividualVCFtoChrPosGenotype.jar /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/003_indiVCF/chr7D_vmap2.1_heter_SNPbased_Cultivar.vcf.gz /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/005_003_trans/chr7D_vmap2.1_heter_SNPbased_Cultivar_chrposGenotype.txt.gz > /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/log/003/log_chr7D_vmap2.1_heter_SNPbased_Cultivar_chrposGenotype.txt 2>&1 &
 
-
+// DD 一个个体的运行
+        //nohup java -jar 034_mkindividualVCFtoChrPosGenotype.jar /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/003_indiVCF/chr1D_vmap2.1_heter_SNPbased_Ae.tauschii_AE1211.vcf.gz /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/005_003_trans/chr1D_vmap2.1_heter_SNPbased_Ae.tauschii_AE1211_chrposGenotype.txt.gz > /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/log/003/log_chr1D_vmap2.1_heter_SNPbased_Ae.tauschii_AE1211_chrposGenotype.txt 2>&1 &
+        //nohup java -jar 034_mkindividualVCFtoChrPosGenotype.jar /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/003_indiVCF/chr2D_vmap2.1_heter_SNPbased_Ae.tauschii_AE1211.vcf.gz /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/005_003_trans/chr2D_vmap2.1_heter_SNPbased_Ae.tauschii_AE1211_chrposGenotype.txt.gz > /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/log/003/log_chr2D_vmap2.1_heter_SNPbased_Ae.tauschii_AE1211_chrposGenotype.txt 2>&1 &
+        //nohup java -jar 034_mkindividualVCFtoChrPosGenotype.jar /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/003_indiVCF/chr3D_vmap2.1_heter_SNPbased_Ae.tauschii_AE1211.vcf.gz /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/005_003_trans/chr3D_vmap2.1_heter_SNPbased_Ae.tauschii_AE1211_chrposGenotype.txt.gz > /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/log/003/log_chr3D_vmap2.1_heter_SNPbased_Ae.tauschii_AE1211_chrposGenotype.txt 2>&1 &
+        //nohup java -jar 034_mkindividualVCFtoChrPosGenotype.jar /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/003_indiVCF/chr4D_vmap2.1_heter_SNPbased_Ae.tauschii_AE1211.vcf.gz /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/005_003_trans/chr4D_vmap2.1_heter_SNPbased_Ae.tauschii_AE1211_chrposGenotype.txt.gz > /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/log/003/log_chr4D_vmap2.1_heter_SNPbased_Ae.tauschii_AE1211_chrposGenotype.txt 2>&1 &
+        //nohup java -jar 034_mkindividualVCFtoChrPosGenotype.jar /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/003_indiVCF/chr5D_vmap2.1_heter_SNPbased_Ae.tauschii_AE1211.vcf.gz /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/005_003_trans/chr5D_vmap2.1_heter_SNPbased_Ae.tauschii_AE1211_chrposGenotype.txt.gz > /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/log/003/log_chr5D_vmap2.1_heter_SNPbased_Ae.tauschii_AE1211_chrposGenotype.txt 2>&1 &
+        //nohup java -jar 034_mkindividualVCFtoChrPosGenotype.jar /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/003_indiVCF/chr6D_vmap2.1_heter_SNPbased_Ae.tauschii_AE1211.vcf.gz /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/005_003_trans/chr6D_vmap2.1_heter_SNPbased_Ae.tauschii_AE1211_chrposGenotype.txt.gz > /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/log/003/log_chr6D_vmap2.1_heter_SNPbased_Ae.tauschii_AE1211_chrposGenotype.txt 2>&1 &
+        //nohup java -jar 034_mkindividualVCFtoChrPosGenotype.jar /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/003_indiVCF/chr7D_vmap2.1_heter_SNPbased_Ae.tauschii_AE1211.vcf.gz /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/005_003_trans/chr7D_vmap2.1_heter_SNPbased_Ae.tauschii_AE1211_chrposGenotype.txt.gz > /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/log/003/log_chr7D_vmap2.1_heter_SNPbased_Ae.tauschii_AE1211_chrposGenotype.txt 2>&1 &
 
 
     }
@@ -244,9 +263,10 @@ public class Heterozygosity {
 
 
     public void mergeTxt(){
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/004_heterogozysity/003_indi_test/003_cal2MWindow_1Mstep_2";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/004_heterogozysity/003_indi_test/004_merge2/heter_cultivar_indi_2Mwindow_1Mstep.txt";
-        new CountSites().mergeTxt(infileDirS,outfileS);
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/004_heterogozysity/003_indi_test/003_cal2MWindow_1Mstep_2";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/004_heterogozysity/003_indi_test/004_merge2/heter_cultivar_indi_2Mwindow_1Mstep.txt";
+//        new CountSites().mergeTxt(infileDirS,outfileS);
+
     }
 
 

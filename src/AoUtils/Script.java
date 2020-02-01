@@ -45,23 +45,23 @@ public class Script {
 
 
     public void script_ABD_byRef() {
-        for (int i = 1; i < 8; i++) {
-            String[] chr = {i + "A", i + "B",i+"D"};
-            for (int j = 0; j < chr.length; j++) {
-                System.out.println("nohup vcftools --vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/013_VMapIIbyRef/chr" + chr[j] + "_vmap2.1.vcf --indv PI205738 --recode --stdout | bgzip -c -@ 4 > chr" + chr[j] + "_vmap2.1_heter_SNPbased_Cultivar.vcf.gz &" );
-//                System.out.println("vcftools --vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/013_VMapIIbyRef/chr" + chr[j] + "_vmap2.1.vcf --indv PI436228 --recode --stdout | bgzip -c -@ 4 > chr" + chr[j] + "_vmap2.1_heter_SNPbased_Landrace_PI436228.vcf.gz &" );
-
-            }
-        }
-
 //        for (int i = 1; i < 8; i++) {
-//            String[] chr = {i + "A", i + "B"};
+//            String[] chr = {i + "A", i + "B",i+"D"};
 //            for (int j = 0; j < chr.length; j++) {
-//                System.out.println("vcftools --vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/013_VMapIIbyRef/chr" + chr[j] + "_vmap2.1.vcf --indv PI355466 --recode --stdout | bgzip -c -@ 4 > chr" + chr[j] + "_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466.vcf.gz &" );
-////                System.out.println("vcftools --vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/013_VMapIIbyRef/chr" + chr[j] + "_vmap2.1.vcf --indv PI466987 --recode --stdout | bgzip -c -@ 4 > chr" + chr[j] + "_vmap2.1_heter_SNPbased_WildEmmer_PI466987.vcf.gz &" );
+//                System.out.println("vcftools --vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/013_VMapIIbyRef/chr" + chr[j] + "_vmap2.1.vcf --indv PI205738 --recode --stdout | bgzip -c -@ 4 > chr" + chr[j] + "_vmap2.1_heter_SNPbased_Cultivar.vcf.gz &" );
+////                System.out.println("vcftools --vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/013_VMapIIbyRef/chr" + chr[j] + "_vmap2.1.vcf --indv PI436228 --recode --stdout | bgzip -c -@ 4 > chr" + chr[j] + "_vmap2.1_heter_SNPbased_Landrace_PI436228.vcf.gz &" );
 //
 //            }
 //        }
+
+        for (int i = 1; i < 8; i++) {
+            String[] chr = {i + "A", i + "B"};
+            for (int j = 0; j < chr.length; j++) {
+                System.out.println("vcftools --vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/013_VMapIIbyRef/chr" + chr[j] + "_vmap2.1.vcf --indv PI355466 --recode --stdout | bgzip -c -@ 4 > chr" + chr[j] + "_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466.vcf.gz &" );
+//                System.out.println("vcftools --vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/013_VMapIIbyRef/chr" + chr[j] + "_vmap2.1.vcf --indv PI466987 --recode --stdout | bgzip -c -@ 4 > chr" + chr[j] + "_vmap2.1_heter_SNPbased_WildEmmer_PI466987.vcf.gz &" );
+
+            }
+        }
 
 //        for (int i = 1; i < 8; i++) {
 //            String[] chr = {i + "D"};

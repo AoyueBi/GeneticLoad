@@ -34,6 +34,24 @@ public class Mode {
         new CountSites().mergeTxt(infileDirS,outfileS);
     }
 
+    public void runParallele_listFile(){
+        String infileDirS = "/Users/Aoyue/Documents/out";
+        String outfileDirS = "/Users/Aoyue/Documents/out1";
+        List<File> fsList = IOUtils.getVisibleFileListInDir(infileDirS);
+        fsList.stream().forEach(f -> {
+            String infileS = f.getAbsolutePath();
+            String outfileS = null;
+            if (infileS.endsWith(".txt")) {
+                outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "_RH_2Mwindow_1Mstep.txt.gz").getAbsolutePath();
+            } else if (infileS.endsWith(".txt.gz")) {
+                outfileS = new File(outfileDirS, f.getName().split(".txt.gz")[0] + "_RH_2Mwindow_1Mstep.txt.gz").getAbsolutePath();
+            }
+            new Bin().calwindowstep_ResidualHeterozygosity(infileS,2000000,1000000,outfileS);
+            System.out.println(f.getName() + "\tis completed at " + outfileS);
+        });
+    }
+
+
     public void runJarParallele(){
         String infileDirS = "";
         String outfileDirS ="";
