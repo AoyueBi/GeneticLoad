@@ -32,8 +32,8 @@ public class Heterozygosity {
 //        this.script_mkGenotype();
 
 //        this.calWindowStep_RH_indivi(); //也是多线程
-//        this.runJarParallele();
-        this.mergeTxt_calWindowStep_RH_indivi();
+        this.runJarParallele();
+//        this.mergeTxt_calWindowStep_RH_indivi();
 
 
 
@@ -58,16 +58,21 @@ public class Heterozygosity {
         String outfileDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/006_005_bin/DD";
         String logDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/log/004";
 //        String[] chrArr = {"1A", "1B", "1D", "2A", "2B", "2D", "3A", "3B", "3D", "4A", "4B", "4D", "5A", "5B", "5D", "6A", "6B", "6D", "7A", "7B", "7D"};
-//        String[] chrArr = {"1A", "1B", "2A", "2B", "3A", "3B", "4A", "4B", "5A", "5B", "6A", "6B", "7A", "7B"};
-        String[] chrArr = {"1D","2D", "3D", "4D", "5D", "6D","7D"};
+        String[] chrArr = {"1A", "1B", "2A", "2B", "3A", "3B", "4A", "4B", "5A", "5B", "6A", "6B", "7A", "7B"};
+//        String[] chrArr = {"1D","2D", "3D", "4D", "5D", "6D","7D"};
         for (int j = 0; j < chrArr.length; j++) {
 //            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_Cultivar_chrposGenotype.txt.gz").getAbsolutePath();
 //            String outfileS = new File(outfileDirS,"chr" + chrArr[j] +"_vmap2.1_heter_SNPbased_Cultivar_chrposGenotype_RH_2Mwindow_1Mstep.txt").getAbsolutePath();
 //            String logfileS = new File(logDirS,"log_chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_Cultivar_chrposGenotype_RH_2Mwindow_1Mstep.txt").getAbsolutePath();
 
-            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_Ae.tauschii_AE1211_chrposGenotype.txt.gz").getAbsolutePath();
-            String outfileS = new File(outfileDirS,"chr" + chrArr[j] +"_vmap2.1_heter_SNPbased_Ae.tauschii_AE1211_chrposGenotype_RH_2Mwindow_1Mstep.txt").getAbsolutePath();
-            String logfileS = new File(logDirS,"log_chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_Ae.tauschii_AE1211_chrposGenotype_RH_2Mwindow_1Mstep.txt").getAbsolutePath();
+//            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_Ae.tauschii_AE1211_chrposGenotype.txt.gz").getAbsolutePath();
+//            String outfileS = new File(outfileDirS,"chr" + chrArr[j] +"_vmap2.1_heter_SNPbased_Ae.tauschii_AE1211_chrposGenotype_RH_2Mwindow_1Mstep.txt").getAbsolutePath();
+//            String logfileS = new File(logDirS,"log_chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_Ae.tauschii_AE1211_chrposGenotype_RH_2Mwindow_1Mstep.txt").getAbsolutePath();
+
+            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype.txt.gz").getAbsolutePath();
+            String outfileS = new File(outfileDirS,"chr" + chrArr[j] +"_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype_RH_2Mwindow_1Mstep.txt").getAbsolutePath();
+            String logfileS = new File(logDirS,"log_" + new File(outfileS).getName().split(".gz")[0]).getAbsolutePath();
+
 
             System.out.println("nohup java -jar 035_calWindowStep_RH_indivi.jar " + infileS + " 2000000 1000000 " + outfileS + " > " + logfileS  + " 2>&1 &" );
         }
@@ -102,6 +107,21 @@ public class Heterozygosity {
 //                nohup java -jar 035_calWindowStep_RH_indivi.jar /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/005_003_trans/chr7A_vmap2.1_heter_SNPbased_Cultivar_chrposGenotype.txt.gz 2000000 1000000 /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/006_005_bin/chr7A_vmap2.1_heter_SNPbased_Cultivar_chrposGenotype_RH_2Mwindow_1Mstep.txt > /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/log/004/log_chr7A_vmap2.1_heter_SNPbased_Cultivar_chrposGenotype_RH_2Mwindow_1Mstep.txt 2>&1 &
 //                nohup java -jar 035_calWindowStep_RH_indivi.jar /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/005_003_trans/chr7B_vmap2.1_heter_SNPbased_Cultivar_chrposGenotype.txt.gz 2000000 1000000 /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/006_005_bin/chr7B_vmap2.1_heter_SNPbased_Cultivar_chrposGenotype_RH_2Mwindow_1Mstep.txt > /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/log/004/log_chr7B_vmap2.1_heter_SNPbased_Cultivar_chrposGenotype_RH_2Mwindow_1Mstep.txt 2>&1 &
 
+
+        //nohup java -jar 035_calWindowStep_RH_indivi.jar /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/005_003_trans/chr1A_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype.txt.gz 2000000 1000000 /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/006_005_bin/DD/chr1A_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype_RH_2Mwindow_1Mstep.txt > /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/log/004/log_chr1A_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype_RH_2Mwindow_1Mstep.txt 2>&1 &
+        //nohup java -jar 035_calWindowStep_RH_indivi.jar /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/005_003_trans/chr1B_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype.txt.gz 2000000 1000000 /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/006_005_bin/DD/chr1B_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype_RH_2Mwindow_1Mstep.txt > /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/log/004/log_chr1B_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype_RH_2Mwindow_1Mstep.txt 2>&1 &
+        //nohup java -jar 035_calWindowStep_RH_indivi.jar /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/005_003_trans/chr2A_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype.txt.gz 2000000 1000000 /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/006_005_bin/DD/chr2A_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype_RH_2Mwindow_1Mstep.txt > /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/log/004/log_chr2A_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype_RH_2Mwindow_1Mstep.txt 2>&1 &
+        //nohup java -jar 035_calWindowStep_RH_indivi.jar /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/005_003_trans/chr2B_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype.txt.gz 2000000 1000000 /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/006_005_bin/DD/chr2B_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype_RH_2Mwindow_1Mstep.txt > /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/log/004/log_chr2B_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype_RH_2Mwindow_1Mstep.txt 2>&1 &
+        //nohup java -jar 035_calWindowStep_RH_indivi.jar /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/005_003_trans/chr3A_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype.txt.gz 2000000 1000000 /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/006_005_bin/DD/chr3A_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype_RH_2Mwindow_1Mstep.txt > /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/log/004/log_chr3A_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype_RH_2Mwindow_1Mstep.txt 2>&1 &
+        //nohup java -jar 035_calWindowStep_RH_indivi.jar /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/005_003_trans/chr3B_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype.txt.gz 2000000 1000000 /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/006_005_bin/DD/chr3B_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype_RH_2Mwindow_1Mstep.txt > /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/log/004/log_chr3B_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype_RH_2Mwindow_1Mstep.txt 2>&1 &
+        //nohup java -jar 035_calWindowStep_RH_indivi.jar /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/005_003_trans/chr4A_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype.txt.gz 2000000 1000000 /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/006_005_bin/DD/chr4A_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype_RH_2Mwindow_1Mstep.txt > /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/log/004/log_chr4A_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype_RH_2Mwindow_1Mstep.txt 2>&1 &
+        //nohup java -jar 035_calWindowStep_RH_indivi.jar /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/005_003_trans/chr4B_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype.txt.gz 2000000 1000000 /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/006_005_bin/DD/chr4B_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype_RH_2Mwindow_1Mstep.txt > /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/log/004/log_chr4B_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype_RH_2Mwindow_1Mstep.txt 2>&1 &
+        //nohup java -jar 035_calWindowStep_RH_indivi.jar /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/005_003_trans/chr5A_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype.txt.gz 2000000 1000000 /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/006_005_bin/DD/chr5A_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype_RH_2Mwindow_1Mstep.txt > /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/log/004/log_chr5A_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype_RH_2Mwindow_1Mstep.txt 2>&1 &
+        //nohup java -jar 035_calWindowStep_RH_indivi.jar /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/005_003_trans/chr5B_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype.txt.gz 2000000 1000000 /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/006_005_bin/DD/chr5B_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype_RH_2Mwindow_1Mstep.txt > /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/log/004/log_chr5B_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype_RH_2Mwindow_1Mstep.txt 2>&1 &
+        //nohup java -jar 035_calWindowStep_RH_indivi.jar /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/005_003_trans/chr6A_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype.txt.gz 2000000 1000000 /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/006_005_bin/DD/chr6A_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype_RH_2Mwindow_1Mstep.txt > /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/log/004/log_chr6A_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype_RH_2Mwindow_1Mstep.txt 2>&1 &
+        //nohup java -jar 035_calWindowStep_RH_indivi.jar /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/005_003_trans/chr6B_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype.txt.gz 2000000 1000000 /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/006_005_bin/DD/chr6B_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype_RH_2Mwindow_1Mstep.txt > /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/log/004/log_chr6B_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype_RH_2Mwindow_1Mstep.txt 2>&1 &
+        //nohup java -jar 035_calWindowStep_RH_indivi.jar /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/005_003_trans/chr7A_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype.txt.gz 2000000 1000000 /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/006_005_bin/DD/chr7A_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype_RH_2Mwindow_1Mstep.txt > /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/log/004/log_chr7A_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype_RH_2Mwindow_1Mstep.txt 2>&1 &
+        //nohup java -jar 035_calWindowStep_RH_indivi.jar /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/005_003_trans/chr7B_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype.txt.gz 2000000 1000000 /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/006_005_bin/DD/chr7B_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype_RH_2Mwindow_1Mstep.txt > /data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/log/004/log_chr7B_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype_RH_2Mwindow_1Mstep.txt 2>&1 &
     }
 
 
@@ -134,16 +154,20 @@ public class Heterozygosity {
         String outfileDirS ="/data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/004_out_indivi/005_003_trans";
         String logDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/004_heter/log/003/";
 //        String[] chrArr = {"1A", "1B", "1D", "2A", "2B", "2D", "3A", "3B", "3D", "4A", "4B", "4D", "5A", "5B", "5D", "6A", "6B", "6D", "7A", "7B", "7D"};
-//        String[] chrArr = {"1A", "1B", "2A", "2B", "3A", "3B", "4A", "4B", "5A", "5B", "6A", "6B", "7A", "7B"};
-        String[] chrArr = {"1D","2D", "3D", "4D", "5D", "6D","7D"};
+        String[] chrArr = {"1A", "1B", "2A", "2B", "3A", "3B", "4A", "4B", "5A", "5B", "6A", "6B", "7A", "7B"};
+//        String[] chrArr = {"1D","2D", "3D", "4D", "5D", "6D","7D"};
         for (int j = 0; j < chrArr.length; j++) {
 //            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_Cultivar.vcf.gz").getAbsolutePath();
 //            String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_Cultivar_chrposGenotype.txt.gz").getAbsolutePath();
 //            String logfileS = new File(logDirS,"log_chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_Cultivar_chrposGenotype.txt").getAbsolutePath();
 
-            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_Ae.tauschii_AE1211.vcf.gz").getAbsolutePath();
-            String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_Ae.tauschii_AE1211_chrposGenotype.txt.gz").getAbsolutePath();
-            String logfileS = new File(logDirS,"log_chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_Ae.tauschii_AE1211_chrposGenotype.txt").getAbsolutePath();
+//            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_Ae.tauschii_AE1211.vcf.gz").getAbsolutePath();
+//            String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_Ae.tauschii_AE1211_chrposGenotype.txt.gz").getAbsolutePath();
+//            String logfileS = new File(logDirS,"log_chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_Ae.tauschii_AE1211_chrposGenotype.txt").getAbsolutePath();
+
+            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466.vcf.gz").getAbsolutePath();
+            String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype.txt.gz").getAbsolutePath();
+            String logfileS = new File(logDirS,"log_" + new File(outfileS).getName().split(".gz")[0]).getAbsolutePath();
 
             System.out.println("nohup java -jar 034_mkindividualVCFtoChrPosGenotype.jar " + infileS + " " + outfileS + " > " + logfileS  + " 2>&1 &" );
         }
