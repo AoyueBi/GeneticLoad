@@ -32,7 +32,7 @@ public class Heterozygosity {
 //        this.script_mkGenotype();
 
 //        this.calWindowStep_RH_indivi(); //也是多线程
-        this.runJarParallele();
+//        this.runJarParallele();
 //        this.mergeTxt_calWindowStep_RH_indivi();
 
 
@@ -41,13 +41,17 @@ public class Heterozygosity {
 
 
     public void mergeTxt_calWindowStep_RH_indivi(){
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/004_heterogozysity/004_indi_RH/001_out";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/004_heterogozysity/004_indi_RH/002_merge/Heter_SNPbased_Cultivar_chrposGenotype_RH_2Mwindow_1Mstep.txt";
-        new CountSites().mergeTxt(infileDirS,outfileS);
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/004_heterogozysity/004_indi_RH/001_out";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/004_heterogozysity/004_indi_RH/002_merge/Heter_SNPbased_Cultivar_chrposGenotype_RH_2Mwindow_1Mstep.txt";
+//        new CountSites().mergeTxt(infileDirS,outfileS);
 
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/004_heterogozysity/004_indi_RH/003_out_DD";
 //        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/004_heterogozysity/004_indi_RH/004_merge/heter_SNPbased_Ae.tauschii_AE1211_chrposGenotype_RH_2Mwindow_1Mstep.txt";
 //        new CountSites().mergeTxt(infileDirS,outfileS);
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/004_heterogozysity/004_indi_RH/006_out_AABB";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/004_heterogozysity/004_indi_RH/007_merge/heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype_RH_2Mwindow_1Mstep.txt";
+        new CountSites().mergeTxt(infileDirS,outfileS);
 
 
     }
