@@ -1,6 +1,6 @@
 package daxing.filterSNP;
 
-import format.position.ChrPos;
+import pgl.format.position.ChrPos;
 
 public class Dotcp extends ChrPos {
 

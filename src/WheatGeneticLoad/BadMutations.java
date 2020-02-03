@@ -2,7 +2,7 @@ package WheatGeneticLoad;
 
 import AoUtils.AoFile;
 import AoUtils.SplitScript;
-import utils.IOUtils;
+import pgl.utils.IOUtils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

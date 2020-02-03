@@ -4,9 +4,9 @@ import daxing.common.ArrayTool;
 import daxing.filterSNP.Cells;
 import daxing.filterSNP.DepthInfo;
 import daxing.filterSNP.Dot;
-import format.position.ChrPos;
-import utils.IOUtils;
-import utils.PStringUtils;
+import pgl.format.position.ChrPos;
+import pgl.utils.IOUtils;
+import pgl.utils.PStringUtils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

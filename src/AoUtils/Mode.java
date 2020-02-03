@@ -5,9 +5,9 @@
  */
 package AoUtils;
 
-import format.position.ChrPos;
-import utils.IOUtils;
-import utils.PStringUtils;
+import pgl.format.position.ChrPos;
+import pgl.utils.IOUtils;
+import pgl.utils.PStringUtils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

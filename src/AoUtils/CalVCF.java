@@ -5,9 +5,9 @@
  */
 package AoUtils;
 
-import format.table.RowTable;
-import utils.IOUtils;
-import utils.PStringUtils;
+import pgl.format.table.RowTable;
+import pgl.utils.IOUtils;
+import pgl.utils.PStringUtils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

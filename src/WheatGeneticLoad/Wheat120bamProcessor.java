@@ -5,22 +5,21 @@
  */
 package WheatGeneticLoad;
 
-import format.table.RowTable;
 import gnu.trove.list.array.TDoubleArrayList;
-import gnu.trove.list.array.TIntArrayList;
-import java.awt.Point;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import pgl.format.table.RowTable;
+import pgl.utils.IOFileFormat;
+import pgl.utils.IOUtils;
+import pgl.utils.PStringUtils;
+
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
-import utils.IOFileFormat;
-import utils.IOUtils;
-import utils.PStringUtils;
 
 /**
  *

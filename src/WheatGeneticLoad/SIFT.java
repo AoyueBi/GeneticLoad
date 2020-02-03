@@ -5,9 +5,9 @@
  */
 package WheatGeneticLoad;
 
-import format.genomeAnnotation.GeneFeature;
-import utils.IOUtils;
-import utils.PStringUtils;
+import pgl.format.genomeAnnotation.GeneFeature;
+import pgl.utils.IOUtils;
+import pgl.utils.PStringUtils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

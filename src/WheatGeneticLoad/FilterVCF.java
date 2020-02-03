@@ -5,16 +5,16 @@
  */
 package WheatGeneticLoad;
 
-import format.position.ChrPos;
-import format.table.RowTable;
+import pgl.format.position.ChrPos;
+import pgl.format.table.RowTable;
 import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.set.hash.TIntHashSet;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
-import utils.IOFileFormat;
-import utils.IOUtils;
-import utils.PArrayUtils;
-import utils.PStringUtils;
+import pgl.utils.IOFileFormat;
+import pgl.utils.IOUtils;
+import pgl.utils.PArrayUtils;
+import pgl.utils.PStringUtils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
