@@ -16,6 +16,37 @@ public class Fst {
 
     /**
      *
+     *
+     */
+    public void mkTable(){
+        //pseudo-code
+        /**
+         * 四倍体：WE DE FT
+         * 六倍体：LR CU
+         * 二倍体
+         * 合计12种组合，两两之间。每种组合分为A B subgenome,每条Asub 分为 1-7条染色体
+         *
+         * 先跑每一种组合的7条，写成1A 2A 3A 4A 5A 6A 7A
+         */
+
+    }
+
+
+    /**
+     * get mean from a file
+     *
+     * @param infileS
+     * @return
+     */
+    public String getMean(String infileS){
+        String out = null;
+
+        return out;
+
+    }
+
+    /**
+     *
      */
     public void mkFstCommandbasedSNP() {
 

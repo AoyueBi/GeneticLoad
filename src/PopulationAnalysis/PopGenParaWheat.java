@@ -587,13 +587,13 @@ public class PopGenParaWheat {
         String fstDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/001_Fst/002_fst_basedSNP_hexa_diploid";
         String outfileS = "/data4/home/aoyue/vmap2/analysis/021_popGen/001_Fst/003_fstTable/fstTable_chr005.txt";
 
-        File[] fs = new File(groupDirS).listFiles();
-        String[] groups = new String[fs.length];
+        File[] fs = new File(groupDirS).listFiles(); //求分组文件
+        String[] groups = new String[fs.length]; //一个分组文件是一个group
         for (int i = 0; i < groups.length; i++) {
             groups[i] = fs[i].getName().replaceFirst(".txt", "");
         }
         Arrays.sort(groups);
-        double[][] fstValues = new double[groups.length][groups.length];
+        double[][] fstValues = new double[groups.length][groups.length]; //两两分组
         for (int i = 0; i < groups.length - 1; i++) {
             for (int j = i + 1; j < groups.length; j++) {
 //                String infileS = groups[i]+"VS"+groups[j]+"_chr001_.weir.fst"; //先找到其名字
@@ -633,19 +633,20 @@ public class PopGenParaWheat {
         try {
             BufferedWriter bw = IOUtils.getTextWriter(outfileS);
             StringBuilder sb = new StringBuilder("Pupoluation");
-            for (int i = 0; i < groups.length; i++) {
+            for (int i = 0; i < groups.length; i++) { //开始打表头
                 sb.append("\t").append(groups[i]);
             }
             bw.write(sb.toString());
             bw.newLine();
+
             for (int i = 0; i < groups.length; i++) {
-                sb = new StringBuilder(groups[i]);
+                sb = new StringBuilder(groups[i]); //第一列都是分组信息
                 for (int j = 0; j < groups.length; j++) {
-                    if (fstValues[i][j] == 0) {
+                    if (fstValues[i][j] == 0) { //说明2个小组没有分化，或者没有比较
                         if (i == j) { //两者相等
                             sb.append("\tNA");
                         } else { //两个group不相等，但是fst值等于0
-                            sb.append("\t");
+                            sb.append("\t"); //跳过，说明2者没有进行比较
                         }
                     } else { //两个group不相等，fst值不等于0
                         sb.append("\t").append(fstValues[i][j]);
