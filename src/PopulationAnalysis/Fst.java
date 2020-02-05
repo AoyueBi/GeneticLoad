@@ -1,8 +1,12 @@
 package PopulationAnalysis;
 
 import AoUtils.SplitScript;
+import gnu.trove.list.array.TDoubleArrayList;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import pgl.utils.IOUtils;
+import pgl.utils.PStringUtils;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,9 +44,33 @@ public class Fst {
      */
     public String getMean(String infileS){
         String out = null;
-
+        try {
+            BufferedReader br = IOUtils.getTextReader(infileS);
+            String temp = br.readLine();
+            List<String> l = new ArrayList<>();
+            TDoubleArrayList vList = new TDoubleArrayList();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+                String t = l.get(2);
+                if (t.startsWith("-n") || t.startsWith("n")) {
+                    continue;
+                }
+                double v = Double.parseDouble(t);
+                vList.add(v);
+            }
+            br.close();
+            double[] v = vList.toArray();
+            DescriptiveStatistics d = new DescriptiveStatistics(v);
+            double m = d.getMean();
+            out = String.format("%.3f", m);
+            System.out.println(infileS + "\t" + out + " is completed");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
         return out;
-
     }
 
     /**
