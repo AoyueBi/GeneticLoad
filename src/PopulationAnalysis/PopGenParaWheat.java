@@ -26,7 +26,7 @@ public class PopGenParaWheat {
 //        this.mkFstCommandbasedSNP();
 //        new CountSites().mergeTxt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/sh", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/fst_basedSNP.sh");
 //        new Script().splitBwaScript("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/fst_basedSNP.sh", "fst_basedSNP", 30, 7);
-//        this.fstTable();
+        this.fstTable();
 //        this.mkFstCommandbasedwinndow();
 //        this.mergeSh("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/002_script_based10kbWindow/001_total", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/002_script_based10kbWindow/002_merge_sh/fst_basedWindow20191126.sh");
 //        new Script().splitBwaScript("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/002_script_based10kbWindow/002_merge_sh/fst_basedWindow20191126.sh", "fst_basedWindow_", 30, 6);
@@ -575,6 +575,9 @@ public class PopGenParaWheat {
 
     }
 
+    /**
+     * 求每个值的平均值，做成表格
+     */
     public void fstTable() {
 //        String groupDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/000_group/000_hexaploidandTetraploid";
 //        String fstDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/001_Fst/001_fst_basedSNP";

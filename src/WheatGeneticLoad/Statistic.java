@@ -5,12 +5,13 @@
  */
 package WheatGeneticLoad;
 
+import pgl.utils.IOUtils;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import utils.IOUtils;
 
 /**
  *

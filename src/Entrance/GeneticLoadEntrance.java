@@ -7,7 +7,7 @@ package Entrance;
 
 import GermplasmInfo.GermplasmInfo;
 import Plot.PCA;
-import PopulationAnalysis.Heterozygosity;
+import PopulationAnalysis.Fst;
 import WheatGeneticLoad.DeleteriousBiologyAoyue;
 
 import java.text.SimpleDateFormat;
@@ -76,7 +76,8 @@ public class GeneticLoadEntrance {
 //        new TreePreparation();
 //        new CalVCF();
 //        new BadMutations();
-        new Heterozygosity();
+//        new Heterozygosity();
+        new Fst();
 
 
     }
