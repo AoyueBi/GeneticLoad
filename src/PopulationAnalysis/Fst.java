@@ -1,6 +1,5 @@
 package PopulationAnalysis;
 
-import AoUtils.SplitScript;
 import gnu.trove.list.array.TDoubleArrayList;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import pgl.utils.IOUtils;
@@ -14,8 +13,9 @@ import java.util.List;
 public class Fst {
     public Fst() {
 //        this.mkFstCommandbasedSNP();
-        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/001_scriptSNPbased/fst_basedSNP_20200205.sh",7,23);
+//        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/001_scriptSNPbased/fst_basedSNP_20200205.sh",7,23);
 
+        this.mkTable();
     }
 
     /**
@@ -32,12 +32,34 @@ public class Fst {
          *
          * 先跑每一种组合的7条，写成1A 2A 3A 4A 5A 6A 7A
          */
+        String infileS = "tesffft_chr1A.txt";
+        this.getChr(infileS);
 
+
+
+    }
+
+    /**
+     * 根据文件的名字获取chr信息，不进行里面的读取
+     *
+     * @param infileS
+     * @return
+     */
+    public String getChr(String infileS){
+        String out = null;
+
+        String name = new File(infileS).getName();
+        int index = name.indexOf("chr");
+        int index1 = index+3;
+        int index2 = index+5;
+        out = name.substring(index1,index2);
+        System.out.println(out);
+        return out;
     }
 
 
     /**
-     * get mean from a file
+     * get mean from a file， is the value equals -nan, continue
      *
      * @param infileS
      * @return
@@ -52,19 +74,19 @@ public class Fst {
             int cnt = 0;
             while ((temp = br.readLine()) != null) {
                 l = PStringUtils.fastSplit(temp);
-                cnt++;
                 String t = l.get(2);
-                if (t.startsWith("-n") || t.startsWith("n")) {
+                if (t.startsWith("-n") || t.startsWith("n")) { //pos中 fst值为 -nan 的全部去掉
                     continue;
                 }
                 double v = Double.parseDouble(t);
                 vList.add(v);
+                cnt++; //有 fst值的位点数目
             }
             br.close();
             double[] v = vList.toArray();
             DescriptiveStatistics d = new DescriptiveStatistics(v);
             double m = d.getMean();
-            out = String.format("%.3f", m);
+            out = String.format("%.4f", m);
             System.out.println(infileS + "\t" + out + " is completed");
         } catch (Exception e) {
             e.printStackTrace();
