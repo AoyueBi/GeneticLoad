@@ -136,6 +136,7 @@ public class GeneticLoadEntrance {
 //        new CountSites().extractVCF(infileS,outfileS,taxaList);
 //        new Heterozygosity().mkGenotype(args[0], args[1]);
 //        new Bin().calwindowstep_ResidualHeterozygosity(args[0], Integer.parseInt(args[1]),Integer.parseInt(args[2]), args[3]);
+//        new Fst().mkFstTable(args[0], args[1]);
 
         System.out.println(new SimpleDateFormat().format(new Date()) + "\tend.");
         /**

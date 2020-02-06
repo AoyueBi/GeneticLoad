@@ -243,6 +243,27 @@ public class Mode {
 
     }
 
+    public void TryCatch(){
+        try {
+            String infileS = "";
+            String outfileS = "";
+            BufferedReader br = IOUtils.getTextReader(infileS);
+            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            String temp = null;
+            while ((temp = br.readLine()) != null) {
+
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+    }
+
     public void testifD() {
         boolean ifd = false;
         String chr = "chr003.vmap2...".substring(3, 6);
