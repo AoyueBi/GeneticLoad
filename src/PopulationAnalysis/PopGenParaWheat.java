@@ -92,7 +92,7 @@ public class PopGenParaWheat {
 //        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/003_result/005_merge_sub_byPloidy/Fst_Bsub_based100kbWindow_byPloidy.txt.gz";
 //        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/003_result/005_merge_sub_byPloidy/Fst_Dsub_based100kbWindow_byPloidy.txt.gz";
 
-                File[] fs = new File(infileDirS).listFiles();
+        File[] fs = new File(infileDirS).listFiles();
         for (int i = 0; i < fs.length; i++) {
             if (fs[i].isHidden()) {
                 fs[i].delete();
