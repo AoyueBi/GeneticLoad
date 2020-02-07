@@ -1,6 +1,6 @@
 package PopulationAnalysis;
 
-import AoUtils.Bin;
+import AoUtils.SplitScript;
 import gnu.trove.list.array.TDoubleArrayList;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import pgl.utils.IOUtils;
@@ -13,13 +13,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Fst {
-    public Fst() {
+    public Fst() { //计算不消耗内存
 //        this.mkFstCommandbasedSNP();
 //        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/001_scriptSNPbased/fst_basedSNP_20200205.sh",7,23);
 
 //        this.mkFstTable("/Users/Aoyue/Documents/po1_VS_pop2_chr1A.txt","/Users/Aoyue/Documents/out.txt");
 
-        this.scriptMkFstTable();
+//        this.scriptMkFstTable();
+//        this.mkFstCommandbasedwinndow();
+        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/003_scriptbased2Mwindow1Mstep/sh_fst_based2Mwindow_1Mstep_20200205.sh",21,8);
     }
 
 
@@ -28,7 +30,6 @@ public class Fst {
         //local file： one: group two: script
         String groupHexaandTetraDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/000_group/hexaandTetra";
         String groupHexaandDiDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/000_group/hexaandDi";
-        String shScriptDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/000_scriptSNPbased";
 
         // HPC file: group fileDirS
         String group1FileDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/101_Fst/000_group/hexaandTetra";
@@ -36,7 +37,7 @@ public class Fst {
 
         // HPC file: output fileDirS
         String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/013_VMapIIbyRef";
-        String outfileDirS = "";
+        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/101_Fst/004_fst_based2Mwindow_1Mstep/001";
 
         List<File> fs = IOUtils.getVisibleFileListInDir(groupHexaandTetraDirS);
         File[] group1FileS = fs.toArray(new File[fs.size()]);
@@ -44,23 +45,21 @@ public class Fst {
         List<File> fs2 = IOUtils.getVisibleFileListInDir(groupHexaandDiDirS);
         File[] group2FileS = fs2.toArray(new File[fs2.size()]);
 
-        new File(shScriptDirS).mkdirs(); //无论在不在，都可以创建该文件夹
-
         ArrayList<String> perlList = new ArrayList(); //在循环外建立perlList集合， 每个集合包含多个字符串，一个字符串代表一个文件。
 
         for (int i = 0; i < group1FileS.length - 1; i++) {
             String pop1 = group1FileS[i].getName().replace(".txt", ""); //第一组的名字
             for (int j = i + 1; j < group1FileS.length; j++) {
                 String pop2 = group1FileS[j].getName().replace(".txt", ""); //第二组的名字
-                //vcftools --gzvcf test.vcf.gz --weir-fst-pop ../groups/Teosinte.txt --weir-fst-pop ../groups/Stiff_stalk.txt --weir-fst-pop ../groups/Non_stiff_stalk.txt --out out.txt
-                String[] chrArr = {"1A", "1B", "2A", "2B", "3A", "3B", "4A", "4B", "5A", "5B", "6A", "6B", "7A", "7B"};
+                String[] chrArr = {"1A", "2A", "3A","4A", "5A", "6A", "7A", "1B", "2B", "3B", "4B", "5B", "6B", "7B"};
                 for (int k = 0; k < chrArr.length; k++) {
                     String chr = chrArr[k];
                     String infileS = new File(infileDirS, "chr" + chr + "_vmap2.1.vcf").getAbsolutePath();
                     String outfileS = new File(outfileDirS, pop1 + "_VS_" + pop2 + "_chr" + chr).getAbsolutePath();
                     String group1S = new File(group1FileDirS, group1FileS[i].getName()).getAbsolutePath();
                     String group2S = new File(group1FileDirS, group1FileS[j].getName()).getAbsolutePath();
-                    System.out.println("vcftools --vcf " + infileS + " --weir-fst-pop " + group1S + " --weir-fst-pop " + group2S + " --out " + outfileS);
+                    System.out.println("vcftools --vcf " + infileS + " --weir-fst-pop " + group1S +
+                            " --weir-fst-pop " + group2S + " --fst-window-size 2000000 --fst-window-step 1000000 " +  " --out " + outfileS);
                 }
             }
         }
@@ -76,7 +75,8 @@ public class Fst {
                     String outfileS = new File(outfileDirS, pop1 + "_VS_" + pop2 + "_chr" + chr).getAbsolutePath();
                     String group1S = new File(group2FileDirS, group2FileS[i].getName()).getAbsolutePath();
                     String group2S = new File(group2FileDirS, group2FileS[j].getName()).getAbsolutePath();
-                    System.out.println("vcftools --vcf " + infileS + " --weir-fst-pop " + group1S + " --weir-fst-pop " + group2S + " --out " + outfileS);
+                    System.out.println("vcftools --vcf " + infileS + " --weir-fst-pop " + group1S +
+                            " --weir-fst-pop " + group2S + " --fst-window-size 2000000 --fst-window-step 1000000 " +  " --out " + outfileS);
                 }
             }
         }
@@ -92,7 +92,6 @@ public class Fst {
         //local file： one: group two: script
         String groupHexaandTetraDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/000_group/hexaandTetra";
         String groupHexaandDiDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/000_group/hexaandDi";
-        String shScriptDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/000_scriptSNPbased";
 
         // HPC file: output fileDirS
         String infileDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/101_Fst/002_fst_basedSNP";
@@ -104,8 +103,6 @@ public class Fst {
 
         List<File> fs2 = IOUtils.getVisibleFileListInDir(groupHexaandDiDirS);
         File[] group2FileS = fs2.toArray(new File[fs2.size()]);
-
-        new File(shScriptDirS).mkdirs(); //无论在不在，都可以创建该文件夹
 
         ArrayList<String> perlList = new ArrayList(); //在循环外建立perlList集合， 每个集合包含多个字符串，一个字符串代表一个文件。
 
@@ -140,23 +137,6 @@ public class Fst {
         }
     }
 
-    public void scriptMkFstTable2(){
-        String infileDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/101_Fst/002_fst_basedSNP";
-        String outfileDirS ="/data4/home/aoyue/vmap2/analysis/021_popGen/101_Fst/003_fst_table";
-        String logDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/101_Fst/log/001";
-        List<File> fsList = IOUtils.getVisibleFileListInDir(infileDirS);
-        fsList.stream().forEach(f -> {
-            String infileS = f.getAbsolutePath();
-            String outfileS = null;
-            if (infileS.endsWith(".txt")) {
-                outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "_RH_2Mwindow_1Mstep.txt.gz").getAbsolutePath();
-            } else if (infileS.endsWith(".txt.gz")) {
-                outfileS = new File(outfileDirS, f.getName().split(".txt.gz")[0] + "_RH_2Mwindow_1Mstep.txt.gz").getAbsolutePath();
-            }
-            new Bin().calwindowstep_ResidualHeterozygosity(infileS,2000000,1000000,outfileS);
-            System.out.println(f.getName() + "\tis completed at " + outfileS);
-        });
-    }
 
     /**
      *
@@ -258,7 +238,6 @@ public class Fst {
         //local file： one: group two: script
         String groupHexaandTetraDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/000_group/hexaandTetra";
         String groupHexaandDiDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/000_group/hexaandDi";
-        String shScriptDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/000_scriptSNPbased";
 
         // HPC file: group fileDirS
         String group1FileDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/101_Fst/000_group/hexaandTetra";
@@ -273,8 +252,6 @@ public class Fst {
 
         List<File> fs2 = IOUtils.getVisibleFileListInDir(groupHexaandDiDirS);
         File[] group2FileS = fs2.toArray(new File[fs2.size()]);
-
-        new File(shScriptDirS).mkdirs(); //无论在不在，都可以创建该文件夹
 
         ArrayList<String> perlList = new ArrayList(); //在循环外建立perlList集合， 每个集合包含多个字符串，一个字符串代表一个文件。
 

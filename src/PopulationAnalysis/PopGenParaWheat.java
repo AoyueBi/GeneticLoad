@@ -26,12 +26,12 @@ public class PopGenParaWheat {
 //        this.mkFstCommandbasedSNP();
 //        new CountSites().mergeTxt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/sh", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/fst_basedSNP.sh");
 //        new Script().splitBwaScript("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/fst_basedSNP.sh", "fst_basedSNP", 30, 7);
-        this.fstTable();
+//        this.fstTable();
 //        this.mkFstCommandbasedwinndow();
 //        this.mergeSh("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/002_script_based10kbWindow/001_total", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/002_script_based10kbWindow/002_merge_sh/fst_basedWindow20191126.sh");
 //        new Script().splitBwaScript("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/002_script_based10kbWindow/002_merge_sh/fst_basedWindow20191126.sh", "fst_basedWindow_", 30, 6);
 
-//        this.mkPiCMDbasedWindow();
+        this.mkPiCMDbasedWindow();
 //        this.mergeSh("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/002_Pi/001_script_based100kbWindow/001_total", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/002_Pi/001_script_based100kbWindow/002_merge_sh/pi_based100kbWindow20191126.sh");
 //        new Script().splitBwaScript("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/002_Pi/001_script_based100kbWindow/002_merge_sh/pi_based100kbWindow20191126.sh", "pi_based100kbWindow_", 5, 18);
 //   this.mkTajimaDbasedWindow();
@@ -515,8 +515,6 @@ public class PopGenParaWheat {
                 try {
                     String scriptS = new File(shScriptDirS, group1 + "VS" + group2 + ".sh").getAbsolutePath(); //写入的是命令，每个文件包含n条染色体的命令。
                     BufferedWriter bw = IOUtils.getTextWriter(scriptS);
-                    //vcftools --gzvcf test.vcf.gz --weir-fst-pop ../groups/Teosinte.txt --weir-fst-pop ../groups/Stiff_stalk.txt --weir-fst-pop ../groups/Non_stiff_stalk.txt --out out.txt
-
                     for (int k = 1; k < 8; k++) {
                         String[] chr = {k + "A", k + "B"};
                         for (int l = 0; l < chr.length; l++) {
