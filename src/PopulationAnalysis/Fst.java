@@ -1,6 +1,5 @@
 package PopulationAnalysis;
 
-import AoUtils.SplitScript;
 import gnu.trove.list.array.TDoubleArrayList;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import pgl.utils.IOUtils;
@@ -21,10 +20,66 @@ public class Fst {
 
 //        this.scriptMkFstTable();
 //        this.mkFstCommandbasedwinndow();
-        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/003_scriptbased2Mwindow1Mstep/sh_fst_based2Mwindow_1Mstep_20200205.sh",21,8);
+//        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/003_scriptbased2Mwindow1Mstep/sh_fst_based2Mwindow_1Mstep_20200205.sh",21,8);
+
+        this.extractVCFlog();
     }
 
 
+
+    public void extractVCFlog(){
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/log/001_log";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/log/002_merge/Fst_bySubspecies_20200208.txt";
+        List<File> fsList = IOUtils.getVisibleFileListInDir(infileDirS);
+        try {
+            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            bw.write("CHROM\tPOP1_VS_POP2\tWEIGHTED_FST\tMEAN_FST");
+            bw.newLine();
+            for (int i = 0; i < fsList.size(); i++) {
+                String infileS = fsList.get(i).getAbsolutePath();
+                BufferedReader br = IOUtils.getTextReader(infileS);
+
+                String temp = null;
+                while ((temp = br.readLine()) != null) {
+                    /**
+                     * start to deal with: extract chr pop1 pop2
+                     */
+
+                    if (temp.equals("Parameters as interpreted:")){
+                        for (int j = 0; j < 16; j++) {
+                            temp=br.readLine();
+                            if (j==7){
+                                String outPath = PStringUtils.fastSplit(temp).get(1).replaceFirst("--out ","");
+//                                System.out.println(outPath);
+                                String name = new File(outPath).getName(); //Cultivar_VS_Domesticated_emmer_chr1A
+                                String chr = name.substring(name.indexOf("chr")+3,name.indexOf("chr")+5);
+                                String pop1pop2 = name.substring(0,name.indexOf("_chr"));
+                                bw.write(chr + "\t" + pop1pop2 + "\t");
+                            }
+                            if (j==12){ //Weir and Cockerham mean Fst estimate: 0.14323
+                                System.out.println(temp);
+                                String meanValue = temp.replaceFirst("Weir and Cockerham mean Fst estimate: ","");
+                                temp = br.readLine();
+                                String weightedValue = temp.replaceFirst("Weir and Cockerham weighted Fst estimate: ","");
+                                bw.write(weightedValue + "\t" + meanValue);
+                                bw.newLine();
+                            }
+                            
+                        } //16
+
+                    }
+
+                }
+                br.close();
+            }
+            bw.flush();
+            bw.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
 
     public void mkFstCommandbasedwinndow() {
 
@@ -161,6 +216,8 @@ public class Fst {
             String pop1pop2 = name.substring(0,name.indexOf("_chr"));
             String value = this.getMean(infileS);
 
+
+
             BufferedWriter bw = IOUtils.getTextWriter(outfileS);
             bw.write("CHROM\tPOP1_VS_POP2\tMEAN_FST");
             bw.newLine();
@@ -190,6 +247,7 @@ public class Fst {
         int index2 = index+5;
         out = name.substring(index1,index2);
         System.out.println(out);
+
         return out;
     }
 
