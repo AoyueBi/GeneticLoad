@@ -25,6 +25,7 @@ public class Fst {
     }
 
 
+
     public void mkFstCommandbasedwinndow() {
 
         //local file： one: group two: script

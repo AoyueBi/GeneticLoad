@@ -31,7 +31,7 @@ public class PopGenParaWheat {
 //        this.mergeSh("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/002_script_based10kbWindow/001_total", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/002_script_based10kbWindow/002_merge_sh/fst_basedWindow20191126.sh");
 //        new Script().splitBwaScript("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/001_Fst/002_script_based10kbWindow/002_merge_sh/fst_basedWindow20191126.sh", "fst_basedWindow_", 30, 6);
 
-        this.mkPiCMDbasedWindow();
+//        this.mkPiCMDbasedWindow();
 //        this.mergeSh("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/002_Pi/001_script_based100kbWindow/001_total", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/002_Pi/001_script_based100kbWindow/002_merge_sh/pi_based100kbWindow20191126.sh");
 //        new Script().splitBwaScript("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/002_Pi/001_script_based100kbWindow/002_merge_sh/pi_based100kbWindow20191126.sh", "pi_based100kbWindow_", 5, 18);
 //   this.mkTajimaDbasedWindow();
@@ -49,7 +49,7 @@ public class PopGenParaWheat {
         /**
          * 按照倍性，将AABBDD AABB DD的文件合并在一起
          */
-//        this.mergePopfile();
+        this.mergePopfile();
 
     }
     
