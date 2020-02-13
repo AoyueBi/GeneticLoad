@@ -1,5 +1,6 @@
 package PopulationAnalysis;
 
+import AoUtils.SplitScript;
 import gnu.trove.list.array.TDoubleArrayList;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import pgl.utils.IOUtils;
@@ -21,8 +22,9 @@ public class Fst {
 //        this.scriptMkFstTable();
 //        this.mkFstCommandbasedwinndow();
 //        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/003_scriptbased2Mwindow1Mstep/sh_fst_based2Mwindow_1Mstep_20200205.sh",21,8);
+        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/005_script_based100kwindow_50kstep/fst_based100kwindow_50kstep_20200213.sh",21,8);
 
-        this.extractVCFlog();
+//        this.extractVCFlog();
     }
 
 
@@ -83,7 +85,7 @@ public class Fst {
 
     public void mkFstCommandbasedwinndow() {
 
-        //local file： one: group two: script
+        //local file： one: group
         String groupHexaandTetraDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/000_group/hexaandTetra";
         String groupHexaandDiDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/000_group/hexaandDi";
 
@@ -93,7 +95,8 @@ public class Fst {
 
         // HPC file: output fileDirS
         String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/013_VMapIIbyRef";
-        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/101_Fst/004_fst_based2Mwindow_1Mstep/001";
+//        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/101_Fst/004_fst_based2Mwindow_1Mstep/001";
+        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/101_Fst/006_fst_based100kwindow_50kstep/001";
 
         List<File> fs = IOUtils.getVisibleFileListInDir(groupHexaandTetraDirS);
         File[] group1FileS = fs.toArray(new File[fs.size()]);
@@ -115,7 +118,9 @@ public class Fst {
                     String group1S = new File(group1FileDirS, group1FileS[i].getName()).getAbsolutePath();
                     String group2S = new File(group1FileDirS, group1FileS[j].getName()).getAbsolutePath();
                     System.out.println("vcftools --vcf " + infileS + " --weir-fst-pop " + group1S +
-                            " --weir-fst-pop " + group2S + " --fst-window-size 2000000 --fst-window-step 1000000 " +  " --out " + outfileS);
+//                            " --weir-fst-pop " + group2S + " --fst-window-size 2000000 --fst-window-step 1000000 " +  " --out " + outfileS);
+                    " --weir-fst-pop " + group2S + " --fst-window-size 100000 --fst-window-step 50000 " +  " --out " + outfileS);
+
                 }
             }
         }
@@ -132,7 +137,9 @@ public class Fst {
                     String group1S = new File(group2FileDirS, group2FileS[i].getName()).getAbsolutePath();
                     String group2S = new File(group2FileDirS, group2FileS[j].getName()).getAbsolutePath();
                     System.out.println("vcftools --vcf " + infileS + " --weir-fst-pop " + group1S +
-                            " --weir-fst-pop " + group2S + " --fst-window-size 2000000 --fst-window-step 1000000 " +  " --out " + outfileS);
+//                            " --weir-fst-pop " + group2S + " --fst-window-size 2000000 --fst-window-step 1000000 " +  " --out " + outfileS);
+                    " --weir-fst-pop " + group2S + " --fst-window-size 100000 --fst-window-step 50000 " +  " --out " + outfileS);
+
                 }
             }
         }
