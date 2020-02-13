@@ -1,6 +1,7 @@
 package PopulationAnalysis;
 
 import AoUtils.AoFile;
+import AoUtils.SplitScript;
 import gnu.trove.list.array.TDoubleArrayList;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import pgl.utils.IOUtils;
@@ -17,8 +18,9 @@ public class Pi {
     public Pi(){
 //        this.mkPiCommandbasedwinndow();
 //        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/102_Pi/001_script_based2Mwindow_1Mstep/pi_based2Mwindow_1Mstep_20200207.sh",23,4); //91cmd
+        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/102_Pi/004_script_based100kbwindow_50kbstep/pi_based100kbwindow_50kbstep_20200213.sh",23,4); //91cmd
 
-        this.extractVCFlog();
+//        this.extractVCFlog();
     }
 
 
@@ -92,13 +94,17 @@ public class Pi {
     }
 
     public void mkPiCommandbasedwinndow(){
-        String windowsize = "2000000";
-        String windowstep = "1000000";
+//        String windowsize = "2000000";
+//        String windowstep = "1000000";
+
+        String windowsize = "100000";
+        String windowstep = "50000";
 
         //HPC path
         String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/013_VMapIIbyRef";
-        String outfileDirS ="/data4/home/aoyue/vmap2/analysis/021_popGen/102_Pi/002_pi_based2Mwindow_1Mstep";
+//        String outfileDirS ="/data4/home/aoyue/vmap2/analysis/021_popGen/102_Pi/002_pi_based2Mwindow_1Mstep";
         String groupDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/102_Pi/000_group";
+        String outfileDirS ="/data4/home/aoyue/vmap2/analysis/021_popGen/102_Pi/003_pi_based100kbwindow_50kbstep";
 
         //local path
         String grouplocalDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/102_Pi/000_group";
@@ -113,7 +119,7 @@ public class Pi {
                     String outfileS = new File(outfileDirS,groupname + "_chr" + chrArr[j] + "_based" + windowsize+ "Window_" + windowstep + "step").getAbsolutePath();
                     String groupS = new File(groupDirS,groupname+".txt").getAbsolutePath();
                     System.out.println("vcftools --vcf " + infileS + " --keep " + groupS +
-                            " --window-pi " + windowsize +  " --window-pi-step 1000000  --out " + outfileS );
+                            " --window-pi " + windowsize +  " --window-pi-step " + windowstep + "  --out " + outfileS );
                 }
 
             }
@@ -124,7 +130,7 @@ public class Pi {
                     String outfileS = new File(outfileDirS,groupname + "_chr" + chrArr[j] + "_based" + windowsize+ "Window_" + windowstep + "step").getAbsolutePath();
                     String groupS = new File(groupDirS,groupname+".txt").getAbsolutePath();
                     System.out.println("vcftools --vcf " + infileS + " --keep " + groupS +
-                            " --window-pi " + windowsize +  " --window-pi-step 1000000  --out " + outfileS );
+                            " --window-pi " + windowsize +  " --window-pi-step " + windowstep + "  --out " + outfileS );
                 }
 
             }
@@ -135,7 +141,7 @@ public class Pi {
                     String outfileS = new File(outfileDirS,groupname + "_chr" + chrArr[j] + "_based" + windowsize+ "Window_" + windowstep + "step").getAbsolutePath();
                     String groupS = new File(groupDirS,groupname+".txt").getAbsolutePath();
                     System.out.println("vcftools --vcf " + infileS + " --keep " + groupS +
-                            " --window-pi " + windowsize +  " --window-pi-step 1000000  --out " + outfileS );
+                            " --window-pi " + windowsize +  " --window-pi-step " + windowstep +  "  --out " + outfileS );
                 }
             }
 
