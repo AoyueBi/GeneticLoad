@@ -9,17 +9,21 @@ import java.util.List;
 public class TajimaD {
     public TajimaD(){
 //        this.mkTajimaDCommandbasedwinndow();
-        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/103_TajimaD/001_script_based2Mwindow_1Mstep/TajimaD_based2Mwindow_1Mstep_20200208.sh",46,2); //91
+//        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/103_TajimaD/001_script_based2Mwindow_1Mstep/TajimaD_based2Mwindow_1Mstep_20200208.sh",46,2); //91
+        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/103_TajimaD/003_script_based50k/TajimaD_based50kbwindow_20200213.sh",23,4); //91
 
     }
 
     public void mkTajimaDCommandbasedwinndow(){
-        String windowsize = "1000000";
+//        String windowsize = "1000000";
+        String windowsize = "50000";
+
 
         //HPC path
         String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/013_VMapIIbyRef";
-        String outfileDirS ="/data4/home/aoyue/vmap2/analysis/021_popGen/103_TajimaD/002_TajimaD_based2Mwindow_1Mstep";
+//        String outfileDirS ="/data4/home/aoyue/vmap2/analysis/021_popGen/103_TajimaD/002_TajimaD_based2Mwindow_1Mstep";
         String groupDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/103_TajimaD/000_group";
+        String outfileDirS ="/data4/home/aoyue/vmap2/analysis/021_popGen/103_TajimaD/004_TajimaD_based50kbwindow";
 
         //local path
         String grouplocalDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/103_TajimaD/000_group";

@@ -7,7 +7,7 @@ package Entrance;
 
 import GermplasmInfo.GermplasmInfo;
 import Plot.PCA;
-import PopulationAnalysis.Pi;
+import PopulationAnalysis.TajimaD;
 import WheatGeneticLoad.DeleteriousBiologyAoyue;
 
 import java.text.SimpleDateFormat;
@@ -78,8 +78,8 @@ public class GeneticLoadEntrance {
 //        new BadMutations();
 //        new Heterozygosity();
 //        new Fst();
-        new Pi();
-//        new TajimaD();
+//        new Pi();
+        new TajimaD();
 
 
     }
