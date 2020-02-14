@@ -25,7 +25,7 @@ public class Fst {
 //        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/005_script_based100kwindow_50kstep/fst_based100kwindow_50kstep_20200213.sh",21,8);
 
 //        this.extractVCFlog();
-        this.mergeTxt();
+//        this.mergeTxt();
     }
 
 
