@@ -1027,6 +1027,12 @@ public class CountSites {
             } else if (infileS.endsWith(".txt.gz")) {
                 br = IOUtils.getTextGzipReader(infileS);
             }
+            else if (infileS.endsWith(".fst")) {
+                br = IOUtils.getTextReader(infileS);
+            }
+            else if (infileS.endsWith(".pi")) {
+                br = IOUtils.getTextReader(infileS);
+            }
 
             ///读表头
             BufferedWriter bw = null;
@@ -1046,6 +1052,10 @@ public class CountSites {
                     br = IOUtils.getTextReader(infileS);
                 } else if (infileS.endsWith(".txt.gz")) {
                     br = IOUtils.getTextGzipReader(infileS);
+                }else if (infileS.endsWith(".fst")) {
+                    br = IOUtils.getTextReader(infileS);
+                }else if (infileS.endsWith(".pi")) {
+                    br = IOUtils.getTextReader(infileS);
                 }
                 String temp = br.readLine(); //read header
 //                String temp = null; //not read header

@@ -1,6 +1,6 @@
 package PopulationAnalysis;
 
-import AoUtils.SplitScript;
+import AoUtils.CountSites;
 import gnu.trove.list.array.TDoubleArrayList;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import pgl.utils.IOUtils;
@@ -22,11 +22,24 @@ public class Fst {
 //        this.scriptMkFstTable();
 //        this.mkFstCommandbasedwinndow();
 //        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/003_scriptbased2Mwindow1Mstep/sh_fst_based2Mwindow_1Mstep_20200205.sh",21,8);
-        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/005_script_based100kwindow_50kstep/fst_based100kwindow_50kstep_20200213.sh",21,8);
+//        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/005_script_based100kwindow_50kstep/fst_based100kwindow_50kstep_20200213.sh",21,8);
 
 //        this.extractVCFlog();
+        this.mergeTxt();
     }
 
+
+//    public void mergeTxt(){
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/004_fst_based2Mwindow_1Mstep/test/001";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/004_fst_based2Mwindow_1Mstep/test/002_merge/Free_threshing_tetraploid_VS_Landrace_windowed.weir.fst.txt";
+//        new CountSites().mergeTxt(infileDirS,outfileS);
+//    }
+
+    public void mergeTxt(){
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/102_Pi/test/003_merge";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/102_Pi/test/004/pi.txt";
+        new CountSites().mergeTxt(infileDirS,outfileS);
+    }
 
 
     public void extractVCFlog(){
