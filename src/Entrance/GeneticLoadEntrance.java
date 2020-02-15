@@ -5,9 +5,9 @@
  */
 package Entrance;
 
+import AoUtils.CalVCF;
 import GermplasmInfo.GermplasmInfo;
 import Plot.PCA;
-import PopulationAnalysis.Fst;
 import WheatGeneticLoad.DeleteriousBiologyAoyue;
 
 import java.text.SimpleDateFormat;
@@ -77,7 +77,7 @@ public class GeneticLoadEntrance {
 //        new CalVCF();
 //        new BadMutations();
 //        new Heterozygosity();
-        new Fst();
+//        new Fst();
 //        new Pi();
 //        new TajimaD();
 
@@ -139,6 +139,7 @@ public class GeneticLoadEntrance {
 //        new Heterozygosity().mkGenotype(args[0], args[1]);
 //        new Bin().calwindowstep_ResidualHeterozygosity(args[0], Integer.parseInt(args[1]),Integer.parseInt(args[2]), args[3]);
 //        new Fst().mkFstTable(args[0], args[1]);
+        new CalVCF().reheader(args[0], args[1], args[2]);
 
         System.out.println(new SimpleDateFormat().format(new Date()) + "\tend.");
         /**
