@@ -1,6 +1,7 @@
 package PopulationAnalysis;
 
 import AoUtils.CountSites;
+import AoUtils.SplitScript;
 import gnu.trove.list.array.TDoubleArrayList;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import pgl.utils.IOUtils;
@@ -18,14 +19,83 @@ public class Fst {
 //        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/001_scriptSNPbased/fst_basedSNP_20200205.sh",7,23);
 
 //        this.mkFstTable("/Users/Aoyue/Documents/po1_VS_pop2_chr1A.txt","/Users/Aoyue/Documents/out.txt");
-
 //        this.scriptMkFstTable();
+
 //        this.mkFstCommandbasedwinndow();
 //        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/003_scriptbased2Mwindow1Mstep/sh_fst_based2Mwindow_1Mstep_20200205.sh",21,8);
 //        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/005_script_based100kwindow_50kstep/fst_based100kwindow_50kstep_20200213.sh",21,8);
 
 //        this.extractVCFlog();
 //        this.mergeTxt();
+
+//        this.mkFstCommandbasedwinndow_newGroup();
+        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/006_scriptbased2Mwindow1Mstep/fst_based2Mwindow_1Mstep_20200216.sh",40,7); //273
+
+
+    }
+
+    /**
+     * 将landrace细化分组，为欧洲的landrace和东亚的landrace，比较两两之间的关系
+     */
+    public void mkFstCommandbasedwinndow_newGroup() {
+
+        //local file： one: group
+        String groupHexaandTetraDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/000_group2/hexaandTetra";
+        String groupHexaandDiDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/000_group2/hexaandDi";
+
+        // HPC file: group fileDirS
+        String group1FileDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/101_Fst/000_group2/hexaandTetra";
+        String group2FileDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/101_Fst/000_group2/hexaandDi";
+
+        // HPC file: output fileDirS
+        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/013_VMapIIbyRef";
+        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/101_Fst/008_fst_based2Mwindow_1Mstep";
+
+        List<File> fs = IOUtils.getVisibleFileListInDir(groupHexaandTetraDirS);
+        File[] group1FileS = fs.toArray(new File[fs.size()]);
+
+        List<File> fs2 = IOUtils.getVisibleFileListInDir(groupHexaandDiDirS);
+        File[] group2FileS = fs2.toArray(new File[fs2.size()]);
+
+        ArrayList<String> perlList = new ArrayList(); //在循环外建立perlList集合， 每个集合包含多个字符串，一个字符串代表一个文件。
+
+        for (int i = 0; i < group1FileS.length - 1; i++) {
+            String pop1 = group1FileS[i].getName().replace(".txt", ""); //第一组的名字
+            for (int j = i + 1; j < group1FileS.length; j++) {
+                String pop2 = group1FileS[j].getName().replace(".txt", ""); //第二组的名字
+                String[] chrArr = {"1A", "2A", "3A","4A", "5A", "6A", "7A", "1B", "2B", "3B", "4B", "5B", "6B", "7B"};
+                for (int k = 0; k < chrArr.length; k++) {
+                    String chr = chrArr[k];
+                    String infileS = new File(infileDirS, "chr" + chr + "_vmap2.1.vcf").getAbsolutePath();
+                    String outfileS = new File(outfileDirS, pop1 + "_VS_" + pop2 + "_chr" + chr).getAbsolutePath();
+                    String group1S = new File(group1FileDirS, group1FileS[i].getName()).getAbsolutePath();
+                    String group2S = new File(group1FileDirS, group1FileS[j].getName()).getAbsolutePath();
+                    System.out.println("vcftools --vcf " + infileS + " --weir-fst-pop " + group1S +
+                            " --weir-fst-pop " + group2S + " --fst-window-size 2000000 --fst-window-step 1000000 " +  " --out " + outfileS);
+//                            " --weir-fst-pop " + group2S + " --fst-window-size 100000 --fst-window-step 50000 " +  " --out " + outfileS);
+
+                }
+            }
+        }
+
+        for (int i = 0; i < group2FileS.length - 1; i++) {
+            String pop1 = group2FileS[i].getName().replace(".txt", "");
+            for (int j = i + 1; j < group2FileS.length; j++) {
+                String pop2 = group2FileS[j].getName().replace(".txt", "");
+                String[] chrArr = {"1D", "2D", "3D", "4D", "5D", "6D", "7D"};
+                for (int k = 0; k < chrArr.length; k++) {
+                    String chr = chrArr[k];
+                    String infileS = new File(infileDirS, "chr" + chr + "_vmap2.1.vcf").getAbsolutePath();
+                    String outfileS = new File(outfileDirS, pop1 + "_VS_" + pop2 + "_chr" + chr).getAbsolutePath();
+                    String group1S = new File(group2FileDirS, group2FileS[i].getName()).getAbsolutePath();
+                    String group2S = new File(group2FileDirS, group2FileS[j].getName()).getAbsolutePath();
+                    System.out.println("vcftools --vcf " + infileS + " --weir-fst-pop " + group1S +
+                            " --weir-fst-pop " + group2S + " --fst-window-size 2000000 --fst-window-step 1000000 " +  " --out " + outfileS);
+//                            " --weir-fst-pop " + group2S + " --fst-window-size 100000 --fst-window-step 50000 " +  " --out " + outfileS);
+
+                }
+            }
+        }
     }
 
 
@@ -235,8 +305,6 @@ public class Fst {
             String chr = this.getChr(infileS);
             String pop1pop2 = name.substring(0,name.indexOf("_chr"));
             String value = this.getMean(infileS);
-
-
 
             BufferedWriter bw = IOUtils.getTextWriter(outfileS);
             bw.write("CHROM\tPOP1_VS_POP2\tMEAN_FST");
