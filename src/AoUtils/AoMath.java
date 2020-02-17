@@ -94,6 +94,25 @@ public class AoMath {
         return out;
     }
 
+    public HashMap<String,Integer> setGrouptoNumber (String infileS, int columnIndex){
+        HashMap<String,Integer> hm = new HashMap<>();
+        RowTable<String> t = new RowTable<>(infileS);
+        List<String> l = t.getColumn(columnIndex);
+        System.out.println(l.size() + " list个数");
+        Set<String> s = new HashSet<>(l);
+        System.out.println(s.size() + " set个数");
+        System.out.println(s);
+        for(String a : s){
+            System.out.println(a + "\t" + Collections.frequency(l, a));
+        }
+        List<String> group  = new ArrayList<>(s);
+        for (int i = 0; i < group.size();i++) {
+            String name = group.get(i);
+            hm.put(name,i+1);
+        }
+
+        return hm;
+    }
 
     public void countCaseInGroup(String infileS, int columnIndex){
         RowTable<String> t = new RowTable<>(infileS);

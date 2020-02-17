@@ -1,8 +1,10 @@
 package PopulationAnalysis;
 
+import AoUtils.AoMath;
 import AoUtils.CountSites;
 import gnu.trove.list.array.TDoubleArrayList;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import pgl.format.table.RowTable;
 import pgl.utils.IOUtils;
 import pgl.utils.PStringUtils;
 
@@ -10,6 +12,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class Fst {
@@ -117,6 +120,43 @@ public class Fst {
      *
      */
     public void addSubandGroup(){
+        String infileS="";
+        String outfileS="";
+        HashMap<String,Integer> hm = new AoMath().setGrouptoNumber(infileS,1);
+        RowTable<String> t = new RowTable<>(infileS);
+
+        try {
+            BufferedReader br = IOUtils.getTextReader(infileS);
+            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                String chr = l.get(0);
+                String sub = chr.substring(1);
+                String name = l.get(1);
+                int group = hm.get(name);
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < l.size() ; i++) {
+                    sb.append(l.get(i)).append("\t");
+                }
+                sb.deleteCharAt(sb.length()-1);
+
+
+
+
+
+
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
 
     }
 
