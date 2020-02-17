@@ -4,7 +4,6 @@ import AoUtils.AoMath;
 import AoUtils.CountSites;
 import gnu.trove.list.array.TDoubleArrayList;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
-import pgl.format.table.RowTable;
 import pgl.utils.IOUtils;
 import pgl.utils.PStringUtils;
 
@@ -33,9 +32,8 @@ public class Fst {
 //        this.mkFstCommandbasedwinndow_newGroup();
 //        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/006_scriptbased2Mwindow1Mstep/fst_based2Mwindow_1Mstep_20200216.sh",40,7); //273
 
-        this.extractVCFlog();
-//        this.mergeTxt();
-
+//        this.extractVCFlog();
+        this.addSubandGroup();
     }
 
     /**
@@ -120,15 +118,17 @@ public class Fst {
      *
      */
     public void addSubandGroup(){
-        String infileS="";
-        String outfileS="";
+        String infileS="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/log/004_merge/001_Fst_bySubspecies_LandraceEUEA_20200217_ori.txt";
+        String outfileS="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/log/004_merge/002_Fst_bySubspecies_LandraceEUEA_addSub.txt";
         HashMap<String,Integer> hm = new AoMath().setGrouptoNumber(infileS,1);
-        RowTable<String> t = new RowTable<>(infileS);
 
         try {
             BufferedReader br = IOUtils.getTextReader(infileS);
             BufferedWriter bw = IOUtils.getTextWriter(outfileS);
-            String temp = null;
+
+            String temp = br.readLine();
+            bw.write(temp + "\tGroup\tSub");
+            bw.newLine();
             List<String> l = new ArrayList<>();
             int cnt = 0;
             while ((temp = br.readLine()) != null) {
@@ -137,17 +137,11 @@ public class Fst {
                 String sub = chr.substring(1);
                 String name = l.get(1);
                 int group = hm.get(name);
-                StringBuilder sb = new StringBuilder();
                 for (int i = 0; i < l.size() ; i++) {
-                    sb.append(l.get(i)).append("\t");
+                    bw.write(l.get(i) + "\t");
                 }
-                sb.deleteCharAt(sb.length()-1);
-
-
-
-
-
-
+                bw.write(group + "\t" + sub);
+                bw.newLine();
             }
             br.close();
             bw.flush();

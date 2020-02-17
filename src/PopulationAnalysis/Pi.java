@@ -20,7 +20,7 @@ public class Pi {
 //        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/102_Pi/001_script_based2Mwindow_1Mstep/pi_based2Mwindow_1Mstep_20200207.sh",23,4); //91cmd
         new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/102_Pi/004_script_based100kbwindow_50kbstep/pi_based100kbwindow_50kbstep_20200213.sh",23,4); //91cmd
 
-//        this.extractVCFlog();
+        this.getMeanPIvalue();
     }
 
 
@@ -61,7 +61,10 @@ public class Pi {
         return out;
     }
 
-    public void extractVCFlog(){
+    /**
+     *
+     */
+    public void getMeanPIvalue(){
         String taxaList = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/taxaList.txt";
         HashMap<String,String> hm = new AoFile().getHashMap(taxaList,11,8);
 
