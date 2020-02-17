@@ -1,7 +1,6 @@
 package PopulationAnalysis;
 
 import AoUtils.CountSites;
-import AoUtils.SplitScript;
 import gnu.trove.list.array.TDoubleArrayList;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import pgl.utils.IOUtils;
@@ -29,8 +28,10 @@ public class Fst {
 //        this.mergeTxt();
 
 //        this.mkFstCommandbasedwinndow_newGroup();
-        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/006_scriptbased2Mwindow1Mstep/fst_based2Mwindow_1Mstep_20200216.sh",40,7); //273
+//        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/006_scriptbased2Mwindow1Mstep/fst_based2Mwindow_1Mstep_20200216.sh",40,7); //273
 
+        this.extractVCFlog();
+//        this.mergeTxt();
 
     }
 
@@ -111,10 +112,20 @@ public class Fst {
         new CountSites().mergeTxt(infileDirS,outfileS);
     }
 
+    /**
+     * 为两两群体之间的FST添加①亚基因组的信息和②分组的信息
+     *
+     */
+    public void addSubandGroup(){
+
+    }
 
     public void extractVCFlog(){
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/log/001_log";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/log/002_merge/Fst_bySubspecies_20200208.txt";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/log/001_log";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/log/002_merge/Fst_bySubspecies_20200208.txt";
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/log/003";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/log/004_merge/001_Fst_bySubspecies_LandraceEUEA_20200217_ori.txt";
         List<File> fsList = IOUtils.getVisibleFileListInDir(infileDirS);
         try {
             BufferedWriter bw = IOUtils.getTextWriter(outfileS);
