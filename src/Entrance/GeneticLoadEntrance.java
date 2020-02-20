@@ -5,9 +5,9 @@
  */
 package Entrance;
 
+import Annotation.AnnotationCrossover;
 import GermplasmInfo.GermplasmInfo;
 import Plot.PCA;
-import PopulationAnalysis.Pi;
 import WheatGeneticLoad.DeleteriousBiologyAoyue;
 
 import java.text.SimpleDateFormat;
@@ -78,8 +78,9 @@ public class GeneticLoadEntrance {
 //        new BadMutations();
 //        new Heterozygosity();
 //        new Fst();
-        new Pi();
+//        new Pi();
 //        new TajimaD();
+        new AnnotationCrossover();
 
 
     }

@@ -22,6 +22,45 @@ public class Pi {
 //        this.getMeanPIvalue();
 //        this.mkPiCommandbasedwinndow_LandrcaeSub();
 //        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/102_Pi/007_script_based2Mwindow_1Mstep_landraceWAEUEA/pi_based2Mwindow_1Mstep.sh",34,5); //168
+        this.getMeanPIvaluefromLandraceWAEAEU();
+    }
+
+    /**
+     * 获取 Landrace细分类后的PI值
+     *
+     */
+    public void getMeanPIvaluefromLandraceWAEAEU(){
+        String taxaList = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/groupInfo.txt";
+        HashMap<String,String> hm = new AoFile().getHashMap(taxaList,0,1);
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/102_Pi/008_pi_based2Mwindow_1Mstep";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/102_Pi/009_meanPI/Pi_bySubspecies_20200208.txt";
+
+
+        List<File> fsList = IOUtils.getVisibleFileListInDir(infileDirS);
+        try {
+            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            bw.write("CHROM\tSub\tGroup\tPloidy\tMEAN_PI");
+            bw.newLine();
+            for (int i = 0; i < fsList.size(); i++) {
+                String infileS = fsList.get(i).getAbsolutePath();
+                String name = new File(infileS).getName(); //Cultivar_chr1D_based2000000Window_1000000step.windowed.pi
+                String chr = name.substring(name.indexOf("chr")+3,name.indexOf("chr")+5);
+                String sub = chr.substring(1);
+                String group = name.substring(0,name.indexOf("_chr"));
+                String ploidy = hm.get(group);
+                String value = this.getMean(infileS);
+                bw.write(chr + "\t" + sub + "\t" + group + "\t" + ploidy + "\t" + value);
+                bw.newLine();
+
+            }
+            bw.flush();
+            bw.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
 
@@ -129,8 +168,13 @@ public class Pi {
         String taxaList = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/taxaList.txt";
         HashMap<String,String> hm = new AoFile().getHashMap(taxaList,11,8);
 
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/102_Pi/002_pi_based2Mwindow_1Mstep";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/102_Pi/003_meadPI/Pi_bySubspecies_20200208.txt";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/102_Pi/002_pi_based2Mwindow_1Mstep";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/102_Pi/003_meadPI/Pi_bySubspecies_20200208.txt";
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/102_Pi/008_pi_based2Mwindow_1Mstep";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/102_Pi/009_meanPI/Pi_bySubspecies_20200208.txt";
+
+
         List<File> fsList = IOUtils.getVisibleFileListInDir(infileDirS);
         try {
             BufferedWriter bw = IOUtils.getTextWriter(outfileS);
