@@ -143,6 +143,7 @@ public class GeneticLoadEntrance {
 //        new Fst().mkFstTable(args[0], args[1]);
 //        new CalVCF().reheader(args[0], args[1], args[2]);
 //        new CalVCF().extractIDHapPosRefAlt(args[0], args[1]);
+//        new CalVCF().extractIDHapPosRefAlt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/022_subsetVCF/001_singleChr0.001", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/002_snp");
 
         System.out.println(new SimpleDateFormat().format(new Date()) + "\tend.");
         /**
