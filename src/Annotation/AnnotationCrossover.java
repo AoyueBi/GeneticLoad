@@ -16,7 +16,8 @@ import java.util.List;
 
 public class AnnotationCrossover {
     public AnnotationCrossover(){
-        this.convertCoordinate();
+//        this.convertCoordinate();
+        this.addRecombination();
 
     }
 
@@ -25,8 +26,8 @@ public class AnnotationCrossover {
      *
      */
     public void addRecombination () {
-        String dirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/test/001";
-        String outDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/test/002_addRecombination";
+        String dirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/test/001/001_exonSNPAnnotation";
+        String outDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/test/001/002_addRecombination";
         String recombinationFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/007_recombination/001_recombination/iwgsc_refseqv1.0_recombination_rate_chrID.txt";
         ColumnTable<String> t = new ColumnTable<>(recombinationFileS);
         int chrNum = Integer.parseInt(t.getCell(t.getRowNumber()-1, 0)); //获取最后一行第0列的数字，即染色体最大值，这里是42号染色体
@@ -45,7 +46,7 @@ public class AnnotationCrossover {
             endLists[index].add(Integer.parseInt(t.getCell(i, 2)));
             crossLists[index].add(Float.parseFloat(t.getCell(i, 3)));
         }
-        List<File> fList = IOUtils.getFileListInDirEndsWith(dirS, ".gz");
+        List<File> fList = IOUtils.getFileListInDirEndsWith(dirS, ".txt");
         fList.parallelStream().forEach(f -> {
             //String outfileS = new File (outDirS, f.getName()).getAbsolutePath();
             Dyad<String, List<String>> two = VMapDBUtils.getDBInfo(f.getAbsolutePath()); //返回Dyad类型
@@ -69,7 +70,7 @@ public class AnnotationCrossover {
                     currentPos = Integer.parseInt(l.get(2)); //索引2 含有位置
                     posIndex = startLists[chrIndex].binarySearch(currentPos); //在 刚刚的起始集合里搜索 index
                     if (posIndex < 0) posIndex = -posIndex-2;
-                    if (posIndex < 0) {  //如果index小于0，说明在最开始区间的前面（第一个window的最前面 ），即没有在起始位点集合中
+                    if (posIndex < 0) {  //如果index小于0，说明在最开始区间的前面（第一个window的最前面），即没有在起始位点集合中
                         sb.append(recordList.get(i)).append("\t").append("NA");
                         bw.write(sb.toString());
                         bw.newLine();
