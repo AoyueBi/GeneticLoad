@@ -12,14 +12,128 @@ import pgl.utils.wheat.RefV1Utils;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 
 public class XPCLR {
     public XPCLR(){
 //        this.convertCoordinate();
 //        this.test();
-        this.addgeneticPos();
+//        this.addgeneticPos();
+//        this.calDensity("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/002_snp/chr001.subgenome.maf0.01.SNP_bi.subset.pos.Base.txt.gz",1,3,2000000,2000000,"/Users/Aoyue/Documents/test.txt");
 
+    }
+
+
+    /**
+     * 根据 chr pos 两列,返回每个window内的变异个数
+     * @param infileS
+     * @param chrIndex 染色体所在的那一列
+     * @param posIndex 位置所在的那一列
+     * @param window 滑窗大小
+     * @param step 步移大小
+     * @param outfileS
+     */
+    public void calDensity(String infileS,int chrIndex,int posIndex, int window, int step, String outfileS){
+        // 1.将pos转为为list,找到最大值，根据最大值确定bin的数目
+        // 2.建立count数目和list数组，对pos进行循环，找到每个bin的左边的数目和value的集合，求这个集合的平均值，最大值，方差等
+        // 3.输出，每个bin的值
+        //************************
+
+        //先求最大值,即染色体长度
+        RowTable<String> t = new RowTable(infileS);
+        int chrlength = Integer.valueOf(t.getCell(t.getRowNumber() - 1, posIndex)); //t.getRowNumber()是文件的行数，不包括header。 这里getCell得到的是索引         //染色体的长度是最后一行pos的位置
+        System.out.println(new File(infileS).getName().substring(0,5) + " length is " + chrlength);
+        String chr = t.getCell(0,chrIndex);
+
+        int[][] bound = this.initializeWindowStep(chrlength, window,step);
+        int[] count = new int[bound.length]; //查看每个bin里面的变异个数
+        int[] boundright = new int[bound.length]; //只看左边的bound
+        int[] boundleft = new int[bound.length]; //右边的bound
+        for (int i = 0; i < bound.length; i++) { //每个bound的左边
+            boundleft[i] = bound[i][0];
+            boundright[i] = bound[i][1];
+        }
+
+        for (int i = 0; i < t.getRowNumber(); i++) {
+            int pos = Integer.parseInt(t.getCell(i,posIndex));
+
+            int indexleft = Arrays.binarySearch(boundleft, pos);
+            if (indexleft < 0) {
+                indexleft = -indexleft - 2 +1;
+            }
+            else if (indexleft > -1) {
+                indexleft = indexleft +1;
+            }
+
+
+            int indexright = Arrays.binarySearch(boundright, pos);
+            if (indexright < 0){
+                indexright = -indexright-1;
+            }
+            else if (indexright > -1){
+                indexright = indexright +1;
+            }
+
+
+            for (int j = indexright; j < indexleft ; j++) {
+                count[j]++; //每个Bin 里面的变异个数
+            }
+        }
+
+        try {
+            BufferedWriter bw = null;
+            if (outfileS.endsWith(".txt")){
+                bw = IOUtils.getTextWriter(outfileS);
+            }
+            if (outfileS.endsWith(".txt.gz")){
+                bw = IOUtils.getTextGzipWriter(outfileS);
+            }
+            bw.write("CHROM\tBIN_START\tBIN_END\tN_VARIANTS");
+            bw.newLine();
+            for (int i = 0; i < bound.length; i++) {
+                StringBuilder sb = new StringBuilder();
+                sb.append(chr).append("\t").append(bound[i][0]).append("\t").append(bound[i][1]-1).append("\t").append(count[i]);
+                bw.write(sb.toString());
+                bw.newLine();
+            }
+            bw.flush();
+            bw.close();
+            System.out.println( "Bin calculation is completed at "+ outfileS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+
+    /**
+     * return the bound needed
+     *
+     * @param chrLength
+     * @param windowSize
+     * @param windowStep
+     * @return
+     */
+    private int[][] initializeWindowStep (int chrLength, int windowSize, int windowStep) {
+
+        TIntArrayList startList = new TIntArrayList();
+        TIntArrayList endList = new TIntArrayList();
+        int start = 1;
+        int end = start+windowSize;
+        while (start < chrLength) {
+            startList.add(start);
+            endList.add(end);
+            start+=windowStep;
+            end = start+windowSize;
+        }
+
+        int[][] bound = new int[startList.size()][2];
+        for (int i = 0; i < startList.size(); i++) {
+            bound[i][0] = startList.get(i);
+            bound[i][1] = endList.get(i);
+        }
+        return bound;
     }
 
     /**
@@ -38,26 +152,27 @@ public class XPCLR {
 
     /**
      *
-     *
+     * 根据science 发表的重组文件，向 snp info 中添加 genetic position
      */
     public void addgeneticPos () {
-        String dirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/002_snp";
-        String recombinationFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/007_recombination/001_recombination/iwgsc_refseqv1.0_mapping_data_chrID.txt";
+//        String dirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/002_snp";
+//        String recombinationFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/007_recombination/001_recombination/iwgsc_refseqv1.0_mapping_data_chrID.txt";
+
+        String dirS = "/data4/home/aoyue/vmap2/analysis/022_XPCLR/001_prepare/001_chrposRefAlt";
+        String recombinationFileS = "/data4/home/aoyue/vmap2/analysis/022_XPCLR/001_prepare/iwgsc_refseqv1.0_mapping_data_chrID.txt";
+
         ColumnTable<String> t = new ColumnTable<>(recombinationFileS);
         int chrNum = Integer.parseInt(t.getCell(t.getRowNumber()-1, 1)); //获取最后一行第0列的数字，即染色体最大值，这里是42号染色体
         TIntArrayList[] startLists = new TIntArrayList[chrNum]; //42条染色体中，每条染色体的窗口起始位置的集合
-//        TIntArrayList[] endLists = new TIntArrayList[chrNum]; //42条染色体中，每条染色体的窗口结束位置的集合
         TFloatArrayList[] geneticPosLists = new TFloatArrayList[chrNum]; //42条染色体中，每条染色体的每个窗口对应cross数值集合
         for (int i = 0; i < startLists.length; i++) { //对每个数组内的集合进行初始化
             startLists[i] = new TIntArrayList();
-//            endLists[i] = new TIntArrayList();
             geneticPosLists[i] = new TFloatArrayList();
         }
         int index = -1;
         for (int i = 0; i < t.getRowNumber(); i++) {
             index = Integer.parseInt(t.getCell(i, 1))-1; //染色体号的索引，即1号染色体索引为0
             startLists[index].add(Integer.parseInt(t.getCell(i, 2))); //将每个Bin的起始位置加入集合中
-//            endLists[index].add(Integer.parseInt(t.getCell(i, 2)));
             geneticPosLists[index].add(Float.parseFloat(t.getCell(i, 3)));
         }
         List<File> fList = IOUtils.getFileListInDirEndsWith(dirS, ".txt.gz");
