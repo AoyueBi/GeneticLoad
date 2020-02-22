@@ -31,10 +31,21 @@ public class XPCLR {
     }
 
     public void script_getGenotypeXPCLR(){
-        for (int i = 1; i < 43; i++) {
-            String chr = PStringUtils.getNDigitNumber(3, i);
-            System.out.print( "\"" + chr + "\"" + "," );
+        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/011_VMapII";
+        String outfileDirS ="/data4/home/aoyue/vmap2/analysis/022_XPCLR/001_prepare/004_genoFile";
+        String logDirS = "/data4/home/aoyue/vmap2/aaPlantGenetics/log_040";
+//        String popfileS = "/data4/home/aoyue/vmap2/analysis/022_XPCLR/001_prepare/000_pop/Cultivar.txt";
+        String popfileS = "/data4/home/aoyue/vmap2/analysis/022_XPCLR/001_prepare/000_pop/Landrace_Europe.txt";
+
+        String pop = new File(popfileS).getName().replaceFirst(".txt","");
+        String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
+        for (int j = 0; j < chrArr.length; j++) {
+            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_vmap2.1.vcf").getAbsolutePath();
+            String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_"+pop+"_geno.txt").getAbsolutePath();
+            String logfileS = new File(logDirS,"log_" + new File(outfileS).getName().split(".gz")[0]).getAbsolutePath(); //不管是不是gz结尾，我们只取gz前的部分，妙！
+            System.out.println("nohup java -jar 040_getGenotypeXPCLR.jar " + infileS + " " + popfileS + " " + outfileS + " > " + logfileS  + " 2>&1 &" );
         }
+
     }
 
     /**
