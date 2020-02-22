@@ -24,6 +24,38 @@ public class AoFile {
         
     }
 
+    public BufferedReader readFile(String infileS){
+        BufferedReader br = null;
+        if (infileS.endsWith(".vcf")) {
+            br = IOUtils.getTextReader(infileS);
+        } else if (infileS.endsWith(".vcf.gz")) {
+            br = IOUtils.getTextGzipReader(infileS);
+        }
+        if (infileS.endsWith(".txt")) {
+            br = IOUtils.getTextReader(infileS);
+        } else if (infileS.endsWith(".txt.gz")) {
+            br = IOUtils.getTextGzipReader(infileS);
+        }
+        return br;
+    }
+
+    public BufferedWriter writeFile(String outfileS){
+        BufferedWriter bw = null;
+        if (outfileS.endsWith(".txt")){
+            bw=IOUtils.getTextWriter(outfileS);
+        }else if (outfileS.endsWith(".txt.gz")) {
+            bw = IOUtils.getTextGzipWriter(outfileS);
+        }
+        if (outfileS.endsWith(".vcf")){
+            bw=IOUtils.getTextWriter(outfileS);
+        }else if (outfileS.endsWith(".vcf.gz")) {
+            bw = IOUtils.getTextGzipWriter(outfileS);
+        }
+        return bw;
+    }
+
+
+
     /**
      * add colum to a file
      */

@@ -42,19 +42,8 @@ public class XPCLR {
         List<Integer> indexHexa = new ArrayList<>();
 
         try {
-            BufferedReader br = null;
-            if (infileS.endsWith(".vcf")) {
-                br = IOUtils.getTextReader(infileS);
-            } else if (infileS.endsWith(".vcf.gz")) {
-                br = IOUtils.getTextGzipReader(infileS);
-            }
-            BufferedWriter bw = null;
-            if (outfileS.endsWith(".geno.txt")){
-                bw=IOUtils.getTextWriter(outfileS);
-            }else if (outfileS.endsWith(".geno.txt.gz")) {
-                bw = IOUtils.getTextGzipWriter(outfileS);
-            }
-
+            BufferedReader br = new AoFile().readFile(infileS);
+            BufferedWriter bw = new AoFile().writeFile(outfileS);
             String temp = null;
             List<String> l = new ArrayList<>();
             int cnt = 0;
@@ -71,7 +60,6 @@ public class XPCLR {
                     }
                     Collections.sort(indexHexa);
 //                    System.out.println("Finish find the pop index from vcffile.");
-
                 }
                 if (!temp.startsWith("#")) {
                     l = PStringUtils.fastSplit(temp);
