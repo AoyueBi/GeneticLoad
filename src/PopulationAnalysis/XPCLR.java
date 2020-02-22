@@ -26,18 +26,25 @@ public class XPCLR {
 //        this.addgeneticPos();
 //        this.calDensity("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/002_snp/chr001.subgenome.maf0.01.SNP_bi.subset.pos.Base.txt.gz",1,3,2000000,2000000,"/Users/Aoyue/Documents/test.txt");
 
-        this.getGenotypeXPCLR();
+//        this.getGenotypeXPCLR();
+        this.script_getGenotypeXPCLR();
+    }
+
+    public void script_getGenotypeXPCLR(){
+        for (int i = 1; i < 43; i++) {
+            String chr = PStringUtils.getNDigitNumber(3, i);
+            System.out.print( "\"" + chr + "\"" + "," );
+        }
     }
 
     /**
      *
      *
      */
-    public void getGenotypeXPCLR(){
-        String popfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/003_genoTest/001_pop/Cultivar.txt";
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/022_subsetVCF/001_singleChr0.001/chr001.subgenome.maf0.01.SNP_bi.subset.vcf.gz";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/003_genoTest/002_geno/chr001_cultivar.geno.txt";
-
+    public void getGenotypeXPCLR(String infileS, String popfileS, String outfileS){
+//        String popfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/003_genoTest/001_pop/Cultivar.txt";
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/022_subsetVCF/001_singleChr0.001/chr001.subgenome.maf0.01.SNP_bi.subset.vcf.gz";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/003_genoTest/002_geno/chr001_cultivar.geno.txt";
         List<String> queryTaxal = new AoFile().getStringListwithoutHeader(popfileS,0); //获取pop列表
         List<Integer> indexHexa = new ArrayList<>();
 

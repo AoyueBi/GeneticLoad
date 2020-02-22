@@ -34,7 +34,7 @@ public class Mode {
         new CountSites().mergeTxt(infileDirS,outfileS);
     }
 
-    public void runParallele_listFile(){
+    public void runParallele_listFile(){ //本地运行常用
         String infileDirS = "/Users/Aoyue/Documents/out";
         String outfileDirS = "/Users/Aoyue/Documents/out1";
         List<File> fsList = IOUtils.getVisibleFileListInDir(infileDirS);
@@ -61,7 +61,7 @@ public class Mode {
 //        String[] chrArr = {"1D","2D", "3D", "4D", "5D", "6D","7D"};
 //        String[] chrArr = {"1A", "2A", "3A","4A", "5A", "6A", "7A", "1B", "2B", "3B", "4B", "5B", "6B", "7B", "1D", "2D", "3D",  "4D", "5D", "6D", "7D"};
         String[] chrArr = {"1A", "2A", "3A","4A", "5A", "6A", "7A", "1B", "2B", "3B", "4B", "5B", "6B", "7B"};
-
+//        String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
         for (int j = 0; j < chrArr.length; j++) {
             String infileS = new File(infileDirS,"chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_Cultivar.vcf.gz").getAbsolutePath();
             String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_Cultivar_chrposGenotype.txt.gz").getAbsolutePath();
@@ -69,23 +69,6 @@ public class Mode {
             System.out.println("nohup java -jar 034_mkindividualVCFtoChrPosGenotype.jar " + infileS + " " + outfileS + " > " + logfileS  + " 2>&1 &" );
         }
 
-    }
-
-    public void txtlistFile(){
-        String infileDirS = "";
-        String outfileDirS = "";
-        List<File> fsList = IOUtils.getVisibleFileListInDir(infileDirS);
-        fsList.parallelStream().forEach(f -> {
-            String infileS = f.getAbsolutePath();
-            String outfileS = null;
-            if (infileS.endsWith(".txt")) {
-                outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "_RH_2Mwindow_1Mstep.txt.gz").getAbsolutePath();
-            } else if (infileS.endsWith(".txt.gz")) {
-                outfileS = new File(outfileDirS, f.getName().split(".txt.gz")[0] + "_RH_2Mwindow_1Mstep.txt.gz").getAbsolutePath();
-            }
-            new Bin().calwindowstep_ResidualHeterozygosity(infileS,2000000,1000000,outfileS);
-            System.out.println(f.getName() + "\tis completed at " + outfileS);
-        });
     }
 
 
