@@ -1,5 +1,6 @@
 package PopulationAnalysis;
 
+import AoUtils.AoFile;
 import analysis.wheatVMap2.VMapDBUtils;
 import gnu.trove.list.array.TFloatArrayList;
 import gnu.trove.list.array.TIntArrayList;
@@ -10,9 +11,12 @@ import pgl.utils.IOUtils;
 import pgl.utils.PStringUtils;
 import pgl.utils.wheat.RefV1Utils;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class XPCLR {
@@ -22,6 +26,97 @@ public class XPCLR {
 //        this.addgeneticPos();
 //        this.calDensity("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/002_snp/chr001.subgenome.maf0.01.SNP_bi.subset.pos.Base.txt.gz",1,3,2000000,2000000,"/Users/Aoyue/Documents/test.txt");
 
+        this.getGenotypeXPCLR();
+    }
+
+    /**
+     *
+     *
+     */
+    public void getGenotypeXPCLR(){
+        String popfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/003_genoTest/001_pop/Cultivar.txt";
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/022_subsetVCF/001_singleChr0.001/chr001.subgenome.maf0.01.SNP_bi.subset.vcf.gz";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/003_genoTest/002_geno/chr001_cultivar.geno.txt";
+
+        List<String> queryTaxal = new AoFile().getStringListwithoutHeader(popfileS,0); //获取pop列表
+        List<Integer> indexHexa = new ArrayList<>();
+
+        try {
+            BufferedReader br = null;
+            if (infileS.endsWith(".vcf")) {
+                br = IOUtils.getTextReader(infileS);
+            } else if (infileS.endsWith(".vcf.gz")) {
+                br = IOUtils.getTextGzipReader(infileS);
+            }
+            BufferedWriter bw = null;
+            if (outfileS.endsWith(".geno.txt")){
+                bw=IOUtils.getTextWriter(outfileS);
+            }else if (outfileS.endsWith(".geno.txt.gz")) {
+                bw = IOUtils.getTextGzipWriter(outfileS);
+            }
+
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                if (temp.startsWith("##"))continue;
+                if (temp.startsWith("#C")){
+                    l = PStringUtils.fastSplit(temp);
+                    for (int i = 9; i < l.size(); i++) {
+                        String taxon = l.get(i);
+                        int index = Collections.binarySearch(queryTaxal, taxon);
+                        if (index > -1) { //当找到列表中的taxa时，写列表中的taxa信息
+                            indexHexa.add(i);
+                        }
+                    }
+                    Collections.sort(indexHexa);
+//                    System.out.println("Finish find the pop index from vcffile.");
+
+                }
+                if (!temp.startsWith("#")) {
+                    l = PStringUtils.fastSplit(temp);
+                    List<String> lGeno = new ArrayList<>();
+                    for (int i = 0; i < indexHexa.size(); i++) { //无论有无基因型，都加进去了
+                        lGeno.add(l.get(indexHexa.get(i)));
+                    }
+                    String[] GenoArray = lGeno.toArray(new String[lGeno.size()]);
+
+                    String geno = this.getGenoInfo(GenoArray);
+                    bw.write(geno);
+                    bw.newLine();
+                    cnt++;
+                }
+            }
+            System.out.println(cnt + " SNP " + new File(infileS).getName() + " is completed at " + outfileS);
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+
+    public String getGenoInfo(String[] genoArray) {
+        String geno = null;
+        List<String> tempList = null;
+        List<String> temList = null;
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < genoArray.length; i++) {
+            tempList = PStringUtils.fastSplit(genoArray[i], ":"); //tempList是包含基因型GT AD PL的集合
+            temList = PStringUtils.fastSplit(tempList.get(0), "/"); //temList是包含基因型拆分后的集合
+            String ref1 = temList.get(0);
+            String alt2 = temList.get(1);
+            if (ref1.equals(".")){
+                ref1 = "9";
+                alt2 = "9";
+            }
+            sb.append(ref1).append(" ").append(alt2).append(" ");
+        }
+        geno = sb.toString();
+        return geno;
     }
 
 

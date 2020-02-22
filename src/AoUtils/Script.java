@@ -28,12 +28,12 @@ public class Script {
 //        this.bgzip_D();
 //        this.bgzip_AB();
 //        this.bgzip_ABD();
-//        this.script_ABD();
+        this.script_ABD();
 //        this.script_AB();
 //        this.script_D();
 
 //        this.script_AB_byRef();
-        this.script_ABD_byRef();
+//        this.script_ABD_byRef();
 
 
 //        
