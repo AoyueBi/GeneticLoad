@@ -27,9 +27,258 @@ public class XPCLR {
 //        this.calDensity("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/002_snp/chr001.subgenome.maf0.01.SNP_bi.subset.pos.Base.txt.gz",1,3,2000000,2000000,"/Users/Aoyue/Documents/test.txt");
 
 //        this.getGenotypeXPCLR();
-        this.script_getGenotypeXPCLR();
+//        this.script_getGenotypeXPCLR();
+        /**
+         * 多线程打包测试
+         */
+//        this.getGenotypeXPCLR_parallele();
+//        this.getGenotypeXPCLR_parallele_tetra();
+//        this.getGenotypeXPCLR_parallele_diploid();
     }
 
+    public void script_XPCLR(){
+        //
+        String infileDirS = "";
+        String outfileDirS ="";
+        String logDirS = "";
+        String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
+//        String[] chrArr ={"001","002","003","004","007","008","009","010","013","014","015","016","019","020","021","022","025","026","027","028","031","032","033","034","037","038","039","040"};
+//        String[] chrArr ={"005","006","011","012","017","018","023","024","029","030","035","036","041","042"};
+
+        for (int j = 0; j < chrArr.length; j++) {
+            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_Cultivar.vcf.gz").getAbsolutePath();
+            String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_Cultivar_chrposGenotype.txt.gz").getAbsolutePath();
+            String logfileS = new File(logDirS,"log_" + new File(outfileS).getName().split(".gz")[0]).getAbsolutePath(); //不管是不是gz结尾，我们只取gz前的部分，妙！
+            System.out.println("nohup java -jar 034_mkindividualVCFtoChrPosGenotype.jar " + infileS + " " + outfileS + " > " + logfileS  + " 2>&1 &" );
+        }
+
+    }
+
+    /**
+     * 根据文件夹获取pop的基因型XPCLR格式，多线程运行,适用于四倍体群体
+     */
+    public void getGenotypeXPCLR_parallele_diploid(String infileDirS,String popfileS,String outfileDirS){
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/022_subsetVCF/001_singleChr0.001";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/003_genoTest/002_geno";
+//        String popfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/003_genoTest/001_pop/Cultivar.txt";
+        String pop = new File(popfileS).getName().replaceFirst(".txt","");
+        List<String> queryTaxal = new AoFile().getStringListwithoutHeader(popfileS,0); //获取pop列表
+        String[] chrArr ={"005","006","011","012","017","018","023","024","029","030","035","036","041","042"};
+        Arrays.sort(chrArr);
+        List<File> fsList = IOUtils.getVisibleFileListInDir(infileDirS);
+        fsList.parallelStream().forEach(f -> {
+            String infileS = f.getAbsolutePath();
+            String chr = f.getName().substring(3,6);
+            int jj = Arrays.binarySearch(chrArr,chr);
+            if (jj > -1){
+                String outfileS = new File(outfileDirS,f.getName().split(".vcf")[0]+ "_" + pop + "_geno.txt").getAbsolutePath();
+                try{
+                    BufferedReader br = new AoFile().readFile(infileS);
+                    BufferedWriter bw = new AoFile().writeFile(outfileS);
+                    String temp = null;
+                    List<String> l = new ArrayList<>();
+                    List<Integer> indexHexa = new ArrayList<>();
+                    int cnt = 0;
+                    while ((temp = br.readLine()) != null) {
+                        if (temp.startsWith("##"))continue;
+                        if (temp.startsWith("#C")){
+                            l = PStringUtils.fastSplit(temp);
+                            for (int i = 9; i < l.size(); i++) {
+                                String taxon = l.get(i);
+                                int index = Collections.binarySearch(queryTaxal, taxon);
+                                if (index > -1) { //当找到列表中的taxa时，写列表中的taxa信息
+                                    indexHexa.add(i);
+                                }
+                            }
+                            Collections.sort(indexHexa);
+//                    System.out.println("Finish find the pop index from vcffile.");
+                        }
+                        if (!temp.startsWith("#")) {
+                            l = PStringUtils.fastSplit(temp);
+                            List<String> lGeno = new ArrayList<>();
+                            for (int i = 0; i < indexHexa.size(); i++) { //无论有无基因型，都加进去了
+                                lGeno.add(l.get(indexHexa.get(i)));
+                            }
+                            String[] GenoArray = lGeno.toArray(new String[lGeno.size()]);
+
+                            String geno = this.getGenoInfo(GenoArray);
+                            bw.write(geno);
+                            bw.newLine();
+                            cnt++;
+                        }
+                    }
+                    System.out.println(cnt + " SNP " + new File(infileS).getName() + " is completed at " + outfileS);
+                    br.close();
+                    bw.flush();
+                    bw.close();
+                }catch (Exception e) {
+                    e.printStackTrace();
+                    System.exit(1);
+                }
+
+            }
+
+        });
+
+    }
+
+    /**
+     * 根据文件夹获取pop的基因型XPCLR格式，多线程运行,适用于四倍体群体
+     */
+    public void getGenotypeXPCLR_parallele_tetra(String infileDirS,String popfileS,String outfileDirS){
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/022_subsetVCF/001_singleChr0.001";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/003_genoTest/002_geno";
+//        String popfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/003_genoTest/001_pop/Cultivar.txt";
+        String pop = new File(popfileS).getName().replaceFirst(".txt","");
+        List<String> queryTaxal = new AoFile().getStringListwithoutHeader(popfileS,0); //获取pop列表
+        String[] chrArr ={"001","002","003","004","007","008","009","010","013","014","015","016","019","020","021","022","025","026","027","028","031","032","033","034","037","038","039","040"};
+        Arrays.sort(chrArr);
+        List<File> fsList = IOUtils.getVisibleFileListInDir(infileDirS);
+        fsList.parallelStream().forEach(f -> {
+            String infileS = f.getAbsolutePath();
+            String chr = f.getName().substring(3,6);
+            int jj = Arrays.binarySearch(chrArr,chr);
+            if (jj > -1){
+                String outfileS = new File(outfileDirS,f.getName().split(".vcf")[0]+ "_" + pop + "_geno.txt").getAbsolutePath();
+                try{
+                    BufferedReader br = new AoFile().readFile(infileS);
+                    BufferedWriter bw = new AoFile().writeFile(outfileS);
+                    String temp = null;
+                    List<String> l = new ArrayList<>();
+                    List<Integer> indexHexa = new ArrayList<>();
+                    int cnt = 0;
+                    while ((temp = br.readLine()) != null) {
+                        if (temp.startsWith("##"))continue;
+                        if (temp.startsWith("#C")){
+                            l = PStringUtils.fastSplit(temp);
+                            for (int i = 9; i < l.size(); i++) {
+                                String taxon = l.get(i);
+                                int index = Collections.binarySearch(queryTaxal, taxon);
+                                if (index > -1) { //当找到列表中的taxa时，写列表中的taxa信息
+                                    indexHexa.add(i);
+                                }
+                            }
+                            Collections.sort(indexHexa);
+//                    System.out.println("Finish find the pop index from vcffile.");
+                        }
+                        if (!temp.startsWith("#")) {
+                            l = PStringUtils.fastSplit(temp);
+                            List<String> lGeno = new ArrayList<>();
+                            for (int i = 0; i < indexHexa.size(); i++) { //无论有无基因型，都加进去了
+                                lGeno.add(l.get(indexHexa.get(i)));
+                            }
+                            String[] GenoArray = lGeno.toArray(new String[lGeno.size()]);
+
+                            String geno = this.getGenoInfo(GenoArray);
+                            bw.write(geno);
+                            bw.newLine();
+                            cnt++;
+                        }
+                    }
+                    System.out.println(cnt + " SNP " + new File(infileS).getName() + " is completed at " + outfileS);
+                    br.close();
+                    bw.flush();
+                    bw.close();
+                }catch (Exception e) {
+                    e.printStackTrace();
+                    System.exit(1);
+                }
+
+            }
+
+        });
+
+    }
+
+    /**
+     * 根据文件夹获取pop的基因型XPCLR格式，多线程运行,适用于六倍体群体
+     */
+    public void getGenotypeXPCLR_parallele(String infileDirS,String popfileS,String outfileDirS){
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/022_subsetVCF/001_singleChr0.001";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/003_genoTest/002_geno";
+//        String popfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/003_genoTest/001_pop/Cultivar.txt";
+        String pop = new File(popfileS).getName().replaceFirst(".txt","");
+        List<String> queryTaxal = new AoFile().getStringListwithoutHeader(popfileS,0); //获取pop列表
+
+        List<File> fsList = IOUtils.getVisibleFileListInDir(infileDirS);
+        fsList.parallelStream().forEach(f -> {
+            String infileS = f.getAbsolutePath();
+            String outfileS = new File(outfileDirS,f.getName().split(".vcf")[0]+ "_" + pop + "_geno.txt").getAbsolutePath();
+            try{
+                BufferedReader br = new AoFile().readFile(infileS);
+                BufferedWriter bw = new AoFile().writeFile(outfileS);
+                String temp = null;
+                List<String> l = new ArrayList<>();
+                List<Integer> indexHexa = new ArrayList<>();
+                int cnt = 0;
+                while ((temp = br.readLine()) != null) {
+                    if (temp.startsWith("##"))continue;
+                    if (temp.startsWith("#C")){
+                        l = PStringUtils.fastSplit(temp);
+                        for (int i = 9; i < l.size(); i++) {
+                            String taxon = l.get(i);
+                            int index = Collections.binarySearch(queryTaxal, taxon);
+                            if (index > -1) { //当找到列表中的taxa时，写列表中的taxa信息
+                                indexHexa.add(i);
+                            }
+                        }
+                        Collections.sort(indexHexa);
+//                    System.out.println("Finish find the pop index from vcffile.");
+                    }
+                    if (!temp.startsWith("#")) {
+                        l = PStringUtils.fastSplit(temp);
+                        List<String> lGeno = new ArrayList<>();
+                        for (int i = 0; i < indexHexa.size(); i++) { //无论有无基因型，都加进去了
+                            lGeno.add(l.get(indexHexa.get(i)));
+                        }
+                        String[] GenoArray = lGeno.toArray(new String[lGeno.size()]);
+
+                        String geno = this.getGenoInfo(GenoArray);
+                        bw.write(geno);
+                        bw.newLine();
+                        cnt++;
+                    }
+                }
+                System.out.println(cnt + " SNP " + new File(infileS).getName() + " is completed at " + outfileS);
+                br.close();
+                bw.flush();
+                bw.close();
+            }catch (Exception e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
+        });
+
+    }
+
+    /**
+     *
+     * java运行，不生成log文件
+     */
+    public void script_getGenotypeXPCLR2(){
+//        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/011_VMapII";
+//        String outfileDirS ="/data4/home/aoyue/vmap2/analysis/022_XPCLR/001_prepare/004_genoFile";
+
+        String infileDirS = "/data4/home/aoyue/vmap2/feilu/002_genicSNP/002_exonSNPVCF";
+        String outfileDirS ="/data4/home/aoyue/vmap2/analysis/022_XPCLR/002_exon/004_genoFile";
+
+        String popfileS = "/data4/home/aoyue/vmap2/analysis/022_XPCLR/001_prepare/000_pop/Cultivar.txt";
+//        String popfileS = "/data4/home/aoyue/vmap2/analysis/022_XPCLR/001_prepare/000_pop/Landrace_Europe.txt";
+
+        String pop = new File(popfileS).getName().replaceFirst(".txt","");
+        String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
+        for (int j = 0; j < chrArr.length; j++) {
+            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_exon_vmap2.1.vcf.gz").getAbsolutePath();
+            String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_"+pop+"_geno.txt").getAbsolutePath();
+            System.out.println("java -jar 040_getGenotypeXPCLR.jar " + infileS + " " + popfileS + " " + outfileS );
+        }
+
+    }
+
+    /**
+     *
+     * java运行，一个java生成一个log文件
+     */
     public void script_getGenotypeXPCLR(){
 //        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/011_VMapII";
 //        String outfileDirS ="/data4/home/aoyue/vmap2/analysis/022_XPCLR/001_prepare/004_genoFile";
@@ -61,13 +310,13 @@ public class XPCLR {
 //        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/022_subsetVCF/001_singleChr0.001/chr001.subgenome.maf0.01.SNP_bi.subset.vcf.gz";
 //        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/003_genoTest/002_geno/chr001_cultivar.geno.txt";
         List<String> queryTaxal = new AoFile().getStringListwithoutHeader(popfileS,0); //获取pop列表
-        List<Integer> indexHexa = new ArrayList<>();
 
         try {
             BufferedReader br = new AoFile().readFile(infileS);
             BufferedWriter bw = new AoFile().writeFile(outfileS);
             String temp = null;
             List<String> l = new ArrayList<>();
+            List<Integer> indexHexa = new ArrayList<>();
             int cnt = 0;
             while ((temp = br.readLine()) != null) {
                 if (temp.startsWith("##"))continue;

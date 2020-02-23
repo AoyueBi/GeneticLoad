@@ -249,6 +249,13 @@ public class Mode {
             System.exit(1);
         }
 
+        try{
+
+        }catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
     }
 
     public void testifD() {
