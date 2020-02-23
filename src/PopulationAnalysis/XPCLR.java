@@ -1,6 +1,7 @@
 package PopulationAnalysis;
 
 import AoUtils.AoFile;
+import AoUtils.CountSites;
 import analysis.wheatVMap2.VMapDBUtils;
 import gnu.trove.list.array.TFloatArrayList;
 import gnu.trove.list.array.TIntArrayList;
@@ -34,22 +35,52 @@ public class XPCLR {
 //        this.getGenotypeXPCLR_parallele();
 //        this.getGenotypeXPCLR_parallele_tetra();
 //        this.getGenotypeXPCLR_parallele_diploid();
+//        this.script_XPCLR();
+//        this.script_calSNPdensity();
+//        this.mergeTxt();
+//        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/006_script/sh_xpclr_hexaploid20200224.sh",14,3);
     }
 
-    public void script_XPCLR(){
-        //
-        String infileDirS = "";
-        String outfileDirS ="";
-        String logDirS = "";
-        String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
-//        String[] chrArr ={"001","002","003","004","007","008","009","010","013","014","015","016","019","020","021","022","025","026","027","028","031","032","033","034","037","038","039","040"};
-//        String[] chrArr ={"005","006","011","012","017","018","023","024","029","030","035","036","041","042"};
+    public void mergeTxt(){
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/004_snpDensity/001_calDensity_100kb";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/004_snpDensity/exon_vmap2.1.pos.Base.density_100k.txt";
+        new CountSites().mergeTxt(infileDirS,outfileS);
+    }
 
+    public void script_calSNPdensity(){
+        String infileDirS = "/data4/home/aoyue/vmap2/analysis/022_XPCLR/002_exon/001_chrposRefAlt";
+        String outfileDirS ="/data4/home/aoyue/vmap2/analysis/022_XPCLR/002_exon/003_calDensity";
+        String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
         for (int j = 0; j < chrArr.length; j++) {
-            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_Cultivar.vcf.gz").getAbsolutePath();
-            String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_vmap2.1_heter_SNPbased_Cultivar_chrposGenotype.txt.gz").getAbsolutePath();
-            String logfileS = new File(logDirS,"log_" + new File(outfileS).getName().split(".gz")[0]).getAbsolutePath(); //不管是不是gz结尾，我们只取gz前的部分，妙！
-            System.out.println("nohup java -jar 034_mkindividualVCFtoChrPosGenotype.jar " + infileS + " " + outfileS + " > " + logfileS  + " 2>&1 &" );
+            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_exon_vmap2.1.pos.Base.txt").getAbsolutePath();
+            String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_exon_vmap2.1.pos.Base.density_100k.txt").getAbsolutePath();
+            System.out.println("java -jar 039_calDensity.jar " + infileS + " 1 3 100000 100000 " + outfileS + " &");
+        }
+
+    }
+
+
+    public void script_XPCLR(){
+        //XPCLR -xpclr /data4/home/aoyue/vmap2/analysis/022_XPCLR/002_exon/004_genoFile/chr001_Cultivar_geno.txt /data4/home/aoyue/vmap2/analysis/022_XPCLR/002_exon/004_genoFile/chr001_Landrace_Europe_geno.txt /data4/home/aoyue/vmap2/analysis/022_XPCLR/002_exon/001_chrposRefAlt/chr001_exon_vmap2.1.pos.Base.txt chr001_CLvsEU_100kbwindow -w1 0.005 600 100000 1 -p0 0.95 > log_chr001_CLvsEU_100kbwindow.txt 2>&1 &
+        String infileDirS = "/data4/home/aoyue/vmap2/analysis/022_XPCLR/002_exon/004_genoFile";
+        String outfileDirS ="/data4/home/aoyue/vmap2/analysis/022_XPCLR/002_exon/005_out";
+        String snpInfoDirS = "/data4/home/aoyue/vmap2/analysis/022_XPCLR/002_exon/001_chrposRefAlt";
+        String logDirS = "/data4/home/aoyue/vmap2/analysis/022_XPCLR/002_exon/log";
+        String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
+        String gwin = "0.005";
+        String snpWin = "1400";
+        String gridSize = "100000";
+        for (int j = 0; j < chrArr.length; j++) {
+            int chr = Integer.parseInt(chrArr[j]);
+            String pop1fileS = new File(infileDirS,"chr" + chrArr[j] + "_exon_vmap2.1_Cultivar_geno.txt").getAbsolutePath();
+            String pop2fileS = new File(infileDirS,"chr" + chrArr[j] + "_exon_vmap2.1_Landrace_Europe_geno.txt").getAbsolutePath();
+            String snpInfoS = new File(snpInfoDirS,"chr"+chrArr[j]+"_exon_vmap2.1.pos.Base.txt").getAbsolutePath();
+            String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_CLvsEU_exonRegion_100kbwindow").getAbsolutePath();
+            String logS = new File(logDirS,new File(outfileS).getName().split(".gz")[0]).getAbsolutePath();
+            System.out.println("XPCLR -xpclr " + pop1fileS + " " + pop2fileS + " " +
+                    snpInfoS + " " + outfileS + " -w1 " + gwin + " " + snpWin + " "+
+                    gridSize + " " + chr + " -p0 0.95" +
+                    " > " + logS);
         }
 
     }
