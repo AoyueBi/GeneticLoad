@@ -15,10 +15,7 @@ import pgl.utils.wheat.RefV1Utils;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class XPCLR {
     public XPCLR(){
@@ -39,6 +36,23 @@ public class XPCLR {
 //        this.script_calSNPdensity();
 //        this.mergeTxt();
 //        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/006_script/sh_xpclr_hexaploid20200224.sh",14,3);
+
+        this.statisticSNPdensity();
+
+
+    }
+
+
+
+    /**
+     *
+     * 以 100kb为窗口，统计各个亚基因组的SNP个数是多少
+     */
+    public void statisticSNPdensity(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/004_snpDensity/exon_vmap2.1.pos.Base.density_100k.txt";
+        String hmfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_chrList/ChrID.txt";
+        HashMap<String,String> hm = new AoFile().getHashMap(hmfileS,0,3);
+        new AoFile().addColumbyString(infileS,0,hm,"Subgenome");
     }
 
     public void mergeTxt(){
