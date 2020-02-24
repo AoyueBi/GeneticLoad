@@ -38,8 +38,18 @@ public class XPCLR {
 //        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/006_script/sh_xpclr_hexaploid20200224.sh",14,3);
 
 //        this.statisticSNPdensity();
-        this.mergeTxt2();
+//        this.mergeTxt2();
+        this.convertXPCLRCoordinate();
+//        this.test1();
 
+
+    }
+
+    public void test1(){
+        String a = "40700.000000";
+//        String c = a.split(".")[0];
+        int b = (int) Double.parseDouble(a);
+        System.out.println(b);
 
     }
 
@@ -49,18 +59,31 @@ public class XPCLR {
      */
     public void convertXPCLRCoordinate(){
         try {
-            String infileS = "";
-            String outfileS = "";
+            String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/002_merge/CLvsEU_exonRegion_100kbwindow.xpclr.txt";
+            String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/002_merge/001_CLvsEU_exonRegion_100kbwindow_changeChrPos.xpclr.txt";
             BufferedReader br = new AoFile().readFile(infileS);
             BufferedWriter bw = new AoFile().writeFile(outfileS);
+            bw.write("chr\tgrid\tSNPs_in_window\tphysical_pos\tgenetic_pos\tXPCLR_score\tmax_s");
+            bw.newLine();
             String temp = null;
             List<String> l = new ArrayList<>();
             int cnt = 0;
             while ((temp = br.readLine()) != null) {
                 l = PStringUtils.fastSplit(temp," ");
+                if (l.size() < 7)continue;
                 cnt++;
                 //2 217 1152 21716707.000000 0.651300 584.597428 0.000000
-
+                String chrS = l.get(0);
+                String posS = l.get(3);
+                int chrID = Integer.parseInt(chrS);
+                int posID = (int) Double.parseDouble(posS);
+                String Chr = RefV1Utils.getChromosome(chrID,posID);
+                int pos = RefV1Utils.getPosOnChromosome(chrID,posID);
+                StringBuilder sb = new StringBuilder();
+                sb.append(Chr).append("\t").append(l.get(1)).append("\t").append(l.get(2)).append("\t").
+                        append(pos).append("\t").append(l.get(4)).append("\t").append(l.get(5)).append("\t").append(l.get(6));
+                bw.write(sb.toString());
+                bw.newLine();
             }
             br.close();
             bw.flush();
