@@ -5,8 +5,8 @@
  */
 package AoUtils;
 
-import pgl.format.table.RowTable;
 import gnu.trove.list.array.TIntArrayList;
+import pgl.format.table.RowTable;
 import pgl.utils.IOUtils;
 import pgl.utils.PStringUtils;
 
@@ -24,6 +24,162 @@ public class AoFile {
         
     }
 
+    public File[] getFileArrayInDir (String inDirS) {
+        File[] fs = new File(inDirS).listFiles();
+        List<File> fList = new ArrayList<>();
+        for (int i = 0; i < fs.length; i++) {
+            if (fs[i].isHidden()) continue;
+            fList.add(fs[i]);
+        }
+        Collections.sort(fList);
+        File[] fsArray = fList.toArray(new File[fList.size()]);
+        return fsArray;
+    }
+
+    public List<File> getFileListInDir (String inDirS) {
+        File[] fs = new File(inDirS).listFiles();
+        List<File> fList = new ArrayList<>();
+        for (int i = 0; i < fs.length; i++) {
+            if (fs[i].isHidden()) continue;
+            fList.add(fs[i]);
+        }
+        Collections.sort(fList);
+        return fList;
+    }
+
+    /**
+     *
+     * @param infileDirS
+     * @param outfileS
+     */
+    public void mergeTxtbysuffix(String infileDirS, String outfileS, String suffix) {
+        File[] fs = this.getFileArrayInDir(infileDirS);
+        fs = IOUtils.listFilesContains(fs, suffix);
+        Arrays.sort(fs);
+        try {
+            String infileS = fs[0].getAbsolutePath();
+            BufferedReader br = this.readFile(infileS);
+            BufferedWriter bw = this.writeFile(outfileS);
+            //read header
+            bw.write(br.readLine());
+            bw.newLine();
+
+            int cnttotal = 0;
+            //read context
+            for (int i = 0; i < fs.length; i++) {
+                infileS = fs[i].getAbsolutePath();
+                br = this.readFile(infileS);
+                br.readLine();
+                String temp = null; //read header
+                int cnt = 0;
+                while ((temp = br.readLine()) != null) {
+                    cnt++;
+                    cnttotal++;
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(temp);
+                    bw.write(sb.toString());
+                    bw.newLine();
+                }
+                System.out.println(fs[i].getName() + "\t" + cnt);
+            }
+            System.out.println("Total lines without header count is " + cnttotal + " at merged file " + outfileS );
+            br.close();
+            bw.flush();
+            bw.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    /**
+     *
+     * @param infileDirS
+     * @param outfileS
+     */
+    public void mergeTxt(String infileDirS, String outfileS) {
+        File[] fs = this.getFileArrayInDir(infileDirS);
+        Arrays.sort(fs);
+        try {
+            String infileS = fs[0].getAbsolutePath();
+            BufferedReader br = this.readFile(infileS);
+            BufferedWriter bw = this.writeFile(outfileS);
+            //read header
+            bw.write(br.readLine());
+            bw.newLine();
+
+            int cnttotal = 0;
+            //read context
+            for (int i = 0; i < fs.length; i++) {
+                infileS = fs[i].getAbsolutePath();
+                br = this.readFile(infileS);
+                br.readLine();
+                String temp = null; //read header
+                int cnt = 0;
+                while ((temp = br.readLine()) != null) {
+                    cnt++;
+                    cnttotal++;
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(temp);
+                    bw.write(sb.toString());
+                    bw.newLine();
+                }
+                System.out.println(fs[i].getName() + "\t" + cnt);
+            }
+            System.out.println("Total lines without header count is " + cnttotal + " at merged file " + outfileS );
+            br.close();
+            bw.flush();
+            bw.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    /**
+     * 目的：将所有txt文本的chr pos位点等信息合并成一个文件。
+     *
+     * @param infileDirS
+     * @param outfileS
+     */
+    public void mergeTxtwithoutHeader(String infileDirS, String outfileS) {
+
+        File[] fs = new AoFile().getFileArrayInDir(infileDirS);
+        try {
+
+            BufferedReader br = null;
+            BufferedWriter bw = this.writeFile(outfileS);
+            int cnttotal = 0;
+            //读正文部分
+            for (int i = 0; i < fs.length; i++) {
+                String infileS = fs[i].getAbsolutePath();
+                br = this.readFile(infileS);
+                String temp = null;
+                int cnt = 0;
+                while ((temp = br.readLine()) != null) {
+                    cnt++;
+                    cnttotal++;
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(temp);
+                    bw.write(sb.toString());
+                    bw.newLine();
+                }
+                System.out.println(fs[i].getName() + "\t" + cnt);
+            }
+            System.out.println("Total lines without header count is " + cnttotal + " at merged file " + outfileS );
+            br.close();
+            bw.flush();
+            bw.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+
     public BufferedReader readFile(String infileS){
         BufferedReader br = null;
         if (infileS.endsWith(".vcf")) {
@@ -35,6 +191,10 @@ public class AoFile {
             br = IOUtils.getTextReader(infileS);
         } else if (infileS.endsWith(".txt.gz")) {
             br = IOUtils.getTextGzipReader(infileS);
+        }else if (infileS.endsWith(".fst")) {
+            br = IOUtils.getTextReader(infileS);
+        }else if (infileS.endsWith(".pi")) {
+            br = IOUtils.getTextReader(infileS);
         }
         return br;
     }
@@ -53,7 +213,6 @@ public class AoFile {
         }
         return bw;
     }
-
 
 
     /**

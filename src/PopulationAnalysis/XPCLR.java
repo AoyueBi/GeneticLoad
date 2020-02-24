@@ -37,12 +37,46 @@ public class XPCLR {
 //        this.mergeTxt();
 //        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/006_script/sh_xpclr_hexaploid20200224.sh",14,3);
 
-        this.statisticSNPdensity();
+//        this.statisticSNPdensity();
+        this.mergeTxt2();
 
 
     }
 
+    /**
+     * 将结果进行坐标转换，并添加表头
+     *
+     */
+    public void convertXPCLRCoordinate(){
+        try {
+            String infileS = "";
+            String outfileS = "";
+            BufferedReader br = new AoFile().readFile(infileS);
+            BufferedWriter bw = new AoFile().writeFile(outfileS);
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp," ");
+                cnt++;
+                //2 217 1152 21716707.000000 0.651300 584.597428 0.000000
 
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    public void mergeTxt2(){
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/001_out";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/002_merge/CLvsEU_exonRegion_100kbwindow.xpclr.txt";
+        new AoFile().mergeTxtwithoutHeader(infileDirS,outfileS);
+    }
 
     /**
      *

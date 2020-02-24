@@ -209,8 +209,8 @@ public class Mode {
         try {
             String infileS = "";
             String outfileS = "";
-            BufferedReader br = IOUtils.getTextReader(infileS);
-            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            BufferedReader br = new AoFile().readFile(infileS);
+            BufferedWriter bw = new AoFile().writeFile(outfileS);
             String temp = null;
             List<String> l = new ArrayList<>();
             int cnt = 0;
