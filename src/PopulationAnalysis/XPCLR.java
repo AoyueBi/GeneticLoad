@@ -3,6 +3,7 @@ package PopulationAnalysis;
 import AoUtils.AoFile;
 import AoUtils.CountSites;
 import analysis.wheatVMap2.VMapDBUtils;
+import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TFloatArrayList;
 import gnu.trove.list.array.TIntArrayList;
 import pgl.format.table.ColumnTable;
@@ -39,8 +40,8 @@ public class XPCLR {
 
 //        this.statisticSNPdensity();
 //        this.mergeTxt2();
-        this.convertXPCLRCoordinate();
-//        this.test1();
+//        this.convertXPCLRCoordinate();
+        this.test1();
 
 
     }
@@ -50,6 +51,10 @@ public class XPCLR {
 //        String c = a.split(".")[0];
         int b = (int) Double.parseDouble(a);
         System.out.println(b);
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/002_merge/001_CLvsEU_exonRegion_100kbwindow_changeChrPos.xpclr.txt";
+        TDoubleArrayList l = new AoFile().getDoubleList(infileS,5);
+        double f = l.max();
+        System.out.println(f);
 
     }
 
@@ -58,12 +63,19 @@ public class XPCLR {
      *
      */
     public void convertXPCLRCoordinate(){
+
+        HashMap<String,Integer> hm = new HashMap<String, Integer>();
+        String[] chrArr = {"1A", "1B", "1D", "2A", "2B", "2D", "3A", "3B", "3D", "4A", "4B", "4D", "5A", "5B", "5D", "6A", "6B", "6D", "7A", "7B", "7D"};
+        for (int i = 0; i < chrArr.length; i++) {
+            String chr = chrArr[i];
+            hm.put(chr,i+1);
+        }
         try {
             String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/002_merge/CLvsEU_exonRegion_100kbwindow.xpclr.txt";
             String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/002_merge/001_CLvsEU_exonRegion_100kbwindow_changeChrPos.xpclr.txt";
             BufferedReader br = new AoFile().readFile(infileS);
             BufferedWriter bw = new AoFile().writeFile(outfileS);
-            bw.write("chr\tgrid\tSNPs_in_window\tphysical_pos\tgenetic_pos\tXPCLR_score\tmax_s");
+            bw.write("CHR\tGrid\tN_SNPs\tPOS\tGenetic_pos\tXPCLR_score\tMax_s\tID");
             bw.newLine();
             String temp = null;
             List<String> l = new ArrayList<>();
@@ -79,9 +91,11 @@ public class XPCLR {
                 int posID = (int) Double.parseDouble(posS);
                 String Chr = RefV1Utils.getChromosome(chrID,posID);
                 int pos = RefV1Utils.getPosOnChromosome(chrID,posID);
+                int ID = hm.get(Chr);
                 StringBuilder sb = new StringBuilder();
                 sb.append(Chr).append("\t").append(l.get(1)).append("\t").append(l.get(2)).append("\t").
-                        append(pos).append("\t").append(l.get(4)).append("\t").append(l.get(5)).append("\t").append(l.get(6));
+                        append(pos).append("\t").append(l.get(4)).append("\t").append(l.get(5)).
+                        append("\t").append(l.get(6)).append("\t").append(ID);
                 bw.write(sb.toString());
                 bw.newLine();
             }

@@ -5,6 +5,7 @@
  */
 package AoUtils;
 
+import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TIntArrayList;
 import pgl.format.table.RowTable;
 import pgl.utils.IOUtils;
@@ -656,6 +657,38 @@ public class AoFile {
             e.printStackTrace();
         }
         return out;
+    }
+
+    /**
+     * get the pos database from txt file
+     *
+     * @param infileS
+     * @param columnIndex
+     * @return
+     */
+    public TDoubleArrayList getDoubleList(String infileS, int columnIndex){
+        TDoubleArrayList ll = new TDoubleArrayList();
+        try {
+            BufferedReader br = this.readFile(infileS);
+            String temp = br.readLine(); //read header
+            List<String> l = new ArrayList();
+            int cnttotal = 0;
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                cnttotal++;
+                l = PStringUtils.fastSplit(temp);
+                String goal = l.get(columnIndex);
+                if (goal.startsWith("N") | goal.startsWith("inf")) continue;
+                ll.add(Double.parseDouble(goal));
+                cnt++;
+            }
+            br.close();
+            System.out.println("Total num in the list is    " + cnt + "\t" + ll.size());
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ll;
     }
 
     /**
