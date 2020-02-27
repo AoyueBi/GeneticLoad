@@ -33,7 +33,43 @@ public class Fst {
 //        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/006_scriptbased2Mwindow1Mstep/fst_based2Mwindow_1Mstep_20200216.sh",40,7); //273
 
 //        this.extractVCFlog();
-        this.addSubandGroup();
+//        this.addSubandGroup();
+
+        this.mergeFSTwindow();
+    }
+
+    /**
+     * 将fst window scan 计算的FST,多个文件合并起来成为一个文件，并添加一列分组Group信息
+     * 暂时
+     *
+     */
+    public void mergeFSTwindow(){
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/004_fst_based2Mwindow_1Mstep/001";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/004_fst_based2Mwindow_1Mstep/002_merge/Pi_bySubspecies_20200208.txt";
+
+        List<File> fsList = IOUtils.getVisibleFileListInDir(infileDirS);
+        try {
+            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            bw.write("CHROM\tSub\tGroup\tPloidy\tMEAN_PI");
+            bw.newLine();
+            for (int i = 0; i < fsList.size(); i++) {
+                String infileS = fsList.get(i).getAbsolutePath();
+                String name = new File(infileS).getName(); //Cultivar_chr1D_based2000000Window_1000000step.windowed.pi
+                String chr = name.substring(name.indexOf("chr")+3,name.indexOf("chr")+5);
+                String sub = chr.substring(1);
+                String group = name.substring(0,name.indexOf("_chr"));
+                String value = this.getMean(infileS);
+                bw.write(chr + "\t" + sub + "\t" + group + "\t" + "jj" + "\t" + value);
+                bw.newLine();
+
+            }
+            bw.flush();
+            bw.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
     /**
