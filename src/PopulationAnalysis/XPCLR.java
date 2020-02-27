@@ -37,7 +37,7 @@ public class XPCLR {
          * 最终执行脚本文件
          */
 //        this.script_XPCLR();
-        this.script_XPCLR_tetraploid();
+//        this.script_XPCLR_tetraploid();
 
 //        this.script_calSNPdensity();
 //        this.mergeTxt();
@@ -45,7 +45,7 @@ public class XPCLR {
 
 //        this.statisticSNPdensity();
 //        this.mergeTxt2();
-//        this.convertXPCLRCoordinate();
+        this.convertXPCLRCoordinate();
 //        this.test1();
 
 
@@ -76,8 +76,12 @@ public class XPCLR {
             hm.put(chr,i+1);
         }
         try {
-            String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/002_merge/CLvsEU_exonRegion_100kbwindow.xpclr.txt";
-            String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/002_merge/001_CLvsEU_exonRegion_100kbwindow_changeChrPos.xpclr.txt";
+//            String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/002_merge/CLvsEU_exonRegion_100kbwindow.xpclr.txt";
+//            String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/002_merge/001_CLvsEU_exonRegion_100kbwindow_changeChrPos.xpclr.txt";
+
+            String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/002_merge/CLvsEU_exonRegion_0.005m_1400snp_100kbwindoww.xpclr.txt";
+            String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/002_merge/002_CLvsEU_exonRegion_0.005m_1400snp_100kbwindoww_changeChrPos.xpclr.txt";
+
             BufferedReader br = new AoFile().readFile(infileS);
             BufferedWriter bw = new AoFile().writeFile(outfileS);
             bw.write("CHR\tGrid\tN_SNPs\tPOS\tGenetic_pos\tXPCLR_score\tMax_s\tID");
@@ -116,7 +120,7 @@ public class XPCLR {
 
     public void mergeTxt2(){
         String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/001_out";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/002_merge/CLvsEU_exonRegion_100kbwindow.xpclr.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/002_merge/CLvsEU_exonRegion_0.005m_1400snp_100kbwindoww.xpclr.txt";
         new AoFile().mergeTxtwithoutHeader(infileDirS,outfileS);
     }
 
@@ -178,6 +182,7 @@ public class XPCLR {
 
 
     public void script_XPCLR(){
+        //-w1 0.0002 200 2000 1 -p1 0.95
         //XPCLR -xpclr /data4/home/aoyue/vmap2/analysis/022_XPCLR/002_exon/004_genoFile/chr001_Cultivar_geno.txt /data4/home/aoyue/vmap2/analysis/022_XPCLR/002_exon/004_genoFile/chr001_Landrace_Europe_geno.txt /data4/home/aoyue/vmap2/analysis/022_XPCLR/002_exon/001_chrposRefAlt/chr001_exon_vmap2.1.pos.Base.txt chr001_CLvsEU_100kbwindow -w1 0.005 600 100000 1 -p0 0.95 > log_chr001_CLvsEU_100kbwindow.txt 2>&1 &
         String infileDirS = "/data4/home/aoyue/vmap2/analysis/022_XPCLR/002_exon/004_genoFile";
 //        String outfileDirS ="/data4/home/aoyue/vmap2/analysis/022_XPCLR/002_exon/005_out";
@@ -185,10 +190,13 @@ public class XPCLR {
         String snpInfoDirS = "/data4/home/aoyue/vmap2/analysis/022_XPCLR/002_exon/001_chrposRefAlt";
         String logDirS = "/data4/home/aoyue/vmap2/analysis/022_XPCLR/002_exon/log";
         String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
-        String gwin = "0.005";
+//        String gwin = "0.005";
+        String gwin = "0.0002";
 //        String snpWin = "1400";
         String snpWin = "200";
-        String gridSize = "100000";
+//        String snpWin = "100";
+//        String gridSize = "100000";
+        String gridSize = "2000";
 
         for (int j = 0; j < chrArr.length; j++) {
             int chr = Integer.parseInt(chrArr[j]);
