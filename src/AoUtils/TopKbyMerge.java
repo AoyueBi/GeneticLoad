@@ -10,7 +10,7 @@ public class TopKbyMerge{
     //
     //直到k个数为top，但这k个数并没有顺序。
 
-    int partion(int a[],int first,int end){
+    int partion(int a[],int first,int end){ // 0, 9,6  int a[]={2,20,3,7,9,1,17,18,0,4};
         int i=first;
         int main=a[end];
         for(int j=first;j<end;j++){
