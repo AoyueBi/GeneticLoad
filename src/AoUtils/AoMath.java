@@ -26,6 +26,20 @@ public class AoMath {
 
     }
 
+    public List<Double> topK(){
+        List<Double> out = new ArrayList<>();
+
+        List<Double> l = new ArrayList<>();
+//        double[] array = {1,5,2,9,4,7,5.6,Double.POSITIVE_INFINITY,Double.POSITIVE_INFINITY};
+        double[] array = {1, 5, 2, 9, 4, 7, 5.6, 8.8, 9, 3.2, 4.5, 6.6, 1.2, 9.4, 4.5, 6.6, 1.2, 9.4, 9.8, 7.3 };
+        double k = 0.01;
+        int length = array.length;
+
+
+
+        return out;
+    }
+
 
     public String getRelativeMean(TDoubleArrayList value){
         String out = null;
@@ -94,6 +108,12 @@ public class AoMath {
         return out;
     }
 
+    /**
+     *  将group的名字用 index 数字代替
+     * @param infileS
+     * @param columnIndex
+     * @return
+     */
     public HashMap<String,Integer> setGrouptoNumber (String infileS, int columnIndex){
         HashMap<String,Integer> hm = new HashMap<>();
         RowTable<String> t = new RowTable<>(infileS);

@@ -25,7 +25,7 @@ public class AoFile {
         
     }
 
-    public File[] getFileArrayInDir (String inDirS) {
+    public static File[] getFileArrayInDir (String inDirS) {
         File[] fs = new File(inDirS).listFiles();
         List<File> fList = new ArrayList<>();
         for (int i = 0; i < fs.length; i++) {
@@ -34,10 +34,11 @@ public class AoFile {
         }
         Collections.sort(fList);
         File[] fsArray = fList.toArray(new File[fList.size()]);
+        Arrays.sort(fsArray);
         return fsArray;
     }
 
-    public List<File> getFileListInDir (String inDirS) {
+    public static List<File> getFileListInDir (String inDirS) {
         File[] fs = new File(inDirS).listFiles();
         List<File> fList = new ArrayList<>();
         for (int i = 0; i < fs.length; i++) {
@@ -99,13 +100,13 @@ public class AoFile {
      * @param infileDirS
      * @param outfileS
      */
-    public void mergeTxt(String infileDirS, String outfileS) {
-        File[] fs = this.getFileArrayInDir(infileDirS);
+    public static void mergeTxt(String infileDirS, String outfileS) {
+        File[] fs = AoFile.getFileArrayInDir(infileDirS);
         Arrays.sort(fs);
         try {
             String infileS = fs[0].getAbsolutePath();
-            BufferedReader br = this.readFile(infileS);
-            BufferedWriter bw = this.writeFile(outfileS);
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
             //read header
             bw.write(br.readLine());
             bw.newLine();
@@ -114,7 +115,7 @@ public class AoFile {
             //read context
             for (int i = 0; i < fs.length; i++) {
                 infileS = fs[i].getAbsolutePath();
-                br = this.readFile(infileS);
+                br = AoFile.readFile(infileS);
                 br.readLine();
                 String temp = null; //read header
                 int cnt = 0;
@@ -181,7 +182,7 @@ public class AoFile {
     }
 
 
-    public BufferedReader readFile(String infileS){
+    public static BufferedReader readFile(String infileS){
         BufferedReader br = null;
         if (infileS.endsWith(".vcf")) {
             br = IOUtils.getTextReader(infileS);
@@ -200,7 +201,7 @@ public class AoFile {
         return br;
     }
 
-    public BufferedWriter writeFile(String outfileS){
+    public static BufferedWriter writeFile(String outfileS){
         BufferedWriter bw = null;
         if (outfileS.endsWith(".txt")){
             bw=IOUtils.getTextWriter(outfileS);

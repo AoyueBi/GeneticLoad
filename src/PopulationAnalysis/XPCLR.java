@@ -2,6 +2,7 @@ package PopulationAnalysis;
 
 import AoUtils.AoFile;
 import AoUtils.CountSites;
+import AoUtils.SplitScript;
 import analysis.wheatVMap2.VMapDBUtils;
 import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TFloatArrayList;
@@ -38,6 +39,7 @@ public class XPCLR {
          */
 //        this.script_XPCLR();
 //        this.script_XPCLR_tetraploid();
+        new SplitScript().splitScript2("/Users/Aoyue/Documents/xpclr_20200301.sh",12,4);
 
 //        this.script_calSNPdensity();
 //        this.mergeTxt();
@@ -45,7 +47,7 @@ public class XPCLR {
 
 //        this.statisticSNPdensity();
 //        this.mergeTxt2();
-        this.convertXPCLRCoordinate();
+//        this.convertXPCLRCoordinate();
 //        this.test1();
 
 
@@ -191,19 +193,21 @@ public class XPCLR {
         String logDirS = "/data4/home/aoyue/vmap2/analysis/022_XPCLR/002_exon/log";
         String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
 //        String gwin = "0.005";
-        String gwin = "0.0002";
+//        String gwin = "0.0002";
+        String gwin = "0.0001";
 //        String snpWin = "1400";
         String snpWin = "200";
 //        String snpWin = "100";
+        String gridSize = "50000";
 //        String gridSize = "100000";
-        String gridSize = "2000";
+//        String gridSize = "2000";
 
         for (int j = 0; j < chrArr.length; j++) {
             int chr = Integer.parseInt(chrArr[j]);
             String pop1fileS = new File(infileDirS,"chr" + chrArr[j] + "_exon_vmap2.1_Cultivar_geno.txt").getAbsolutePath();
             String pop2fileS = new File(infileDirS,"chr" + chrArr[j] + "_exon_vmap2.1_Landrace_Europe_geno.txt").getAbsolutePath();
             String snpInfoS = new File(snpInfoDirS,"chr"+chrArr[j]+"_exon_vmap2.1.pos.Base.txt").getAbsolutePath();
-            String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_CLvsEU_exonRegion_100kbwindow").getAbsolutePath();
+            String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_CLvsEU_exonRegion_"+gwin+"_"+snpWin+"_"+gridSize).getAbsolutePath();
             String logS = new File(logDirS,new File(outfileS).getName().split(".gz")[0]+".txt").getAbsolutePath();
             System.out.println("XPCLR -xpclr " + pop1fileS + " " + pop2fileS + " " +
                     snpInfoS + " " + outfileS + " -w1 " + gwin + " " + snpWin + " "+

@@ -1,5 +1,6 @@
 package PopulationAnalysis;
 
+import AoUtils.AoFile;
 import AoUtils.AoMath;
 import AoUtils.CountSites;
 import gnu.trove.list.array.TDoubleArrayList;
@@ -40,29 +41,48 @@ public class Fst {
 
     /**
      * 将fst window scan 计算的FST,多个文件合并起来成为一个文件，并添加一列分组Group信息
-     * 暂时
+     * 暂时只将AE.tauschii合并起来吧
      *
      */
     public void mergeFSTwindow(){
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/004_fst_based2Mwindow_1Mstep/001";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/004_fst_based2Mwindow_1Mstep/002_merge/Pi_bySubspecies_20200208.txt";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/004_fst_based2Mwindow_1Mstep/001";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/004_fst_based2Mwindow_1Mstep/002_merge/FST_Ae.tauschii_2Mwindow_1Mstep_20200227.txt";
 
-        List<File> fsList = IOUtils.getVisibleFileListInDir(infileDirS);
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/008_fst_based2Mwindow_1Mstep/001";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/008_fst_based2Mwindow_1Mstep/002_merge/FST_Ae.tauschii_subLandrace_2Mwindow_1Mstep_20200227.txt";
+
+        File[] fs = AoFile.getFileArrayInDir(infileDirS);
         try {
-            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
-            bw.write("CHROM\tSub\tGroup\tPloidy\tMEAN_PI");
+            String infileS = fs[0].getAbsolutePath();
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            //read header
+            bw.write(br.readLine() + "\tGroup");
             bw.newLine();
-            for (int i = 0; i < fsList.size(); i++) {
-                String infileS = fsList.get(i).getAbsolutePath();
-                String name = new File(infileS).getName(); //Cultivar_chr1D_based2000000Window_1000000step.windowed.pi
-                String chr = name.substring(name.indexOf("chr")+3,name.indexOf("chr")+5);
-                String sub = chr.substring(1);
-                String group = name.substring(0,name.indexOf("_chr"));
-                String value = this.getMean(infileS);
-                bw.write(chr + "\t" + sub + "\t" + group + "\t" + "jj" + "\t" + value);
-                bw.newLine();
 
+            int cnttotal = 0;
+            //read context
+            for (int i = 0; i < fs.length; i++) {
+                infileS = fs[i].getAbsolutePath();
+                String name = fs[i].getName();
+                if (!name.contains("Ae.tauschii"))continue;
+                String group = name.substring(0,name.indexOf("_chr"));
+                br = AoFile.readFile(infileS);
+                br.readLine();
+                String temp = null; //read header
+                int cnt = 0;
+                while ((temp = br.readLine()) != null) {
+                    cnt++;
+                    cnttotal++;
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(temp).append("\t").append(group);
+                    bw.write(sb.toString());
+                    bw.newLine();
+                }
+                System.out.println(fs[i].getName() + "\t" + cnt);
             }
+            System.out.println("Total lines without header count is " + cnttotal + " at merged file " + outfileS );
+            br.close();
             bw.flush();
             bw.close();
 
