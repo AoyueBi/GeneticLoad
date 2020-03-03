@@ -26,16 +26,20 @@ public class AoMath {
 
     }
 
-    public List<Double> topK(){
+    public static List<Double> topK(){
         List<Double> out = new ArrayList<>();
 
-        List<Double> l = new ArrayList<>();
+        List<Double> l = new ArrayList<Double>();
 //        double[] array = {1,5,2,9,4,7,5.6,Double.POSITIVE_INFINITY,Double.POSITIVE_INFINITY};
-        double[] array = {1, 5, 2, 9, 4, 7, 5.6, 8.8, 9, 3.2, 4.5, 6.6, 1.2, 9.4, 4.5, 6.6, 1.2, 9.4, 9.8, 7.3 };
-        double k = 0.01;
+        Double[] array = {1.0, 5.0, 2.0, 9.0, 4.0, 7.0, 5.6, 8.8, 9.0, 3.2, 4.5, 6.6, 1.2, 9.4, 4.5, 6.6, 1.2, 9.4, 9.8, 7.3 };
+        double k = 0.2;
         int length = array.length;
-
-
+        double kk = k*length;
+        l = Arrays.asList(array);
+        Collections.sort(l,Collections.reverseOrder());
+        for (int i = 0; i < kk ; i++) {
+            System.out.println(l.get(i));
+        }
 
         return out;
     }

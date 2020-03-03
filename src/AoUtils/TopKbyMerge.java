@@ -14,7 +14,7 @@ public class TopKbyMerge{
         int i=first;
         int main=a[end];
         for(int j=first;j<end;j++){
-            if(a[j]<main){
+            if(a[j]< main){
                 int temp=a[j];
                 a[j]=a[i];
                 a[i]=temp;
