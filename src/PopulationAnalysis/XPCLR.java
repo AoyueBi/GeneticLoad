@@ -3,14 +3,18 @@ package PopulationAnalysis;
 import AoUtils.AoFile;
 import AoUtils.CountSites;
 import analysis.wheatVMap2.VMapDBUtils;
+import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TFloatArrayList;
 import gnu.trove.list.array.TIntArrayList;
 import pgl.format.table.ColumnTable;
 import pgl.format.table.RowTable;
+import pgl.graphcis.tablesaw.TablesawUtils;
 import pgl.utils.Dyad;
 import pgl.utils.IOUtils;
 import pgl.utils.PStringUtils;
 import pgl.utils.wheat.RefV1Utils;
+import tech.tablesaw.api.IntColumn;
+import tech.tablesaw.api.Table;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -52,8 +56,107 @@ public class XPCLR {
 //        this.convertXPCLRCoordinate();
 //        this.convertXPCLRCoordinate2();
 //        this.sortbyXPCLR();
-        this.getTopK();
+//        this.getTopK();
+        this.addGeneID();
 
+
+    }
+
+
+    /**
+     * 解析老师的结果
+     */
+    public void extractInfoFromVMap2 () {
+        int subLength = 150;
+        String outDirS = "/Users/feilu/Documents/analysisH/vmap2/002_genicSNP/001_genicSNPByChr/";
+        String vmapDirS = "/Volumes/Fei_HDD_Mac/VMap2.1/";
+        File[] fs  = new File(vmapDirS).listFiles();
+        fs = IOUtils.listFilesEndsWith(fs, ".gz");
+        List<File> vmapList = Arrays.asList(fs);
+        Collections.sort(vmapList);
+        String geneHCFileS = "/Users/feilu/Documents/analysisH/vmap2/001_geneHC/geneHC.txt";
+        Table t = TablesawUtils.readTsv(geneHCFileS); //读进表格里
+        System.out.println(t.structure());
+        t.sortAscendingOn("Chr", "TranStart"); //升序
+        IntColumn chrColumn = t.intColumn("chr"); //返回一个类 InColumn
+        int chrNum = chrColumn.countUnique(); //意思是一共有42条染色体
+        TIntList[] startLists = new TIntList[chrNum]; //所有的起始位点建立一个集合
+        TIntList[] endLists = new TIntList[chrNum]; //所有的终止位点建立一个集合
+        List<String>[] tranLists = new ArrayList[chrNum]; //每条染色体都有一个list
+        for (int i = 0; i < chrNum; i++) { //对list数组进行初始化
+            startLists[i] = new TIntArrayList();
+            endLists[i] = new TIntArrayList();
+            tranLists[i] = new ArrayList();
+        }
+        for (int i = 0; i < t.rowCount(); i++) {
+            startLists[Integer.parseInt(t.getString(i, 2))-1].add(Integer.parseInt(t.getString(i, 3)));
+            endLists[Integer.parseInt(t.getString(i, 2))-1].add(Integer.parseInt(t.getString(i, 4)));
+            tranLists[Integer.parseInt(t.getString(i, 2))-1].add(t.getString(i, 1));
+        }
+        vmapList.parallelStream().forEach(f -> {
+            int chrIndex = Integer.parseInt(f.getName().substring(3, 6))-1;
+            String outfileS = new File (outDirS, f.getName().replaceFirst(".vcf.gz", "_genicSNP.txt.gz")).getAbsolutePath();
+            int[] dc = {5, 6, 11, 12, 17, 18, 23, 24, 29, 30, 35, 36, 41, 42};
+            Arrays.sort(dc);
+            StringBuilder sb = new StringBuilder();
+            if (Arrays.binarySearch(dc, chrIndex+1) < 0) {
+                sb.append("ID\tChr\tPos\tRef\tAlt\tMajor\tMinor\tMaf\tAAF_ABD\tAAF_AB\tTranscript");
+            }
+            else {
+                sb.append("ID\tChr\tPos\tRef\tAlt\tMajor\tMinor\tMaf\tAAF_ABD\tAAF_D\tTranscript");
+            }
+            try {
+                BufferedReader br = IOUtils.getTextGzipReader(f.getAbsolutePath());
+                BufferedWriter bw = IOUtils.getTextGzipWriter(outfileS);
+                bw.write(sb.toString());
+                bw.newLine();
+                String temp = null;
+                while ((temp = br.readLine()).startsWith("#")) {}
+
+                List<String> l = null;
+                List<String> ll = null;
+                List<String> lll = null;
+                String info = null;
+                int currentPos = -1;
+                int posIndex = -1;
+                while ((temp = br.readLine()) != null) {
+                    sb.setLength(0);
+                    int currentSub = subLength;
+                    if (temp.length() < subLength) {
+                        currentSub = temp.length();
+                    }
+                    l = PStringUtils.fastSplit(temp.substring(0, currentSub));
+                    currentPos = Integer.parseInt(l.get(1));
+                    posIndex = startLists[chrIndex].binarySearch(currentPos);
+                    if (posIndex < 0) {
+                        posIndex = -posIndex-2; //确保该位点在起始位点的右边
+                    }
+                    if (posIndex < 0) continue; //如果不在起始位点的右边，那么就不在范围内，跳过该位点
+                    if (currentPos >= endLists[chrIndex].get(posIndex)) continue; //确保在末端位点的前面，若不在，也舍去
+                    sb.append(l.get(2)).append("\t").append(l.get(0)).append("\t").append(l.get(1)).append("\t").append(l.get(3));
+                    sb.append("\t").append(l.get(4)).append("\t");
+                    ll = PStringUtils.fastSplit(l.get(7), ";");
+                    lll = PStringUtils.fastSplit(ll.get(2).replaceFirst("AD=", ""),",");
+                    if (Integer.parseInt(lll.get(0)) > Integer.parseInt(lll.get(1))) {
+                        sb.append(l.get(3)).append("\t").append(l.get(4)).append("\t");
+                    }
+                    else {
+                        sb.append(l.get(4)).append("\t").append(l.get(3)).append("\t");
+                    }
+                    sb.append(ll.get(6).split("=")[1]).append("\t").append(ll.get(7).split("=")[1]).append("\t").append(ll.get(8).split("=")[1]);
+                    sb.append("\t").append(tranLists[chrIndex].get(posIndex));
+                    bw.write(sb.toString());
+                    bw.newLine();
+                }
+                bw.flush();
+                bw.close();
+                br.close();
+                System.out.println(f.getAbsolutePath() + " is completed.");
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
 
     }
 
@@ -61,9 +164,49 @@ public class XPCLR {
      * 将XPCLR的结果添加 gene 结果
      */
     public void addGeneID(){
-        String infileS = "";
-        String outfileS = "";
+        String geneHCFileS = "/Users/Aoyue/Documents/Data/wheat/gene/001_geneHC/geneHC.txt";
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/004_merge/001_CLvsEU_exonRegion_0.0001_200_50000_addHeader_sortbyXPCLR_top0.05.xpclr.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/004_merge/001_CLvsEU_exonRegion_0.0001_200_50000_addHeader_sortbyXPCLR_top0.05_addGeneID.xpclr.txt";
+
+        //先处理gene的表格，建立区间
+        Table t = TablesawUtils.readTsv(geneHCFileS);
+        System.out.println(t.structure());
+        t.sortAscendingOn("Chr","TranStart");
+        IntColumn chrColumn = t.intColumn("chr"); //返回一个类 InColumn
+        int chrNum = chrColumn.countUnique(); //意思是一共有42条染色体
+        TIntList[] startLists = new TIntList[chrNum]; //所有的起始位点建立一个集合
+        TIntList[] endLists = new TIntList[chrNum]; //所有的终止位点建立一个集合
+        List<String>[] tranLists = new ArrayList[chrNum]; //每条染色体都有一个list
+        for (int i = 0; i < chrNum; i++) { //对list数组进行初始化
+            startLists[i] = new TIntArrayList();
+            endLists[i] = new TIntArrayList();
+            tranLists[i] = new ArrayList();
+        }
+        for (int i = 0; i < t.rowCount(); i++) {
+            startLists[Integer.parseInt(t.getString(i, 2))-1].add(Integer.parseInt(t.getString(i, 3)));
+            endLists[Integer.parseInt(t.getString(i, 2))-1].add(Integer.parseInt(t.getString(i, 4)));
+            tranLists[Integer.parseInt(t.getString(i, 2))-1].add(t.getString(i, 1));
+        }
+
+
+        //再处理要添加列的文件
         try{
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            bw.write(br.readLine() + "\tGeneID");
+            bw.newLine();
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int currentPos = -1;
+            int posIndex = -1;
+            StringBuilder sb = new StringBuilder();
+            while ((temp = br.readLine()) != null){
+                l=PStringUtils.fastSplit(temp);
+                int chrIndex = Integer.parseInt(l.get(0));
+
+            }
+
+
 
         }catch (Exception e) {
             e.printStackTrace();
