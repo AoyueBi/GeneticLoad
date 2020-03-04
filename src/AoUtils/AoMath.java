@@ -5,9 +5,9 @@
  */
 package AoUtils;
 
-import pgl.format.table.RowTable;
 import gnu.trove.list.array.TDoubleArrayList;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import pgl.format.table.RowTable;
 import pgl.utils.IOUtils;
 import pgl.utils.PStringUtils;
 
@@ -26,7 +26,12 @@ public class AoMath {
 
     }
 
+    /**
+     *
+     * @return
+     */
     public static List<Double> topK(){
+        //我想根据pos xpclr 得到
         List<Double> out = new ArrayList<>();
 
         List<Double> l = new ArrayList<Double>();
@@ -38,7 +43,8 @@ public class AoMath {
         l = Arrays.asList(array);
         Collections.sort(l,Collections.reverseOrder());
         for (int i = 0; i < kk ; i++) {
-            System.out.println(l.get(i));
+//            System.out.println(l.get(i));
+            System.out.println(l.indexOf(l.get(i)));
         }
 
         return out;

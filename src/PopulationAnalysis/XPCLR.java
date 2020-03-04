@@ -2,7 +2,6 @@ package PopulationAnalysis;
 
 import AoUtils.AoFile;
 import AoUtils.CountSites;
-import AoUtils.SplitScript;
 import analysis.wheatVMap2.VMapDBUtils;
 import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TFloatArrayList;
@@ -39,16 +38,22 @@ public class XPCLR {
          */
 //        this.script_XPCLR();
 //        this.script_XPCLR_tetraploid();
-        new SplitScript().splitScript2("/Users/Aoyue/Documents/xpclr_20200301.sh",12,4);
+//        new SplitScript().splitScript2("/Users/Aoyue/Documents/xpclr_20200301.sh",12,4);
 
 //        this.script_calSNPdensity();
 //        this.mergeTxt();
 //        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/006_script/sh_xpclr_hexaploid20200224.sh",14,3);
 
 //        this.statisticSNPdensity();
+
+        /**
+         * 结果处理：合并，转换坐标，
+         */
 //        this.mergeTxt2();
 //        this.convertXPCLRCoordinate();
+//        this.convertXPCLRCoordinate2();
 //        this.test1();
+        this.sortbyXPCLR();
 
 
     }
@@ -63,6 +68,134 @@ public class XPCLR {
         double f = l.max();
         System.out.println(f);
 
+    }
+
+    public void sortbyXPCLR(){
+        double xpclr = Double.MIN_VALUE;
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/004_merge/001_CLvsEU_exonRegion_0.0001_200_50000_addHeader.xpclr.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/004_merge/001_CLvsEU_exonRegion_0.0001_200_50000_addHeader_sortbyXPCLR.xpclr.txt";
+        try{
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+
+            RowTable<String> t = new RowTable<>(infileS);
+            List<Record> l = new ArrayList<>();
+            int cnt = 0;
+            for (int i = 0; i < t.getRowNumber(); i++) {
+                cnt++;
+                String chr = t.getCell(i,0);
+                int grid = t.getCellAsInteger(i,1);
+                int N_SNPs = t.getCellAsInteger(i,2);
+                int pos = t.getCellAsInteger(i,3);
+                double genetic_pos = t.getCellAsDouble(i,4);
+                String xpclrS = t.getCell(i,5);
+                if (xpclrS.equals("inf")){
+                    xpclr=0.0;
+                }else {
+                    xpclr = Double.parseDouble(xpclrS);
+                }
+//                System.out.println(cnt);
+                if (t.getCell(i,6)==null || t.getCell(i,6)==""){
+                    System.out.println("jjjjjjjjjjjjjj");
+                }
+                double max_s = t.getCellAsDouble(i,6);
+                Record o = new Record(chr,grid,N_SNPs,pos,genetic_pos,xpclr,max_s);
+                l.add(o);
+            }
+
+        }catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+    }
+
+
+    class Record implements Comparable<Record>{
+        public String chr;
+        public int grid;
+        public int N_SNPs;
+        public int pos;
+        public double genetic_pos;
+        public double xpclr;
+        public double max_s;
+
+        public Record(String chr, int grid, int N_SNPs, int pos, double genetic_pos, double xpclr,double max_s){
+            this.chr=chr;
+            this.grid=grid;
+            this.N_SNPs=N_SNPs;
+            this.pos=pos;
+            this.genetic_pos=genetic_pos;
+            this.xpclr=xpclr;
+            this.max_s=max_s;
+        }
+
+        @Override
+        public int compareTo(Record o){
+            if(this.xpclr < o.xpclr){
+                return -1;
+            }else if (this.xpclr == o.xpclr){
+                return 0;
+            }
+            else{
+                return 1;
+            }
+        }
+    }
+
+    /**
+     * 将结果不进行坐标转换，只添加表头，把信息不完全的行删除
+     *
+     */
+    public void convertXPCLRCoordinate2(){
+
+        HashMap<String,Integer> hm = new HashMap<String, Integer>();
+        String[] chrArr = {"1A", "1B", "1D", "2A", "2B", "2D", "3A", "3B", "3D", "4A", "4B", "4D", "5A", "5B", "5D", "6A", "6B", "6D", "7A", "7B", "7D"};
+        for (int i = 0; i < chrArr.length; i++) {
+            String chr = chrArr[i];
+            hm.put(chr,i+1);
+        }
+        try {
+//            String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/002_merge/CLvsEU_exonRegion_100kbwindow.xpclr.txt";
+//            String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/002_merge/001_CLvsEU_exonRegion_100kbwindow_changeChrPos.xpclr.txt";
+
+            String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/004_merge/CLvsEU_exonRegion_0.0001_200_50000.xpclr.txt";
+            String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/004_merge/001_CLvsEU_exonRegion_0.0001_200_50000_addHeader.xpclr.txt";
+
+            BufferedReader br = new AoFile().readFile(infileS);
+            BufferedWriter bw = new AoFile().writeFile(outfileS);
+            bw.write("CHROM\tGrid\tN_SNPs\tPOS\tGenetic_pos\tXPCLR_score\tMax_s");
+            bw.newLine();
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp," ");
+                if (l.size() < 7)continue;
+                cnt++;
+                //2 217 1152 21716707.000000 0.651300 584.597428 0.000000
+                String chrS = l.get(0);
+                String posS = l.get(3);
+                int chrID = Integer.parseInt(chrS);
+                int posID = (int) Double.parseDouble(posS);
+//                String Chr = RefV1Utils.getChromosome(chrID,posID);
+//                int pos = RefV1Utils.getPosOnChromosome(chrID,posID);
+//                int ID = hm.get(Chr);
+                StringBuilder sb = new StringBuilder();
+                sb.append(chrID).append("\t").append(l.get(1)).append("\t").append(l.get(2)).append("\t").
+                        append(posID).append("\t").append(l.get(4)).append("\t").append(l.get(5)).
+                        append("\t").append(l.get(6));
+                bw.write(sb.toString());
+                bw.newLine();
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
     /**
@@ -81,12 +214,15 @@ public class XPCLR {
 //            String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/002_merge/CLvsEU_exonRegion_100kbwindow.xpclr.txt";
 //            String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/002_merge/001_CLvsEU_exonRegion_100kbwindow_changeChrPos.xpclr.txt";
 
-            String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/002_merge/CLvsEU_exonRegion_0.005m_1400snp_100kbwindoww.xpclr.txt";
-            String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/002_merge/002_CLvsEU_exonRegion_0.005m_1400snp_100kbwindoww_changeChrPos.xpclr.txt";
+//            String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/002_merge/CLvsEU_exonRegion_0.005m_1400snp_100kbwindoww.xpclr.txt";
+//            String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/002_merge/002_CLvsEU_exonRegion_0.005m_1400snp_100kbwindoww_changeChrPos.xpclr.txt";
+
+            String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/004_merge/CLvsEU_exonRegion_0.0001_200_50000.xpclr.txt";
+            String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/004_merge/002_CLvsEU_exonRegion_0.0001_200_50000_changeChrPos.xpclr.txt";
 
             BufferedReader br = new AoFile().readFile(infileS);
             BufferedWriter bw = new AoFile().writeFile(outfileS);
-            bw.write("CHR\tGrid\tN_SNPs\tPOS\tGenetic_pos\tXPCLR_score\tMax_s\tID");
+            bw.write("CHROM\tGrid\tN_SNPs\tPOS\tGenetic_pos\tXPCLR_score\tMax_s\tID");
             bw.newLine();
             String temp = null;
             List<String> l = new ArrayList<>();
@@ -121,9 +257,15 @@ public class XPCLR {
     }
 
     public void mergeTxt2(){
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/001_out";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/002_merge/CLvsEU_exonRegion_0.005m_1400snp_100kbwindoww.xpclr.txt";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/001_out";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/002_merge/CLvsEU_exonRegion_0.005m_1400snp_100kbwindoww.xpclr.txt";
+//        new AoFile().mergeTxtwithoutHeader(infileDirS,outfileS);
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/003_out_snpWin200";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/004_merge/CLvsEU_exonRegion_0.0001_200_50000.xpclr.txt";
         new AoFile().mergeTxtwithoutHeader(infileDirS,outfileS);
+
+
     }
 
     /**

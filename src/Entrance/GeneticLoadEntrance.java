@@ -5,9 +5,9 @@
  */
 package Entrance;
 
-import AoUtils.AoMath;
 import GermplasmInfo.GermplasmInfo;
 import Plot.PCA;
+import PopulationAnalysis.XPCLR;
 import WheatGeneticLoad.DeleteriousBiologyAoyue;
 
 import java.text.SimpleDateFormat;
@@ -81,8 +81,8 @@ public class GeneticLoadEntrance {
 //        new Pi();
 //        new TajimaD();
 //        new AnnotationCrossover();
-//        new XPCLR();
-        AoMath.topK();
+        new XPCLR();
+//        AoMath.topK();
 
 
     }
