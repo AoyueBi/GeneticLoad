@@ -78,11 +78,10 @@ public class XPCLR {
             BufferedReader br = AoFile.readFile(infileS);
             BufferedWriter bw = AoFile.writeFile(outfileS);
 
+            //进行 list 的构建
             RowTable<String> t = new RowTable<>(infileS);
             List<Record> l = new ArrayList<>();
-            int cnt = 0;
             for (int i = 0; i < t.getRowNumber(); i++) {
-                cnt++;
                 String chr = t.getCell(i,0);
                 int grid = t.getCellAsInteger(i,1);
                 int N_SNPs = t.getCellAsInteger(i,2);
@@ -94,14 +93,23 @@ public class XPCLR {
                 }else {
                     xpclr = Double.parseDouble(xpclrS);
                 }
-//                System.out.println(cnt);
-                if (t.getCell(i,6)==null || t.getCell(i,6)==""){
-                    System.out.println("jjjjjjjjjjjjjj");
-                }
+                if (t.getCell(i,6).isEmpty())continue;
                 double max_s = t.getCellAsDouble(i,6);
                 Record o = new Record(chr,grid,N_SNPs,pos,genetic_pos,xpclr,max_s);
                 l.add(o);
             }
+
+            //排序并写出排序后的文件
+            Collections.sort(l);
+            bw.write(br.readLine());
+            bw.newLine();
+            for (int i = 0; i < l.size(); i++) {
+                bw.write(l.get(i).getString());
+                bw.newLine();
+            }
+            br.close();
+            bw.flush();
+            bw.close();
 
         }catch (Exception e) {
             e.printStackTrace();
@@ -130,15 +138,23 @@ public class XPCLR {
             this.max_s=max_s;
         }
 
+        public String getString(){
+            StringBuilder sb = new StringBuilder();
+            sb.append(this.chr).append("\t").append(this.grid).append("\t").append(this.N_SNPs).append("\t").
+                    append(this.pos).append("\t").append(genetic_pos).append("\t").append(this.xpclr).
+                    append("\t").append(this.max_s);
+            return sb.toString();
+        }
+
         @Override
         public int compareTo(Record o){
             if(this.xpclr < o.xpclr){
-                return -1;
+                return 1; //从高到低排序
             }else if (this.xpclr == o.xpclr){
                 return 0;
             }
             else{
-                return 1;
+                return -1;
             }
         }
     }
