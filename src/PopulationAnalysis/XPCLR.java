@@ -57,6 +57,21 @@ public class XPCLR {
 
     }
 
+    /**
+     * 将XPCLR的结果添加 gene 结果
+     */
+    public void addGeneID(){
+        String infileS = "";
+        String outfileS = "";
+        try{
+
+        }catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+
+    }
 
 
     //获取topK的结果，只输出CHROM POS	Genetic_pos	XPCLR_score
