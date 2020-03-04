@@ -25,6 +25,27 @@ public class AoFile {
         
     }
 
+    public static int getFileRowNumber(String infileS){
+        int out = 0;
+        try{
+            BufferedReader br = AoFile.readFile(infileS);
+            String temp = br.readLine();
+            int cnt=0;
+            while((temp=br.readLine()) != null){
+                cnt++;
+            }
+            br.close();
+            out = cnt;
+
+        }catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        return out;
+
+    }
+
     public static File[] getFileArrayInDir (String inDirS) {
         File[] fs = new File(inDirS).listFiles();
         List<File> fList = new ArrayList<>();

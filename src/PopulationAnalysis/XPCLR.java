@@ -3,7 +3,6 @@ package PopulationAnalysis;
 import AoUtils.AoFile;
 import AoUtils.CountSites;
 import analysis.wheatVMap2.VMapDBUtils;
-import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TFloatArrayList;
 import gnu.trove.list.array.TIntArrayList;
 import pgl.format.table.ColumnTable;
@@ -52,21 +51,37 @@ public class XPCLR {
 //        this.mergeTxt2();
 //        this.convertXPCLRCoordinate();
 //        this.convertXPCLRCoordinate2();
-//        this.test1();
-        this.sortbyXPCLR();
+//        this.sortbyXPCLR();
+        this.getTopK();
 
 
     }
 
-    public void test1(){
-        String a = "40700.000000";
-//        String c = a.split(".")[0];
-        int b = (int) Double.parseDouble(a);
-        System.out.println(b);
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/002_merge/001_CLvsEU_exonRegion_100kbwindow_changeChrPos.xpclr.txt";
-        TDoubleArrayList l = new AoFile().getDoubleList(infileS,5);
-        double f = l.max();
-        System.out.println(f);
+
+
+    //获取topK的结果，只输出CHROM POS	Genetic_pos	XPCLR_score
+    public void getTopK(){
+        double k = 0.01;
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/004_merge/001_CLvsEU_exonRegion_0.0001_200_50000_addHeader_sortbyXPCLR.xpclr.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/004_merge/001_CLvsEU_exonRegion_0.0001_200_50000_addHeader_sortbyXPCLR_top0.05.xpclr.txt";
+        try{
+            int n = AoFile.getFileRowNumber(infileS);
+            double line = k*n;
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            bw.write(br.readLine());
+            bw.newLine();
+            for (int i = 0; i < line; i++) {
+                bw.write(br.readLine());
+                bw.newLine();
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+        }catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
 
     }
 
