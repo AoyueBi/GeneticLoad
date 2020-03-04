@@ -1,6 +1,7 @@
 package PopulationAnalysis;
 
 import AoUtils.AoFile;
+import AoUtils.AoMath;
 import AoUtils.CountSites;
 import analysis.wheatVMap2.VMapDBUtils;
 import gnu.trove.list.TIntList;
@@ -185,7 +186,7 @@ public class XPCLR {
         for (int i = 0; i < t.rowCount(); i++) {
             startLists[Integer.parseInt(t.getString(i, 2))-1].add(Integer.parseInt(t.getString(i, 3)));
             endLists[Integer.parseInt(t.getString(i, 2))-1].add(Integer.parseInt(t.getString(i, 4)));
-            tranLists[Integer.parseInt(t.getString(i, 2))-1].add(t.getString(i, 1));
+            tranLists[Integer.parseInt(t.getString(i, 2))-1].add(t.getString(i, 0));
         }
 
 
@@ -201,19 +202,30 @@ public class XPCLR {
             int posIndex = -1;
             StringBuilder sb = new StringBuilder();
             while ((temp = br.readLine()) != null){
+                sb.setLength(0);
                 l=PStringUtils.fastSplit(temp);
                 int chrIndex = Integer.parseInt(l.get(0));
-
+                currentPos = Integer.parseInt(l.get(3));
+                posIndex = startLists[chrIndex].binarySearch(currentPos);
+                if (posIndex < 0) {
+                    posIndex = -posIndex-2; //确保该位点在起始位点的右边
+                }
+                if (posIndex < 0) continue; //如果不在起始位点的右边，那么就不在范围内，跳过该位点
+                if (currentPos >= endLists[chrIndex].get(posIndex)) continue; //确保在末端位点的前面，若不在，也舍去
+                String trans = tranLists[chrIndex].get(posIndex);
+                sb.append(temp).append("\t").append(trans);
+                bw.write(sb.toString());
+                bw.newLine();
             }
+            br.close();
+            bw.flush();
+            bw.close();
 
-
-
+            new AoMath().countCaseInGroup(outfileS,7);
         }catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
         }
-
-
     }
 
 
