@@ -58,8 +58,9 @@ public class XPCLR {
 //        this.convertXPCLRCoordinate2();
 //        this.sortbyXPCLR();
 //        this.getTopK();
-        this.addGeneID();
+//        this.addGeneID();
 
+        this.addGeneID_onlyGridPos();
 
     }
 
@@ -162,13 +163,14 @@ public class XPCLR {
     }
 
     /**
-     * 将XPCLR的结果添加 gene 结果
+     * 将XPCLR的结果添加 gene 结果,只添加xpclr输出文件中的pos单个位点的结果
      */
-    public void addGeneID(){
+    public void addGeneID_onlyGridPos(){
         String geneHCFileS = "/Users/Aoyue/Documents/Data/wheat/gene/001_geneHC/geneHC.txt";
         String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/004_merge/001_CLvsEU_exonRegion_0.0001_200_50000_addHeader_sortbyXPCLR_top0.05.xpclr.txt";
         String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/004_merge/001_CLvsEU_exonRegion_0.0001_200_50000_addHeader_sortbyXPCLR_top0.05_addGeneID.xpclr.txt";
 
+        Set<String> transSet = new HashSet<>();
         //先处理gene的表格，建立区间
         Table t = TablesawUtils.readTsv(geneHCFileS);
         System.out.println(t.structure());
@@ -197,6 +199,9 @@ public class XPCLR {
             bw.write(br.readLine() + "\tGeneID");
             bw.newLine();
             String temp = null;
+//            String temp = br.readLine();
+
+            String trans = null;
             List<String> l = new ArrayList<>();
             int currentPos = -1;
             int posIndex = -1;
@@ -206,15 +211,51 @@ public class XPCLR {
                 l=PStringUtils.fastSplit(temp);
                 int chrIndex = Integer.parseInt(l.get(0));
                 currentPos = Integer.parseInt(l.get(3));
+                // 对 currentPos所在region内的所有pos进行判断
+//                if(currentPos < 50000){ //说明在起始位点
+//                    for (int i = 0; i < currentPos; i++) {
+//                        int pos = i+1;
+//                        posIndex = startLists[chrIndex].binarySearch(pos);
+//                        if (posIndex < 0) {
+//                            posIndex = -posIndex-2; //确保该位点在起始位点的右边
+//                        }
+//                        if (posIndex < 0) continue; //如果不在起始位点的右边，那么就不在范围内，跳过该位点
+//                        if (pos >= endLists[chrIndex].get(posIndex)) continue; //确保在末端位点的前面，若不在，也舍去
+//                        trans = tranLists[chrIndex].get(posIndex);
+//                        transSet.add(trans);
+//                    }
+//
+//                }else if (currentPos > 50000){ //说明在中间区域
+//                    for (int i = currentPos-50000; i < currentPos; i++) {
+//                        int pos = i+1;
+//                        posIndex = startLists[chrIndex].binarySearch(pos);
+//                        if (posIndex < 0) {
+//                            posIndex = -posIndex-2; //确保该位点在起始位点的右边
+//                        }
+//                        if (posIndex < 0) continue; //如果不在起始位点的右边，那么就不在范围内，跳过该位点
+//                        if (pos >= endLists[chrIndex].get(posIndex)) continue; //确保在末端位点的前面，若不在，也舍去
+//                        trans = tranLists[chrIndex].get(posIndex);
+//                        transSet.add(trans);
+//                    }
+//                }
                 posIndex = startLists[chrIndex].binarySearch(currentPos);
                 if (posIndex < 0) {
                     posIndex = -posIndex-2; //确保该位点在起始位点的右边
                 }
                 if (posIndex < 0) continue; //如果不在起始位点的右边，那么就不在范围内，跳过该位点
                 if (currentPos >= endLists[chrIndex].get(posIndex)) continue; //确保在末端位点的前面，若不在，也舍去
-                String trans = tranLists[chrIndex].get(posIndex);
+                trans = tranLists[chrIndex].get(posIndex);
+
                 sb.append(temp).append("\t").append(trans);
                 bw.write(sb.toString());
+                bw.newLine();
+            }
+
+
+
+            List<String> goalTransl = new ArrayList<>(transSet);
+            for (int i = 0; i < goalTransl.size(); i++) {
+                bw.write(goalTransl.get(i));
                 bw.newLine();
             }
             br.close();
@@ -222,6 +263,114 @@ public class XPCLR {
             bw.close();
 
             new AoMath().countCaseInGroup(outfileS,7);
+        }catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+
+    /**
+     * 将XPCLR的结果添加 gene 结果
+     */
+    public void addGeneID(){
+        String geneHCFileS = "/Users/Aoyue/Documents/Data/wheat/gene/001_geneHC/geneHC.txt";
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/004_merge/001_CLvsEU_exonRegion_0.0001_200_50000_addHeader_sortbyXPCLR_top0.05.xpclr.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/004_merge/001_CLvsEU_exonRegion_0.0001_200_50000_addHeader_sortbyXPCLR_top0.05_addGeneID.xpclr.txt";
+
+        Set<String> transSet = new HashSet<>();
+        //先处理gene的表格，建立区间
+        Table t = TablesawUtils.readTsv(geneHCFileS);
+        System.out.println(t.structure());
+        t.sortAscendingOn("Chr","TranStart");
+        IntColumn chrColumn = t.intColumn("chr"); //返回一个类 InColumn
+        int chrNum = chrColumn.countUnique(); //意思是一共有42条染色体
+        TIntList[] startLists = new TIntList[chrNum]; //所有的起始位点建立一个集合
+        TIntList[] endLists = new TIntList[chrNum]; //所有的终止位点建立一个集合
+        List<String>[] tranLists = new ArrayList[chrNum]; //每条染色体都有一个list
+        for (int i = 0; i < chrNum; i++) { //对list数组进行初始化
+            startLists[i] = new TIntArrayList();
+            endLists[i] = new TIntArrayList();
+            tranLists[i] = new ArrayList();
+        }
+        for (int i = 0; i < t.rowCount(); i++) {
+            startLists[Integer.parseInt(t.getString(i, 2))-1].add(Integer.parseInt(t.getString(i, 3)));
+            endLists[Integer.parseInt(t.getString(i, 2))-1].add(Integer.parseInt(t.getString(i, 4)));
+            tranLists[Integer.parseInt(t.getString(i, 2))-1].add(t.getString(i, 0));
+        }
+
+
+        //再处理要添加列的文件
+        try{
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+//            bw.write(br.readLine() + "\tGeneID");
+//            bw.newLine();
+//            String temp = null;
+            String temp = br.readLine();
+
+            String trans = null;
+            List<String> l = new ArrayList<>();
+            int currentPos = -1;
+            int posIndex = -1;
+            StringBuilder sb = new StringBuilder();
+            while ((temp = br.readLine()) != null){
+                sb.setLength(0);
+                l=PStringUtils.fastSplit(temp);
+                int chrIndex = Integer.parseInt(l.get(0));
+                currentPos = Integer.parseInt(l.get(3));
+                // 对 currentPos所在region内的所有pos进行判断
+                if(currentPos < 50000){ //说明在起始位点
+                    for (int i = 0; i < currentPos; i++) {
+                        int pos = i+1;
+                        posIndex = startLists[chrIndex].binarySearch(pos);
+                        if (posIndex < 0) {
+                            posIndex = -posIndex-2; //确保该位点在起始位点的右边
+                        }
+                        if (posIndex < 0) continue; //如果不在起始位点的右边，那么就不在范围内，跳过该位点
+                        if (pos >= endLists[chrIndex].get(posIndex)) continue; //确保在末端位点的前面，若不在，也舍去
+                        trans = tranLists[chrIndex].get(posIndex);
+                        transSet.add(trans);
+                    }
+
+                }else if (currentPos > 50000){ //说明在中间区域
+                    for (int i = currentPos-50000; i < currentPos; i++) {
+                        int pos = i+1;
+                        posIndex = startLists[chrIndex].binarySearch(pos);
+                        if (posIndex < 0) {
+                            posIndex = -posIndex-2; //确保该位点在起始位点的右边
+                        }
+                        if (posIndex < 0) continue; //如果不在起始位点的右边，那么就不在范围内，跳过该位点
+                        if (pos >= endLists[chrIndex].get(posIndex)) continue; //确保在末端位点的前面，若不在，也舍去
+                        trans = tranLists[chrIndex].get(posIndex);
+                        transSet.add(trans);
+                    }
+                }
+//                posIndex = startLists[chrIndex].binarySearch(currentPos);
+//                if (posIndex < 0) {
+//                    posIndex = -posIndex-2; //确保该位点在起始位点的右边
+//                }
+//                if (posIndex < 0) continue; //如果不在起始位点的右边，那么就不在范围内，跳过该位点
+//                if (currentPos >= endLists[chrIndex].get(posIndex)) continue; //确保在末端位点的前面，若不在，也舍去
+//                trans = tranLists[chrIndex].get(posIndex);
+//
+//                sb.append(temp).append("\t").append(trans);
+//                bw.write(sb.toString());
+//                bw.newLine();
+            }
+
+
+
+            List<String> goalTransl = new ArrayList<>(transSet);
+            for (int i = 0; i < goalTransl.size(); i++) {
+                bw.write(goalTransl.get(i));
+                bw.newLine();
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+
+//            new AoMath().countCaseInGroup(outfileS,7);
         }catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
