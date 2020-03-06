@@ -12,7 +12,15 @@ public class GOanalysis {
 
     public GOanalysis(){
 //        this.changeGeneVersion();
-        this.mkGO2gene();
+//        this.mkGO2gene();
+        this.addOnt();
+
+    }
+
+    /**
+     * 向结果文件中添加Gene Ontology分类信息
+     */
+    public void addOnt(){
 
     }
 
@@ -24,15 +32,19 @@ public class GOanalysis {
             String infileS = "/Users/Aoyue/Documents/Data/wheat/gene/iwgsc_refseqv1.0_FunctionalAnnotation_v1/iwgsc_refseqv1.0_FunctionalAnnotation_v1__HCgenes_v1.0-repr.TEcleaned.TAB";
             String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/007_GO/001_input/TERM2gene_v1__HCgenes_v1.0_repr.TEcleaned.txt";
             String outfileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/007_GO/001_input/TERM2name_v1__HCgenes_v1.0_repr.TEcleaned.txt";
+            String outfileS3 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/007_GO/001_input/TERM2ont_v1__HCgenes_v1.0_repr.TEcleaned.txt";
+
 
             BufferedReader br = new AoFile().readFile(infileS);
             BufferedWriter bw = new AoFile().writeFile(outfileS);
             BufferedWriter bw2 = new AoFile().writeFile(outfileS2);
+            BufferedWriter bw3 = new AoFile().writeFile(outfileS3);
 
             AoFile.readheader(infileS);
             String temp = br.readLine();
             String GOid = null;
             String name = null;
+            String ont = null;
             List<String> l = new ArrayList<>();
             List<String> go = new ArrayList<>();
             List<String> gof = new ArrayList<>();
@@ -51,10 +63,14 @@ public class GOanalysis {
                 for (int i = 0; i < go.size(); i++) {
                     GOid = go.get(i).split(" ")[0];
                     name = go.get(i).substring(15);
+                    ont = go.get(i).split(" ")[1].substring(0,2);
                     bw.write(GOid + "\t" + trans);
                     bw2.write(GOid + "\t" + name);
+                    bw3.write(GOid+"\t"+ont);
+
                     bw.newLine();
                     bw2.newLine();
+                    bw3.newLine();
                 }
             }
             br.close();
@@ -62,6 +78,8 @@ public class GOanalysis {
             bw.close();
             bw2.flush();
             bw2.close();
+            bw3.flush();
+            bw3.close();
             System.out.println();
         } catch (Exception e) {
             e.printStackTrace();
