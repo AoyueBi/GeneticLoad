@@ -18,7 +18,7 @@ public class R {
     public void changeXaxisLabel(){
         String infileS = "/Users/Aoyue/project/wheatVMapII/001_germplasm/GermplasmDB/WheatVMapII_index_subspecies.txt";
         new AoFile().readheader(infileS);
-        HashMap<Integer,String> hm = new AoFile().getHashMap2(infileS,0,3);
+        HashMap<Integer,String> hm = new AoFile().getHashMapintKey(infileS,0,3);
 //        int[] index = {2,3,4,7,10,11,19,13,20,17,14};
         int[] index = {0,10,11,19,13,20,17,14};
         //scale_x_discrete(limits=c("2", "3", "4"),labels = c("wild","Domes","Free"))

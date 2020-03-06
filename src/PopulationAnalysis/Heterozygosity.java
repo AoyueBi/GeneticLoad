@@ -314,7 +314,7 @@ public class Heterozygosity {
 //            String infileS = new File(infileDirS,"chr" + chrArr[i] + "_vmap2.1_heter_SNPbased_Landrace.txt.gz").getAbsolutePath();
 //            String outfileS = new File(outfileDirS,"chr" + chrArr[i] + "_vmap2.1_heter_SNPbased_Landrace_2Mwindow_1Mstep.txt").getAbsolutePath();
 //
-//            HashMap<Integer,String> hm = new AoFile().getHashMap2(infileS,1,2);
+//            HashMap<Integer,String> hm = new AoFile().getHashMapintKey(infileS,1,2);
 //            new Bin().calwindowstep(chrArr[i],hm,2000000,1000000,outfileS);
 //        }
 
@@ -338,7 +338,7 @@ public class Heterozygosity {
                 }
 
                 String chr = f.getName().substring(3,5);
-                HashMap<Integer,String> hm = new AoFile().getHashMap2(infileS,1,2);
+                HashMap<Integer,String> hm = new AoFile().getHashMapintKey(infileS,1,2);
                 new Bin().calwindowstep(chr,hm,2000000,1000000,outfileS);
 
                 System.out.println(f.getName() + "\tis completed at " + outfileS);
@@ -397,14 +397,14 @@ public class Heterozygosity {
     public void windowCal(){
 //        String infileS= "/Users/Aoyue/Documents/chr002.subgenome.maf0.01.SNP_bi.cultivar.vcf.txt";
 //        String outfileS = "/Users/Aoyue/Documents/chr002_Cultivar_100kwindow50kstep.txt";
-//        HashMap<Integer,String> hm = new AoFile().getHashMap2(infileS,1,2);
+//        HashMap<Integer,String> hm = new AoFile().getHashMapintKey(infileS,1,2);
         //        new Bin().calwindow("2",hm,1000000,outfileS);
 //        new Bin().calwindowstep("2",hm,100000,50000,outfileS);
 
 
         String infileS= "/Users/Aoyue/Documents/a.txt";
         String outfileS = "/Users/Aoyue/Documents/b.txt";
-        HashMap<Integer,String> hm = new AoFile().getHashMap2(infileS,1,2);
+        HashMap<Integer,String> hm = new AoFile().getHashMapintKey(infileS,1,2);
 //        new Bin().calwindowstep_ResidualHeterozygosity("2A",hm,2000000,1000000,outfileS);
 
     }
@@ -417,7 +417,7 @@ public class Heterozygosity {
         //***************************** step one : 确定其倍性，根据倍性计算 ****************************//
         String dbfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/000_prepareData/001_input/taxaList.txt";
         new AoFile().readheader(dbfileS);
-        HashMap<String,String> hm = new AoFile().getHashMap(dbfileS,10,8);
+        HashMap<String,String> hm = new AoFile().getHashMapStringKey(dbfileS,10,8);
         System.out.println(hm.entrySet());
         List<String> groupl = new ArrayList<String>(hm.keySet());
         Collections.sort(groupl);

@@ -59,7 +59,7 @@ public class Tree {
     public void test(){
         String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/006_fromxuebo/002_labels/trash.txt";
         String infile2S = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/006_fromxuebo/002_labels/key.txt";
-        HashMap<String, String> hm = new AoFile().getHashMap(infileS,1,0);
+        HashMap<String, String> hm = new AoFile().getHashMapStringKey(infileS,1,0);
         List<String> l = new AoFile().getStringList(infile2S,0);
         for (int i = 0; i < l.size(); i++) {
             System.out.println(l.get(i) + "\t" + hm.get(l.get(i)));

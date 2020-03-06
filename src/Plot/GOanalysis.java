@@ -6,6 +6,7 @@ import pgl.utils.PStringUtils;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class GOanalysis {
@@ -21,6 +22,12 @@ public class GOanalysis {
      * 向结果文件中添加Gene Ontology分类信息
      */
     public void addOnt(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/007_GO/002_out/test.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/007_GO/002_out/002_test_addOnt.txt";
+        String ontfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/007_GO/001_input/TERM2ont_v1__HCgenes_v1.0_repr.TEcleaned.txt";
+        HashMap<String,String> hm = AoFile.getHashMapStringKey_withoutHeader(ontfileS,0,1);
+
+        AoFile.addColumbyString(infileS,1,hm,"ONTOLOGY");
 
     }
 

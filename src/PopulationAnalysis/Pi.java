@@ -31,7 +31,7 @@ public class Pi {
      */
     public void getMeanPIvaluefromLandraceWAEAEU(){
         String taxaList = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/groupInfo.txt";
-        HashMap<String,String> hm = new AoFile().getHashMap(taxaList,0,1);
+        HashMap<String,String> hm = new AoFile().getHashMapStringKey(taxaList,0,1);
 
         String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/102_Pi/008_pi_based2Mwindow_1Mstep";
         String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/102_Pi/009_meanPI/Pi_bySubspecies_20200208.txt";
@@ -166,7 +166,7 @@ public class Pi {
      */
     public void getMeanPIvalue(){
         String taxaList = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/taxaList.txt";
-        HashMap<String,String> hm = new AoFile().getHashMap(taxaList,11,8);
+        HashMap<String,String> hm = new AoFile().getHashMapStringKey(taxaList,11,8);
 
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/102_Pi/002_pi_based2Mwindow_1Mstep";
 //        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/102_Pi/003_meadPI/Pi_bySubspecies_20200208.txt";

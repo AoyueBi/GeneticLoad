@@ -34,7 +34,7 @@ public class PCA {
         String groupDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/008_treeValidatedGroup_bySubspecies";
         HashMap<String,String> hm = new AoFile().getHashMapwithFileDirs(groupDirS);
         String continentS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/000_prepareData/001_input/taxaList.txt";
-        HashMap<String,String> hm2 = new AoFile().getHashMap(continentS,0,5);
+        HashMap<String,String> hm2 = new AoFile().getHashMapStringKey(continentS,0,5);
 
         String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/006_fromxuebo/05_PCA/000_PC_ABsubgenome_maf0.1.txt";
         String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/006_fromxuebo/05_PCA/001_PC_ABsubgenome_maf0.1_addGroup.txt";

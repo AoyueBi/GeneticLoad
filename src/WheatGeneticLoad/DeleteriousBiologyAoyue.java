@@ -604,8 +604,8 @@ public class DeleteriousBiologyAoyue {
         String infileS =  "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/002_VMapIIDepth/taxaDepth_Asub.summary.txt";
         String infile2S = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/002_VMapIIDepth/taxaDepth_Dsub.summary.txt";
         String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/002_VMapIIDepth/taxaDepth_summary.txt";
-        HashMap<String,String> hm1 = new AoFile().getHashMap(infileS,0,2);
-        HashMap<String,String> hm2 = new AoFile().getHashMap(infile2S,0,2);
+        HashMap<String,String> hm1 = new AoFile().getHashMapStringKey(infileS,0,2);
+        HashMap<String,String> hm2 = new AoFile().getHashMapStringKey(infile2S,0,2);
         Set<String> s = new HashSet<>();
         for (int i = 0; i < hm1.size(); i++) {
             s.addAll(hm1.keySet());

@@ -625,7 +625,7 @@ public class XPCLR {
     public void statisticSNPdensity(){
         String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/004_snpDensity/exon_vmap2.1.pos.Base.density_100k.txt";
         String hmfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_chrList/ChrID.txt";
-        HashMap<String,String> hm = new AoFile().getHashMap(hmfileS,0,3);
+        HashMap<String,String> hm = new AoFile().getHashMapStringKey(hmfileS,0,3);
         new AoFile().addColumbyString(infileS,0,hm,"Subgenome");
     }
 

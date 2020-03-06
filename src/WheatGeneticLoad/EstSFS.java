@@ -769,7 +769,7 @@ public class EstSFS {
             String chr = new File(infileS).getName().substring(3,6);
 //            String anceS = new File(anceDirS,"chr"+chr+"_hv_brdis.exon.ancestralAllele.txt.gz").getAbsolutePath();
             String anceS = new File(anceDirS,"chr" + chr + ".hovul.brdis.orjap.exon.probs.ancestral.txt.gz").getAbsolutePath();
-            HashMap<Integer,String> hm = new AoFile().getHashMap2(anceS,1,2);
+            HashMap<Integer,String> hm = new AoFile().getHashMapintKey(anceS,1,2);
             new AoFile().addColumbyint(infileS,2,hm,"Ancestral_hovul_brdis_orjap");
         }
     }

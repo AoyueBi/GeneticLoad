@@ -244,10 +244,10 @@ public class AoFile {
     /**
      * add colum to a file
      */
-    public void addColumbyString(String infileS,int keyIDindex, HashMap<String,String> hm,String headername){
+    public static void addColumbyString(String infileS,int keyIDindex, HashMap<String,String> hm,String headername){
         String outfileS = null;
-        String outfileDirS = new File(infileS).getParent(); //获取输入文件的父目录
-        outfileDirS = new File(outfileDirS).getParent(); //根据输入文件的父目录获取上一级父目录；
+        String outfileDirS = new File(infileS).getParent(); //获取输入文件的目录
+        outfileDirS = new File(outfileDirS).getParent(); //根据输入文件的目录获取上一级父目录；
         outfileDirS = outfileDirS + "/A_out"; //根据父目录路径 创建输出文件目录
         new File(outfileDirS).mkdirs(); //创建输出文件目录
         outfileS = new File(outfileDirS,new File(infileS).getName()).getAbsolutePath();
@@ -367,6 +367,8 @@ public class AoFile {
 
     /**
      * return a hashmap from a file dirs
+     * 每个文件的名字是分组信息，文件内的taxa是key
+     * 此目录下的所有文件都建立这样的关系，返回到同一个hashmap中
      *
      * @param infileDirS
      * @return
@@ -421,7 +423,7 @@ public class AoFile {
      * @param valuecolumnIndex
      * @return
      */
-    public HashMap<Integer,String> getHashMap2(String infileS, int keycolummIndex, int valuecolumnIndex){
+    public HashMap<Integer,String> getHashMapintKey(String infileS, int keycolummIndex, int valuecolumnIndex){
         String out = null;
         RowTable<String> t = new RowTable<>(infileS);
         HashMap<Integer,String> hm = new HashMap<>();
@@ -444,7 +446,7 @@ public class AoFile {
      * @param valuecolumnIndex
      * @return
      */
-    public HashMap<String,String> getHashMap(String infileS, int keycolummIndex, int valuecolumnIndex){
+    public HashMap<String,String> getHashMapStringKey(String infileS, int keycolummIndex, int valuecolumnIndex){
         String out = null;
         RowTable<String> t = new RowTable<>(infileS);
         HashMap<String,String> hm = new HashMap<>();
@@ -456,6 +458,40 @@ public class AoFile {
         System.out.println("HashMap contains " + hm.size() + " pairs");
 
         
+        return hm;
+    }
+
+    /**
+     *return a hashmap from a file
+     *
+     * @param infileS
+     * @param keycolummIndex
+     * @param valuecolumnIndex
+     * @return
+     */
+    public static HashMap<String,String> getHashMapStringKey_withoutHeader(String infileS, int keycolummIndex, int valuecolumnIndex){
+        HashMap<String,String> hm = new HashMap<>();
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            String temp = null; //no header
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+                String key = l.get(keycolummIndex);
+                String value = l.get(valuecolumnIndex);
+                hm.put(key,value);
+            }
+            br.close();
+            System.out.println("The file has " + cnt + " lines without counting header.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+        System.out.println("HashMap contains " + hm.size() + " pairs");
+
+
         return hm;
     }
 

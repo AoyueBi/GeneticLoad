@@ -120,19 +120,19 @@ public class GermplasmInfo {
     public void addInfo(){
         String dbfileS ="/Users/Aoyue/project/wheatVMapII/001_germplasm/GermplasmDB/001_toFeiLu/wheatVMapII_germplasmInfo_20191225.txt";
         String taxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/000_prepareData/001_input/taxaList.txt";
-//        HashMap<String,String> hm = new AoFile().getHashMap(dbfileS,4,5);
+//        HashMap<String,String> hm = new AoFile().getHashMapStringKey(dbfileS,4,5);
 //        new AoFile().addColumbyString(taxaFileS,0,hm,"Ploidy");
 
-//        HashMap<String,String> hm = new AoFile().getHashMap(dbfileS,4,24);
+//        HashMap<String,String> hm = new AoFile().getHashMapStringKey(dbfileS,4,24);
 //        new AoFile().addColumbyString(taxaFileS,0,hm,"PCA_group");
 
-//        HashMap<String,String> hm = new AoFile().getHashMap(dbfileS,4,24);
+//        HashMap<String,String> hm = new AoFile().getHashMapStringKey(dbfileS,4,24);
 //        new AoFile().addColumbyString(taxaFileS,0,hm,"PCA_group");
 
-//                HashMap<String,String> hm = new AoFile().getHashMap(dbfileS,4,26);
+//                HashMap<String,String> hm = new AoFile().getHashMapStringKey(dbfileS,4,26);
 //        new AoFile().addColumbyString(taxaFileS,0,hm,"TreeValidatedGroupbyPloidy");
 
-        HashMap<String,String> hm = new AoFile().getHashMap(dbfileS,4,27);
+        HashMap<String,String> hm = new AoFile().getHashMapStringKey(dbfileS,4,27);
         new AoFile().addColumbyString(taxaFileS,0,hm,"TreeValidatedGroupbySubspecies");
     }
 
