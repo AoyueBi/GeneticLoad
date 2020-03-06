@@ -219,6 +219,9 @@ public class AoFile {
         }else if (infileS.endsWith(".pi")) {
             br = IOUtils.getTextReader(infileS);
         }
+        else if (infileS.endsWith(".TAB")) {
+            br = IOUtils.getTextReader(infileS);
+        }
         return br;
     }
 
@@ -797,7 +800,7 @@ public class AoFile {
      *
      * @param infileS
      */
-    public void readheader(String infileS){
+    public static void readheader(String infileS){
         try {
             BufferedReader br = null;
             if (infileS.endsWith(".txt")) {
@@ -811,6 +814,9 @@ public class AoFile {
                 br = IOUtils.getTextReader(infileS);
             }
             else if (infileS.endsWith(".xls")) {
+                br = IOUtils.getTextReader(infileS);
+            }
+            else if (infileS.endsWith(".TAB")) {
                 br = IOUtils.getTextReader(infileS);
             }
             String temp = br.readLine();

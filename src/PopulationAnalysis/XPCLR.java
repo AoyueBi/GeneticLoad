@@ -58,9 +58,9 @@ public class XPCLR {
 //        this.convertXPCLRCoordinate2();
 //        this.sortbyXPCLR();
 //        this.getTopK();
-//        this.addGeneID();
+        this.addGeneID();
 
-        this.addGeneID_onlyGridPos();
+//        this.addGeneID_onlyGridPos();
 
     }
 
@@ -188,7 +188,7 @@ public class XPCLR {
         for (int i = 0; i < t.rowCount(); i++) {
             startLists[Integer.parseInt(t.getString(i, 2))-1].add(Integer.parseInt(t.getString(i, 3)));
             endLists[Integer.parseInt(t.getString(i, 2))-1].add(Integer.parseInt(t.getString(i, 4)));
-            tranLists[Integer.parseInt(t.getString(i, 2))-1].add(t.getString(i, 0));
+            tranLists[Integer.parseInt(t.getString(i, 2))-1].add(t.getString(i, 1));
         }
 
 
@@ -276,7 +276,7 @@ public class XPCLR {
     public void addGeneID(){
         String geneHCFileS = "/Users/Aoyue/Documents/Data/wheat/gene/001_geneHC/geneHC.txt";
         String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/004_merge/001_CLvsEU_exonRegion_0.0001_200_50000_addHeader_sortbyXPCLR_top0.05.xpclr.txt";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/004_merge/001_CLvsEU_exonRegion_0.0001_200_50000_addHeader_sortbyXPCLR_top0.05_addGeneID.xpclr.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/007_GO/001_input/GeneID.txt";
 
         Set<String> transSet = new HashSet<>();
         //先处理gene的表格，建立区间
@@ -296,7 +296,7 @@ public class XPCLR {
         for (int i = 0; i < t.rowCount(); i++) {
             startLists[Integer.parseInt(t.getString(i, 2))-1].add(Integer.parseInt(t.getString(i, 3)));
             endLists[Integer.parseInt(t.getString(i, 2))-1].add(Integer.parseInt(t.getString(i, 4)));
-            tranLists[Integer.parseInt(t.getString(i, 2))-1].add(t.getString(i, 0));
+            tranLists[Integer.parseInt(t.getString(i, 2))-1].add(t.getString(i, 1));
         }
 
 
