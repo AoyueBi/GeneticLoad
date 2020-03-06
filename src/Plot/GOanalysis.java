@@ -40,6 +40,7 @@ public class GOanalysis {
             while ((temp = br.readLine()) != null) {
                 l = PStringUtils.fastSplit(temp);
                 cnt++;
+//                String trans = l.get(0).split("\\.")[0];
                 String trans = l.get(0);
                 String GOl = l.get(7);
                 if (GOl.isEmpty() || GOl == null || GOl == "")continue;
@@ -55,7 +56,6 @@ public class GOanalysis {
                     bw.newLine();
                     bw2.newLine();
                 }
-
             }
             br.close();
             bw.flush();
