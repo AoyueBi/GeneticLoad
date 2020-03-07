@@ -14,8 +14,38 @@ public class GOanalysis {
     public GOanalysis(){
 //        this.changeGeneVersion();
 //        this.mkGO2gene();
-        this.addOnt();
+//        this.addOnt();
+        this.getCytoscapeInput();
 
+    }
+
+    public void getCytoscapeInput(){
+        try {
+            String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/007_GO/001_input/TERM2GENE_v1__HCgenes_v1.0_repr.TEcleaned.txt";
+            String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/007_GO/001_input/GENE2TERM_v1__HCgenes_v1.0_repr.TEcleaned_cytoscapeInput.txt";
+            BufferedReader br = new AoFile().readFile(infileS);
+            BufferedWriter bw = new AoFile().writeFile(outfileS);
+            bw.write("(species=sss_aa)(type=consortium)(curator=Go)");
+            bw.newLine();
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+                String go = l.get(0).split(":")[1];
+                String trans = l.get(1);
+                bw.write(trans + " = " + go);
+                bw.newLine();
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
     /**
