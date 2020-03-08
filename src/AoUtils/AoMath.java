@@ -144,9 +144,19 @@ public class AoMath {
         return hm;
     }
 
-    public void countCaseInGroup(String infileS, int columnIndex){
+    public static void countCaseInGroup(String infileS, int columnIndex){
         RowTable<String> t = new RowTable<>(infileS);
         List<String> l = t.getColumn(columnIndex);
+        System.out.println(l.size() + " list个数");
+        Set<String> s = new HashSet<>(l);
+        System.out.println(s.size() + " set个数");
+        System.out.println(s);
+        for(String a : s){
+            System.out.println(a + "\t" + Collections.frequency(l, a));
+        }
+    }
+
+    public static void countCase_fromList(List<String> l){
         System.out.println(l.size() + " list个数");
         Set<String> s = new HashSet<>(l);
         System.out.println(s.size() + " set个数");

@@ -58,10 +58,35 @@ public class XPCLR {
 //        this.convertXPCLRCoordinate2();
 //        this.sortbyXPCLR();
 //        this.getTopK();
-        this.addGeneID();
+//        this.addGeneID();
 
 //        this.addGeneID_onlyGridPos();
+        this.checkTopGeneDistribution();
 
+    }
+
+    public void checkTopGeneDistribution(){
+        List<String> l = new ArrayList<>();
+        try {
+            String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/007_GO/001_input/002_GeneID_V1.txt";
+            BufferedReader br = new AoFile().readFile(infileS);
+            String temp = null;
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                cnt++;
+                String chr = temp.substring(7,9);
+                l.add(chr);
+            }
+            br.close();
+            System.out.println();
+
+//            AoMath.countCaseInGroup(outfileS,0);
+            AoMath.countCase_fromList(l);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
 
@@ -271,12 +296,13 @@ public class XPCLR {
 
 
     /**
-     * 将XPCLR的结果添加 gene 结果
+     * 将XPCLR的结果添加 gene 结果, 单个pos向前计算50Kb，再进行区域内的位点判断
      */
     public void addGeneID(){
         String geneHCFileS = "/Users/Aoyue/Documents/Data/wheat/gene/001_geneHC/geneHC.txt";
         String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/004_merge/001_CLvsEU_exonRegion_0.0001_200_50000_addHeader_sortbyXPCLR_top0.05.xpclr.txt";
         String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/007_GO/001_input/GeneID.txt";
+        String outfileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/004_merge/001_CLvsEU_exonRegion_0.0001_200_50000_addHeader_sortbyXPCLR_top0.05_addGeneID.xpclr.txt";
 
         Set<String> transSet = new HashSet<>();
         //先处理gene的表格，建立区间
@@ -304,8 +330,6 @@ public class XPCLR {
         try{
             BufferedReader br = AoFile.readFile(infileS);
             BufferedWriter bw = AoFile.writeFile(outfileS);
-//            bw.write(br.readLine() + "\tGeneID");
-//            bw.newLine();
 //            String temp = null;
             String temp = br.readLine();
 
@@ -346,17 +370,6 @@ public class XPCLR {
                         transSet.add(trans);
                     }
                 }
-//                posIndex = startLists[chrIndex].binarySearch(currentPos);
-//                if (posIndex < 0) {
-//                    posIndex = -posIndex-2; //确保该位点在起始位点的右边
-//                }
-//                if (posIndex < 0) continue; //如果不在起始位点的右边，那么就不在范围内，跳过该位点
-//                if (currentPos >= endLists[chrIndex].get(posIndex)) continue; //确保在末端位点的前面，若不在，也舍去
-//                trans = tranLists[chrIndex].get(posIndex);
-//
-//                sb.append(temp).append("\t").append(trans);
-//                bw.write(sb.toString());
-//                bw.newLine();
             }
 
 
@@ -572,7 +585,7 @@ public class XPCLR {
 
             BufferedReader br = new AoFile().readFile(infileS);
             BufferedWriter bw = new AoFile().writeFile(outfileS);
-            bw.write("CHROM\tGrid\tN_SNPs\tPOS\tGenetic_pos\tXPCLR_score\tMax_s\tID");
+            bw.write("CHROM\tGrid\tN_SNPs\tPOS\tGenetic_pos\tXPCLR_score\tMax_s\tID_Manhatton");
             bw.newLine();
             String temp = null;
             List<String> l = new ArrayList<>();
