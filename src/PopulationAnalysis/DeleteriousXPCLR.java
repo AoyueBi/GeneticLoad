@@ -32,10 +32,24 @@ public class DeleteriousXPCLR {
     }
 
     /**
-     *
+     * 将A B D的结果合并，使一个taxa拥有一个结果，不分亚基因组
      */
 
     public void mergeByTaxa(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/002_countDel/001_additiveDeleterious_vmap2_bychr_selectedRegion_bysub.txt";
+        String outfileS = new File(infileS).getAbsolutePath().replaceFirst(".txt","_mergeByTaxa.txt");
+
+        try{
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+
+
+
+        }catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
 
     }
 
