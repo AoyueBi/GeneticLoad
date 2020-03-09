@@ -239,9 +239,10 @@ public class Mode {
         try {
             String infileS = "";
             String outfileS = "";
-            BufferedReader br = IOUtils.getTextReader(infileS);
-            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
             String temp = null;
+            List<String> l = new ArrayList<>();
             while ((temp = br.readLine()) != null) {
 
             }

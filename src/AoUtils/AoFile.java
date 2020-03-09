@@ -619,6 +619,44 @@ public class AoFile {
      * @param columnIndex
      * @return
      */
+    public static String[] getStringArraybySet(String infileS, int columnIndex){
+        Set<String> out = new HashSet<>();
+        try {
+            BufferedReader br = null;
+            if (infileS.endsWith(".txt")) {
+                br = IOUtils.getTextReader(infileS);
+            } else if (infileS.endsWith(".txt.gz")) {
+                br = IOUtils.getTextGzipReader(infileS);
+            }
+
+            String temp = br.readLine(); //read header
+            List<String> l = new ArrayList();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                String goal = l.get(columnIndex);
+                out.add(goal);
+                cnt++;
+            }
+            br.close();
+            System.out.println("Total num in the set is " + out.size());
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        String[] outArray = out.toArray(new String[out.size()]);
+        Arrays.sort(outArray);
+        return outArray;
+    }
+
+    /**
+     *
+     * get String set from a txt file
+     * @param infileS
+     * @param columnIndex
+     * @return
+     */
     public Set<String> getStringSet(String infileS, int columnIndex){
         Set<String> out = new HashSet<>();
         try {
@@ -655,7 +693,7 @@ public class AoFile {
      * @param columnIndex
      * @return
      */
-    public List<String> getStringListwithoutHeader(String infileS, int columnIndex){
+    public static List<String> getStringListwithoutHeader(String infileS, int columnIndex){
         List<String> out = new ArrayList<>();
         try {
             BufferedReader br = null;
@@ -691,7 +729,83 @@ public class AoFile {
      * @param columnIndex
      * @return
      */
-    public static String[] getStringArray(String infileS, int columnIndex){
+    public List<String> getStringList(String infileS, int columnIndex){
+        List<String> out = new ArrayList<>();
+        try {
+            BufferedReader br = null;
+            if (infileS.endsWith(".txt")) {
+                br = IOUtils.getTextReader(infileS);
+            } else if (infileS.endsWith(".txt.gz")) {
+                br = IOUtils.getTextGzipReader(infileS);
+            }
+
+            String temp = br.readLine(); //read header
+            List<String> l = new ArrayList();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                String goal = l.get(columnIndex);
+                out.add(goal);
+                cnt++;
+            }
+            br.close();
+            System.out.println("Total num in the list is    " + cnt + "\t" + out.size());
+            Collections.sort(out);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return out;
+    }
+
+    /**
+     *
+     * get String list from a txt file
+     * @param infileS
+     * @param columnIndex
+     * @return
+     */
+    public static String[] getStringArraybyList_withoutGeader(String infileS, int columnIndex){
+
+        List<String> out = new ArrayList<>();
+        try {
+            BufferedReader br = null;
+            if (infileS.endsWith(".txt")) {
+                br = IOUtils.getTextReader(infileS);
+            } else if (infileS.endsWith(".txt.gz")) {
+                br = IOUtils.getTextGzipReader(infileS);
+            }
+
+            String temp = null; //read header
+            List<String> l = new ArrayList();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                String goal = l.get(columnIndex);
+                out.add(goal);
+                cnt++;
+            }
+            br.close();
+            System.out.println("Total num in the list is    " + cnt + "\t" + out.size());
+            Collections.sort(out);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        String[] outArray = out.toArray(new String[out.size()]);
+        Arrays.sort(outArray);
+        return outArray;
+    }
+
+    /**
+     *
+     * get String list from a txt file
+     * @param infileS
+     * @param columnIndex
+     * @return
+     */
+    public static String[] getStringArraybyList(String infileS, int columnIndex){
 
         List<String> out = new ArrayList<>();
         try {
@@ -724,41 +838,7 @@ public class AoFile {
         return outArray;
     }
 
-    /**
-     *
-     * get String list from a txt file
-     * @param infileS
-     * @param columnIndex
-     * @return
-     */
-    public List<String> getStringList(String infileS, int columnIndex){
-        List<String> out = new ArrayList<>();
-        try {
-            BufferedReader br = null;
-            if (infileS.endsWith(".txt")) {
-                br = IOUtils.getTextReader(infileS);
-            } else if (infileS.endsWith(".txt.gz")) {
-                br = IOUtils.getTextGzipReader(infileS);
-            }
 
-            String temp = br.readLine(); //read header
-            List<String> l = new ArrayList();
-            int cnt = 0;
-            while ((temp = br.readLine()) != null) {
-                    l = PStringUtils.fastSplit(temp);
-                    String goal = l.get(columnIndex);
-                    out.add(goal);
-                    cnt++;
-            }
-            br.close();
-            System.out.println("Total num in the list is    " + cnt + "\t" + out.size());
-            Collections.sort(out);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        return out;
-    }
 
     /**
      * get the pos database from txt file

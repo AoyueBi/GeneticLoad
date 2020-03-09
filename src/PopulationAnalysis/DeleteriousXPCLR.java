@@ -19,31 +19,129 @@ public class DeleteriousXPCLR {
 
     public DeleteriousXPCLR(){
 //        this.mergeExonSNPAnnotation();
-        this.countDeleteriousVMapII_byChr();
-//        this.test();
-//        this.mergeFinalfilebySub();
+//        this.countDeleteriousVMapII_byChr();
+//        this.mergeByTaxa();
+        this.getEUandCLmutationBurden();
 
     }
 
-    public void test(){
-        AoFile.readheader("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/taxaList.txt");
+    public void getEUandCLmutationBurden(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/002_countDel/001_additiveDeleterious_vmap2_bychr_selectedRegion_bysub_mergeByTaxa.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/003_extractPop/EUvsCL_additiveDeleterious_vmap2_bychr_selectedRegion_bysub_mergeByTaxa.txt";
+        String infile1S = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/008_treeValidatedGroup_bySubspecies/Cultivar.txt";
+        String infile2S = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/009_treeValidatedFroup_byRegion/002_Landrace_European/Landrace_Europe.txt";
+        String[] cul = AoFile.getStringArraybyList_withoutGeader(infile1S,0);
+        String[] eu = AoFile.getStringArraybyList_withoutGeader(infile2S,0);
+        System.out.println(cul.length);
+        System.out.println(eu.length);
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = br.readLine();
+            String pop = null;
+            bw.write(temp+"\tGroup_byXPCLR");
+            bw.newLine();
+            List<String> l = new ArrayList<>();
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                String taxon = l.get(0);
+                int index1 = Arrays.binarySearch(cul,taxon);
+                int index2 = Arrays.binarySearch(eu,taxon);
+                if (index1 <0 && index2<0)continue;
+                if (index1 > -1){
+                    pop = "Cultivar";
+                }
+                if (index2 > -1){
+                    pop = "Landrace_Europe";
+                }
 
+                bw.write(temp+"\t"+pop);
+                bw.newLine();
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
 
     }
+
+
 
     /**
      * 将A B D的结果合并，使一个taxa拥有一个结果，不分亚基因组
+     * 即一个taxa的所有有害等位位点数，基因型数，比率。
      */
 
     public void mergeByTaxa(){
         String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/002_countDel/001_additiveDeleterious_vmap2_bychr_selectedRegion_bysub.txt";
         String outfileS = new File(infileS).getAbsolutePath().replaceFirst(".txt","_mergeByTaxa.txt");
+        String[] taxa = AoFile.getStringArraybySet(infileS,0);
+
+        TDoubleArrayList[] derivedDelList = new TDoubleArrayList[taxa.length];
+        TDoubleArrayList[] genotypeList = new TDoubleArrayList[taxa.length];
+        for (int j = 0; j < derivedDelList.length; j++) {
+            derivedDelList[j] = new TDoubleArrayList();
+            genotypeList[j] = new TDoubleArrayList();
+
+        }
+
+
+        String taxaSummaryFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/taxaList.txt";
+        AoFile.readheader(taxaSummaryFileS);
+        HashMap<String, String> taxaGroupMap = new HashMap();
+        HashMap<String, String> taxaSubMap = new HashMap();
+        HashMap<String, String> taxaGroupIDMap = new HashMap();
+        RowTable<String> t = new RowTable (taxaSummaryFileS);
+        for (int i = 0; i < t.getRowNumber(); i++) {
+            taxaGroupMap.put(t.getCellAsString(i, 0), t.getCellAsString(i, 10));
+            taxaSubMap.put(t.getCellAsString(i, 0), t.getCellAsString(i, 11));
+            taxaGroupIDMap.put(t.getCellAsString(i, 0), t.getCellAsString(i, 7));
+        }
 
         try{
             BufferedReader br = AoFile.readFile(infileS);
             BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = br.readLine(); //read header
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+                String taxon = l.get(0);
+                int index = Arrays.binarySearch(taxa,taxon);
+                if (index<0)continue;
+                double d = Double.parseDouble(l.get(2));
+                double k = Double.parseDouble(l.get(3));
+                derivedDelList[index].add(d);
+                genotypeList[index].add(k);
+            }
+            br.close();
 
+            DescriptiveStatistics[] d = new DescriptiveStatistics[taxa.length];
+            DescriptiveStatistics[] dd = new DescriptiveStatistics[taxa.length];
 
+            Double[] ratio = new Double[taxa.length];
+            for (int i = 0; i < derivedDelList.length; i++) {
+                d[i] = new DescriptiveStatistics(derivedDelList[i].toArray());
+                dd[i] = new DescriptiveStatistics(genotypeList[i].toArray());
+                ratio[i] = d[i].getSum()/dd[i].getSum();
+            }
+
+            bw.write("Taxa\tDeleteriousCountPerHaplotype\tSiteCountWithMinDepth\tIfSelectedRegion\tGroup\tSubspecies\tGroupID\tRatio");
+            bw.newLine();
+            for (int i = 0; i < taxa.length; i++) {
+                if(dd[i].getSum()==0)continue;
+                bw.write(taxa[i]  + "\t" + String.format("%.1f",d[i].getSum()) + "\t" + String.format("%.0f",dd[i].getSum())+ "\t1"
+                        + "\t" + taxaGroupMap.get(taxa[i]) + "\t" + taxaSubMap.get(taxa[i]) + "\t" + taxaGroupIDMap.get(taxa[i]) + "\t" + String.format("%.4f",ratio[i]));
+                bw.newLine();
+            }
+
+            bw.flush();
+            bw.close();
 
         }catch (Exception e) {
             e.printStackTrace();
@@ -363,7 +461,7 @@ public class DeleteriousXPCLR {
          *  ################################### taxa 集合 642个taxa
          */
         String vmap2TaxaList = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/taxaList.txt";
-        String[] taxa = AoFile.getStringArray(vmap2TaxaList,0);
+        String[] taxa = AoFile.getStringArraybyList(vmap2TaxaList,0);
 
         double[][] addCount = new double[chrNum][taxa.length];
         int[][] recCount = new int[chrNum][taxa.length];
