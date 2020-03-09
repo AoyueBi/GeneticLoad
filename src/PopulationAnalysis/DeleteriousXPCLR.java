@@ -3,7 +3,9 @@ package PopulationAnalysis;
 import AoUtils.AoFile;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TCharArrayList;
+import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TIntArrayList;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import pgl.format.table.RowTable;
 import pgl.utils.IOUtils;
 import pgl.utils.PStringUtils;
@@ -19,6 +21,7 @@ public class DeleteriousXPCLR {
 //        this.mergeExonSNPAnnotation();
         this.countDeleteriousVMapII_byChr();
 //        this.test();
+//        this.mergeFinalfilebySub();
 
     }
 
@@ -26,6 +29,172 @@ public class DeleteriousXPCLR {
         AoFile.readheader("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/taxaList.txt");
 
 
+    }
+
+    //根据最终生成的文件，进行 A B D sub的合并
+    public void mergeFinalfilebySub(String infileS){
+        //change
+//        String infileS = "";
+
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/002_countDel/001_additiveDeleterious_vmap2_bychr_selectedRegion.txt";
+        String splitDirS = new File(infileS).getParent()+"/split";
+        new File(splitDirS).mkdirs();
+
+        String outfileS = infileS.replaceFirst(".txt", "_bysub.txt");
+
+        //查看有多少个taxa
+        RowTable<String> t = new RowTable<>(infileS);
+        Set<String> s = new HashSet<>(t.getColumn(0));
+        String[] taxa = s.toArray(new String[s.size()]);
+        Arrays.sort(taxa);
+        /**
+         * 将文件按照taxa进行分类写出
+         */
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            String header = br.readLine();
+            BufferedWriter[] bw = new BufferedWriter[taxa.length];
+            for (int i = 0; i < taxa.length; i++) {
+                String tempoutS = new File(splitDirS,taxa[i]+".txt").getAbsolutePath();
+                bw[i] = AoFile.writeFile(tempoutS);
+                bw[i].write(header);
+                bw[i].newLine();
+            }
+
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                String ta = l.get(0);
+                int index = Arrays.binarySearch(taxa,ta);
+                bw[index].write(temp);
+                bw[index].newLine();
+                cnt++;
+
+            }
+            br.close();
+            for (int i = 0; i < taxa.length; i++) {
+                bw[i].flush();
+                bw[i].close();
+            }
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+
+        //不变的
+        String taxaSummaryFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/taxaList.txt";
+        AoFile.readheader(taxaSummaryFileS);
+        HashMap<String, String> taxaGroupMap = new HashMap();
+        HashMap<String, String> taxaSubMap = new HashMap();
+        HashMap<String, String> taxaGroupIDMap = new HashMap();
+        t = new RowTable (taxaSummaryFileS);
+        for (int i = 0; i < t.getRowNumber(); i++) {
+            taxaGroupMap.put(t.getCellAsString(i, 0), t.getCellAsString(i, 10));
+            taxaSubMap.put(t.getCellAsString(i, 0), t.getCellAsString(i, 11));
+            taxaGroupIDMap.put(t.getCellAsString(i, 0), t.getCellAsString(i, 7));
+        }
+
+        HashMap<String,Integer> h = new HashMap<>();
+        h.put("A",0);
+        h.put("B",1);
+        h.put("D",2);
+
+        String outDirS = null;
+        for (int i = 0; i < taxa.length; i++) {
+            try {
+                outDirS = new File(splitDirS).getParent() + "/split_merge";
+                new File(outDirS).mkdirs();
+                String inS = new File(splitDirS,taxa[i]+".txt").getAbsolutePath();
+                String outS = new File(outDirS,taxa[i]+"_bysub.txt").getAbsolutePath();
+                BufferedReader br = AoFile.readFile(inS);
+                BufferedWriter bw = AoFile.writeFile(outS);
+                bw.write(br.readLine().replaceFirst("Chr","Sub"));
+                bw.newLine();
+                TDoubleArrayList[] derivedDelList = new TDoubleArrayList[3];
+                TDoubleArrayList[] genotypeList = new TDoubleArrayList[3];
+                for (int j = 0; j < derivedDelList.length; j++) {
+                    derivedDelList[j] = new TDoubleArrayList();
+                    genotypeList[j] = new TDoubleArrayList();
+
+                }
+                String temp = null;
+                List<String> l = new ArrayList<>();
+                int cnt = 0;
+                while ((temp = br.readLine()) != null) {
+                    l = PStringUtils.fastSplit(temp);
+                    cnt++;
+                    int chr = Integer.parseInt(l.get(1));
+                    double d = Double.parseDouble(l.get(2));
+                    double k = Double.parseDouble(l.get(3));
+                    String sub = this.convertChrtoSub(chr);
+                    derivedDelList[h.get(sub)].add(d);
+                    genotypeList[h.get(sub)].add(k);
+                }
+                br.close();
+
+
+                //求和
+                DescriptiveStatistics[] d = new DescriptiveStatistics[3];
+                DescriptiveStatistics[] dd = new DescriptiveStatistics[3];
+
+                Double[] ratio = new Double[3];
+                for (int j = 0; j < derivedDelList.length; j++) {
+                    d[j] = new DescriptiveStatistics(derivedDelList[j].toArray());
+                    dd[j] = new DescriptiveStatistics(genotypeList[j].toArray());
+                    ratio[j] = d[j].getSum()/dd[j].getSum();
+
+                }
+
+                HashMap<Integer,String> hhh = new HashMap<>();
+                hhh.put(0,"A");
+                hhh.put(1,"B");
+                hhh.put(2,"D");
+
+
+                for (int j = 0; j < derivedDelList.length; j++) {
+                    if(dd[j].getSum()==0)continue;
+                    bw.write(taxa[i] + "\t" + hhh.get(j) + "\t" + String.format("%.1f",d[j].getSum()) + "\t" + String.format("%.0f",dd[j].getSum())+ "\t1"
+                            + "\t" + taxaGroupMap.get(taxa[i]) + "\t" + taxaSubMap.get(taxa[i]) + "\t" + taxaGroupIDMap.get(taxa[i]) + "\t" + String.format("%.4f",ratio[j]));
+                    bw.newLine();
+                }
+
+                bw.flush();
+                bw.close();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        AoFile.mergeTxtbysuffix(outDirS,outfileS,".txt");
+        new File(splitDirS).delete();
+        new File(outDirS).delete();
+    }
+
+    /**
+     * 根据染色体号，返回所在亚基因组
+     * @param a
+     * @return
+     */
+    public String convertChrtoSub(int a){
+        int[] arra = {1, 2, 7, 8, 13, 14, 19, 20, 25, 26, 31, 32, 37, 38};
+        int[] arrb = {3, 4, 9, 10, 15, 16, 21, 22, 27, 28, 33, 34, 39, 40};
+        int[] arrd = {5, 6, 11, 12, 17, 18, 23, 24, 29, 30, 35, 36, 41, 42};
+        HashMap<Integer, String> hml = new HashMap<>();
+        Arrays.sort(arra);
+        Arrays.sort(arrb);
+        Arrays.sort(arrd);
+        for (int i = 0; i < arra.length; i++) {
+            hml.put(arra[i], "A");
+            hml.put(arrb[i], "B");
+            hml.put(arrd[i], "D");
+        }
+        String subgenome = hml.get(a);
+        return subgenome;
     }
 
     /**
@@ -367,9 +536,10 @@ public class DeleteriousXPCLR {
                 bw.newLine();
             }
             bw.close();
+            this.mergeFinalfilebySub(addCountFileAddGroupS);
         }
         catch(Exception e){
-
+            e.printStackTrace();
         }
     }
 

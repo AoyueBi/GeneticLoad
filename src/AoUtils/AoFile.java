@@ -75,14 +75,14 @@ public class AoFile {
      * @param infileDirS
      * @param outfileS
      */
-    public void mergeTxtbysuffix(String infileDirS, String outfileS, String suffix) {
-        File[] fs = this.getFileArrayInDir(infileDirS);
+    public static void mergeTxtbysuffix(String infileDirS, String outfileS, String suffix) {
+        File[] fs = AoFile.getFileArrayInDir(infileDirS);
         fs = IOUtils.listFilesContains(fs, suffix);
         Arrays.sort(fs);
         try {
             String infileS = fs[0].getAbsolutePath();
-            BufferedReader br = this.readFile(infileS);
-            BufferedWriter bw = this.writeFile(outfileS);
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
             //read header
             bw.write(br.readLine());
             bw.newLine();
@@ -91,7 +91,7 @@ public class AoFile {
             //read context
             for (int i = 0; i < fs.length; i++) {
                 infileS = fs[i].getAbsolutePath();
-                br = this.readFile(infileS);
+                br = AoFile.readFile(infileS);
                 br.readLine();
                 String temp = null; //read header
                 int cnt = 0;
