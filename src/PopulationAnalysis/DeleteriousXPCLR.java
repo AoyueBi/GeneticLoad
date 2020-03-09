@@ -31,7 +31,15 @@ public class DeleteriousXPCLR {
 
     }
 
-    //根据最终生成的文件，进行 A B D sub的合并
+    /**
+     *
+     */
+
+    public void mergeByTaxa(){
+
+    }
+
+    //根据最终生成的文件，进行 A B D sub的合并,使每个taxa具有Asub Bsub Dsub的结果
     public void mergeFinalfilebySub(String infileS){
         //change
 //        String infileS = "";
@@ -537,6 +545,8 @@ public class DeleteriousXPCLR {
             }
             bw.close();
             this.mergeFinalfilebySub(addCountFileAddGroupS);
+            new File(addCountFileS).delete();
+            new File(recCountFileS).delete();
         }
         catch(Exception e){
             e.printStackTrace();
