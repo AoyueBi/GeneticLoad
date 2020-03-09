@@ -18,10 +18,13 @@ public class DeleteriousXPCLR {
     public DeleteriousXPCLR(){
 //        this.mergeExonSNPAnnotation();
         this.countDeleteriousVMapII_byChr();
+//        this.test();
 
     }
 
     public void test(){
+        AoFile.readheader("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/taxaList.txt");
+
 
     }
 
@@ -29,7 +32,6 @@ public class DeleteriousXPCLR {
      * 计算受选择区域的 Clutivar 和 landrace Europe 之间的 mutation burden
      */
     public void countDeleteriousVMapII_byChr() {
-
         String delVCFDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/002_exonSNPVCF"; //有害变异的VCF文件路径
         String deleFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/004_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz"; //有害变异信息库
 
@@ -41,11 +43,11 @@ public class DeleteriousXPCLR {
 //        String addCountFileS = ""; //有害变异加性模型输出文件
 //        String recCountFileS = ""; //有害变异隐形模型输出文件
 
-        String addCountFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/002_countDel/001_additiveDeleterious_vmap2_bychr_selectedRegion.temp.txt"; //有害变异加性模型输出文件
-        String recCountFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/002_countDel/002_recessiveDeleterious_vmap2_bychr_selectedRegion.temp.txt"; //有害变异隐形模型输出文件
-
         String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/002_countDel/001_additiveDeleterious_vmap2_bychr_selectedRegion.txt";
         String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/002_countDel/002_recessiveDeleterious_vmap2_bychr_selectedRegion.txt";
+
+        String addCountFileS = new File(addCountFileAddGroupS).getAbsolutePath().replaceFirst(".txt",".temp.txt"); //有害变异加性模型输出文件
+        String recCountFileS = new File(recCountFileAddGroupS).getAbsolutePath().replaceFirst(".txt",".temp.txt"); //有害变异隐形模型输出文件
 
         AoFile.readheader(deleFileS);
 
@@ -109,7 +111,9 @@ public class DeleteriousXPCLR {
             for (int i = 0; i < t.getRowNumber(); i++) {
                 int index = t.getCellAsInteger(i, 1) - 1; //染色体号的索引
                 int pos = t.getCellAsInteger(i,2);
-                //对该位点进行判断，看是否在选择区域
+                /**
+                 * 对该位点进行判断，看是否在选择区域,不在选择区域就忽略不计
+                 */
                 int posIndex =-1;
                 posIndex = startLists[index].binarySearch(pos);
                 if (posIndex < 0) {
@@ -117,6 +121,19 @@ public class DeleteriousXPCLR {
                 }
                 if (posIndex < 0) continue; //如果不在起始位点的右边，那么就不在范围内，跳过该位点
                 if (pos >= endLists[index].get(posIndex)) continue; //确保在末端位点的前面，若不在，也舍去
+                bw.write(index+1 + "\t" + pos);
+                bw.newLine();
+
+                /**
+                 * 定义有害突变，不是有害突变，就忽略不计
+                 */
+                String variantType = t.getCell(i,12);
+                String sift = t.getCell(i,13);
+                String gerp = t.getCell(i,20);
+                if (!variantType.equals("NONSYNONYMOUS") || sift.equals("NA") || gerp.equals("NA"))continue;
+                double siftd = Double.parseDouble(sift);
+                double gerpd = Double.parseDouble(gerp);
+                if (siftd >= 0.05 || gerpd <= 1)continue;
                 //################### 需要修改 //###################//###################//###################//###################
 //            String ancestralAllele = t.getCell(i, 22); //不同的数据库，这一列的信息不一样，千万要注意!!!!!!!!!!!!!!!!! 祖先基因的数据库
                 String ancestralAllele = t.getCell(i, 15); //不同的数据库，这一列的信息不一样，千万要注意!!!!!!!!!!!!!!!!! 祖先基因的数据库
@@ -128,19 +145,13 @@ public class DeleteriousXPCLR {
                     derivedAllele = minorAllele;
                     posList[index].add(t.getCellAsInteger(i, 2)); //将包含有derived allele的位点添加到Poslist
                     charList[index].add(derivedAllele.charAt(0)); //返回的是char类型的字符
-                    bw.write(index+1 + "\t" + pos);
-                    bw.newLine();
                 }
                 if (ancestralAllele.equals(minorAllele)) {
                     derivedAllele = majorAllele;
                     posList[index].add(t.getCellAsInteger(i, 2));
                     charList[index].add(derivedAllele.charAt(0));
-                    bw.write(index+1 + "\t" + pos);
-                    bw.newLine();
                 }
                 else if (!(ancestralAllele.equals(majorAllele) || ancestralAllele.equals(minorAllele))){
-                    bw.write(index+1 + "\t" + pos);
-                    bw.newLine();
                 }
             }
             bw.flush();
@@ -156,8 +167,6 @@ public class DeleteriousXPCLR {
             e.printStackTrace();
             System.exit(1);
         }
-
-
 
         /**
          *  ################################### taxa 集合 642个taxa
@@ -316,8 +325,6 @@ public class DeleteriousXPCLR {
         try{
             String taxaSummaryFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/taxaList.txt";
             AoFile.readheader(taxaSummaryFileS);
-            BufferedReader br = AoFile.readFile(addCountFileS);
-            BufferedWriter bw = AoFile.writeFile(addCountFileAddGroupS);
             double depthCut = 3; //只保留深度大于3的taxa样本
             HashMap<String, String> taxaGroupMap = new HashMap();
             HashMap<String, String> taxaSubMap = new HashMap();
@@ -325,20 +332,41 @@ public class DeleteriousXPCLR {
             RowTable t = new RowTable (taxaSummaryFileS);
             ArrayList<String> taxaList = new ArrayList();
             for (int i = 0; i < t.getRowNumber(); i++) {
-                taxaGroupMap.put(t.getCellAsString(i, 0), t.getCellAsString(i, 26));
-                taxaSubMap.put(t.getCellAsString(i, 0), t.getCellAsString(i, 27));
+                taxaGroupMap.put(t.getCellAsString(i, 0), t.getCellAsString(i, 10));
+                taxaSubMap.put(t.getCellAsString(i, 0), t.getCellAsString(i, 11));
                 taxaGroupIDMap.put(t.getCellAsString(i, 0), t.getCellAsString(i, 7));
-                if (t.getCellAsDouble(i, 9) < depthCut) continue;
+                if (t.getCellAsDouble(i, 12) < depthCut) continue;
                 taxaList.add(t.getCellAsString(i, 0));
             }
             String[] taxaWithHighDepth = taxaList.toArray(new String[taxaList.size()]); //taxa是具有高深度的taxa列表
-            Arrays.sort(taxa);
+            Arrays.sort(taxaWithHighDepth);
 
-
-
-
-
-
+            BufferedReader br = AoFile.readFile(addCountFileS);
+            BufferedWriter bw = AoFile.writeFile(addCountFileAddGroupS);
+            t=new RowTable(addCountFileS);
+            List<String> headerl = t.getHeader();
+            for (int i = 0; i < headerl.size(); i++) {
+                bw.write(headerl.get(i) + "\t");
+            }
+            bw.write("Group\tSubspecies\tGroupID\tRatio");
+            bw.newLine();
+            for (int i = 0; i < t.getRowNumber(); i++) { //这里的t是 addCountFileS
+                int index = Arrays.binarySearch(taxa, t.getCellAsString(i, 0));
+                if (index < 0) continue;
+                if(taxaGroupMap.get(taxa[index]).equals("ExclusionHexaploid") || taxaGroupMap.get(taxa[index]).equals("ExclusionTetraploid")) continue;
+                double genotypesite = Double.valueOf(t.getCellAsDouble(i, 2));
+                if(genotypesite == 0) continue;
+                double ratio = Double.valueOf(t.getCellAsDouble(i, 2))/Double.valueOf(t.getCellAsDouble(i, 3));
+                for (int j = 0; j < t.getColumnNumber(); j++) { //按列书写
+                    bw.write(t.getCellAsString(i,j) + "\t");
+                }
+                bw.write(taxaGroupMap.get(taxa[index])
+                        +"\t"+taxaSubMap.get(taxa[index])
+                        +"\t"+taxaGroupIDMap.get(taxa[index])
+                        +"\t"+String.format("%.4f",ratio));
+                bw.newLine();
+            }
+            bw.close();
         }
         catch(Exception e){
 
