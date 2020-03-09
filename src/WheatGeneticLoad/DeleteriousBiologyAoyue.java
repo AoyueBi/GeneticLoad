@@ -40,10 +40,6 @@ public class DeleteriousBiologyAoyue {
 
     }
 
-    public void delBurdenVSsynBurden(){
-
-    }
-
 
     public class Record implements Comparable<Record>{
         public String taxa;

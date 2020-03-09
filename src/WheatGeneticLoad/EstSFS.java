@@ -23,8 +23,8 @@ public class EstSFS {
 
 //        this.mergeDelgenicSNPAnnotation();
 //        this.countDeleteriousVMapII_byChr();
-//        this.countDeleteriousVMapIIHighDepth();
-        this.mergeFinalfilebySub();
+        this.countDeleteriousVMapIIHighDepth();
+//        this.mergeFinalfilebySub();
 
 //        this.getNonsynonymousGerp1();
 //        this.diffcheck("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/003_ancestralAllele", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/003_ancestral/hv_brdis/002_byChrID");

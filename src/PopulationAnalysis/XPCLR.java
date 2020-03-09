@@ -54,14 +54,14 @@ public class XPCLR {
          * 结果处理：合并，转换坐标，
          */
 //        this.mergeTxt2();
-//        this.convertXPCLRCoordinate();
+        this.convertXPCLRCoordinate();
 //        this.convertXPCLRCoordinate2();
 //        this.sortbyXPCLR();
 //        this.getTopK();
 //        this.addGeneID();
 
 //        this.addGeneID_onlyGridPos();
-        this.checkTopGeneDistribution();
+//        this.checkTopGeneDistribution();
 
     }
 
@@ -581,7 +581,7 @@ public class XPCLR {
 //            String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/002_merge/002_CLvsEU_exonRegion_0.005m_1400snp_100kbwindoww_changeChrPos.xpclr.txt";
 
             String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/004_merge/CLvsEU_exonRegion_0.0001_200_50000.xpclr.txt";
-            String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/004_merge/002_CLvsEU_exonRegion_0.0001_200_50000_changeChrPos.xpclr.txt";
+            String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/004_merge/002_CLvsEU_exonRegion_0.0001_200_50000_changeChrPos_addChr007.xpclr.txt";
 
             BufferedReader br = new AoFile().readFile(infileS);
             BufferedWriter bw = new AoFile().writeFile(outfileS);

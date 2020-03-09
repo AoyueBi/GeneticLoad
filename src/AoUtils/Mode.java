@@ -205,6 +205,11 @@ public class Mode {
 
     }
 
+
+    /**
+     *  ################################### 初
+     */
+
     public void txtSinglethread(){
         try {
             String infileS = "";
