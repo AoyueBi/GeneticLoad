@@ -26,8 +26,13 @@ public class DeleteriousXPCLR {
     }
 
     public void getEUandCLmutationBurden(){
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/002_countDel/001_additiveDeleterious_vmap2_bychr_selectedRegion_bysub_mergeByTaxa.txt";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/003_extractPop/EUvsCL_additiveDeleterious_vmap2_bychr_selectedRegion_bysub_mergeByTaxa.txt";
+        //输入输出文件  可变
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/002_countDel/001_additiveDeleterious_vmap2_bychr_selectedRegion_bysub_mergeByTaxa.txt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/003_extractPop/EUvsCL_additiveDeleterious_vmap2_bychr_selectedRegion_bysub_mergeByTaxa.txt";
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/002_countDel/001_additiveDeleterious_vmap2_bychr_selectedRegion_bysub.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/003_extractPop/EUvsCL_additiveDeleterious_vmap2_bychr_selectedRegion_bysub.txt";
+
+        //分组文件 可变
         String infile1S = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/008_treeValidatedGroup_bySubspecies/Cultivar.txt";
         String infile2S = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/009_treeValidatedFroup_byRegion/002_Landrace_European/Landrace_Europe.txt";
         String[] cul = AoFile.getStringArraybyList_withoutGeader(infile1S,0);
