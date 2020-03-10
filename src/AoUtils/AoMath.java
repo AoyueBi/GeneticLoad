@@ -166,6 +166,33 @@ public class AoMath {
         }
     }
 
+    public static File countCase_fromList_outFile(List<String> l){
+        File out = new File("/Users/Aoyue/Documents/countCase.txt");
+        BufferedWriter bw = AoFile.writeFile(out.getAbsolutePath());
+        System.out.println(l.size() + " list个数");
+        Set<String> s = new HashSet<>(l);
+        System.out.println(s.size() + " set个数");
+        System.out.println(s);
+
+        try{
+            bw.write("CHROM\tCount\tSub");
+            bw.newLine();
+            for(String a : s){
+                System.out.println(a + "\t" + Collections.frequency(l, a));
+                String sub = a.substring(1);
+                bw.write(a+"\t"+Collections.frequency(l, a)+"\t"+sub);
+                bw.newLine();
+            }
+            bw.flush();
+            bw.close();
+        }catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        return out;
+    }
+
     /**
      * 计算每个文件中某一列数值小于某个值的个数
      *

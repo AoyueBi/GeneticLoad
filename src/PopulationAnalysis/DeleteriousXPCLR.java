@@ -19,9 +19,9 @@ public class DeleteriousXPCLR {
 
     public DeleteriousXPCLR(){
 //        this.mergeExonSNPAnnotation();
-//        this.countDeleteriousVMapII_byChr();
+        this.countDeleteriousVMapII_byChr();
 //        this.mergeByTaxa();
-        this.getEUandCLmutationBurden();
+//        this.getEUandCLmutationBurden();
 
     }
 

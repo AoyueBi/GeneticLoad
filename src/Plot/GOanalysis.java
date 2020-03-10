@@ -13,9 +13,9 @@ public class GOanalysis {
 
     public GOanalysis(){
 //        this.changeGeneVersion();
-//        this.mkGO2gene();
+        this.mkGO2gene();
 //        this.addOnt();
-        this.getCytoscapeInput();
+//        this.getCytoscapeInput();
 
     }
 

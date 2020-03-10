@@ -41,7 +41,7 @@ public class XPCLR {
          * 最终执行脚本文件
          */
 //        this.script_XPCLR();
-        this.script_XPCLR_tetraploid();
+//        this.script_XPCLR_tetraploid();
 //        new SplitScript().splitScript2("/Users/Aoyue/Documents/xpclr_20200301.sh",12,4);
 //        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/006_script/003_WEDE/xpclr_tetraploid_WE_DE_20200310.sh",14,2); //14,2
 
@@ -62,17 +62,19 @@ public class XPCLR {
 //        this.convertXPCLRCoordinate2();
 //        this.sortbyXPCLR();
 //        this.getTopK();
-//        this.addGeneID();
+//        this.addGeneID(); //已放弃
+//        this.addGeneID_onlyGridPos(); //已放弃
+//        this.getSelectedPos(); //采用这种方法来获取受选择区域的基因列表
+        this.checkTopGeneDistribution();
 
-//        this.addGeneID_onlyGridPos();
-//        this.checkTopGeneDistribution();
 
     }
 
     public void checkTopGeneDistribution(){
         List<String> l = new ArrayList<>();
+
         try {
-            String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/007_GO/001_input/002_GeneID_V1.txt";
+            String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/007_GO/001_input/001_GeneID_v2.txt";
             BufferedReader br = new AoFile().readFile(infileS);
             String temp = null;
             int cnt = 0;
@@ -82,12 +84,103 @@ public class XPCLR {
                 l.add(chr);
             }
             br.close();
-            System.out.println();
 
-//            AoMath.countCaseInGroup(outfileS,0);
-            AoMath.countCase_fromList(l);
+            AoMath.countCase_fromList_outFile(l);
 
         } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    /**
+     * 根据得到的topK的XPCLR结果，进行受选择区域的CHR POS的提取，并判断其所在的基因位置
+     * 写出2个文件:chr pos transcript
+     * 写出基因列表
+     */
+    public void getSelectedPos(){
+        String snpAnnoS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/004_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
+        //Top K xpclr regions
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/004_merge/001_CLvsEU_exonRegion_0.0001_200_50000_addHeader_sortbyXPCLR_top0.05.xpclr.txt";
+        // 受选择区域的位点列表
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/004_merge/001_CLvsEU_exonRegion_0.0001_200_50000_addHeader_sortbyXPCLR_top0.05_transcript.xpclr.txt";
+        String geneList = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/007_GO/001_input/001_GeneID_v2.txt";
+        Set<String> s = new HashSet<>();
+        /**
+         * 初始化受选择区域的 起始集合 终止集合
+         */
+        int chrNum = 42;
+        int bin = 50000;
+        int currentPos = -1;
+        int chrIndex = -1;
+        RowTable<String> t = new RowTable<>(infileS);
+        TIntList[] startLists = new TIntList[chrNum]; //所有的起始位点建立一个集合
+        TIntList[] endLists = new TIntList[chrNum]; //所有的终止位点建立一个集合
+        for (int i = 0; i < chrNum; i++) { //对list数组进行初始化
+            startLists[i] = new TIntArrayList();
+            endLists[i] = new TIntArrayList();
+        }
+        for (int i = 0; i < t.getRowNumber(); i++) {
+            chrIndex = t.getCellAsInteger(i,0) -1;
+            currentPos = t.getCellAsInteger(i,3);
+            startLists[chrIndex].add(currentPos);
+            endLists[chrIndex].add(currentPos+bin);
+        }
+        for (int i = 0; i < startLists.length; i++) {
+            startLists[i].sort();
+            endLists[i].sort();
+        }
+        System.out.println("Finished building the region list");
+
+        /**
+         *  ################################### 写出受选择区域的位点
+         */
+
+        new AoFile().readheader(snpAnnoS);
+
+        try{
+            t = new RowTable(snpAnnoS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            bw.write("CHROM\tPOS\tTranscript");
+            bw.newLine();
+            for (int i = 0; i < t.getRowNumber(); i++) {
+                int index = t.getCellAsInteger(i, 1) - 1; //染色体号的索引
+                int pos = t.getCellAsInteger(i,2);
+                String trans = t.getCell(i,10);
+                /**
+                 * 对该位点进行判断，看是否在选择区域,不在选择区域就忽略不计
+                 */
+                int posIndex =-1;
+                posIndex = startLists[index].binarySearch(pos);
+                if (posIndex < 0) {
+                    posIndex = -posIndex-2; //确保该位点在起始位点的右边
+                }
+                if (posIndex < 0) continue; //如果不在起始位点的右边，那么就不在范围内，跳过该位点
+                if (pos >= endLists[index].get(posIndex)) continue; //确保在末端位点的前面，若不在，也舍去
+                bw.write(index+1 + "\t" + pos + "\t" + trans);
+                bw.newLine();
+                s.add(trans);
+            }
+            bw.flush();
+            bw.close();
+
+        }catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        try{
+            BufferedWriter bw = AoFile.writeFile(geneList);
+            String[] gene = s.toArray(new String[s.size()]);
+            Arrays.sort(gene);
+            for (int i = 0; i < gene.length; i++) {
+                bw.write(gene[i]);
+                bw.newLine();
+            }
+            bw.flush();
+            bw.close();
+
+        }catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
         }
@@ -300,7 +393,7 @@ public class XPCLR {
 
 
     /**
-     * 将XPCLR的结果添加 gene 结果, 单个pos向前计算50Kb，再进行区域内的位点判断
+     * 将XPCLR的结果添加 gene 结果, 单个pos向后计算50Kb，再进行区域内的位点判断
      */
     public void addGeneID(){
         String geneHCFileS = "/Users/Aoyue/Documents/Data/wheat/gene/001_geneHC/geneHC.txt";
@@ -375,8 +468,6 @@ public class XPCLR {
                     }
                 }
             }
-
-
 
             List<String> goalTransl = new ArrayList<>(transSet);
             for (int i = 0; i < goalTransl.size(); i++) {
