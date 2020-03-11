@@ -167,18 +167,18 @@ public class AoFile {
      * @param infileDirS
      * @param outfileS
      */
-    public void mergeTxtwithoutHeader(String infileDirS, String outfileS) {
+    public static void mergeTxtwithoutHeader(String infileDirS, String outfileS) {
 
         File[] fs = new AoFile().getFileArrayInDir(infileDirS);
         try {
 
             BufferedReader br = null;
-            BufferedWriter bw = this.writeFile(outfileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
             int cnttotal = 0;
             //读正文部分
             for (int i = 0; i < fs.length; i++) {
                 String infileS = fs[i].getAbsolutePath();
-                br = this.readFile(infileS);
+                br = AoFile.readFile(infileS);
                 String temp = null;
                 int cnt = 0;
                 while ((temp = br.readLine()) != null) {

@@ -5,17 +5,90 @@ import pgl.utils.PStringUtils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.io.File;
+import java.util.*;
 
 public class GOanalysis {
 
     public GOanalysis(){
 //        this.changeGeneVersion();
-        this.mkGO2gene();
+//        this.mkGO2gene();
 //        this.addOnt();
 //        this.getCytoscapeInput();
+        this.divideGOanno();
+
+    }
+
+    /**
+     * 将GO数据库分成3类：CC MF BP
+     */
+    public void divideGOanno(){
+        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/007_GO/001_input/TERM2GENE_v1__HCgenes_v1.0_repr.TEcleaned.txt";
+        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/007_GO/001_input/TERM2name_v1__HCgenes_v1.0_repr.TEcleaned.txt";
+        String ontFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/007_GO/001_input/TERM2ont_v1__HCgenes_v1.0_repr.TEcleaned.txt";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/007_GO/001_input/ont";
+        HashMap<String,String> hm = AoFile.getHashMapStringKey_withoutHeader(ontFileS,0,1);
+        String[] ont = {"CC","MF","BP"};
+        Arrays.sort(ont);
+        Set<String> gos = new HashSet<>();
+        try {
+            BufferedReader br = AoFile.readFile(infileS1); //term2gene
+            BufferedWriter[] bw = new BufferedWriter[ont.length];
+            for (int i = 0; i < ont.length; i++) {
+                String outfileS = new File(outfileDirS,new File(infileS1).getName().split(".txt")[0] + "_"+ont[i]+".txt").getAbsolutePath();
+                bw[i]=AoFile.writeFile(outfileS);
+            }
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                String go = l.get(0);
+                String charac = hm.get(go);
+                int index = Arrays.binarySearch(ont,charac);
+                bw[index].write(temp);
+                bw[index].newLine();
+            }
+            br.close();
+            for (int i = 0; i < ont.length; i++) {
+                bw[i].flush();
+                bw[i].close();
+            }
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        try {
+            BufferedReader br = AoFile.readFile(infileS2); //term2name
+            BufferedWriter[] bw = new BufferedWriter[ont.length];
+            for (int i = 0; i < ont.length; i++) {
+                String outfileS = new File(outfileDirS,new File(infileS2).getName().split(".txt")[0] + "_"+ont[i]+".txt").getAbsolutePath();
+                bw[i]=AoFile.writeFile(outfileS);
+            }
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                String go = l.get(0);
+                if (!gos.add(go))continue; //不能加进set中，说明是重复的
+                String charac = hm.get(go);
+                int index = Arrays.binarySearch(ont,charac);
+                bw[index].write(temp);
+                bw[index].newLine();
+            }
+            br.close();
+            for (int i = 0; i < ont.length; i++) {
+                bw[i].flush();
+                bw[i].close();
+            }
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+
 
     }
 
@@ -62,7 +135,7 @@ public class GOanalysis {
     }
 
     /**
-     *
+     * 将从网上下载的数据库进行格式转换，生成3个文件，对应clusterProfiler包和cytoscape软件需要的注释库
      */
     public void mkGO2gene(){
         try {
@@ -129,7 +202,7 @@ public class GOanalysis {
      */
     public void changeGeneVersion(){
         try {
-            String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/007_GO/001_input/GeneID.txt";
+            String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/007_GO/001_input/001_GeneID_v2.txt";
             String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/007_GO/001_input/002_GeneID_V1.txt";
             BufferedReader br = new AoFile().readFile(infileS);
             BufferedWriter bw = new AoFile().writeFile(outfileS);
