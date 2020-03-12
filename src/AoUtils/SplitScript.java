@@ -33,7 +33,7 @@ public class SplitScript {
      * @param numcmd, the number of CDM in each file
      * eg:"/Users/Aoyue/Documents/sh_md5_WheatVMapII_ABgenome_fixmatePosBam.sh", "md5_WheatVMapII_ABgenome_fixmateBam_", 20, 32
      */
-    public void splitScript2(String infileS,int numfile, int numcmd) {
+    public static void splitScript2(String infileS,int numfile, int numcmd) {
         //String infileS = "/Users/Aoyue/project/wheatVMapII/006_ABandD/000_cleandata/001_bwaScript/bwa_20190705needRERUN.sh";
         //String outfileDirS = "/Users/Aoyue/project/wheatVMapII/006_ABandD/000_cleandata/001_bwaScript/splitScript";
         String parentS = new File(infileS).getParent();

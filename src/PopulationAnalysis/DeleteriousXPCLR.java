@@ -19,26 +19,40 @@ public class DeleteriousXPCLR {
 
     public DeleteriousXPCLR(){
 //        this.mergeExonSNPAnnotation();
-        this.countDeleteriousVMapII_byChr();
+//        this.countDeleteriousVMapII_byChr();
 //        this.mergeByTaxa();
-//        this.getEUandCLmutationBurden();
+        this.getPopmutationBurden();
 
     }
 
-    public void getEUandCLmutationBurden(){
+    /**
+     * 下一阶段：通过上一步骤得到的结果，进行指定群体的结果提取，进行Mutation burden 测试
+     * need 4 file path
+     */
+    public void getPopmutationBurden(){
+        String objectPop = "DE"; //pop1
+        String refPop = "WE"; //pop2
+
         //输入输出文件  可变
 //        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/002_countDel/001_additiveDeleterious_vmap2_bychr_selectedRegion_bysub_mergeByTaxa.txt";
 //        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/003_extractPop/EUvsCL_additiveDeleterious_vmap2_bychr_selectedRegion_bysub_mergeByTaxa.txt";
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/002_countDel/001_additiveDeleterious_vmap2_bychr_selectedRegion_bysub.txt";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/003_extractPop/EUvsCL_additiveDeleterious_vmap2_bychr_selectedRegion_bysub.txt";
 
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/002_countDel/001_additiveDeleterious_vmap2_bychr_selectedRegion_bysub.txt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/003_extractPop/EUvsCL_additiveDeleterious_vmap2_bychr_selectedRegion_bysub.txt";
+
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/002_countDel/001_WEvsDE_additiveDeleterious_vmap2_bychr_selectedRegion_bysub_mergeByTaxa.txt";
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/002_countDel/001_WEvsDE_additiveDeleterious_vmap2_bychr_selectedRegion_bysub.txt";
+        String outfileS = new File(infileS).getAbsolutePath().replaceFirst(".txt","_"+ objectPop + "_vs_" + refPop+".txt");
         //分组文件 可变
-        String infile1S = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/008_treeValidatedGroup_bySubspecies/Cultivar.txt";
-        String infile2S = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/009_treeValidatedFroup_byRegion/002_Landrace_European/Landrace_Europe.txt";
-        String[] cul = AoFile.getStringArraybyList_withoutGeader(infile1S,0);
-        String[] eu = AoFile.getStringArraybyList_withoutGeader(infile2S,0);
-        System.out.println(cul.length);
-        System.out.println(eu.length);
+//        String pop1fileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/008_treeValidatedGroup_bySubspecies/Cultivar.txt";
+//        String pop2fileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/009_treeValidatedFroup_byRegion/002_Landrace_European/Landrace_Europe.txt";
+
+        String pop1fileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/008_treeValidatedGroup_bySubspecies/Domesticated_emmer.txt";
+        String pop2fileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/008_treeValidatedGroup_bySubspecies/Wild_emmer.txt";
+        String[] pop1 = AoFile.getStringArraybyList_withoutGeader(pop1fileS,0);
+        String[] pop2 = AoFile.getStringArraybyList_withoutGeader(pop2fileS,0);
+        System.out.println(pop1.length);
+        System.out.println(pop2.length);
         try {
             BufferedReader br = AoFile.readFile(infileS);
             BufferedWriter bw = AoFile.writeFile(outfileS);
@@ -50,14 +64,16 @@ public class DeleteriousXPCLR {
             while ((temp = br.readLine()) != null) {
                 l = PStringUtils.fastSplit(temp);
                 String taxon = l.get(0);
-                int index1 = Arrays.binarySearch(cul,taxon);
-                int index2 = Arrays.binarySearch(eu,taxon);
+                int index1 = Arrays.binarySearch(pop1,taxon);
+                int index2 = Arrays.binarySearch(pop2,taxon);
                 if (index1 <0 && index2<0)continue;
                 if (index1 > -1){
-                    pop = "Cultivar";
+//                    pop = "Cultivar";
+                    pop = objectPop;
                 }
                 if (index2 > -1){
-                    pop = "Landrace_Europe";
+//                    pop = "Landrace_Europe";
+                    pop = refPop;
                 }
 
                 bw.write(temp+"\t"+pop);
@@ -82,7 +98,8 @@ public class DeleteriousXPCLR {
      */
 
     public void mergeByTaxa(){
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/002_countDel/001_additiveDeleterious_vmap2_bychr_selectedRegion_bysub.txt";
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/002_countDel/001_additiveDeleterious_vmap2_bychr_selectedRegion_bysub.txt";
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/002_countDel/001_WEvsDE_additiveDeleterious_vmap2_bychr_selectedRegion_bysub.txt";
         String outfileS = new File(infileS).getAbsolutePath().replaceFirst(".txt","_mergeByTaxa.txt");
         String[] taxa = AoFile.getStringArraybySet(infileS,0);
 
@@ -152,12 +169,11 @@ public class DeleteriousXPCLR {
             e.printStackTrace();
             System.exit(1);
         }
-
-
     }
 
     //根据最终生成的文件，进行 A B D sub的合并,使每个taxa具有Asub Bsub Dsub的结果
     public void mergeFinalfilebySub(String infileS){
+
         //change
 //        String infileS = "";
 
@@ -167,6 +183,9 @@ public class DeleteriousXPCLR {
 
         String outfileS = infileS.replaceFirst(".txt", "_bysub.txt");
 
+        /**
+         * ############################# step1: split del table by taxa
+         */
         //查看有多少个taxa
         RowTable<String> t = new RowTable<>(infileS);
         Set<String> s = new HashSet<>(t.getColumn(0));
@@ -185,7 +204,6 @@ public class DeleteriousXPCLR {
                 bw[i].write(header);
                 bw[i].newLine();
             }
-
             String temp = null;
             List<String> l = new ArrayList<>();
             int cnt = 0;
@@ -228,6 +246,9 @@ public class DeleteriousXPCLR {
         h.put("B",1);
         h.put("D",2);
 
+        /**
+         * ############################# step2: calculating each taxa's deleterious mutation by A sub Bsub and D sub
+         */
         String outDirS = null;
         for (int i = 0; i < taxa.length; i++) {
             try {
@@ -295,6 +316,10 @@ public class DeleteriousXPCLR {
             }
         }
 
+        /**
+         * ############################# step3: merge each taxa's deleterious mutation by A sub Bsub and D sub
+         */
+
         AoFile.mergeTxtbysuffix(outDirS,outfileS,".txt");
         new File(splitDirS).delete();
         new File(outDirS).delete();
@@ -324,21 +349,27 @@ public class DeleteriousXPCLR {
 
     /**
      * 计算受选择区域的 Clutivar 和 landrace Europe 之间的 mutation burden
+     * 一共有 5 步
      */
     public void countDeleteriousVMapII_byChr() {
         String delVCFDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/002_exonSNPVCF"; //有害变异的VCF文件路径
         String deleFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/004_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz"; //有害变异信息库
 
         //Top K xpclr regions
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/004_merge/001_CLvsEU_exonRegion_0.0001_200_50000_addHeader_sortbyXPCLR_top0.05.xpclr.txt";
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/004_merge/001_CLvsEU_exonRegion_0.0001_200_50000_addHeader_sortbyXPCLR_top0.01.xpclr.txt";
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/002_DEvsWE/002_merge/003_WEvsDE_exonRegion_0.0001_100_50000.xpclr_addHeader_sortbyXPCLR_top0.01.txt";
+
         // 受选择区域的位点列表
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/001_selectedRegion/001_ExonSNP_anno_selectedRegion.txt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/001_selectedRegion/001_ExonSNP_anno_selectedRegion.txt";
 
 //        String addCountFileS = ""; //有害变异加性模型输出文件
 //        String recCountFileS = ""; //有害变异隐形模型输出文件
 
-        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/002_countDel/001_additiveDeleterious_vmap2_bychr_selectedRegion.txt";
-        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/002_countDel/002_recessiveDeleterious_vmap2_bychr_selectedRegion.txt";
+//        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/002_countDel/001_additiveDeleterious_vmap2_bychr_selectedRegion.txt";
+//        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/002_countDel/002_recessiveDeleterious_vmap2_bychr_selectedRegion.txt";
+
+        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/002_countDel/001_WEvsDE_additiveDeleterious_vmap2_bychr_selectedRegion.txt";
+        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/002_countDel/002_WEvsDE_recessiveDeleterious_vmap2_bychr_selectedRegion.txt";
 
         String addCountFileS = new File(addCountFileAddGroupS).getAbsolutePath().replaceFirst(".txt",".temp.txt"); //有害变异加性模型输出文件
         String recCountFileS = new File(recCountFileAddGroupS).getAbsolutePath().replaceFirst(".txt",".temp.txt"); //有害变异隐形模型输出文件
@@ -346,7 +377,7 @@ public class DeleteriousXPCLR {
         AoFile.readheader(deleFileS);
 
         /**
-         *  ################################### 初始化染色体集合
+         *  ################################### step1: 初始化染色体集合
          */
         int minDepth = 2;//inclusive
         int chrNum = 42;
@@ -378,11 +409,11 @@ public class DeleteriousXPCLR {
             startLists[i].sort();
             endLists[i].sort();
         }
-        System.out.println("Finished building the region list");
+        System.out.println("Finished step1: building the region list");
 
 
         /**
-         *  ################################### posList  charList 补充完整
+         *  ################################### step2: posList  charList 补充完整
          */
 
         int[][] delePos = new int[chrNum][];
@@ -399,9 +430,9 @@ public class DeleteriousXPCLR {
 
         try{
             RowTable<String> t = new RowTable(deleFileS);
-            BufferedWriter bw = AoFile.writeFile(outfileS);
-            bw.write("CHROM\tPOS");
-            bw.newLine();
+//            BufferedWriter bw = AoFile.writeFile(outfileS);
+//            bw.write("CHROM\tPOS");
+//            bw.newLine();
             for (int i = 0; i < t.getRowNumber(); i++) {
                 int index = t.getCellAsInteger(i, 1) - 1; //染色体号的索引
                 int pos = t.getCellAsInteger(i,2);
@@ -415,8 +446,8 @@ public class DeleteriousXPCLR {
                 }
                 if (posIndex < 0) continue; //如果不在起始位点的右边，那么就不在范围内，跳过该位点
                 if (pos >= endLists[index].get(posIndex)) continue; //确保在末端位点的前面，若不在，也舍去
-                bw.write(index+1 + "\t" + pos);
-                bw.newLine();
+//                bw.write(index+1 + "\t" + pos);
+//                bw.newLine();
 
                 /**
                  * 定义有害突变，不是有害突变，就忽略不计
@@ -448,14 +479,15 @@ public class DeleteriousXPCLR {
                 else if (!(ancestralAllele.equals(majorAllele) || ancestralAllele.equals(minorAllele))){
                 }
             }
-            bw.flush();
-            bw.close();
+//            bw.flush();
+//            bw.close();
 
             for (int i = 0; i < chrNum; i++) { //将每一个list转化为数组
                 delePos[i] = posList[i].toArray();
                 deleChar[i] = charList[i].toArray();
                 Arrays.sort(delePos[i]);
             }
+            System.out.println("Finished step2: completing the posList  charList.");
 
         }catch (Exception e) {
             e.printStackTrace();
@@ -463,7 +495,7 @@ public class DeleteriousXPCLR {
         }
 
         /**
-         *  ################################### taxa 集合 642个taxa
+         *  ################################### step3: taxa 集合 642个taxa
          */
         String vmap2TaxaList = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/taxaList.txt";
         String[] taxa = AoFile.getStringArraybyList(vmap2TaxaList,0);
@@ -571,6 +603,8 @@ public class DeleteriousXPCLR {
                     }
                 }
                 br.close();
+                System.out.println("Finished step3: calculating each taxa for each chromosome.");
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -579,6 +613,10 @@ public class DeleteriousXPCLR {
              * 进行每个样品每条染色体的计算
              */
         });
+
+        /**
+         *  ################################### step4: 输出每个样品每条染色体的结果
+         */
 
         try {
             BufferedWriter bw = IOUtils.getTextWriter(addCountFileS);
@@ -606,6 +644,7 @@ public class DeleteriousXPCLR {
             }
             bw.flush();
             bw.close();
+            System.out.println("Finished step4: writing taxa table.");
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -613,9 +652,8 @@ public class DeleteriousXPCLR {
 
 
         /**
-         * 将输出的文件添加分组信息：每个taxa的倍性，亚群分布，mutation burden Index
+         *  ################################### step5: 将输出的文件添加分组信息：每个taxa的倍性，亚群分布，mutation burden Index
          */
-
         try{
             String taxaSummaryFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/taxaList.txt";
             AoFile.readheader(taxaSummaryFileS);
@@ -661,6 +699,10 @@ public class DeleteriousXPCLR {
                 bw.newLine();
             }
             bw.close();
+            System.out.println("Finished step5: adding group info for taxa table.");
+            System.out.println("Finished in making the del count table for each taxa in each single chromsome");
+            System.out.println("-----------------------------------------------------------------------------");
+            System.out.println("Now begin to merge final file by subgenome.");
             this.mergeFinalfilebySub(addCountFileAddGroupS);
             new File(addCountFileS).delete();
             new File(recCountFileS).delete();
