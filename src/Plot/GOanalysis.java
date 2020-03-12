@@ -11,11 +11,11 @@ import java.util.*;
 public class GOanalysis {
 
     public GOanalysis(){
-//        this.changeGeneVersion();
+        this.changeGeneVersion();
 //        this.mkGO2gene();
 //        this.addOnt();
 //        this.getCytoscapeInput();
-        this.divideGOanno();
+//        this.divideGOanno();
 
     }
 
@@ -202,8 +202,11 @@ public class GOanalysis {
      */
     public void changeGeneVersion(){
         try {
-            String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/007_GO/001_input/001_GeneID_v2.txt";
-            String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/007_GO/001_input/002_GeneID_V1.txt";
+//            String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/007_GO/001_input/001_GeneID_v2.txt";
+//            String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/007_GO/001_input/002_GeneID_V1.txt";
+
+            String infileS ="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/002_DEvsWE/002_merge/003_WEvsDE_exonRegion_0.0001_100_50000.xpclr_addHeader_sortbyXPCLR_top0.01_geneList.txt";
+            String outfileS = new File(infileS).getAbsolutePath().replaceFirst(".txt","_geneV1.txt");
             BufferedReader br = new AoFile().readFile(infileS);
             BufferedWriter bw = new AoFile().writeFile(outfileS);
             String temp = null;
