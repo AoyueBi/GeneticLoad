@@ -11,7 +11,7 @@ import java.util.*;
 public class GOanalysis {
 
     public GOanalysis(){
-        this.changeGeneVersion();
+//        this.changeGeneVersion();
 //        this.mkGO2gene();
 //        this.addOnt();
 //        this.getCytoscapeInput();
