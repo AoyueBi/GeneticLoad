@@ -19,9 +19,16 @@ public class DeleteriousXPCLR {
 
     public DeleteriousXPCLR(){
 //        this.mergeExonSNPAnnotation();
-//        this.countDeleteriousVMapII_byChr();
-//        this.mergeByTaxa();
-        this.getPopmutationBurden();
+        this.countDeleteriousVMapII_byChr();
+        this.mergeByTaxa();
+//        this.getPopmutationBurden();
+
+    }
+
+    /**
+     * get the mutation burden on unselected regions
+     */
+    public void getControlRegionMutationBurden(){
 
     }
 
