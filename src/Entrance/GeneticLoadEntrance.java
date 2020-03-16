@@ -6,9 +6,9 @@
 package Entrance;
 
 import GermplasmInfo.GermplasmInfo;
-import Plot.GOanalysis;
 import Plot.PCA;
 import WheatGeneticLoad.DeleteriousBiologyAoyue;
+import WheatGeneticLoad.VariantsSum;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -66,7 +66,7 @@ public class GeneticLoadEntrance {
 //        new SIFT();
 //        new CountSites();
         //new ScriptHapscanner2();
-//        new VariantsSum();
+        new VariantsSum();
 //        new PopGenParaWheat();
         //new SplitScript();
 //        new Script();
@@ -83,7 +83,7 @@ public class GeneticLoadEntrance {
 //        new AnnotationCrossover();
 //        new XPCLR();
 //        AoMath.topK();
-        new GOanalysis();
+//        new GOanalysis();
 //        new DeleteriousXPCLR();
 //        new GermplasmInfo();
 

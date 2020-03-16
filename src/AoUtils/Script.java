@@ -208,9 +208,14 @@ public class Script {
     }
 
     public void script_ABD(){
+        String infileDirS = "/data4/home/aoyue/vmap2/analysis/015_annoDB/010_step1";
+        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/015_annoDB/017_toLipengChrPosMajorMinor";
         for (int i = 1; i < 43; i++) {
             String chr = PStringUtils.getNDigitNumber(3, i);
-            System.out.println();
+            String infileS = new File(infileDirS,"chr"+chr+"_vmap2.1_AnnoDB.txt.gz").getAbsolutePath();
+            String outfileS = new File(outfileDirS,"chr"+chr+"_vmap2.1_AnnoDB_majorminor.txt").getAbsolutePath();
+            System.out.println("zcat "+infileS+"|cut -f1,2,5,6 > " + outfileS + " &");
+            //zcat chr001_vmap2.1_AnnoDB.txt.gz |head -n 10|cut -f1,2,5,6
         }
     }
 
