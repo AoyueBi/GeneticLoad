@@ -9,6 +9,7 @@ import gnu.trove.list.array.TIntArrayList;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import pgl.utils.IOUtils;
 import pgl.utils.PStringUtils;
+import pgl.utils.wheat.RefV1Utils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -19,11 +20,11 @@ public class EstSFS {
 
     public EstSFS(){
 //        this.sampleOutdata();
-        this.addAnc();
+//        this.addAnc();
 
 //        this.mergeDelgenicSNPAnnotation();
 //        this.countDeleteriousVMapII_byChr();
-        this.countDeleteriousVMapIIHighDepth();
+//        this.countDeleteriousVMapIIHighDepth();
 //        this.mergeFinalfilebySub();
 
 //        this.getNonsynonymousGerp1();
@@ -31,6 +32,55 @@ public class EstSFS {
 
 
 //        this.checkAncestraldiff();
+
+        this.splitChrfromAncestralLipeng();
+
+    }
+
+    /**
+     * 将康李鹏的结果进行拆分,添加到SNP数据库中
+     */
+    public void splitChrfromAncestralLipeng(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/001_ori/wheat.anc_1.gz";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/002_byChrID";
+        int chrNum = 42;
+        try {
+            String[] outfileS = new String[chrNum];
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter[] bw = new BufferedWriter[chrNum];
+            //确定每个文件的输出路径，每个文件都写一个表头chr pos ancestral
+            for (int i = 0; i < chrNum; i++) {
+                String chr = PStringUtils.getNDigitNumber(3,i+1);
+                outfileS[i] = new File(outfileDirS,"chr" + chr + "_barleyVSsecale_ancestralAllele.txt.gz").getAbsolutePath();
+                bw[i] = AoFile.writeFile(outfileS[i]);
+                bw[i].write("Chr\tPos\tAncestralAllele");
+                bw[i].newLine();
+            }
+
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            while ((temp = br.readLine()) != null) {
+                if (temp.startsWith("#"))continue;
+                l = PStringUtils.fastSplit(temp);
+                String chrom = l.get(0).substring(3);
+                int chrpos = Integer.parseInt(l.get(2));
+                String anc = l.get(10);
+                int chr = RefV1Utils.getChrID(chrom,chrpos);
+                int pos = RefV1Utils.getPosOnChrID(chrom,chrpos);
+                int index = chr-1;
+                bw[index].write(chr + "\t" + pos+"\t"+anc);
+                bw[index].newLine();
+            }
+            br.close();
+            for (int i = 0; i < chrNum; i++) {
+                bw[i].flush();
+                bw[i].close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
 
     }
 

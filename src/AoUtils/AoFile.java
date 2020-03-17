@@ -214,7 +214,10 @@ public class AoFile {
             br = IOUtils.getTextReader(infileS);
         } else if (infileS.endsWith(".txt.gz")) {
             br = IOUtils.getTextGzipReader(infileS);
-        }else if (infileS.endsWith(".fst")) {
+        }else if (infileS.endsWith(".gz")) {
+            br = IOUtils.getTextGzipReader(infileS);
+        }
+        else if (infileS.endsWith(".fst")) {
             br = IOUtils.getTextReader(infileS);
         }else if (infileS.endsWith(".pi")) {
             br = IOUtils.getTextReader(infileS);
@@ -319,6 +322,9 @@ public class AoFile {
                 l = PStringUtils.fastSplit(temp);
                 int key = Integer.parseInt(l.get(keyIDindex)); //注意，如果string类型不能转化为pos,这里也不会报错
                 String value = hm.get(key);
+                if(value == null || value == ""){  //!!!!! if there is no value, we should set the value as "NA".
+                    value = "NA";
+                }
                 bw.write(temp + "\t" + value);
                 bw.newLine();
             }

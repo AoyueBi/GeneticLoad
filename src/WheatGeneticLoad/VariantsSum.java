@@ -153,8 +153,8 @@ public class VariantsSum {
     }
 
     /**
-     * 从未过滤的大库里，提取VMAPII中的pos对应的chr pos major minor
-     * 供康李鹏使用，计算ancestral allele
+     *
+     *
      */
     public void extractMajorMinorfromDB(){
         String infileDirS = "/data4/home/aoyue/vmap2/analysis/015_annoDB/010_step1";
