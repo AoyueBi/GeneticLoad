@@ -18,7 +18,7 @@ import java.util.*;
 public class DeleteriousXPCLR {
 
     public DeleteriousXPCLR(){
-//        this.mergeExonSNPAnnotation();
+        this.mergeExonSNPAnnotation();
         this.countDeleteriousVMapII_byChr();
         this.mergeByTaxa();
 //        this.getPopmutationBurden();

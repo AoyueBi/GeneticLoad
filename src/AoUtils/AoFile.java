@@ -304,16 +304,8 @@ public class AoFile {
         outfileS = new File(outfileDirS,new File(infileS).getName()).getAbsolutePath();
 
         try{
-            BufferedReader br = null;
-            BufferedWriter bw = null;
-            if(infileS.endsWith(".txt")){
-                br=IOUtils.getTextReader(infileS);
-                bw = IOUtils.getTextWriter(outfileS);
-            }else if(infileS.endsWith(".txt.gz")){
-                br=IOUtils.getTextGzipReader(infileS);
-                bw=IOUtils.getTextGzipWriter(outfileS);
-            }
-
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
             String temp = br.readLine(); //read header
             bw.write(temp + "\t" + headername);
             bw.newLine();
@@ -322,7 +314,7 @@ public class AoFile {
                 l = PStringUtils.fastSplit(temp);
                 int key = Integer.parseInt(l.get(keyIDindex)); //注意，如果string类型不能转化为pos,这里也不会报错
                 String value = hm.get(key);
-                if(value == null || value == ""){  //!!!!! if there is no value, we should set the value as "NA".
+                if(value == null || value == "" || value.isEmpty()){  //!!!!! if there is no value, we should set the value as "NA".
                     value = "NA";
                 }
                 bw.write(temp + "\t" + value);

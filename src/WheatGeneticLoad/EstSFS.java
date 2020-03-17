@@ -33,8 +33,17 @@ public class EstSFS {
 
 //        this.checkAncestraldiff();
 
-        this.splitChrfromAncestralLipeng();
+//        this.splitChrfromAncestralLipeng();
+//        this.addAnc();
+        this.mergeExonSNPAnnotation();
 
+    }
+
+
+    public void mergeExonSNPAnnotation(){
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/005_exonSNPAnnotation";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/004_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
+        AoFile.mergeTxt(infileDirS,outfileS);
     }
 
     /**
@@ -80,7 +89,6 @@ public class EstSFS {
             e.printStackTrace();
             System.exit(1);
         }
-
 
     }
 
@@ -796,7 +804,8 @@ public class EstSFS {
 
         //no change
 //        String anceDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/003_ancestralAllele";
-        String anceDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/003_ancestral/hv_br_jap/002_byChrID";
+//        String anceDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/003_ancestral/hv_br_jap/002_byChrID";
+        String anceDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/002_byChrID";
 
         //change
 //        String infileDirS = "";
@@ -811,16 +820,18 @@ public class EstSFS {
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/004_snp/001_/del";
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/004_snp/002_/del";
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/004_snp/003_/syn";
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/004_snp/004_gerp/del";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/004_snp/004_gerp/del";
 
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/003_exonSNPAnnotation";
         List<File> fs =IOUtils.getVisibleFileListInDir(infileDirS);
         for (int i = 0; i < fs.size(); i++) {
             String infileS = fs.get(i).getAbsolutePath();
             String chr = new File(infileS).getName().substring(3,6);
 //            String anceS = new File(anceDirS,"chr"+chr+"_hv_brdis.exon.ancestralAllele.txt.gz").getAbsolutePath();
-            String anceS = new File(anceDirS,"chr" + chr + ".hovul.brdis.orjap.exon.probs.ancestral.txt.gz").getAbsolutePath();
+//            String anceS = new File(anceDirS,"chr" + chr + ".hovul.brdis.orjap.exon.probs.ancestral.txt.gz").getAbsolutePath();
+            String anceS = new File(anceDirS,"chr" + chr + "_barleyVSsecale_ancestralAllele.txt.gz").getAbsolutePath();
             HashMap<Integer,String> hm = new AoFile().getHashMapintKey(anceS,1,2);
-            new AoFile().addColumbyint(infileS,2,hm,"Ancestral_hovul_brdis_orjap");
+            new AoFile().addColumbyint(infileS,2,hm,"Ancestral_barley_secale");
         }
     }
 
