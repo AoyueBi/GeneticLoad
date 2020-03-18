@@ -7,7 +7,7 @@ package Entrance;
 
 import GermplasmInfo.GermplasmInfo;
 import Plot.PCA;
-import WheatGeneticLoad.EstSFS;
+import PopulationAnalysis.DeleteriousCountbyPop;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -29,7 +29,8 @@ public class GeneticLoadEntrance {
 
     public void DBdeleterious(){
 //        new DeleteriousBiologyAoyue();
-        new EstSFS();
+//        new EstSFS();
+        new DeleteriousCountbyPop();
 
     }
 

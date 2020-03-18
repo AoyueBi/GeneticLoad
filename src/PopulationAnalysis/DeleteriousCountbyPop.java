@@ -1,7 +1,6 @@
 package PopulationAnalysis;
 
 import AoUtils.AoFile;
-import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TCharArrayList;
 import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TIntArrayList;
@@ -17,6 +16,7 @@ import java.util.*;
 
 public class DeleteriousCountbyPop {
     public DeleteriousCountbyPop(){
+        this.countDeleteriousVMapII_byChr();
 
     }
 
@@ -276,16 +276,12 @@ public class DeleteriousCountbyPop {
     }
 
     /**
-     * 计算受选择区域的 Clutivar 和 landrace Europe 之间的 mutation burden
+     * 计算所有区域的mutation burden
      * 一共有 5 步
      */
     public void countDeleteriousVMapII_byChr() {
-        String delVCFDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/002_exonSNPVCF"; //有害变异的VCF文件路径
-        String deleFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/004_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz"; //有害变异信息库
-
-        //Top K xpclr regions
-//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/004_merge/001_CLvsEU_exonRegion_0.0001_200_50000_addHeader_sortbyXPCLR_top0.01.xpclr.txt";
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/002_DEvsWE/002_merge/003_WEvsDE_exonRegion_0.0001_100_50000.xpclr_addHeader_sortbyXPCLR_top0.01.txt";
+        String exonVCFDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/002_exonSNPVCF"; //有害变异的VCF文件路径
+        String SNPAnnoFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/004_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz"; //有害变异信息库
 
         // 受选择区域的位点列表
 //        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/001_selectedRegion/001_ExonSNP_anno_selectedRegion.txt";
@@ -293,16 +289,12 @@ public class DeleteriousCountbyPop {
 //        String addCountFileS = ""; //有害变异加性模型输出文件
 //        String recCountFileS = ""; //有害变异隐形模型输出文件
 
-//        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/002_countDel/001_additiveDeleterious_vmap2_bychr_selectedRegion.txt";
-//        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/002_countDel/002_recessiveDeleterious_vmap2_bychr_selectedRegion.txt";
 
         String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/002_countDel/001_WEvsDE_additiveDeleterious_vmap2_bychr_selectedRegion.txt";
         String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/002_countDel/002_WEvsDE_recessiveDeleterious_vmap2_bychr_selectedRegion.txt";
 
         String addCountFileS = new File(addCountFileAddGroupS).getAbsolutePath().replaceFirst(".txt",".temp.txt"); //有害变异加性模型输出文件
         String recCountFileS = new File(recCountFileAddGroupS).getAbsolutePath().replaceFirst(".txt",".temp.txt"); //有害变异隐形模型输出文件
-
-        AoFile.readheader(deleFileS);
 
         /**
          *  ################################### step1: 初始化染色体集合
@@ -313,32 +305,7 @@ public class DeleteriousCountbyPop {
         for (int i = 0; i < chrNum; i++) {
             chrList.add(i + 1);
         }
-
-        /**
-         * 建立 region 的集合
-         */
-        int bin = 50000;
-        int currentPos = -1;
-        int chrInd = -1;
-        RowTable<String> topt = new RowTable<>(infileS);
-        TIntList[] startLists = new TIntList[chrNum]; //所有的起始位点建立一个集合
-        TIntList[] endLists = new TIntList[chrNum]; //所有的终止位点建立一个集合
-        for (int i = 0; i < chrNum; i++) { //对list数组进行初始化
-            startLists[i] = new TIntArrayList();
-            endLists[i] = new TIntArrayList();
-        }
-        for (int i = 0; i < topt.getRowNumber(); i++) {
-            chrInd = topt.getCellAsInteger(i,0) -1;
-            currentPos = topt.getCellAsInteger(i,3);
-            startLists[chrInd].add(currentPos);
-            endLists[chrInd].add(currentPos+bin);
-        }
-        for (int i = 0; i < startLists.length; i++) {
-            startLists[i].sort();
-            endLists[i].sort();
-        }
-        System.out.println("Finished step1: building the region list");
-
+        System.out.println("Finished step1: completing the initialization of chromosome.");
 
         /**
          *  ################################### step2: posList  charList 补充完整
@@ -353,30 +320,14 @@ public class DeleteriousCountbyPop {
             posList[i] = new TIntArrayList();
             charList[i] = new TCharArrayList();
         }
-        new AoFile().readheader(deleFileS);
+        new AoFile().readheader(SNPAnnoFileS);
         String derivedAllele = null;
 
         try{
-            RowTable<String> t = new RowTable(deleFileS);
-//            BufferedWriter bw = AoFile.writeFile(outfileS);
-//            bw.write("CHROM\tPOS");
-//            bw.newLine();
+            RowTable<String> t = new RowTable(SNPAnnoFileS);
             for (int i = 0; i < t.getRowNumber(); i++) {
                 int index = t.getCellAsInteger(i, 1) - 1; //染色体号的索引
                 int pos = t.getCellAsInteger(i,2);
-                /**
-                 * 对该位点进行判断，看是否在选择区域,不在选择区域就忽略不计
-                 */
-                int posIndex =-1;
-                posIndex = startLists[index].binarySearch(pos);
-                if (posIndex < 0) {
-                    posIndex = -posIndex-2; //确保该位点在起始位点的右边
-                }
-                if (posIndex < 0) continue; //如果不在起始位点的右边，那么就不在范围内，跳过该位点
-                if (pos >= endLists[index].get(posIndex)) continue; //确保在末端位点的前面，若不在，也舍去
-//                bw.write(index+1 + "\t" + pos);
-//                bw.newLine();
-
                 /**
                  * 定义有害突变，不是有害突变，就忽略不计
                  */
@@ -407,8 +358,6 @@ public class DeleteriousCountbyPop {
                 else if (!(ancestralAllele.equals(majorAllele) || ancestralAllele.equals(minorAllele))){
                 }
             }
-//            bw.flush();
-//            bw.close();
 
             for (int i = 0; i < chrNum; i++) { //将每一个list转化为数组
                 delePos[i] = posList[i].toArray();
@@ -435,7 +384,7 @@ public class DeleteriousCountbyPop {
         chrList.parallelStream().forEach(chr -> {
             String delVmapFileS = "chr" + PStringUtils.getNDigitNumber(3, chr) + "_exon_vmap2.1.vcf.gz";
             //开始读写VCF文件
-            delVmapFileS = new File(delVCFDirS, delVmapFileS).getAbsolutePath();
+            delVmapFileS = new File(exonVCFDirS, delVmapFileS).getAbsolutePath();
             BufferedReader br = AoFile.readFile(delVmapFileS);
             int chrIndex = chr - 1;
             try {
@@ -469,7 +418,7 @@ public class DeleteriousCountbyPop {
 
                     if (!temp.startsWith("#")) {
                         cnt++;
-                        if (cnt % 1000 == 0) {
+                        if (cnt % 10000 == 0) {
                             System.out.println(String.valueOf(cnt) + " lines on chr " + String.valueOf(chr));
                         }
                         List<String> l = PStringUtils.fastSplit(temp.substring(0, 100), "\t");
@@ -490,7 +439,7 @@ public class DeleteriousCountbyPop {
 
 
                         //合计642个taxa，在A Bgenome中只有606（419+187）个，在Dgenome中只有455（419+36）个，我们要找到每个VCF文件中的genotype所对应的taxa的index
-                        //code:
+                        //code:本段代码是每行SNP位点，每个taxa的有害位点的统计
                         for (int i = 0; i < taxainVCFlist.size(); i++) {
                             int genotypeIndex = hmtaxainVCFindex.get(taxainVCFlist.get(i)); //获取该taxa的基因型所在的列的索引
                             int taxaIndex = hmtaxainTaxaindex.get(taxainVCFlist.get(i)); //获取该taxa所在总的642个数组中的索引，为后续写文件进行统计
@@ -548,12 +497,12 @@ public class DeleteriousCountbyPop {
 
         try {
             BufferedWriter bw = IOUtils.getTextWriter(addCountFileS);
-            bw.write("Taxa\tChr\tDeleteriousCountPerHaplotype\tSiteCountWithMinDepth\tIfSelectedRegion"); //每个taxa有多少个加性效应的derivedAllele 每个taxa在del库中含有基因型的个数
+            bw.write("Taxa\tChr\tDeleteriousCountPerHaplotype\tSiteCountWithMinDepth"); //每个taxa有多少个加性效应的derivedAllele 每个taxa在del库中含有基因型的个数
             bw.newLine();
-            for (int i = 0; i < addCount.length; i++) {
+            for (int i = 0; i < addCount.length; i++) { //第一层是染色体号
                 String chr = String.valueOf(i + 1);
-                for (int j = 0; j < addCount[0].length; j++) {
-                    bw.write(taxa[j] + "\t" + chr + "\t" + String.valueOf(addCount[i][j]) + "\t" + String.valueOf(siteWithMinDepthCount[i][j])+"\t1");
+                for (int j = 0; j < addCount[0].length; j++) { //第二层是该号染色体的有害变异个数
+                    bw.write(taxa[j] + "\t" + chr + "\t" + String.valueOf(addCount[i][j]) + "\t" + String.valueOf(siteWithMinDepthCount[i][j]));
                     bw.newLine();
                 }
             }
@@ -561,12 +510,12 @@ public class DeleteriousCountbyPop {
             bw.close();
 
             bw = IOUtils.getTextWriter(recCountFileS);
-            bw.write("Taxa\tChr\tDeleteriousCountPerHaplotype\tSiteCountWithMinDepth\tSelectedRegion"); //每个taxa有多少个加性效应的derivedAllele 每个taxa在del库中含有基因型的个数
+            bw.write("Taxa\tChr\tDeleteriousCountPerHaplotype\tSiteCountWithMinDepth"); //每个taxa有多少个加性效应的derivedAllele 每个taxa在del库中含有基因型的个数
             bw.newLine();
             for (int i = 0; i < addCount.length; i++) {
                 String chr = String.valueOf(i + 1);
                 for (int j = 0; j < addCount[0].length; j++) {
-                    bw.write(taxa[j] + "\t" + chr + "\t" + String.valueOf(recCount[i][j]) + "\t" + String.valueOf(siteWithMinDepthCount[i][j])+"\t1");
+                    bw.write(taxa[j] + "\t" + chr + "\t" + String.valueOf(recCount[i][j]) + "\t" + String.valueOf(siteWithMinDepthCount[i][j]));
                     bw.newLine();
                 }
             }
@@ -615,7 +564,7 @@ public class DeleteriousCountbyPop {
                 if (index < 0) continue;
                 if(taxaGroupMap.get(taxa[index]).equals("ExclusionHexaploid") || taxaGroupMap.get(taxa[index]).equals("ExclusionTetraploid")) continue;
                 double genotypesite = Double.valueOf(t.getCellAsDouble(i, 2));
-                if(genotypesite == 0) continue;
+                if(genotypesite == 0) continue; //如山羊草在A B亚基因组没有值，故这里删去
                 double ratio = Double.valueOf(t.getCellAsDouble(i, 2))/Double.valueOf(t.getCellAsDouble(i, 3));
                 for (int j = 0; j < t.getColumnNumber(); j++) { //按列书写
                     bw.write(t.getCellAsString(i,j) + "\t");
@@ -631,7 +580,7 @@ public class DeleteriousCountbyPop {
             System.out.println("Finished in making the del count table for each taxa in each single chromsome");
             System.out.println("-----------------------------------------------------------------------------");
             System.out.println("Now begin to merge final file by subgenome.");
-            this.mergeFinalfilebySub(addCountFileAddGroupS);
+            this.mergeFinalfilebySub(addCountFileAddGroupS); //##################### 重点！！！！！！合并文件！！！！！
             new File(addCountFileS).delete();
             new File(recCountFileS).delete();
         }

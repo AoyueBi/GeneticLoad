@@ -35,7 +35,7 @@ public class EstSFS {
 
 //        this.splitChrfromAncestralLipeng();
 //        this.addAnc();
-        this.mergeExonSNPAnnotation();
+//        this.mergeExonSNPAnnotation();
 
     }
 
