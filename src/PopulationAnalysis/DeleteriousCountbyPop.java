@@ -17,6 +17,7 @@ import java.util.*;
 public class DeleteriousCountbyPop {
     public DeleteriousCountbyPop(){
         this.countDeleteriousVMapII_byChr();
+//        this.mergeByTaxa("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/001_additiveDeleterious_ANCbarleyVSsecale_vmap2_bychr_bysub.txt");
 
     }
 
@@ -25,9 +26,9 @@ public class DeleteriousCountbyPop {
      * 即一个taxa的所有有害等位位点数，基因型数，比率。
      */
 
-    public void mergeByTaxa(){
+    public void mergeByTaxa(String infileS){
 //        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/002_countDel/001_additiveDeleterious_vmap2_bychr_selectedRegion_bysub.txt";
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/002_countDel/001_WEvsDE_additiveDeleterious_vmap2_bychr_selectedRegion_bysub.txt";
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/002_countDel/001_WEvsDE_additiveDeleterious_vmap2_bychr_selectedRegion_bysub.txt";
         String outfileS = new File(infileS).getAbsolutePath().replaceFirst(".txt","_mergeByTaxa.txt");
         String[] taxa = AoFile.getStringArraybySet(infileS,0);
 
@@ -81,11 +82,11 @@ public class DeleteriousCountbyPop {
                 ratio[i] = d[i].getSum()/dd[i].getSum();
             }
 
-            bw.write("Taxa\tDeleteriousCountPerHaplotype\tSiteCountWithMinDepth\tIfSelectedRegion\tGroup\tSubspecies\tGroupID\tRatio");
+            bw.write("Taxa\tDeleteriousCountPerHaplotype\tSiteCountWithMinDepth\tGroup\tSubspecies\tGroupID\tRatio");
             bw.newLine();
             for (int i = 0; i < taxa.length; i++) {
                 if(dd[i].getSum()==0)continue;
-                bw.write(taxa[i]  + "\t" + String.format("%.1f",d[i].getSum()) + "\t" + String.format("%.0f",dd[i].getSum())+ "\t1"
+                bw.write(taxa[i]  + "\t" + String.format("%.1f",d[i].getSum()) + "\t" + String.format("%.0f",dd[i].getSum())
                         + "\t" + taxaGroupMap.get(taxa[i]) + "\t" + taxaSubMap.get(taxa[i]) + "\t" + taxaGroupIDMap.get(taxa[i]) + "\t" + String.format("%.4f",ratio[i]));
                 bw.newLine();
             }
@@ -98,6 +99,7 @@ public class DeleteriousCountbyPop {
             System.exit(1);
         }
     }
+
 
     //根据最终生成的文件，进行 A B D sub的合并,使每个taxa具有Asub Bsub Dsub的结果
     public void mergeFinalfilebySub(String infileS){
@@ -251,6 +253,10 @@ public class DeleteriousCountbyPop {
         AoFile.mergeTxtbysuffix(outDirS,outfileS,".txt");
         new File(splitDirS).delete();
         new File(outDirS).delete();
+        //######################## 依据taxa进行合并
+        this.mergeByTaxa(outfileS);
+
+
     }
 
     /**
@@ -290,8 +296,8 @@ public class DeleteriousCountbyPop {
 //        String recCountFileS = ""; //有害变异隐形模型输出文件
 
 
-        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/002_countDel/001_WEvsDE_additiveDeleterious_vmap2_bychr_selectedRegion.txt";
-        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/008_deleteriousRegion/002_countDel/002_WEvsDE_recessiveDeleterious_vmap2_bychr_selectedRegion.txt";
+        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/001_additiveDeleterious_ANCbarleyVSsecale_vmap2_bychr.txt";
+        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/002_recessiveDeleterious_ANCbarleyVSsecale_vmap2_bychr.txt";
 
         String addCountFileS = new File(addCountFileAddGroupS).getAbsolutePath().replaceFirst(".txt",".temp.txt"); //有害变异加性模型输出文件
         String recCountFileS = new File(recCountFileAddGroupS).getAbsolutePath().replaceFirst(".txt",".temp.txt"); //有害变异隐形模型输出文件
@@ -340,7 +346,7 @@ public class DeleteriousCountbyPop {
                 if (siftd >= 0.05 || gerpd <= 1)continue;
                 //################### 需要修改 //###################//###################//###################//###################
 //            String ancestralAllele = t.getCell(i, 22); //不同的数据库，这一列的信息不一样，千万要注意!!!!!!!!!!!!!!!!! 祖先基因的数据库
-                String ancestralAllele = t.getCell(i, 15); //不同的数据库，这一列的信息不一样，千万要注意!!!!!!!!!!!!!!!!! 祖先基因的数据库
+                String ancestralAllele = t.getCell(i, 22); //不同的数据库，这一列的信息不一样，千万要注意!!!!!!!!!!!!!!!!! 祖先基因的数据库
                 //################### 需要修改 //###################//###################//###################//###################
 
                 String majorAllele = t.getCell(i, 5);

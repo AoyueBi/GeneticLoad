@@ -160,11 +160,11 @@ public class DeleteriousXPCLR {
                 ratio[i] = d[i].getSum()/dd[i].getSum();
             }
 
-            bw.write("Taxa\tDeleteriousCountPerHaplotype\tSiteCountWithMinDepth\tIfSelectedRegion\tGroup\tSubspecies\tGroupID\tRatio");
+            bw.write("Taxa\tDeleteriousCountPerHaplotype\tSiteCountWithMinDepth\tGroup\tSubspecies\tGroupID\tRatio");
             bw.newLine();
             for (int i = 0; i < taxa.length; i++) {
                 if(dd[i].getSum()==0)continue;
-                bw.write(taxa[i]  + "\t" + String.format("%.1f",d[i].getSum()) + "\t" + String.format("%.0f",dd[i].getSum())+ "\t1"
+                bw.write(taxa[i]  + "\t" + String.format("%.1f",d[i].getSum()) + "\t" + String.format("%.0f",dd[i].getSum())
                         + "\t" + taxaGroupMap.get(taxa[i]) + "\t" + taxaSubMap.get(taxa[i]) + "\t" + taxaGroupIDMap.get(taxa[i]) + "\t" + String.format("%.4f",ratio[i]));
                 bw.newLine();
             }
