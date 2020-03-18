@@ -56,8 +56,8 @@ public class DeleteriousXPCLR {
 
         String pop1fileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/008_treeValidatedGroup_bySubspecies/Domesticated_emmer.txt";
         String pop2fileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/008_treeValidatedGroup_bySubspecies/Wild_emmer.txt";
-        String[] pop1 = AoFile.getStringArraybyList_withoutGeader(pop1fileS,0);
-        String[] pop2 = AoFile.getStringArraybyList_withoutGeader(pop2fileS,0);
+        String[] pop1 = AoFile.getStringArraybyList_withoutHeader(pop1fileS,0);
+        String[] pop2 = AoFile.getStringArraybyList_withoutHeader(pop2fileS,0);
         System.out.println(pop1.length);
         System.out.println(pop2.length);
         try {

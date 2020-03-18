@@ -763,7 +763,7 @@ public class AoFile {
      * @param columnIndex
      * @return
      */
-    public static String[] getStringArraybyList_withoutGeader(String infileS, int columnIndex){
+    public static String[] getStringArraybyList_withoutHeader(String infileS, int columnIndex){
 
         List<String> out = new ArrayList<>();
         try {
@@ -845,10 +845,10 @@ public class AoFile {
      * @param columnIndex
      * @return
      */
-    public TDoubleArrayList getDoubleList(String infileS, int columnIndex){
+    public static TDoubleArrayList getTDoubleList(String infileS, int columnIndex){
         TDoubleArrayList ll = new TDoubleArrayList();
         try {
-            BufferedReader br = this.readFile(infileS);
+            BufferedReader br = AoFile.readFile(infileS);
             String temp = br.readLine(); //read header
             List<String> l = new ArrayList();
             int cnttotal = 0;
@@ -862,7 +862,7 @@ public class AoFile {
                 cnt++;
             }
             br.close();
-            System.out.println("Total num in the list is    " + cnt + "\t" + ll.size());
+            System.out.println("Total num in the list is " + cnt + "\tTDoubleArrayList size is " + ll.size());
         }
         catch (Exception e) {
             e.printStackTrace();
