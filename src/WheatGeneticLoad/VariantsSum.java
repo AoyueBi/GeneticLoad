@@ -152,37 +152,6 @@ public class VariantsSum {
 
     }
 
-    /**
-     *
-     *
-     */
-    public void extractMajorMinorfromDB(){
-        String infileDirS = "/data4/home/aoyue/vmap2/analysis/015_annoDB/010_step1";
-        String outfileDirS = "";
-        List<File> fsList = IOUtils.getVisibleFileListInDir(infileDirS);
-        fsList.parallelStream().forEach(f -> {
-            try {
-                String infileS = "";
-                String outfileS = "";
-                BufferedReader br = AoFile.readFile(infileS);
-                BufferedWriter bw = AoFile.writeFile(outfileS);
-                String temp = null;
-                List<String> l = new ArrayList<>();
-                while ((temp = br.readLine()) != null) {
-
-                }
-                br.close();
-                bw.flush();
-                bw.close();
-                System.out.println();
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.exit(1);
-            }
-
-
-        });
-    }
 
 
 

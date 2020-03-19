@@ -18,30 +18,39 @@ public class DeleteriousCountbyPop {
     public DeleteriousCountbyPop(){
 
 //        this.countDeleteriousVMapII_byChr();
-//        this.mergeByTaxa("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/001_additiveDeleterious_ANCbarleyVSsecale_vmap2_bychr_bysub.txt");
+        this.DeltoSynonymousRatio();
 
 //        this.getPopmutationBurden();
-        this.DeltoSynonymousRatio();
+
     }
 
     public void DeltoSynonymousRatio(){
 //        String infileS1 = ""; //有害突变文件
 //        String infileS2 = ""; //同义突变文件
 
+        //########### 大麦和黑麦
 //        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/002_additiveDeleterious_ANCbarleyVSsecale_vmap2_bychr_bysub.txt";
 //        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/001_additiveDeleterious_synonymous_ANCbarleyVSsecale_vmap2_bychr_bysub.txt";
 
-        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/002_additiveDeleterious_ANCbarleyVSsecale_vmap2_bychr_bysub_mergeByTaxa.txt"; //有害突变文件
-        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/001_additiveDeleterious_synonymous_ANCbarleyVSsecale_vmap2_bychr_bysub_mergeByTaxa.txt"; //同义突变文件
+//        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/002_additiveDeleterious_ANCbarleyVSsecale_vmap2_bychr_bysub_mergeByTaxa.txt"; //有害突变文件
+//        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/001_additiveDeleterious_synonymous_ANCbarleyVSsecale_vmap2_bychr_bysub_mergeByTaxa.txt"; //同义突变文件
+
+//########### 大麦和乌拉尔图
+
+//        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/004_additiveDeleterious_ANCbarleyVSurartu_vmap2_bychr_bysub_mergeByTaxa.txt"; //有害突变文件
+//        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/003_additiveDeleterious_synonymous_ANCbarleyVSurartu_vmap2_bychr_bysub_mergeByTaxa.txt"; //同义突变文件
+
+        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/004_additiveDeleterious_ANCbarleyVSurartu_vmap2_bychr_bysub.txt"; //有害突变文件
+        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/003_additiveDeleterious_synonymous_ANCbarleyVSurartu_vmap2_bychr_bysub.txt"; //同义突变文件
 
 
         String outfileS = new File(infileS1).getAbsolutePath().replaceFirst(".txt","_delVSsynonymous.txt");
         AoFile.readheader(infileS1);
-//        TDoubleArrayList del = AoFile.getTDoubleList(infileS1,7); //bySub的情况
-//        TDoubleArrayList syn = AoFile.getTDoubleList(infileS2,7); //bySub的情况
+        TDoubleArrayList del = AoFile.getTDoubleList(infileS1,7); //bySub的情况
+        TDoubleArrayList syn = AoFile.getTDoubleList(infileS2,7); //bySub的情况
 
-        TDoubleArrayList del = AoFile.getTDoubleList(infileS1,6); //byTaxa的情况
-        TDoubleArrayList syn = AoFile.getTDoubleList(infileS2,6); //byTaxa的情况
+//        TDoubleArrayList del = AoFile.getTDoubleList(infileS1,6); //byTaxa的情况
+//        TDoubleArrayList syn = AoFile.getTDoubleList(infileS2,6); //byTaxa的情况
         TDoubleArrayList ratioList = new TDoubleArrayList(del.size());
         for (int i = 0; i < del.size(); i++) {
             double r = (double)del.get(i)/syn.get(i); //String.format("%.3f",r)
@@ -79,7 +88,9 @@ public class DeleteriousCountbyPop {
         String refPop = "EU"; //pop2
 
         //输入输出文件  可变
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/002_additiveDeleterious_ANCbarleyVSsecale_vmap2_bychr_bysub_mergeByTaxa.txt";
+//        String infileS = "";
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/002_additiveDeleterious_ANCbarleyVSsecale_vmap2_bychr_bysub_mergeByTaxa.txt";
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/002_additiveDeleterious_ANCbarleyVSsecale_vmap2_bychr_bysub.txt";
 
         String outfileS = new File(infileS).getAbsolutePath().replaceFirst(".txt","_"+ objectPop + "_vs_" + refPop+".txt");
         //分组文件 可变
@@ -397,14 +408,20 @@ public class DeleteriousCountbyPop {
         String exonVCFDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/002_exonSNPVCF"; //有害变异的VCF文件路径
         String SNPAnnoFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/004_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz"; //有害变异信息库
 
-        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/002_additiveDeleterious_ANCbarleyVSsecale_vmap2_bychr.txt";
-        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/002_recessiveDeleterious_ANCbarleyVSsecale_vmap2_bychr.txt";
+        //########### 大麦和黑麦
+        //        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/001_additiveDeleterious_synonymous_ANCbarleyVSsecale_vmap2_bychr.txt";
+//        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/001_recessiveDeleterious_synonymous_ANCbarleyVSsecale_vmap2_bychr.txt";
 
-//        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/001_additiveDeleterious_synonymous_ANCbarleyVSsecale_vmap2_bychr.txt";
-//        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/002_recessiveDeleterious_synonymous_ANCbarleyVSsecale_vmap2_bychr.txt";
+//        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/002_additiveDeleterious_ANCbarleyVSsecale_vmap2_bychr.txt";
+//        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/002_recessiveDeleterious_ANCbarleyVSsecale_vmap2_bychr.txt";
 
-//        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/001_additiveDeleterious_ANCbarleyVSurartu_vmap2_bychr.txt";
-//        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/002_recessiveDeleterious_ANCbarleyVSurartu_vmap2_bychr.txt";
+        //########### 大麦和乌拉尔图
+
+        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/003_additiveDeleterious_synonymous_ANCbarleyVSurartu_vmap2_bychr.txt";
+        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/003_recessiveDeleterious_synonymous_ANCbarleyVSurartu_vmap2_bychr.txt";
+
+//        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/004_additiveDeleterious_ANCbarleyVSurartu_vmap2_bychr.txt";
+//        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/004_recessiveDeleterious_ANCbarleyVSurartu_vmap2_bychr.txt";
 
         String addCountFileS = new File(addCountFileAddGroupS).getAbsolutePath().replaceFirst(".txt",".temp.txt"); //有害变异加性模型输出文件
         String recCountFileS = new File(recCountFileAddGroupS).getAbsolutePath().replaceFirst(".txt",".temp.txt"); //有害变异隐形模型输出文件
@@ -448,19 +465,19 @@ public class DeleteriousCountbyPop {
                  * 定义有害突变，不是有害突变，就忽略不计 ################ 需要修改 需要修改 需要修改 ################
                  */
 
-                if (!variantType.equals("NONSYNONYMOUS") || sift.equals("NA") || gerp.equals("NA"))continue;
-                double siftd = Double.parseDouble(sift);
-                double gerpd = Double.parseDouble(gerp);
-                if (siftd >= 0.05 || gerpd <= 1)continue;
+//                if (!variantType.equals("NONSYNONYMOUS") || sift.equals("NA") || gerp.equals("NA"))continue;
+//                double siftd = Double.parseDouble(sift);
+//                double gerpd = Double.parseDouble(gerp);
+//                if (siftd >= 0.05 || gerpd <= 1)continue;
 
                 /**
                  * 定义有害突变，不是有害突变，就忽略不计 ################ 需要修改 需要修改 需要修改 ################
                  */
-//                if (!variantType.equals("SYNONYMOUS"))continue;
+                if (!variantType.equals("SYNONYMOUS"))continue;
 
                 //################### 需要修改 //###################//###################//###################//###################
-                String ancestralAllele = t.getCell(i, 22); //不同的数据库，这一列的信息不一样，千万要注意!!!!!!!!!!!!!!!!! 祖先基因的数据库
-//                String ancestralAllele = t.getCell(i, 15); //不同的数据库，这一列的信息不一样，千万要注意!!!!!!!!!!!!!!!!! 祖先基因的数据库
+//                String ancestralAllele = t.getCell(i, 22); //不同的数据库，这一列的信息不一样，千万要注意!!!!!!!!!!!!!!!!! 祖先基因的数据库
+                String ancestralAllele = t.getCell(i, 15); //不同的数据库，这一列的信息不一样，千万要注意!!!!!!!!!!!!!!!!! 祖先基因的数据库
 
                 //################### 需要修改 //###################//###################//###################//###################
 

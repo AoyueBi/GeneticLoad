@@ -1,12 +1,13 @@
 package WheatGeneticLoad;
 
 import AoUtils.AoFile;
+import AoUtils.Bin;
 import AoUtils.CountSites;
-import pgl.format.table.RowTable;
 import gnu.trove.list.array.TCharArrayList;
 import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TIntArrayList;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import pgl.format.table.RowTable;
 import pgl.utils.IOUtils;
 import pgl.utils.PStringUtils;
 import pgl.utils.wheat.RefV1Utils;
@@ -36,12 +37,168 @@ public class EstSFS {
 //        this.splitChrfromAncestralLipeng();
 //        this.addAnc();
 //        this.mergeExonSNPAnnotation();
+        this.changeChrPos();
+
+//        this.calDAF();
+//        this.runParallele_listFile();
+
+
+
+    }
+
+    public void runParallele_listFile(){ //本地运行常用
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/005_exonSNPAnnotation";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/006_exonSNPAnnotation_addDAF";
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/006_exonSNPAnnotation_addDAF";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/007_exonSNPAnnotation_addDAF_barleyUratu";
+        List<File> fsList = IOUtils.getVisibleFileListInDir(infileDirS);
+        fsList.stream().forEach(f -> {
+            String infileS = f.getAbsolutePath();
+            String outfileS = new File(outfileDirS,f.getName()).getAbsolutePath();
+            this.calDAF(f.getAbsolutePath(),outfileS);
+            System.out.println(f.getName() + "\tis completed at " + outfileS);
+        });
+    }
+
+    /**
+     * Goal:根据康李鹏提供的 ancestral allele，计算Daf,Daf_ABD Daf_AB Daf_D
+     */
+    public void calDAF(String dbfileS, String outfileS) { //String dbfileS, String ancS, String outfileS
+//        String dbfileS = "";
+//        String outfileS = "";
+        boolean ifd = false;
+        double daf = Double.NaN;
+        double daf_ABD = Double.NaN;
+        double daf_AB = Double.NaN;
+        int cntAncNum = 0;
+        File f = new File(dbfileS); //根据ancestral allele 文件，得到染色体号
+        int chr = Integer.parseInt(f.getName().substring(3, 6));
+        //根据染色体号进行AB还是D的判断
+        int[] db = {5, 6, 11, 12, 17, 18, 23, 24, 29, 30, 35, 36, 41, 42};
+        Arrays.sort(db);
+        if (Arrays.binarySearch(db, chr) > -1) { //说明是属于D的
+            ifd = true;
+        }
+        try {
+            String chrS = PStringUtils.getNDigitNumber(3, chr);
+            BufferedReader br = AoFile.readFile(dbfileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = br.readLine(); //read header
+            if (ifd == false) {
+//                bw.write(temp + "\tDaf_barley_secale\tDaf_ABD_barley_secale\tDaf_AB_barley_secale");
+                bw.write(temp + "\tDaf_barley_urartu\tDaf_ABD_barley_urartu\tDaf_AB_barley_urartu");
+                bw.newLine();
+            } else if (ifd == true) {
+//                bw.write(temp + "\tDaf_barley_secale\tDaf_ABD_barley_secale\tDaf_D_barley_secale");
+                bw.write(temp + "\tDaf_barley_urartu\tDaf_ABD_barley_urartu\tDaf_AB_barley_urartu");
+                bw.newLine();
+            }
+
+            int cntAnc = 0;
+            int cntAncNotMajororMinor = 0;
+            while ((temp = br.readLine()) != null) {
+                List<String> l = PStringUtils.fastSplit(temp);
+                int pos = Integer.parseInt(l.get(2));
+                String major = l.get(5);
+                String minor = l.get(6);
+                double maf = Double.parseDouble(l.get(7));
+                double AAF_ABD = Double.parseDouble(l.get(8));
+                double AAF_AB = Double.parseDouble(l.get(9));
+//                String ancAllele = l.get(22);
+                String ancAllele = l.get(15);
+                StringBuilder sb = new StringBuilder();
+                if (!ancAllele.equals("NA")) { //表明含有anc
+                    //如果ancestral allele存在,且等于major，则derived allele等于minor, daf 就等于maf
+                    //如果ancestral allele存在,且等于minor，则derived allele等于major, daf 就等于 1-daf1
+                    if (ancAllele.equals(minor)) {
+                        cntAnc++;
+                        daf = 1 - maf;
+                        if (AAF_ABD > 0.5) { //说明AAF_ABD是major， 祖先状态是minor的，所有DAF是major
+                            daf_ABD = AAF_ABD;
+                        } else if (AAF_ABD < 0.5) { //说明AAF_ABD是minor， 祖先状态是minor的，所有DAF是major
+                            daf_ABD = 1 - AAF_ABD;
+                        }
+                        if (AAF_AB > 0.5) {
+                            daf_AB = AAF_AB;
+                        } else if (AAF_AB < 0.5) {
+                            daf_AB = 1 - AAF_AB;
+                        }
+                        //多加一道判断，如果群体内部没有分离，直接将DAF设置为NA
+                        String DAF_ABD = String.format("%.4f", daf_ABD);
+                        String DAF_AB = String.format("%.4f", daf_AB);
+                        if (DAF_ABD.equals("0.0000") || DAF_ABD.equals("1.0000")) {
+                            DAF_ABD = "NA";
+                        }
+                        if (DAF_AB.equals("0.0000") || DAF_AB.equals("1.0000")) {
+                            DAF_AB = "NA";
+                        }
+                        sb.append(temp).append("\t").append(String.format("%.4f", daf)).append("\t").append(DAF_ABD).append("\t").append(DAF_AB);
+                        bw.write(sb.toString());
+                        bw.newLine();
+                    }
+                    if (ancAllele.equals(major)) {
+                        cntAnc++;
+                        daf = maf;
+                        if (AAF_ABD > 0.5) { //说明AAF_ABD是major， 祖先状态是major的，所有DAF是minor
+                            daf_ABD = 1 - AAF_ABD;
+                        } else if (AAF_ABD < 0.5) {
+                            daf_ABD = AAF_ABD;
+                        }
+                        if (AAF_AB > 0.5) {
+                            daf_AB = 1 - AAF_AB;
+                        } else if (AAF_AB < 0.5) {
+                            daf_AB = AAF_AB;
+                        }
+                        //多加一道判断，如果群体内部没有分离，直接将DAF设置为NA
+                        String DAF_ABD = String.format("%.4f", daf_ABD);
+                        String DAF_AB = String.format("%.4f", daf_AB);
+                        if (DAF_ABD.equals("0.0000") || DAF_ABD.equals("1.0000")) {
+                            DAF_ABD = "NA";
+                        }
+                        if (DAF_AB.equals("0.0000") || DAF_AB.equals("1.0000")) {
+                            DAF_AB = "NA";
+                        }
+                        sb.append(temp).append("\t").append(String.format("%.4f", daf)).append("\t").append(DAF_ABD).append("\t").append(DAF_AB);
+                        bw.write(sb.toString());
+                        bw.newLine();
+                    }
+                    if (!ancAllele.equals(minor) && (!ancAllele.equals(major))) {
+                        sb.append(temp).append("\t").append("NA").append("\t").append("NA").append("\t").append("NA");
+                        bw.write(sb.toString());
+                        bw.newLine();
+                        //System.out.println("CHR" + PStringUtils.getNDigitNumber(3, CHR) + "\t" + pos + " are neither major nor minor.");
+                        cntAncNotMajororMinor++;
+                    }
+
+                } else { //表明不含anc
+                    sb.append(temp).append("\t").append("NA").append("\t").append("NA").append("\t").append("NA");
+                    bw.write(sb.toString());
+                    bw.newLine();
+                }
+            }
+            double ratio = (double) cntAncNotMajororMinor / (cntAncNotMajororMinor + cntAnc);
+            bw.flush();
+            bw.close();
+            br.close();
+            System.out.println(f.getName() + "\tis completed at " + outfileS + "\t" + cntAnc + "\tancestral allele are with daf value by state major or minor");
+            System.out.println(new File(dbfileS).getName() + "\thave " + cntAncNotMajororMinor + " sites which are neither major nor minor. The ratio is " + String.format("%.4f", ratio));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void changeChrPos(){
+        new Bin().getDAFtable();
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/007_exonSNPAnnotation_addDAF_barleyUratu/chr001_SNP_anno.txt.gz";
+//        String outfileS = "";
+//        AoFile.readheader(infileS);
+//
 
     }
 
 
     public void mergeExonSNPAnnotation(){
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/005_exonSNPAnnotation";
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/007_exonSNPAnnotation_addDAF_barleyUratu";
         String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/004_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
         AoFile.mergeTxt(infileDirS,outfileS);
     }
@@ -803,9 +960,9 @@ public class EstSFS {
     public void addAnc(){
 
         //no change
-//        String anceDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/003_ancestralAllele";
-//        String anceDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/003_ancestral/hv_br_jap/002_byChrID";
-        String anceDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/002_byChrID";
+//        String anceDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/003_ancestral/hv_brdis/002_byChrID";
+        String anceDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/003_ancestral/hv_br_jap/002_byChrID";
+//        String anceDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/002_byChrID";
 
         //change
 //        String infileDirS = "";
@@ -822,16 +979,16 @@ public class EstSFS {
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/004_snp/003_/syn";
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/004_snp/004_gerp/del";
 
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/003_exonSNPAnnotation";
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/005_exonSNPAnnotation";
         List<File> fs =IOUtils.getVisibleFileListInDir(infileDirS);
         for (int i = 0; i < fs.size(); i++) {
             String infileS = fs.get(i).getAbsolutePath();
             String chr = new File(infileS).getName().substring(3,6);
-//            String anceS = new File(anceDirS,"chr"+chr+"_hv_brdis.exon.ancestralAllele.txt.gz").getAbsolutePath();
-//            String anceS = new File(anceDirS,"chr" + chr + ".hovul.brdis.orjap.exon.probs.ancestral.txt.gz").getAbsolutePath();
-            String anceS = new File(anceDirS,"chr" + chr + "_barleyVSsecale_ancestralAllele.txt.gz").getAbsolutePath();
+//            String anceS = new File(anceDirS,"chr"+chr+".hovul.brdis.exon.probs.ancestral.txt.gz").getAbsolutePath();
+            String anceS = new File(anceDirS,"chr" + chr + ".hovul.brdis.orjap.exon.probs.ancestral.txt.gz").getAbsolutePath();
+//            String anceS = new File(anceDirS,"chr" + chr + "_barleyVSsecale_ancestralAllele.txt.gz").getAbsolutePath();
             HashMap<Integer,String> hm = new AoFile().getHashMapintKey(anceS,1,2);
-            new AoFile().addColumbyint(infileS,2,hm,"Ancestral_barley_secale");
+            new AoFile().addColumbyint(infileS,2,hm,"Ancestral_barley_brdis_orjap");
         }
     }
 

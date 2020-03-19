@@ -46,6 +46,11 @@ public class AoFile {
 
     }
 
+    /**
+     * 获取文件数组
+     * @param inDirS
+     * @return
+     */
     public static File[] getFileArrayInDir (String inDirS) {
         File[] fs = new File(inDirS).listFiles();
         List<File> fList = new ArrayList<>();
@@ -59,6 +64,11 @@ public class AoFile {
         return fsArray;
     }
 
+    /**
+     * 获取文件集合
+     * @param inDirS
+     * @return
+     */
     public static List<File> getFileListInDir (String inDirS) {
         File[] fs = new File(inDirS).listFiles();
         List<File> fList = new ArrayList<>();

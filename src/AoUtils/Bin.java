@@ -28,7 +28,7 @@ public class Bin {
 
 //        this.mkBarplotofMAF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/023_rebackDDtauschii/002_subsetVCFandMAF/009_calMAF_newData","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/023_rebackDDtauschii/002_subsetVCFandMAF/010_bintable","25","0.5");
 //    this.mkBarplotofMAF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/023_rebackDDtauschii/002_subsetVCFandMAF/012_calMAF_bySub","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/023_rebackDDtauschii/002_subsetVCFandMAF/013_bintable_bySub","25","0.5");
-//        this.getDAFtable();
+        this.getDAFtable();
     }
 
 
@@ -301,39 +301,24 @@ public class Bin {
      *
      */
     public void getDAFtable() {
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/014_merge";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/014_merge";
 //        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/018_getDAFtablefrom014";
 //        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/018_getDAFtablefrom014/002_basedGerpPhyloP";
-        
 //        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/018_getDAFtablefrom014/003_basedSIFT_ratio";
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/018_getDAFtablefrom014/005_basedonlyGERP";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/018_getDAFtablefrom014/005_basedonlyGERP";
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/004_exonSNPAnnotation_merge";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/004_DAFtable";
         new File(outfileDirS).mkdirs();
 
-        File[] fs = new File(infileDirS).listFiles();
-        for (int i = 0; i < fs.length; i++) {
-            if (fs[i].isHidden()) {
-                System.out.println(fs[i].getName() + " is hidden");
-                fs[i].delete();
-            }
-        }
-        fs = new File(infileDirS).listFiles();
-        List<File> fsList = Arrays.asList(fs);
+        List<File> fsList = AoFile.getFileListInDir(infileDirS);
         fsList.stream().forEach(f -> {
             try {
                 //************************************ 第一阶段，定义输出输出文件，读写文件 ************************//
                 String infileS = f.getAbsolutePath();
-                String outfileS = null;
-                BufferedReader br = null;
-                if (infileS.endsWith(".txt")) {
-                    br = IOUtils.getTextReader(infileS);
-                    outfileS = new File(outfileDirS, f.getName().replaceFirst("txt", "bins" + ".Table.txt")).getAbsolutePath();
-                } else if (infileS.endsWith(".txt.gz")) {
-                    br = IOUtils.getTextGzipReader(infileS);
-                    outfileS = new File(outfileDirS, f.getName().replaceFirst("txt.gz", "bins" + ".Table.txt")).getAbsolutePath();
-                }
-                BufferedWriter bw = null;
-                bw = IOUtils.getTextWriter(outfileS);
-
+                String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "binTable.txt").getAbsolutePath();
+                BufferedReader br = AoFile.readFile(infileS);
+                BufferedWriter bw = AoFile.writeFile(outfileS);
                 //************************************ 第二阶段，创建相关变量，并读入文件判断 ************************//
                 String[] group = {"Deleterious SNPs", "Nonsynonymous-tolerant SNPs", "Synonymous SNPs"};
                 TDoubleArrayList[] dafABD = new TDoubleArrayList[group.length];
@@ -359,13 +344,13 @@ public class Bin {
                 List<String> l = new ArrayList();
                 while ((temp = br.readLine()) != null) { //我想得到 DAF_ABD的pos集合， DAF_AB的pos集合，以及合并数据的DAF集合。每个集合又分为3类，一类是同义突变，一类是非同义突变，sift值小于0.05，一类是非同义突变，sfft大于0.05
                     l = PStringUtils.fastSplit(temp);
-                    String type = l.get(11);
-                    String siftscore = l.get(12);
-                    String gerpscore = l.get(17);
+                    String type = l.get(12);
+                    String siftscore = l.get(13);
+                    String gerpscore = l.get(20);
                     String phylopscore = l.get(18);
-                    String DAF_ABD = l.get(15);
-                    String DAF_AB = l.get(16);
-                    String DAF = l.get(14);
+                    String DAF_ABD = l.get(26);
+                    String DAF_AB = l.get(27);
+                    String DAF = l.get(25);
                     //如果变异类型是同义突变，那么就不用做任何判断；直接加上分组 Synonymous 并写入
                     //如果变异类型是非同义突变，且SIFT值存在，且SIFT值小于0.5，gerp和phylop存在，且gerp大于1，且phylop大于0.5；那么加上分组 Deleterious 并写入； gerp 值和 phylop值不满足条件的，那么就不进行分组
                     //如果变异类型是非同义突变，且SIFT值存在，且SIFT值大于0.5，那么加上分组 Nonsynonymous_tolerent 并写入
