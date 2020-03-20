@@ -305,7 +305,7 @@ public class AoFile {
     /**
      * add colum to a file
      */
-    public void addColumbyint(String infileS,int keyIDindex, HashMap<Integer,String> hm,String headername){
+    public static void addColumbyint(String infileS,int keyIDindex, HashMap<Integer,String> hm,String headername){
         String outfileS = null;
         String outfileDirS = new File(infileS).getParent(); //获取输入文件的父目录
         outfileDirS = new File(outfileDirS).getParent(); //根据输入文件的父目录获取上一级父目录；
@@ -431,7 +431,7 @@ public class AoFile {
      * @param valuecolumnIndex
      * @return
      */
-    public HashMap<Integer,String> getHashMapintKey(String infileS, int keycolummIndex, int valuecolumnIndex){
+    public static HashMap<Integer,String> getHashMapintKey(String infileS, int keycolummIndex, int valuecolumnIndex){
         String out = null;
         RowTable<String> t = new RowTable<>(infileS);
         HashMap<Integer,String> hm = new HashMap<>();
