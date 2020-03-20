@@ -37,12 +37,51 @@ public class EstSFS {
 //        this.splitChrfromAncestralLipeng();
 //        this.addAnc();
 //        this.mergeExonSNPAnnotation();
-        this.changeChrPos();
+//        this.changeChrPos();
 
+        this.extractAncestralAllele();
 //        this.calDAF();
 //        this.runParallele_listFile();
 
 
+
+    }
+
+    /**
+     * 提取达兴的简约法的ancestral allele
+     */
+    public void extractAncestralAllele(){
+        String infileDirS ="";
+        String dbDirS = "";
+        String outfileDirS = "";
+        List<File> fsList = IOUtils.getVisibleFileListInDir(infileDirS);
+        fsList.parallelStream().forEach(f -> {
+            try {
+                String infileS = f.getAbsolutePath();
+                String outfileS = null;
+                BufferedReader br = null;
+                if (infileS.endsWith(".txt")) {
+                    br = IOUtils.getTextReader(infileS);
+                    outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "_subset.txt.gz").getAbsolutePath();
+                } else if (infileS.endsWith(".txt.gz")) {
+                    br = IOUtils.getTextGzipReader(infileS);
+                    outfileS = new File(outfileDirS, f.getName().split(".txt.gz")[0] + "_subset.txt.gz").getAbsolutePath();
+                }
+                BufferedWriter bw = IOUtils.getTextGzipWriter(outfileS);
+                String temp = null;
+                List<String> l = new ArrayList<>();
+                while ((temp = br.readLine()) != null) {
+                    l = PStringUtils.fastSplit(temp);
+
+                }
+                bw.flush();
+                bw.close();
+                br.close();
+                System.out.println(f.getName() + "\tis completed at " + outfileS);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
 
     }
 
