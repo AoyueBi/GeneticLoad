@@ -35,22 +35,31 @@ public class DeleteriousCountbyPop {
 //        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/002_additiveDeleterious_ANCbarleyVSsecale_vmap2_bychr_bysub_mergeByTaxa.txt"; //有害突变文件
 //        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/001_additiveDeleterious_synonymous_ANCbarleyVSsecale_vmap2_bychr_bysub_mergeByTaxa.txt"; //同义突变文件
 
+
+
 //########### 大麦和乌拉尔图
 
 //        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/004_additiveDeleterious_ANCbarleyVSurartu_vmap2_bychr_bysub_mergeByTaxa.txt"; //有害突变文件
 //        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/003_additiveDeleterious_synonymous_ANCbarleyVSurartu_vmap2_bychr_bysub_mergeByTaxa.txt"; //同义突变文件
 
-        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/004_additiveDeleterious_ANCbarleyVSurartu_vmap2_bychr_bysub.txt"; //有害突变文件
-        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/003_additiveDeleterious_synonymous_ANCbarleyVSurartu_vmap2_bychr_bysub.txt"; //同义突变文件
+//        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/004_additiveDeleterious_ANCbarleyVSurartu_vmap2_bychr_bysub.txt"; //有害突变文件
+//        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/003_additiveDeleterious_synonymous_ANCbarleyVSurartu_vmap2_bychr_bysub.txt"; //同义突变文件
 
+
+        //########### 大麦和黑麦 最大简约法
+//        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/003_VMap2.1DelCount/001_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr_bysub.txt";
+//        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/003_VMap2.1DelCount/001_additiveDeleterious_synonymous_ANCbarleyVSsecalePasimony_vmap2_bychr_bysub.txt";
+
+        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/003_VMap2.1DelCount/001_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr_bysub_mergeByTaxa.txt";
+        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/003_VMap2.1DelCount/001_additiveDeleterious_synonymous_ANCbarleyVSsecalePasimony_vmap2_bychr_bysub_mergeByTaxa.txt";
 
         String outfileS = new File(infileS1).getAbsolutePath().replaceFirst(".txt","_delVSsynonymous.txt");
         AoFile.readheader(infileS1);
-        TDoubleArrayList del = AoFile.getTDoubleList(infileS1,7); //bySub的情况
-        TDoubleArrayList syn = AoFile.getTDoubleList(infileS2,7); //bySub的情况
+//        TDoubleArrayList del = AoFile.getTDoubleList(infileS1,7); //bySub的情况
+//        TDoubleArrayList syn = AoFile.getTDoubleList(infileS2,7); //bySub的情况
 
-//        TDoubleArrayList del = AoFile.getTDoubleList(infileS1,6); //byTaxa的情况
-//        TDoubleArrayList syn = AoFile.getTDoubleList(infileS2,6); //byTaxa的情况
+        TDoubleArrayList del = AoFile.getTDoubleList(infileS1,6); //byTaxa的情况
+        TDoubleArrayList syn = AoFile.getTDoubleList(infileS2,6); //byTaxa的情况
         TDoubleArrayList ratioList = new TDoubleArrayList(del.size());
         for (int i = 0; i < del.size(); i++) {
             double r = (double)del.get(i)/syn.get(i); //String.format("%.3f",r)
@@ -424,8 +433,11 @@ public class DeleteriousCountbyPop {
 //        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/004_recessiveDeleterious_ANCbarleyVSurartu_vmap2_bychr.txt";
 
         //########### 大麦和黑麦简约法 达兴
-        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/003_VMap2.1DelCount/001_additiveDeleterious_synonymous_ANCbarleyVSsecalePasimony_vmap2_bychr.txt";
-        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/003_VMap2.1DelCount/001_recessiveDeleterious_synonymous_ANCbarleyVSsecalePasimony_vmap2_bychr.txt";
+//        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/003_VMap2.1DelCount/001_additiveDeleterious_synonymous_ANCbarleyVSsecalePasimony_vmap2_bychr.txt";
+//        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/003_VMap2.1DelCount/001_recessiveDeleterious_synonymous_ANCbarleyVSsecalePasimony_vmap2_bychr.txt";
+
+        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/003_VMap2.1DelCount/001_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr.txt";
+        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/003_VMap2.1DelCount/001_recessiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr.txt";
 
 
 
@@ -459,55 +471,59 @@ public class DeleteriousCountbyPop {
 
         String derivedAllele = null;
 
-        try{
+        try {
+            BufferedReader br = AoFile.readFile(SNPAnnoFileS);
+            String temp = null;
+            String header = br.readLine();
+            List<String> l = new ArrayList<>();
             int cnt = 0;
-            System.out.println("lllll");
-            RowTable<String> t = new RowTable(SNPAnnoFileS);
-            System.out.println("jjjjj");
-            for (int i = 0; i < t.getRowNumber(); i++) {
-                int index = t.getCellAsInteger(i, 1) - 1; //染色体号的索引
-                int pos = t.getCellAsInteger(i,2);
-                String variantType = t.getCell(i,12);
-                String sift = t.getCell(i,13);
-                String gerp = t.getCell(i,20);
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                int index = Integer.parseInt(l.get(1)) - 1; //染色体号的索引
+                int pos = Integer.parseInt(l.get(2));
+                String variantType = l.get(12);
+                String sift = l.get(13);
+                String gerp = l.get(20);
                 /**
                  * 定义有害突变，不是有害突变，就忽略不计 ################ 需要修改 需要修改 需要修改 ################
                  */
 
-//                if (!variantType.equals("NONSYNONYMOUS") || sift.equals("NA") || gerp.equals("NA"))continue;
-//                double siftd = Double.parseDouble(sift);
-//                double gerpd = Double.parseDouble(gerp);
-//                if (siftd >= 0.05 || gerpd <= 1)continue;
+                if (!variantType.equals("NONSYNONYMOUS") || sift.equals("NA") || gerp.equals("NA"))continue;
+                double siftd = Double.parseDouble(sift);
+                double gerpd = Double.parseDouble(gerp);
+                if (siftd >= 0.05 || gerpd <= 1)continue;
 
                 /**
                  * 定义有害突变，不是有害突变，就忽略不计 ################ 需要修改 需要修改 需要修改 ################
                  */
-                if (!variantType.equals("SYNONYMOUS"))continue;
+//                if (!variantType.equals("SYNONYMOUS"))continue;
 
                 //################### 需要修改 //###################//###################//###################//###################
-//                String ancestralAllele = t.getCell(i, 22); //不同的数据库，这一列的信息不一样，千万要注意!!!!!!!!!!!!!!!!! 祖先基因的数据库
-                String ancestralAllele = t.getCell(i, 15); //不同的数据库，这一列的信息不一样，千万要注意!!!!!!!!!!!!!!!!! 祖先基因的数据库
-//                String ancestralAllele = t.getCell(i, 31);
+//                String ancestralAllele = l.get(22); //不同的数据库，这一列的信息不一样，千万要注意!!!!!!!!!!!!!!!!! 祖先基因的数据库
+//                String ancestralAllele = l.get(15); //不同的数据库，这一列的信息不一样，千万要注意!!!!!!!!!!!!!!!!! 祖先基因的数据库
+                String ancestralAllele = l.get(31);
                 //################### 需要修改 //###################//###################//###################//###################
 
-                String majorAllele = t.getCell(i, 5);
-                String minorAllele = t.getCell(i, 6);
+                String majorAllele = l.get(5);
+                String minorAllele = l.get(6);
                 if (ancestralAllele.equals(majorAllele)) {
                     derivedAllele = minorAllele;
-                    posList[index].add(t.getCellAsInteger(i, 2)); //将包含有derived allele的位点添加到Poslist
+                    posList[index].add(Integer.parseInt(l.get(2))); //将包含有derived allele的位点添加到Poslist
                     charList[index].add(derivedAllele.charAt(0)); //返回的是char类型的字符
                 }
                 if (ancestralAllele.equals(minorAllele)) {
                     derivedAllele = majorAllele;
-                    posList[index].add(t.getCellAsInteger(i, 2));
+                    posList[index].add(Integer.parseInt(l.get(2)));
                     charList[index].add(derivedAllele.charAt(0));
                 }
                 else if (!(ancestralAllele.equals(majorAllele) || ancestralAllele.equals(minorAllele))){
                 }
                 cnt++;
-                if (cnt/1000==0) System.out.println("cnt is " + cnt);
+                if (cnt%1000==0) System.out.println("cnt is " + cnt);
 
             }
+            br.close();
+            System.out.println();
 
             for (int i = 0; i < chrNum; i++) { //将每一个list转化为数组
                 delePos[i] = posList[i].toArray();
@@ -516,7 +532,7 @@ public class DeleteriousCountbyPop {
             }
             System.out.println("Finished step2: completing the posList  charList.");
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
         }

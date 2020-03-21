@@ -2,6 +2,7 @@ package WheatGeneticLoad;
 
 import AoUtils.AoFile;
 import AoUtils.CountSites;
+import PopulationAnalysis.DeleteriousCountbyPop;
 import gnu.trove.list.array.TCharArrayList;
 import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TIntArrayList;
@@ -33,18 +34,134 @@ public class EstSFS {
 
 //        this.checkAncestraldiff();
 
+        /**
+         * 处理康李鹏的ancestral allele barley secale (maximum likelihood method)
+         */
 //        this.splitChrfromAncestralLipeng();
 //        this.addAnc();
 //        this.mergeExonSNPAnnotation();
 
-//        this.calDAF();
-        this.runParallele_listFile();
+        /**
+         * 计算DAF值，并且生成表格用来画图
+         */
+//        this.calDAF(); //单线程计算
+//        this.runParallele_listFile(); //多线程运行
+//        this.mergeExonSNPAnnotation(); //计算后结果合并
+//        this.mkDAFtable(); //开始分bin
 
-        //        this.changeChrPos();
+        /**
+         * 处理达兴的简约法ancestral allele Pasimony
+         */
 //        this.extractAncestralAllele();
+//        this.test();
+        this.deleteriousCount();
 
 
 
+    }
+
+    public void deleteriousCount(){
+//        new DeleteriousCountbyPop().countDeleteriousVMapII_byChr();
+        new DeleteriousCountbyPop().DeltoSynonymousRatio();
+    }
+
+    public void test (){
+        String SNPAnnoFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/004_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz"; //有害变异信息库
+        AoFile.readheader(SNPAnnoFileS);
+        System.out.println("begin");
+
+        /**
+         *  ################################### step1: 初始化染色体集合
+         */
+        int minDepth = 2;//inclusive
+        int chrNum = 42;
+        ArrayList<Integer> chrList = new ArrayList();
+        for (int i = 0; i < chrNum; i++) {
+            chrList.add(i + 1);
+        }
+        System.out.println("Finished step1: completing the initialization of chromosome.");
+
+        /**
+         *  ################################### step2: posList  charList 补充完整
+         */
+
+        int[][] delePos = new int[chrNum][];
+        char[][] deleChar = new char[chrNum][];
+
+        TIntArrayList[] posList = new TIntArrayList[chrNum];
+        TCharArrayList[] charList = new TCharArrayList[chrNum];
+        for (int i = 0; i < chrNum; i++) { //集合类数组，要初始化每一个list
+            posList[i] = new TIntArrayList();
+            charList[i] = new TCharArrayList();
+        }
+
+        String derivedAllele = null;
+
+        try {
+            BufferedReader br = AoFile.readFile(SNPAnnoFileS);
+            String temp = null;
+            String header = br.readLine();
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                int index = Integer.parseInt(l.get(1)) - 1; //染色体号的索引
+                int pos = Integer.parseInt(l.get(2));
+                String variantType = l.get(12);
+                String sift = l.get(13);
+                String gerp = l.get(20);
+                /**
+                 * 定义有害突变，不是有害突变，就忽略不计 ################ 需要修改 需要修改 需要修改 ################
+                 */
+
+//                if (!variantType.equals("NONSYNONYMOUS") || sift.equals("NA") || gerp.equals("NA"))continue;
+//                double siftd = Double.parseDouble(sift);
+//                double gerpd = Double.parseDouble(gerp);
+//                if (siftd >= 0.05 || gerpd <= 1)continue;
+
+                /**
+                 * 定义有害突变，不是有害突变，就忽略不计 ################ 需要修改 需要修改 需要修改 ################
+                 */
+                if (!variantType.equals("SYNONYMOUS"))continue;
+
+                //################### 需要修改 //###################//###################//###################//###################
+//                String ancestralAllele = l.get(22); //不同的数据库，这一列的信息不一样，千万要注意!!!!!!!!!!!!!!!!! 祖先基因的数据库
+//                String ancestralAllele = l.get(15); //不同的数据库，这一列的信息不一样，千万要注意!!!!!!!!!!!!!!!!! 祖先基因的数据库
+                String ancestralAllele = l.get(31);
+                //################### 需要修改 //###################//###################//###################//###################
+
+                String majorAllele = l.get(5);
+                String minorAllele = l.get(6);
+                if (ancestralAllele.equals(majorAllele)) {
+                    derivedAllele = minorAllele;
+                    posList[index].add(Integer.parseInt(l.get(2))); //将包含有derived allele的位点添加到Poslist
+                    charList[index].add(derivedAllele.charAt(0)); //返回的是char类型的字符
+                }
+                if (ancestralAllele.equals(minorAllele)) {
+                    derivedAllele = majorAllele;
+                    posList[index].add(Integer.parseInt(l.get(2)));
+                    charList[index].add(derivedAllele.charAt(0));
+                }
+                else if (!(ancestralAllele.equals(majorAllele) || ancestralAllele.equals(minorAllele))){
+                }
+                cnt++;
+                if (cnt%1000==0) System.out.println("cnt is " + cnt);
+
+            }
+            br.close();
+            System.out.println();
+
+            for (int i = 0; i < chrNum; i++) { //将每一个list转化为数组
+                delePos[i] = posList[i].toArray();
+                deleChar[i] = charList[i].toArray();
+                Arrays.sort(delePos[i]);
+            }
+            System.out.println("Finished step2: completing the posList  charList.");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
     /**
@@ -114,6 +231,14 @@ public class EstSFS {
 
     }
 
+    public void mkDAFtable(){
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/004_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
+//        AoFile.readheader(infileS);
+//        new Bin().getDAFtable();
+//
+
+    }
+
     public void runParallele_listFile(){ //本地运行常用
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/005_exonSNPAnnotation";
 //        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/006_exonSNPAnnotation_addDAF";
@@ -159,12 +284,12 @@ public class EstSFS {
             if (ifd == false) {
 //                bw.write(temp + "\tDaf_barley_secale\tDaf_ABD_barley_secale\tDaf_AB_barley_secale");
 //                bw.write(temp + "\tDaf_barley_urartu\tDaf_ABD_barley_urartu\tDaf_AB_barley_urartu");
-                bw.write(temp + "\tDaf_barley_secale\tDaf_ABD_barley_secale\tDaf_AB_barley_secalePasimony");
+                bw.write(temp + "\tDaf_barley_secalePasimony\tDaf_ABD_barley_secalePasimony\tDaf_AB_barley_secalePasimony");
                 bw.newLine();
             } else if (ifd == true) {
 //                bw.write(temp + "\tDaf_barley_secale\tDaf_ABD_barley_secale\tDaf_D_barley_secale");
 //                bw.write(temp + "\tDaf_barley_urartu\tDaf_ABD_barley_urartu\tDaf_AB_barley_urartu");
-                bw.write(temp + "\tDaf_barley_secale\tDaf_ABD_barley_secale\tDaf_AB_barley_secalePasimony");
+                bw.write(temp + "\tDaf_barley_secalePasimony\tDaf_ABD_barley_secalePasimony\tDaf_AB_barley_secalePasimony");
                 bw.newLine();
             }
 
@@ -266,19 +391,13 @@ public class EstSFS {
         }
     }
 
-    public void changeChrPos(){
-//        new Bin().getDAFtable();
-//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/007_exonSNPAnnotation_addDAF_barleyUratu/chr001_SNP_anno.txt.gz";
-//        String outfileS = "";
-//        AoFile.readheader(infileS);
-//
 
-    }
 
 
     public void mergeExonSNPAnnotation(){
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/007_exonSNPAnnotation_addDAF_barleyUratu";
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/008_exonSNPAnnotation_addAnc";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/008_exonSNPAnnotation_addAnc";
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/009_exonSNPAnnotation_addAnc_addDAF_barley_secalePasimony";
         String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/004_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
         AoFile.mergeTxt(infileDirS,outfileS);
     }

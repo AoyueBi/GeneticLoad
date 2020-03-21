@@ -27,7 +27,7 @@ public class Bin {
     public Bin() {
         //this.mkBarplotofMAF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/023_rebackDDtauschii/002_subsetVCFandMAF/002_calMAF","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/023_rebackDDtauschii/002_subsetVCFandMAF/003_bintable","25","0.5");
 
-//        this.mkBarplotofMAF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/023_rebackDDtauschii/002_subsetVCFandMAF/009_calMAF_newData","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/023_rebackDDtauschii/002_subsetVCFandMAF/010_bintable","25","0.5");
+//    this.mkBarplotofMAF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/023_rebackDDtauschii/002_subsetVCFandMAF/009_calMAF_newData","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/023_rebackDDtauschii/002_subsetVCFandMAF/010_bintable","25","0.5");
 //    this.mkBarplotofMAF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/023_rebackDDtauschii/002_subsetVCFandMAF/012_calMAF_bySub","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/023_rebackDDtauschii/002_subsetVCFandMAF/013_bintable_bySub","25","0.5");
 //        this.getDAFtable();
     }
@@ -322,13 +322,13 @@ public class Bin {
             try {
                 //************************************ 第一阶段，定义输出输出文件，读写文件 ************************//
                 String infileS = f.getAbsolutePath();
-                String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "binTable_onlyABD.txt").getAbsolutePath(); //只能画总体的ABD六倍体
+//                String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "binTable_onlyABD.txt").getAbsolutePath(); //只能画总体的ABD六倍体
 //                String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "binTable_onlyAB.txt").getAbsolutePath(); //只能画总体的AB四倍体
 //                String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "binTable_onlyD.txt").getAbsolutePath(); //只能画总体的D二倍体
-//
+
 //                String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "binTable_Asubgenome.txt").getAbsolutePath(); //只有A亚基因组的结果
 //                String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "binTable_Bsubgenome.txt").getAbsolutePath(); //只有A亚基因组的结果
-//                String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "binTable_Dsubgenome.txt").getAbsolutePath(); //只有A亚基因组的结果
+                String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "binTable_Dsubgenome.txt").getAbsolutePath(); //只有A亚基因组的结果
 
                 BufferedReader br = AoFile.readFile(infileS);
                 BufferedWriter bw = AoFile.writeFile(outfileS);
@@ -362,22 +362,28 @@ public class Bin {
                     String chr = RefV1Utils.getChromosome(chrID,posID);
 //                    if(chr.contains("D"))continue; //只能用于AABB总体画图
 //                    if(chr.contains("A") || chr.contains("B"))continue; //只能用于DD总体画图
-//
+
 //                    if(chr.contains("B") || chr.contains("D"))continue; //只能用于A亚基因组
 //                    if(chr.contains("A") || chr.contains("D"))continue; //只能用于B亚基因组
-//                    if(chr.contains("A") || chr.contains("B"))continue; //只能用于D亚基因组
+                    if(chr.contains("A") || chr.contains("B"))continue; //只能用于D亚基因组
                     System.out.println(temp);
                     String type = l.get(12);
                     String siftscore = l.get(13);
                     String gerpscore = l.get(20);
-                    String phylopscore = l.get(18);
+//                    String phylopscore = l.get(18);
+
 //                    String DAF_ABD = l.get(26); //大麦黑麦为ancestral allele计算的DAF值
 //                    String DAF_AB = l.get(27); //大麦黑麦为ancestral allele计算的DAF值
 //                    String DAF = l.get(25); //大麦黑麦为ancestral allele计算的DAF值
 
-                    String DAF_ABD = l.get(29); //大麦乌拉尔图为ancestral allele计算的DAF值
-                    String DAF_AB = l.get(30); //大麦乌拉尔图为ancestral allele计算的DAF值
-                    String DAF = l.get(28); //大麦乌拉尔图为ancestral allele计算的DAF值
+//                    String DAF_ABD = l.get(29); //大麦乌拉尔图为ancestral allele计算的DAF值
+//                    String DAF_AB = l.get(30); //大麦乌拉尔图为ancestral allele计算的DAF值
+//                    String DAF = l.get(28); //大麦乌拉尔图为ancestral allele计算的DAF值
+
+                    String DAF_ABD = l.get(33); //大麦黑麦Pasimony法为ancestral allele计算的DAF值
+                    String DAF_AB = l.get(34); //大麦黑麦Pasimony法为ancestral allele计算的DAF值
+                    String DAF = l.get(32); //大麦黑麦Pasimony法为ancestral allele计算的DAF值
+
                     //如果变异类型是同义突变，那么就不用做任何判断；直接加上分组 Synonymous 并写入
                     //如果变异类型是非同义突变，且SIFT值存在，且SIFT值小于0.5，gerp和phylop存在，且gerp大于1，且phylop大于0.5；那么加上分组 Deleterious 并写入； gerp 值和 phylop值不满足条件的，那么就不进行分组
                     //如果变异类型是非同义突变，且SIFT值存在，且SIFT值大于0.5，那么加上分组 Nonsynonymous_tolerent 并写入

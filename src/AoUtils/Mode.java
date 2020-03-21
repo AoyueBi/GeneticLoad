@@ -242,8 +242,10 @@ public class Mode {
             BufferedReader br = AoFile.readFile(infileS);
             BufferedWriter bw = AoFile.writeFile(outfileS);
             String temp = null;
+            String header = br.readLine();
             List<String> l = new ArrayList<>();
             while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
 
             }
             br.close();
