@@ -1,7 +1,6 @@
 package WheatGeneticLoad;
 
 import AoUtils.AoFile;
-import AoUtils.Bin;
 import AoUtils.CountSites;
 import gnu.trove.list.array.TCharArrayList;
 import gnu.trove.list.array.TDoubleArrayList;
@@ -37,13 +36,12 @@ public class EstSFS {
 //        this.splitChrfromAncestralLipeng();
 //        this.addAnc();
 //        this.mergeExonSNPAnnotation();
-//        this.changeChrPos();
-
-        this.extractAncestralAllele();
-
 
 //        this.calDAF();
-//        this.runParallele_listFile();
+        this.runParallele_listFile();
+
+        //        this.changeChrPos();
+//        this.extractAncestralAllele();
 
 
 
@@ -119,8 +117,12 @@ public class EstSFS {
     public void runParallele_listFile(){ //本地运行常用
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/005_exonSNPAnnotation";
 //        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/006_exonSNPAnnotation_addDAF";
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/006_exonSNPAnnotation_addDAF";
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/007_exonSNPAnnotation_addDAF_barleyUratu";
+
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/006_exonSNPAnnotation_addDAF";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/007_exonSNPAnnotation_addDAF_barleyUratu";
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/008_exonSNPAnnotation_addAnc";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/009_exonSNPAnnotation_addAnc_addDAF_barley_secalePasimony";
         List<File> fsList = IOUtils.getVisibleFileListInDir(infileDirS);
         fsList.stream().forEach(f -> {
             String infileS = f.getAbsolutePath();
@@ -156,11 +158,13 @@ public class EstSFS {
             String temp = br.readLine(); //read header
             if (ifd == false) {
 //                bw.write(temp + "\tDaf_barley_secale\tDaf_ABD_barley_secale\tDaf_AB_barley_secale");
-                bw.write(temp + "\tDaf_barley_urartu\tDaf_ABD_barley_urartu\tDaf_AB_barley_urartu");
+//                bw.write(temp + "\tDaf_barley_urartu\tDaf_ABD_barley_urartu\tDaf_AB_barley_urartu");
+                bw.write(temp + "\tDaf_barley_secale\tDaf_ABD_barley_secale\tDaf_AB_barley_secalePasimony");
                 bw.newLine();
             } else if (ifd == true) {
 //                bw.write(temp + "\tDaf_barley_secale\tDaf_ABD_barley_secale\tDaf_D_barley_secale");
-                bw.write(temp + "\tDaf_barley_urartu\tDaf_ABD_barley_urartu\tDaf_AB_barley_urartu");
+//                bw.write(temp + "\tDaf_barley_urartu\tDaf_ABD_barley_urartu\tDaf_AB_barley_urartu");
+                bw.write(temp + "\tDaf_barley_secale\tDaf_ABD_barley_secale\tDaf_AB_barley_secalePasimony");
                 bw.newLine();
             }
 
@@ -174,8 +178,13 @@ public class EstSFS {
                 double maf = Double.parseDouble(l.get(7));
                 double AAF_ABD = Double.parseDouble(l.get(8));
                 double AAF_AB = Double.parseDouble(l.get(9));
-//                String ancAllele = l.get(22);
-                String ancAllele = l.get(15);
+
+                //################### 需要修改 //###################//###################//###################//###################
+//               String ancAllele = l.get(22); //不同的数据库，这一列的信息不一样，千万要注意!!!!!!!!!!!!!!!!! 祖先基因的数据库
+//                String ancAllele = l.get(15); //不同的数据库，这一列的信息不一样，千万要注意!!!!!!!!!!!!!!!!! 祖先基因的数据库
+               String ancAllele = l.get(31);
+                //################### 需要修改 //###################//###################//###################//###################
+
                 StringBuilder sb = new StringBuilder();
                 if (!ancAllele.equals("NA")) { //表明含有anc
                     //如果ancestral allele存在,且等于major，则derived allele等于minor, daf 就等于maf
@@ -258,7 +267,7 @@ public class EstSFS {
     }
 
     public void changeChrPos(){
-        new Bin().getDAFtable();
+//        new Bin().getDAFtable();
 //        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/007_exonSNPAnnotation_addDAF_barleyUratu/chr001_SNP_anno.txt.gz";
 //        String outfileS = "";
 //        AoFile.readheader(infileS);
@@ -268,7 +277,8 @@ public class EstSFS {
 
 
     public void mergeExonSNPAnnotation(){
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/007_exonSNPAnnotation_addDAF_barleyUratu";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/007_exonSNPAnnotation_addDAF_barleyUratu";
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/008_exonSNPAnnotation_addAnc";
         String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/004_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
         AoFile.mergeTxt(infileDirS,outfileS);
     }

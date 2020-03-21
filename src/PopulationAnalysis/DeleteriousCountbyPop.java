@@ -18,7 +18,7 @@ public class DeleteriousCountbyPop {
     public DeleteriousCountbyPop(){
 
 //        this.countDeleteriousVMapII_byChr();
-        this.DeltoSynonymousRatio();
+//        this.DeltoSynonymousRatio();
 
 //        this.getPopmutationBurden();
 
@@ -407,7 +407,7 @@ public class DeleteriousCountbyPop {
     public void countDeleteriousVMapII_byChr() {
         String exonVCFDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/002_exonSNPVCF"; //有害变异的VCF文件路径
         String SNPAnnoFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/004_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz"; //有害变异信息库
-
+        new AoFile().readheader(SNPAnnoFileS);
         //########### 大麦和黑麦
         //        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/001_additiveDeleterious_synonymous_ANCbarleyVSsecale_vmap2_bychr.txt";
 //        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/001_recessiveDeleterious_synonymous_ANCbarleyVSsecale_vmap2_bychr.txt";
@@ -417,11 +417,17 @@ public class DeleteriousCountbyPop {
 
         //########### 大麦和乌拉尔图
 
-        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/003_additiveDeleterious_synonymous_ANCbarleyVSurartu_vmap2_bychr.txt";
-        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/003_recessiveDeleterious_synonymous_ANCbarleyVSurartu_vmap2_bychr.txt";
+//        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/003_additiveDeleterious_synonymous_ANCbarleyVSurartu_vmap2_bychr.txt";
+//        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/003_recessiveDeleterious_synonymous_ANCbarleyVSurartu_vmap2_bychr.txt";
 
 //        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/004_additiveDeleterious_ANCbarleyVSurartu_vmap2_bychr.txt";
 //        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/004_recessiveDeleterious_ANCbarleyVSurartu_vmap2_bychr.txt";
+
+        //########### 大麦和黑麦简约法 达兴
+        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/003_VMap2.1DelCount/001_additiveDeleterious_synonymous_ANCbarleyVSsecalePasimony_vmap2_bychr.txt";
+        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/003_VMap2.1DelCount/001_recessiveDeleterious_synonymous_ANCbarleyVSsecalePasimony_vmap2_bychr.txt";
+
+
 
         String addCountFileS = new File(addCountFileAddGroupS).getAbsolutePath().replaceFirst(".txt",".temp.txt"); //有害变异加性模型输出文件
         String recCountFileS = new File(recCountFileAddGroupS).getAbsolutePath().replaceFirst(".txt",".temp.txt"); //有害变异隐形模型输出文件
@@ -450,11 +456,14 @@ public class DeleteriousCountbyPop {
             posList[i] = new TIntArrayList();
             charList[i] = new TCharArrayList();
         }
-        new AoFile().readheader(SNPAnnoFileS);
+
         String derivedAllele = null;
 
         try{
+            int cnt = 0;
+            System.out.println("lllll");
             RowTable<String> t = new RowTable(SNPAnnoFileS);
+            System.out.println("jjjjj");
             for (int i = 0; i < t.getRowNumber(); i++) {
                 int index = t.getCellAsInteger(i, 1) - 1; //染色体号的索引
                 int pos = t.getCellAsInteger(i,2);
@@ -478,7 +487,7 @@ public class DeleteriousCountbyPop {
                 //################### 需要修改 //###################//###################//###################//###################
 //                String ancestralAllele = t.getCell(i, 22); //不同的数据库，这一列的信息不一样，千万要注意!!!!!!!!!!!!!!!!! 祖先基因的数据库
                 String ancestralAllele = t.getCell(i, 15); //不同的数据库，这一列的信息不一样，千万要注意!!!!!!!!!!!!!!!!! 祖先基因的数据库
-
+//                String ancestralAllele = t.getCell(i, 31);
                 //################### 需要修改 //###################//###################//###################//###################
 
                 String majorAllele = t.getCell(i, 5);
@@ -495,6 +504,9 @@ public class DeleteriousCountbyPop {
                 }
                 else if (!(ancestralAllele.equals(majorAllele) || ancestralAllele.equals(minorAllele))){
                 }
+                cnt++;
+                if (cnt/1000==0) System.out.println("cnt is " + cnt);
+
             }
 
             for (int i = 0; i < chrNum; i++) { //将每一个list转化为数组

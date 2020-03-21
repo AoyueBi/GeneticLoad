@@ -311,8 +311,10 @@ public class Bin {
         String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/004_exonSNPAnnotation_merge";
 
 //        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/004_DAFtable"; //总共的ABD
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/005_DATtable_barley_urartu";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/005_DATtable_barley_urartu";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/004_DAFtable_barley_secale_parsimony";
 
+//        String outfileDirS = "";
         new File(outfileDirS).mkdirs();
 
         List<File> fsList = AoFile.getFileListInDir(infileDirS);
@@ -320,13 +322,13 @@ public class Bin {
             try {
                 //************************************ 第一阶段，定义输出输出文件，读写文件 ************************//
                 String infileS = f.getAbsolutePath();
-//                String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "binTable_onlyABD.txt").getAbsolutePath(); //只能画总体的ABD六倍体
+                String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "binTable_onlyABD.txt").getAbsolutePath(); //只能画总体的ABD六倍体
 //                String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "binTable_onlyAB.txt").getAbsolutePath(); //只能画总体的AB四倍体
 //                String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "binTable_onlyD.txt").getAbsolutePath(); //只能画总体的D二倍体
 //
 //                String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "binTable_Asubgenome.txt").getAbsolutePath(); //只有A亚基因组的结果
 //                String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "binTable_Bsubgenome.txt").getAbsolutePath(); //只有A亚基因组的结果
-                String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "binTable_Dsubgenome.txt").getAbsolutePath(); //只有A亚基因组的结果
+//                String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "binTable_Dsubgenome.txt").getAbsolutePath(); //只有A亚基因组的结果
 
                 BufferedReader br = AoFile.readFile(infileS);
                 BufferedWriter bw = AoFile.writeFile(outfileS);
@@ -363,7 +365,7 @@ public class Bin {
 //
 //                    if(chr.contains("B") || chr.contains("D"))continue; //只能用于A亚基因组
 //                    if(chr.contains("A") || chr.contains("D"))continue; //只能用于B亚基因组
-                    if(chr.contains("A") || chr.contains("B"))continue; //只能用于D亚基因组
+//                    if(chr.contains("A") || chr.contains("B"))continue; //只能用于D亚基因组
                     System.out.println(temp);
                     String type = l.get(12);
                     String siftscore = l.get(13);
