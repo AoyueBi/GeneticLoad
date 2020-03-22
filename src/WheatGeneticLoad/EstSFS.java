@@ -2,7 +2,6 @@ package WheatGeneticLoad;
 
 import AoUtils.AoFile;
 import AoUtils.CountSites;
-import PopulationAnalysis.DeleteriousCountbyPop;
 import gnu.trove.list.array.TCharArrayList;
 import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TIntArrayList;
@@ -60,9 +59,51 @@ public class EstSFS {
 
     }
 
+    /**
+     *
+     */
+    public void getjDAFtable(){
+        String infileS = "";
+        String outfileS = "";
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = null;
+            String header = br.readLine();
+            List<String> l = new ArrayList<>();
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                int chrID = Integer.parseInt(l.get(1));
+                int posID = Integer.parseInt(l.get(2));
+                String chr = RefV1Utils.getChromosome(chrID,posID);
+//                    if(chr.contains("D"))continue; //只能用于AABB总体画图
+//                    if(chr.contains("A") || chr.contains("B"))continue; //只能用于DD总体画图
+
+//                    if(chr.contains("B") || chr.contains("D"))continue; //只能用于A亚基因组
+//                    if(chr.contains("A") || chr.contains("D"))continue; //只能用于B亚基因组
+                if(chr.contains("A") || chr.contains("B"))continue; //只能用于D亚基因组
+                System.out.println(temp);
+                String type = l.get(12);
+                String siftscore = l.get(13);
+                String gerpscore = l.get(20);
+//                    String phylopscore = l.get(18);
+
+
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+    }
+
     public void deleteriousCount(){
 //        new DeleteriousCountbyPop().countDeleteriousVMapII_byChr();
-        new DeleteriousCountbyPop().DeltoSynonymousRatio();
+//        new DeleteriousCountbyPop().DeltoSynonymousRatio();
     }
 
     public void test (){
