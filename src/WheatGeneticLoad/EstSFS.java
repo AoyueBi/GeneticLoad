@@ -53,21 +53,29 @@ public class EstSFS {
          */
 //        this.extractAncestralAllele();
 //        this.test();
-        this.deleteriousCount();
+//        this.deleteriousCount();
 
+        this.getjDAFtable();
 
 
     }
+
+
 
     /**
      *
      */
     public void getjDAFtable(){
-        String infileS = "";
-        String outfileS = "";
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/009_exonSNPAnnotation_addAnc_addDAF_barley_secalePasimony/chr001_SNP_anno.txt.gz";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/004_DAFtable/jDAF/jDAFchr001.txt";
+        TDoubleArrayList dafList1 = new TDoubleArrayList();
+        TDoubleArrayList dafList2 = new TDoubleArrayList();
+        int bins = 20;
+        int[][] out = new int[20][20];
         try {
             BufferedReader br = AoFile.readFile(infileS);
             BufferedWriter bw = AoFile.writeFile(outfileS);
+            AoFile.readheader(infileS);
             String temp = null;
             String header = br.readLine();
             List<String> l = new ArrayList<>();
@@ -81,16 +89,66 @@ public class EstSFS {
 
 //                    if(chr.contains("B") || chr.contains("D"))continue; //只能用于A亚基因组
 //                    if(chr.contains("A") || chr.contains("D"))continue; //只能用于B亚基因组
-                if(chr.contains("A") || chr.contains("B"))continue; //只能用于D亚基因组
+//                if(chr.contains("A") || chr.contains("B"))continue; //只能用于D亚基因组
                 System.out.println(temp);
                 String type = l.get(12);
                 String siftscore = l.get(13);
                 String gerpscore = l.get(20);
 //                    String phylopscore = l.get(18);
-
-
+                String daf1 = l.get(33);
+                String daf2 = l.get(34);
+                if (daf1.startsWith("N") || daf2.startsWith("N")) continue;
+                dafList1.add(Double.parseDouble(daf1));
+                dafList2.add(Double.parseDouble(daf2));
             }
             br.close();
+
+            double length = Double.parseDouble("1");
+            //先建立bound数组,假如 bin=20,那么每个bin的大小是0.05 bound[0] =0; bound[1]=0.05, bound[19]=0.95 即只取了区间的左边开始位置
+            double[] bound = new double[bins];
+            for (int i = 1; i < bound.length; i++) {
+                bound[i] = (double) length / bins * i;
+            }
+
+            double[] daf = new double[bins]; //确定落入每个区间的个数，进行计算，20个bin，20个count数字
+            for (int i = 0; i < dafList1.size(); i++) { //对每个daf值进行区间的判断
+                double value = dafList1.get(i);
+                int index = Arrays.binarySearch(bound, value);
+                if (index < 0) {
+                    index = -index - 2;
+                }
+                for (int j = 0; j < dafList2.size(); j++) {
+                    double value2 = dafList2.get(j);
+                    int index2 = Arrays.binarySearch(bound, value2);
+                    if (index2 < 0) {
+                        index2 = -index2 - 2;
+                    }
+                    out[index][index2]++;
+                }
+                //例如 0.112021856在bound搜索结果为-13，则此时index为11，及0.1-0.2范围内。好神奇！！又如0.112394，index也是11.
+                //又如0.21652在bound搜索结果中为-23,这样index=21， 这样就将maf的值按照1-100分布开来。
+            }
+
+            for (int i = 0; i < bound.length; i++) {
+                String coordinate = String.format("%.3f", (double) bound[i] + (double) (length / bins) / (double) 2);
+                StringBuilder sb = new StringBuilder();
+                if (i==0){
+                    bw.write(coordinate);
+                    continue;
+                }
+                sb.append("\t").append(coordinate);
+                bw.write(sb.toString());
+            }
+            bw.newLine();
+
+            for (int i = 0; i < out.length; i++) {
+                String coordinate = String.format("%.3f", (double) bound[i] + (double) (length / bins) / (double) 2);
+                bw.write(coordinate);
+                for (int j = 0; j < out[0].length; j++) {
+                    bw.write("\t" + out[i][j]);
+                }
+                bw.newLine();
+            }
             bw.flush();
             bw.close();
             System.out.println();
@@ -98,7 +156,6 @@ public class EstSFS {
             e.printStackTrace();
             System.exit(1);
         }
-
     }
 
     public void deleteriousCount(){

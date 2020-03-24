@@ -538,7 +538,6 @@ public class Bin {
     }
 
     public List[] mkBarplotofDAF(TDoubleArrayList dafList, int bins) {
-        HashMap<Double, Double> hm = new HashMap<>();
         List[] l = new List[2];
         for (int i = 0; i < l.length; i++) {
             l[i] = new ArrayList();
