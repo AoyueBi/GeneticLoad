@@ -140,20 +140,13 @@ public class Mode {
     public void txtParallel() {
         String infileDirS = "";
         String outfileDirS = "";
-        List<File> fsList = IOUtils.getVisibleFileListInDir(infileDirS);
+        List<File> fsList = AoFile.getFileListInDir(infileDirS);
         fsList.parallelStream().forEach(f -> {
             try {
                 String infileS = f.getAbsolutePath();
-                String outfileS = null;
-                BufferedReader br = null;
-                if (infileS.endsWith(".txt")) {
-                    br = IOUtils.getTextReader(infileS);
-                    outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "_subset.txt.gz").getAbsolutePath();
-                } else if (infileS.endsWith(".txt.gz")) {
-                    br = IOUtils.getTextGzipReader(infileS);
-                    outfileS = new File(outfileDirS, f.getName().split(".txt.gz")[0] + "_subset.txt.gz").getAbsolutePath();
-                }
-                BufferedWriter bw = IOUtils.getTextGzipWriter(outfileS);
+                String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "_subset.txt.gz").getAbsolutePath();
+                BufferedReader br = AoFile.readFile(infileS);
+                BufferedWriter bw = AoFile.writeFile(outfileS);
                 String temp = null;
                 List<String> l = new ArrayList<>();
                 while ((temp = br.readLine()) != null) {

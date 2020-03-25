@@ -279,6 +279,7 @@ public class CalVCF {
 
     /**
      * 根据提供的taxa列表，从总的VCF文件中提取所需的VCF文件，并对没有分离的位点进行去除,没有分离位点包括全部都是./.的位点
+     * 计算特定群体的位点杂合度
      *
      * @param infileS
      * @param outfileS
@@ -291,18 +292,9 @@ public class CalVCF {
         Arrays.sort(hexaArray);
         System.out.println("Chr\tNum_MergedFileVariants\tNum_KeptVariants\tNum_RemovedSites\tNum_NosegregationSites\tNum_NogenotypeSites");
         try {
-            BufferedReader br = null;
-            BufferedWriter bw = null;
-            if (infileS.endsWith(".vcf")) {
-                br = IOUtils.getTextReader(infileS);
-            } else if (infileS.endsWith(".vcf.gz")) {
-                br = IOUtils.getTextGzipReader(infileS);
-            }
-            if (outfileS.endsWith(".txt")) {
-                bw = IOUtils.getTextWriter(outfileS);
-            } else if (outfileS.endsWith(".txt.gz")) {
-                bw = IOUtils.getTextGzipWriter(outfileS);
-            }
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+
             bw.write("Chr\tPos\tHetProportion");
             bw.newLine();
             String temp = null;
@@ -416,7 +408,7 @@ public class CalVCF {
      * @param genoArray
      * @return
      */
-    public Double calSNPSitesHeter(String[] genoArray){
+    public static Double calSNPSitesHeter(String[] genoArray){
         Double out = Double.MIN_VALUE;
         int nz = 0; //有基因型的个体数
         int ht = 0;

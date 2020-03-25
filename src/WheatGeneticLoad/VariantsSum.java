@@ -190,7 +190,7 @@ public class VariantsSum {
                     br = IOUtils.getTextGzipReader(annoS);
                 }
 
-                TIntArrayList poslist = new AoFile().getNumListfromVCF(infileS,1); //引用别的方法
+                TIntArrayList poslist = new AoFile().getNumListfromVCF(infileS); //引用别的方法
                 TDoubleArrayList CommonModerate = new TDoubleArrayList();
                 TDoubleArrayList CommonLarge = new TDoubleArrayList();
                 TDoubleArrayList CommonExtreme = new TDoubleArrayList();

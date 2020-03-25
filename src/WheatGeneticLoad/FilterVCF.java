@@ -5,12 +5,14 @@
  */
 package WheatGeneticLoad;
 
-import pgl.format.position.ChrPos;
-import pgl.format.table.RowTable;
+import AoUtils.AoFile;
+import AoUtils.CalVCF;
 import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.set.hash.TIntHashSet;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import pgl.format.position.ChrPos;
+import pgl.format.table.RowTable;
 import pgl.utils.IOFileFormat;
 import pgl.utils.IOUtils;
 import pgl.utils.PArrayUtils;
@@ -20,10 +22,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  *
@@ -138,7 +137,197 @@ public class FilterVCF {
 //    this.mergeTxt("/Users/Aoyue/Documents/log_024", "/Users/Aoyue/Documents/lll.txt");
 //        this.mergeVCFandFilter();
         
+//        this.filterHeterbyPopHexaDi();
+        this.runParallele_filterHeterbyPop();
 
+    }
+
+    public void runParallele_filterHeterbyPop(){ //本地运行常用
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/002_exonSNPVCF";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/010_exonSNPVCF_filterHeter0.05";
+        List<File> fsList = IOUtils.getVisibleFileListInDir(infileDirS);
+        fsList.parallelStream().forEach(f -> {
+            String infileS = f.getAbsolutePath();
+            String outfileS = new File(outfileDirS, f.getName().split(".vcf")[0] + "_filterbyHeter0.05.vcf.gz").getAbsolutePath();
+            this.filterHeterbyPop(infileS,outfileS);
+            System.out.println(f.getName() + "\tis completed at " + outfileS);
+        });
+    }
+
+
+
+    /**
+     * 计算每个群体的缺失率，若都大于0.2，则过滤该位点
+     *
+     * @param infileS
+     * @param outfileS
+     */
+    public void filterHeterbyPop(String infileS, String outfileS) {
+        /**
+         * 判断属于哪个基因组
+         */
+        String mapS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_chrList/ChrID.txt";
+        String chr = new File(infileS).getName().substring(3,6);
+        HashMap<String,String> hm = AoFile.getHashMapStringKey(mapS,1,5);
+        String sub = hm.get(chr);
+        String hexaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/BreadWheat_S419.txt";
+        String diFileS = null;
+
+        if (sub.equals("AABB")){
+            diFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/EmmerWheat_S187.txt";
+        }
+        else if (sub.equals("DD")){
+            diFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/Ae.tauschii_S36.txt";
+        }
+
+//        String hexaFileS = "/data4/home/aoyue/vmap2/analysis/000_taxaList/BreadWheat_S419.txt";
+//        String diFileS = "/data4/home/aoyue/vmap2/analysis/000_taxaList/Ae.tauschii_S36.txt";
+
+        String[] hexaArray = AoFile.getStringArraybyList_withoutHeader(hexaFileS,0);
+        String[] diArray = AoFile.getStringArraybyList_withoutHeader(diFileS,0);
+        List<Integer> indexHexa = new ArrayList<>();
+        List<Integer> indexDi = new ArrayList<>();
+
+        //预进行计算的数字：从过滤MAF0.01后的数据开始进行计算
+        System.out.println("Chr\tTotalSNP Num(MAF>0.01)\tBiallelic Num(MAF>0.01)\tTriallelic Num(MAF>0.01)\tIndel Num(MAF>0.01)\tInsertion Num(MAF>0.01)\tDeletion Num(MAF>0.01)");
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int ori = 0;
+            int cntSNP = 0; //1.总共的SNP数量
+            int cntBi = 0; //2.Bi-allelic SNP的数量
+            int cntTri = 0; //3.Tr-allelic SNP的数量
+
+            int cntBi_ABD = 0; //4.ABD六倍体的Bi-allelic SNP的数量
+            int cntTri_ABD = 0; //5.ABD六倍体的Tri-allelic SNP的数量
+            int cntBi_D = 0; //6.D二倍体的Bi-allelic SNP的数量
+            int cntTri_D = 0; //7.D二倍体的Tri-allelic SNP的数量
+
+            int cntIndel = 0; //8.总共Indel的数量
+            int cntI = 0; //9.总共Insertion的数量
+            int cntD = 0; //10.总共Deletion的数量
+
+            int cntIndel_ABD = 0; //11.ABD六倍体的Indel的数量
+            int cntI_ABD = 0; //12.ABD六倍体的Insertion的数量
+            int cntD_ABD = 0; //13.ABD六倍体的Deletion的数量
+
+            int cntIndel_D = 0; //14.D二倍体的Indel的数量
+            int cntI_D = 0; //15.D二倍体的Insertion的数量
+            int cntD_D = 0; //16.D二倍体的Deletion的数量
+
+            while ((temp = br.readLine()) != null) {
+                //***********************************************************//
+                if (temp.startsWith("##")) {//将注释信息写入表格中
+                    bw.write(temp);
+                    bw.newLine();
+                }
+
+                //***********************************************************//
+                //开始处理taxa的问题，先把所有taxa放入array中，记住在temp中的index
+                if (temp.startsWith("#CHROM")) {
+                    l = PStringUtils.fastSplit(temp);
+                    bw.write(temp);
+                    bw.newLine();
+                    for (int i = 9; i < l.size(); i++) {
+                        String taxon = l.get(i);
+                        int index1 = Arrays.binarySearch(hexaArray, taxon);
+                        int index2 = Arrays.binarySearch(diArray, taxon);
+
+                        if (index1 > -1) {
+                            indexHexa.add(i);
+                        }
+                        if (index2 > -1) {
+                            indexDi.add(i);
+                        }
+                    }
+                    Collections.sort(indexHexa);
+                    Collections.sort(indexDi);
+                }
+                if (!temp.startsWith("#")) {
+                    l = PStringUtils.fastSplit(temp);
+                    String alt = l.get(4);
+                    List<String> lgeno = new ArrayList<>();
+                    List<String> lHexaGeno = new ArrayList<>();
+                    List<String> lDiGeno = new ArrayList<>();
+                    String altList = l.get(4);
+                    //先添加lgeno 再添加lHexaGeno lDiGeno
+                    for (int i = 9; i < l.size(); i++) { //无论有无基因型，都加进去了
+                        lgeno.add(l.get(i));
+                    }
+                    for (int i = 0; i < indexHexa.size(); i++) { //无论有无基因型，都加进去了
+                        lHexaGeno.add(l.get(indexHexa.get(i)));
+                    }
+                    for (int i = 0; i < indexDi.size(); i++) { //无论有无基因型，都加进去了
+                        lDiGeno.add(l.get(indexDi.get(i)));
+                    }
+
+                    String[] genoArray = lgeno.toArray(new String[lgeno.size()]);
+                    String[] hexaGenoArray = lHexaGeno.toArray(new String[lHexaGeno.size()]);
+                    String[] diGenoArray = lDiGeno.toArray(new String[lDiGeno.size()]);
+
+                    //如果该位点没有分离位点，则说明都是1/1 或都是 0/0，该群体在该位点的杂合度是1
+//                    String missRate = this.getMissrate(genoArray);
+//                    String missRateHexa = this.getMissrate(hexaGenoArray);
+//                    String missRateDi = this.getMissrate(diGenoArray);
+
+                    double heterRate = CalVCF.calSNPSitesHeter(genoArray);
+                    double heterRateHexa = CalVCF.calSNPSitesHeter(hexaGenoArray);
+                    double heterRateDi = CalVCF.calSNPSitesHeter(diGenoArray);
+
+                    if (heterRateHexa < 0.05 && (heterRateDi < 0.05)) {
+                        StringBuilder sb = new StringBuilder();
+                        sb.append(temp);
+                        bw.write(sb.toString());
+                        bw.newLine();
+
+                        //保留任何一个群体中缺失率小于0.2的位点
+                        if (!(alt.length() == 1)) { //2个alt的情况;若该位点含有D或I ，那么就属于Indel，如果没有D 或者I，那么就属于SNP
+                            boolean ifD = false;
+                            if (!altList.contains("D") && (!altList.contains("I"))) {
+                                cntTri++;
+                                cntSNP++;
+                            }
+                            if (altList.contains("D")) {
+                                cntD++;
+                                cntIndel++;
+                                ifD = true;
+                            }
+                            if (altList.contains("I")) {
+                                cntI++;
+                                if (ifD == false) {
+                                    cntIndel++;
+                                }
+                            }
+
+                        } else if (alt.length() == 1) { //1个alt的情况;
+                            if (!altList.equals("D") && (!altList.equals("I"))) {
+                                cntBi++;
+                                cntSNP++;
+                            }
+                            if (altList.equals("D")) {
+                                cntD++;
+                                cntIndel++;
+                            }
+                            if (altList.equals("I")) {
+                                cntI++;
+                                cntIndel++;
+                            }
+                        }
+                    }
+                } //
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println(new File(infileS).getName().substring(3, 6) + "\t" + cntSNP + "\t" + cntBi + "\t" + cntTri + "\t" + cntIndel + "\t" + cntI + "\t" + cntD);
+            System.out.println(infileS + " is completed at " + outfileS);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
     

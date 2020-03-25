@@ -454,7 +454,7 @@ public class AoFile {
      * @param valuecolumnIndex
      * @return
      */
-    public HashMap<String,String> getHashMapStringKey(String infileS, int keycolummIndex, int valuecolumnIndex){
+    public static HashMap<String,String> getHashMapStringKey(String infileS, int keycolummIndex, int valuecolumnIndex){
         String out = null;
         RowTable<String> t = new RowTable<>(infileS);
         HashMap<String,String> hm = new HashMap<>();
@@ -891,12 +891,7 @@ public class AoFile {
         TIntArrayList ll = new TIntArrayList();
 
         try {
-            BufferedReader br = null;
-            if (infileS.endsWith(".txt")) {
-                br = IOUtils.getTextReader(infileS);
-            } else if (infileS.endsWith(".txt.gz")) {
-                br = IOUtils.getTextGzipReader(infileS);
-            }
+            BufferedReader br = AoFile.readFile(infileS);
             String temp = br.readLine(); //read header
             List<String> l = new ArrayList();
             int cnttotal = 0;
@@ -923,20 +918,13 @@ public class AoFile {
      * get the pos database from VCF file
      *
      * @param infileS
-     * @param columnIndex
      * @return
      */
-    public TIntArrayList getNumListfromVCF(String infileS, int columnIndex){
+    public static TIntArrayList getNumListfromVCF(String infileS){
         TIntArrayList ll = new TIntArrayList();
 
         try {
-            BufferedReader br = null;
-            if (infileS.endsWith(".vcf.gz")) {
-                br = IOUtils.getTextGzipReader(infileS);
-            }else if(infileS.endsWith(".vcf")) {
-                br = IOUtils.getTextReader(infileS);
-            }
-
+            BufferedReader br = AoFile.readFile(infileS);
             String temp = null;
             List<String> l = new ArrayList();
             int cnttotal = 0;
@@ -945,7 +933,7 @@ public class AoFile {
                 if (!temp.startsWith("#")) {
                     cnttotal++;
                     l = PStringUtils.fastSplit(temp);
-                    String goal = l.get(columnIndex);
+                    String goal = l.get(1);
                     if (goal.startsWith("N")) continue;
                     ll.add(Integer.parseInt(goal));
                     cnt++;
