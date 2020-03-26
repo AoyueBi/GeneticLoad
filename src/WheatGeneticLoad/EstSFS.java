@@ -1,6 +1,7 @@
 package WheatGeneticLoad;
 
 import AoUtils.AoFile;
+import AoUtils.Bin;
 import AoUtils.CountSites;
 import gnu.trove.list.array.TCharArrayList;
 import gnu.trove.list.array.TDoubleArrayList;
@@ -46,7 +47,7 @@ public class EstSFS {
 //        this.calDAF(); //单线程计算
 //        this.runParallele_listFile(); //多线程运行
 //        this.mergeExonSNPAnnotation(); //计算后结果合并
-//        this.mkDAFtable(); //开始分bin
+        this.mkDAFtable(); //开始分bin
 
         /**
          * 处理达兴的简约法ancestral allele Pasimony
@@ -55,7 +56,7 @@ public class EstSFS {
 //        this.test();
 //        this.deleteriousCount();
 
-        this.getjDAFtable();
+//        this.getjDAFtable();
 //        this.getjDAFtable_fromrealPop();
 
 
@@ -441,7 +442,8 @@ public class EstSFS {
     public void mkDAFtable(){
 //        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/004_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
 //        AoFile.readheader(infileS);
-//        new Bin().getDAFtable();
+        new Bin().getDAFtable();
+
 //
 
     }

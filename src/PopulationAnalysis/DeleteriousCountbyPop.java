@@ -104,8 +104,8 @@ public class DeleteriousCountbyPop {
 //        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/003_VMap2.1DelCount/001_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr_bysub.txt";
 //        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/003_VMap2.1DelCount/001_additiveDeleterious_synonymous_ANCbarleyVSsecalePasimony_vmap2_bychr_bysub.txt";
 
-//        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/003_VMap2.1DelCount/001_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr_bysub_mergeByTaxa.txt";
-//        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/003_VMap2.1DelCount/001_additiveDeleterious_synonymous_ANCbarleyVSsecalePasimony_vmap2_bychr_bysub_mergeByTaxa.txt";
+        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/003_VMap2.1DelCount/001_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr_bysub_mergeByTaxa.txt";
+        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/003_VMap2.1DelCount/001_additiveDeleterious_synonymous_ANCbarleyVSsecalePasimony_vmap2_bychr_bysub_mergeByTaxa.txt";
 
 //        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/003_VMap2.1DelCount/002_additiveDeleterious_nonsynonymous_ANCbarleyVSsecalePasimony_vmap2_bychr_bysub.txt";
 //        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/003_VMap2.1DelCount/001_additiveDeleterious_synonymous_ANCbarleyVSsecalePasimony_vmap2_bychr_bysub.txt";
@@ -118,23 +118,23 @@ public class DeleteriousCountbyPop {
 //        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/005_VMap2.1DelCount_filterHeter0.05/002_additiveDeleterious_nonsynonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr_bysub_mergeByTaxa.txt";
 //        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/005_VMap2.1DelCount_filterHeter0.05/001_additiveDeleterious_synonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr_bysub_mergeByTaxa.txt";
 
-        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/005_VMap2.1DelCount_filterHeter0.05/002_additiveDeleterious_nonsynonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr_bysub.txt";
-        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/005_VMap2.1DelCount_filterHeter0.05/001_additiveDeleterious_synonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr_bysub.txt";
+//        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/005_VMap2.1DelCount_filterHeter0.05/002_additiveDeleterious_nonsynonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr_bysub.txt";
+//        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/005_VMap2.1DelCount_filterHeter0.05/001_additiveDeleterious_synonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr_bysub.txt";
 
         String outfileS = new File(infileS1).getAbsolutePath().replaceFirst(".txt","_delVSsynonymous.txt");
         AoFile.readheader(infileS1);
 
-        TDoubleArrayList del = AoFile.getTDoubleList(infileS1,7); //bySub的情况
-        TDoubleArrayList syn = AoFile.getTDoubleList(infileS2,7); //bySub的情况
-                TDoubleArrayList delcount = AoFile.getTDoubleList(infileS1,2); //bySub的情况
-        TDoubleArrayList syncount = AoFile.getTDoubleList(infileS2,2); //bySub的情况
+//        TDoubleArrayList del = AoFile.getTDoubleList(infileS1,7); //bySub的情况
+//        TDoubleArrayList syn = AoFile.getTDoubleList(infileS2,7); //bySub的情况
+//        TDoubleArrayList delcount = AoFile.getTDoubleList(infileS1,2); //bySub的情况
+//        TDoubleArrayList syncount = AoFile.getTDoubleList(infileS2,2); //bySub的情况
 
 
 
-//        TDoubleArrayList del = AoFile.getTDoubleList(infileS1,6); //byTaxa的情况
-//        TDoubleArrayList syn = AoFile.getTDoubleList(infileS2,6); //byTaxa的情况
-//        TDoubleArrayList delcount = AoFile.getTDoubleList(infileS1,1); //byTaxa的情况
-//        TDoubleArrayList syncount = AoFile.getTDoubleList(infileS2,1); //byTaxa的情况
+        TDoubleArrayList del = AoFile.getTDoubleList(infileS1,6); //byTaxa的情况
+        TDoubleArrayList syn = AoFile.getTDoubleList(infileS2,6); //byTaxa的情况
+        TDoubleArrayList delcount = AoFile.getTDoubleList(infileS1,1); //byTaxa的情况
+        TDoubleArrayList syncount = AoFile.getTDoubleList(infileS2,1); //byTaxa的情况
 
 
         TDoubleArrayList ratioList = new TDoubleArrayList(del.size());
