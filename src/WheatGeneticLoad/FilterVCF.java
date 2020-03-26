@@ -136,8 +136,9 @@ public class FilterVCF {
 //    new SplitScript().splitBwaScript("/Users/Aoyue/Desktop/sh_filterVCFbyMiss20191103.sh","sh_filterVCF",15,3);
 //    this.mergeTxt("/Users/Aoyue/Documents/log_024", "/Users/Aoyue/Documents/lll.txt");
 //        this.mergeVCFandFilter();
-        
-//        this.filterHeterbyPopHexaDi();
+
+
+//        this.filterHeterbyPop();
         this.runParallele_filterHeterbyPop();
 
     }

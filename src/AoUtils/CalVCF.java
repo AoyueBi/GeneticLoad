@@ -30,6 +30,90 @@ public class CalVCF {
     }
 
     /**
+     * 根据提供的taxa列表，从总的VCF文件中提取所需的VCF文件，并对没有分离的位点进行去除,没有分离位点包括全部都是./.的位点
+     *
+     * @param infileS
+     * @param outfileS
+     * @param taxalist 没有header，一行一个taxa名字
+     */
+    public static void calMafFromPop(String infileS, String outfileS, String taxalist) {
+        List<Integer> indexTaxa = new ArrayList<>();
+        String[] taxaArray = AoFile.getStringArraybyList_withoutHeader(taxalist,0);
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            bw.write("Maf");
+            bw.newLine();
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            while ((temp = br.readLine()) != null) {
+                if (temp.startsWith("##")) continue;
+                if (temp.startsWith("#CHROM")) {
+                    l = PStringUtils.fastSplit(temp);
+                    for (int i = 9; i < l.size(); i++) {
+                        String taxon = l.get(i);
+                        int index1 = Arrays.binarySearch(taxaArray, taxon);
+                        if (index1 > -1) {
+                            indexTaxa.add(i);
+                        }
+                    }
+                    Collections.sort(indexTaxa);
+                }
+                if (!temp.startsWith("#")) {
+                    l = PStringUtils.fastSplit(temp);
+                    List<String> lTaxaGeno = new ArrayList<>();
+                    for (int i = 0; i < indexTaxa.size(); i++) { //无论有无基因型，都加进去了
+                        lTaxaGeno.add(l.get(indexTaxa.get(i)));
+                    }
+                    String[] taxaGenoArray = lTaxaGeno.toArray(new String[lTaxaGeno.size()]);
+                    String maf = CalVCF.getPopMAF(taxaGenoArray);
+                    bw.write(maf);
+                    bw.newLine();
+                }
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println(infileS + " is completed at " + outfileS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    public static String getPopMAF(String[] PopGenoArray) {
+        int[] acCnt = new int[2]; //所有包括ref和alt的个数
+        List<String> tempList = null;
+        List<String> temList = null;
+        for (int i = 0; i < PopGenoArray.length; i++) {
+            if (PopGenoArray[i].startsWith(".")) continue;
+            tempList = PStringUtils.fastSplit(PopGenoArray[i], ":"); //tempList是包含基因型AD还有PL的集合
+            temList = PStringUtils.fastSplit(tempList.get(0), "/"); //temList是包含基因型拆分后的集合
+            for (int j = 0; j < temList.size(); j++) {
+                int c = Integer.parseInt(temList.get(j)); // c是基因型第j个数值
+                acCnt[c]++; //acCnt[c] 是所有taxa基因型某一数值如0 1 2的总和
+            }
+        }
+        int sum = 0;
+        for (int i = 0; i < acCnt.length; i++) {
+            sum += acCnt[i];
+        }
+        float maf = (float) ((double) acCnt[0] / sum);
+        if (maf > 0.5) {
+            maf = (float) ((double) acCnt[1] / sum);
+        }
+
+        StringBuilder sb = new StringBuilder();
+        if (maf == 0 || maf == 1) {
+            sb.append("NA");
+        }else{
+            sb.append(String.format("%.4f", maf));
+        }
+
+        return sb.toString();
+    }
+
+    /**
      * extract pos info from vcf file. eg: vcf ---- Chr Pos
      *
      * @param infileDirS

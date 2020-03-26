@@ -2,6 +2,7 @@ package WheatGeneticLoad;
 
 import AoUtils.AoFile;
 import AoUtils.Bin;
+import AoUtils.CalVCF;
 import AoUtils.CountSites;
 import gnu.trove.list.array.TCharArrayList;
 import gnu.trove.list.array.TDoubleArrayList;
@@ -47,7 +48,7 @@ public class EstSFS {
 //        this.calDAF(); //单线程计算
 //        this.runParallele_listFile(); //多线程运行
 //        this.mergeExonSNPAnnotation(); //计算后结果合并
-        this.mkDAFtable(); //开始分bin
+//        this.mkDAFtable(); //开始分bin
 
         /**
          * 处理达兴的简约法ancestral allele Pasimony
@@ -59,7 +60,31 @@ public class EstSFS {
 //        this.getjDAFtable();
 //        this.getjDAFtable_fromrealPop();
 
+        /**
+         * 判断过滤heter后的maf分布
+         */
 
+//        this.getMAFfromAetauschii();
+        this.mergeTxt();
+
+    }
+
+    public void mergeTxt(){
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/007_maf/001_DDmaf";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/007_maf/002_merge001/ae.tauschii_exon_vmap2.1_filterbyHeter0.05_maf.txt.gz";
+        new CountSites().mergeTxt(infileDirS,outfileS);
+    }
+
+    public void getMAFfromAetauschii(){ //本地运行常用
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/010_exonSNPVCF_filterHeter0.05";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/007_maf/001_DDmaf";
+        String[] chrArr ={"005","006","011","012","017","018","023","024","029","030","035","036","041","042"};
+        String taxaListS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/Ae.tauschii_S36.txt";
+        for (int j = 0; j < chrArr.length; j++) {
+            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_exon_vmap2.1_filterbyHeter0.05.vcf.gz").getAbsolutePath();
+            String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_exon_vmap2.1_filterbyHeter0.05_maf.txt.gz").getAbsolutePath();
+            CalVCF.calMafFromPop(infileS,outfileS,taxaListS);
+        }
     }
 
     /**
