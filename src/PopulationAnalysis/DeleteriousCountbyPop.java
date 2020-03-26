@@ -8,6 +8,7 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import pgl.format.table.RowTable;
 import pgl.utils.IOUtils;
 import pgl.utils.PStringUtils;
+import pgl.utils.wheat.RefV1Utils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -18,12 +19,160 @@ public class DeleteriousCountbyPop {
     public DeleteriousCountbyPop(){
 
 //        this.countDeleteriousVMapII_byChr();
-        this.DeltoSynonymousRatio();
+//        this.DeltoSynonymousRatio();
 
 //        this.getPopmutationBurden();
 //        this.getFiltedExonSNPAnnotation();
 //        this.mergeExonSNPAnnotation();
+        this.getLargeDelAnnotation();
 
+
+    }
+
+    public void getLargeDelAnnotation(){
+        int cntNONSY = 0;
+//        String exonVCFDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/002_exonSNPVCF"; //有害变异的VCF文件路径
+//        String SNPAnnoFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/004_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz"; //有害变异信息库
+
+        String exonVCFDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/010_exonSNPVCF_filterHeter0.05"; //有害变异的VCF文件路径
+        String SNPAnnoFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/012_exonSNPAnnotation_merge_filterHeter0.05/001_exonSNP_anno_filterHeter0.05.txt.gz"; //有害变异信息库
+
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/008_largeDelAnnotation/exonSNP_anno_filterHeter0.05_largeDelgerp3.txt";
+        new AoFile().readheader(SNPAnnoFileS);
+
+        /**
+         *  ################################### step1: 初始化染色体集合
+         */
+        int minDepth = 2;//inclusive
+        int chrNum = 42;
+        ArrayList<Integer> chrList = new ArrayList();
+        for (int i = 0; i < chrNum; i++) {
+            chrList.add(i + 1);
+        }
+        System.out.println("Finished step1: completing the initialization of chromosome.");
+
+        /**
+         *  ################################### step2: posList  charList 补充完整
+         */
+
+        int[][] delePos = new int[chrNum][];
+        char[][] deleChar = new char[chrNum][];
+
+        TIntArrayList[] posList = new TIntArrayList[chrNum];
+        TCharArrayList[] charList = new TCharArrayList[chrNum];
+        for (int i = 0; i < chrNum; i++) { //集合类数组，要初始化每一个list
+            posList[i] = new TIntArrayList();
+            charList[i] = new TCharArrayList();
+        }
+
+        String derivedAllele = null;
+
+        try {
+            BufferedReader br = AoFile.readFile(SNPAnnoFileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+
+            String temp = null;
+            String header = br.readLine();
+            bw.write(header+"\tSub");bw.newLine();
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                int index = Integer.parseInt(l.get(1)) - 1; //染色体号的索引
+                int chr = Integer.parseInt(l.get(1));
+                int pos = Integer.parseInt(l.get(2));
+                String sub = RefV1Utils.getChromosome(chr,pos).substring(1);
+                String trans = l.get(12);
+                String variantType = l.get(12);
+                String sift = l.get(13);
+                String gerp = l.get(20);
+                /**
+                 * 定义有害突变，不是有害突变，就忽略不计 ################ 需要修改 需要修改 需要修改 ################
+                 */
+
+                if (!variantType.equals("NONSYNONYMOUS") || sift.equals("NA") || gerp.equals("NA"))continue;
+
+//                if (!variantType.equals("NONSYNONYMOUS") || sift.equals("NA"))continue;
+//                if (!variantType.equals("NONSYNONYMOUS") || gerp.equals("NA"))continue;
+                double siftd = Double.parseDouble(sift);
+                double gerpd = Double.parseDouble(gerp);
+
+                if (siftd >= 0.05 || gerpd < 3)continue;
+
+
+
+                /**
+                 * 定义有害突变，不是有害突变，就忽略不计 ################ 需要修改 需要修改 需要修改 ################
+                 */
+//                if (!variantType.equals("SYNONYMOUS"))continue;
+
+                /**
+                 * 定义有害突变，不是有害突变，就忽略不计 ################ 需要修改 需要修改 需要修改 ################
+                 */
+//                if (!variantType.equals("NONSYNONYMOUS"))continue;
+
+                /**
+                 * 只是用来计数用 ################ 需要修改 需要修改 需要修改 ################
+                 */
+
+//                if (variantType.equals("NONSYNONYMOUS") ){
+//                    cntNONSY++;
+//                }
+
+//                if (variantType.equals("NONSYNONYMOUS") && (siftd < 0.05) && (gerpd > 1) ){
+//                    cntNONSY++;
+//                }
+
+//                if (variantType.equals("NONSYNONYMOUS") && (siftd < 0.05)){
+//                    cntNONSY++;
+//                }
+
+//                if (variantType.equals("NONSYNONYMOUS") && (gerpd > 1)){
+//                    cntNONSY++;
+//                }
+
+                //################### 需要修改 //###################//###################//###################//###################
+//                String ancestralAllele = l.get(22); //不同的数据库，这一列的信息不一样，千万要注意!!!!!!!!!!!!!!!!! 祖先基因的数据库
+//                String ancestralAllele = l.get(15); //不同的数据库，这一列的信息不一样，千万要注意!!!!!!!!!!!!!!!!! 祖先基因的数据库
+                String ancestralAllele = l.get(31);
+                //################### 需要修改 //###################//###################//###################//###################
+
+                String majorAllele = l.get(5);
+                String minorAllele = l.get(6);
+                if (ancestralAllele.equals(majorAllele)) {
+                    derivedAllele = minorAllele;
+                    posList[index].add(Integer.parseInt(l.get(2))); //将包含有derived allele的位点添加到Poslist
+                    charList[index].add(derivedAllele.charAt(0)); //返回的是char类型的字符
+                    bw.write(temp + "\t" + sub);
+                    bw.newLine();
+                }
+                if (ancestralAllele.equals(minorAllele)) {
+                    derivedAllele = majorAllele;
+                    posList[index].add(Integer.parseInt(l.get(2)));
+                    charList[index].add(derivedAllele.charAt(0));
+                    bw.write(temp + "\t" + sub);
+                    bw.newLine();
+                }
+                else if (!(ancestralAllele.equals(majorAllele) || ancestralAllele.equals(minorAllele))){
+                }
+                cnt++;
+                if (cnt%100000==0) System.out.println("cnt is " + cnt +" going on at step2");
+
+            }
+            br.close();
+            System.out.println(cntNONSY + " nonsynonymous SNP num");
+
+            for (int i = 0; i < chrNum; i++) { //将每一个list转化为数组
+                delePos[i] = posList[i].toArray();
+                deleChar[i] = charList[i].toArray();
+                Arrays.sort(delePos[i]);
+            }
+            System.out.println("Finished step2: completing the posList  charList.");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
 
     }
 
@@ -498,6 +647,7 @@ public class DeleteriousCountbyPop {
      * 一共有 5 步
      */
     public void countDeleteriousVMapII_byChr() {
+        int cntNONSY = 0;
 //        String exonVCFDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/002_exonSNPVCF"; //有害变异的VCF文件路径
 //        String SNPAnnoFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/004_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz"; //有害变异信息库
 
@@ -591,10 +741,18 @@ public class DeleteriousCountbyPop {
                  * 定义有害突变，不是有害突变，就忽略不计 ################ 需要修改 需要修改 需要修改 ################
                  */
 
-//                if (!variantType.equals("NONSYNONYMOUS") || sift.equals("NA") || gerp.equals("NA"))continue;
-//                double siftd = Double.parseDouble(sift);
-//                double gerpd = Double.parseDouble(gerp);
-//                if (siftd >= 0.05 || gerpd <= 1)continue;
+                if (!variantType.equals("NONSYNONYMOUS") || sift.equals("NA") || gerp.equals("NA"))continue;
+
+
+
+//                if (!variantType.equals("NONSYNONYMOUS") || sift.equals("NA"))continue;
+//                if (!variantType.equals("NONSYNONYMOUS") || gerp.equals("NA"))continue;
+                double siftd = Double.parseDouble(sift);
+                double gerpd = Double.parseDouble(gerp);
+
+                if (siftd >= 0.05 || gerpd < 3)continue;
+
+
 
                 /**
                  * 定义有害突变，不是有害突变，就忽略不计 ################ 需要修改 需要修改 需要修改 ################
@@ -604,7 +762,27 @@ public class DeleteriousCountbyPop {
                 /**
                  * 定义有害突变，不是有害突变，就忽略不计 ################ 需要修改 需要修改 需要修改 ################
                  */
-                if (!variantType.equals("NONSYNONYMOUS"))continue;
+//                if (!variantType.equals("NONSYNONYMOUS"))continue;
+
+                /**
+                 * 只是用来计数用 ################ 需要修改 需要修改 需要修改 ################
+                 */
+
+//                if (variantType.equals("NONSYNONYMOUS") ){
+//                    cntNONSY++;
+//                }
+
+//                if (variantType.equals("NONSYNONYMOUS") && (siftd < 0.05) && (gerpd > 1) ){
+//                    cntNONSY++;
+//                }
+
+//                if (variantType.equals("NONSYNONYMOUS") && (siftd < 0.05)){
+//                    cntNONSY++;
+//                }
+
+//                if (variantType.equals("NONSYNONYMOUS") && (gerpd > 1)){
+//                    cntNONSY++;
+//                }
 
                 //################### 需要修改 //###################//###################//###################//###################
 //                String ancestralAllele = l.get(22); //不同的数据库，这一列的信息不一样，千万要注意!!!!!!!!!!!!!!!!! 祖先基因的数据库
@@ -631,7 +809,7 @@ public class DeleteriousCountbyPop {
 
             }
             br.close();
-            System.out.println();
+            System.out.println(cntNONSY + " nonsynonymous SNP num");
 
             for (int i = 0; i < chrNum; i++) { //将每一个list转化为数组
                 delePos[i] = posList[i].toArray();

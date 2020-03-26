@@ -3003,21 +3003,14 @@ public class CountSites {
      *
      * @param infileDirS
      */
-    public void countSites_singleStream(String infileDirS) {
-        File[] fs = new File(infileDirS).listFiles();
-        for (int i = 0; i < fs.length; i++) {
-            if (fs[i].isHidden()) {
-                System.out.println(fs[i].getName() + " is hidden");
-                fs[i].delete();
-            }
-        } //注意有隐藏文件，需要进行删除后重新列出文件目录。
-        fs = new File(infileDirS).listFiles();
-        Arrays.sort(fs);
+    public static void countSites_singleStream(String infileDirS) {
+        File[] fs = AoFile.getFileArrayInDir(infileDirS);
         int sum = 0;
         for (int i = 0; i < fs.length; i++) {
             int cnt = 0;
             try {
-                BufferedReader br = IOUtils.getTextGzipReader(fs[i].getAbsolutePath());
+                String infileS = fs[i].getAbsolutePath();
+                BufferedReader br = AoFile.readFile(infileS);
                 String temp = null;
                 while ((temp = br.readLine()) != null) {
                     if (temp.startsWith("#")) {
@@ -3031,6 +3024,6 @@ public class CountSites {
             System.out.println(String.valueOf(cnt) + "\t" + fs[i].getName());
             sum += cnt;
         }
-        System.out.println(String.valueOf(sum));
+        System.out.println("Total SNP num is "+ String.valueOf(sum));
     }
 }

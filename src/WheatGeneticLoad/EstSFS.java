@@ -65,8 +65,21 @@ public class EstSFS {
          */
 
 //        this.getMAFfromAetauschii();
-        this.mergeTxt();
+//        this.mergeTxt();
+//        this.maf();
+//        CountSites.countSites_singleStream("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/002_exonSNPVCF");
 
+        CountSites.countSites_singleStream("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/010_exonSNPVCF_filterHeter0.05");
+
+    }
+
+    public void maf(){
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/007_maf/002_merge001";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/007_maf/003_MAFtable";
+        int bins = 20;
+        int columIndex = 0;
+
+        Bin.mkBarplotofMAF(infileDirS,outfileDirS,bins,columIndex);
     }
 
     public void mergeTxt(){
@@ -80,6 +93,8 @@ public class EstSFS {
         String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/007_maf/001_DDmaf";
         String[] chrArr ={"005","006","011","012","017","018","023","024","029","030","035","036","041","042"};
         String taxaListS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/Ae.tauschii_S36.txt";
+
+
         for (int j = 0; j < chrArr.length; j++) {
             String infileS = new File(infileDirS,"chr" + chrArr[j] + "_exon_vmap2.1_filterbyHeter0.05.vcf.gz").getAbsolutePath();
             String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_exon_vmap2.1_filterbyHeter0.05_maf.txt.gz").getAbsolutePath();

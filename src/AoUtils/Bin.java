@@ -660,33 +660,18 @@ public class Bin {
      *
      * @param infileDirS
      * @param outfileDirS
-     * @param binNum the number of bins that would be divided
+     * @param bins the number of bins that would be divided
      */
-    public void mkBarplotofMAF(String infileDirS, String outfileDirS, String binNum, String max) {
-        int bins = Integer.parseInt(binNum);
-        double length = Double.parseDouble(max);
+    public static void mkBarplotofMAF(String infileDirS, String outfileDirS, int bins, int columnIndex) {
+
+        double length = 0.5;
         new File(outfileDirS).mkdirs();
 
-        File[] fs = new File(infileDirS).listFiles();
-        for (int i = 0; i < fs.length; i++) {
-            if (fs[i].isHidden()) {
-                System.out.println(fs[i].getName() + " is hidden");
-                fs[i].delete();
-            }
-        }
-        fs = new File(infileDirS).listFiles();
-        List<File> fsList = Arrays.asList(fs);
+        List<File> fsList = AoFile.getFileListInDir(infileDirS);
         fsList.stream().forEach(f -> {
             String infileS = f.getAbsolutePath();
-            String outfileS = null;
-            BufferedReader br = null;
-            if (infileS.endsWith(".txt")) {
-                br = IOUtils.getTextReader(infileS);
-                outfileS = new File(outfileDirS, f.getName().replaceFirst("txt", bins + "bins" + ".Table.txt")).getAbsolutePath();
-            } else if (infileS.endsWith(".txt.gz")) {
-                br = IOUtils.getTextGzipReader(infileS);
-                outfileS = new File(outfileDirS, f.getName().replaceFirst("txt.gz", bins + "bins" + ".Table.txt")).getAbsolutePath();
-            }
+            String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + bins + "bins.table.txt").getAbsolutePath();
+            BufferedWriter bw = AoFile.writeFile(outfileS);
             //先建立bound数组
             double[] bound = new double[bins];
             for (int i = 1; i < bound.length; i++) {
@@ -698,10 +683,10 @@ public class Bin {
             RowTable<String> t = new RowTable<>(infileS);
             int count = t.getRowNumber();
             for (int i = 0; i < t.getRowNumber(); i++) {
-                if (t.getCell(i, 7).equals("NA")) { //MAF值所在的那一列
+                if (t.getCell(i, columnIndex).equals("NA")) { //MAF值所在的那一列
                     continue;
                 }
-                double value = t.getCellAsDouble(i, 7); //MAF值所在的那一列
+                double value = t.getCellAsDouble(i, columnIndex); //MAF值所在的那一列
                 mafList.add(value);
                 int index = Arrays.binarySearch(bound, value);
                 if (index < 0) {
@@ -711,19 +696,19 @@ public class Bin {
                 //又如0.21652在bound搜索结果中为-23,这样index=21， 这样就将maf的值按照1-100分布开来。
                 maf[index]++; //值落入第i种变异的第index个区间的个数
             }
-            //开始计算每个区间落入点的比例
+//            开始计算每个区间落入点的比例
             for (int i = 0; i < maf.length; i++) {
                 maf[i] = maf[i] / mafList.size();
             }
             System.out.println(mafList.size() + "  size");
             //开始写出文件
             try {
-                BufferedWriter bw = IOUtils.getTextWriter(outfileS);
-                bw.write("Daf\tDensity");
+                bw.write("Xaxes\tMaf");
                 bw.newLine();
                 for (int i = 0; i < bound.length; i++) {
                     StringBuilder sb = new StringBuilder();
-                    sb.append(String.format("%.3f", (double) bound[i] + (double) (length / bins) / (double) 2)).append("\t").append(String.format("%.4f", maf[i]));
+                    String coordinate = String.format("%.3f", (double) bound[i] + (double) (length / bins) / (double) 2);
+                    sb.append(coordinate).append("\t").append(String.format("%.4f", maf[i]));
                     bw.write(sb.toString());
                     bw.newLine();
                 }
