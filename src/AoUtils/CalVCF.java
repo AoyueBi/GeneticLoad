@@ -485,6 +485,58 @@ public class CalVCF {
         return a;
     }
 
+    /**
+     * 根据位点杂合度过滤单个群体的VCF
+     *
+     * @param infileS
+     * @param outfileS
+     */
+    public static void filterHeterinVCF(String infileS, double ratio, String outfileS) {
+
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cntTotal = 0;
+            int cntKeep = 0;
+            while ((temp = br.readLine()) != null) {
+                if (temp.startsWith("#")) {
+                    bw.write(temp);
+                    bw.newLine();
+                }
+                if (!temp.startsWith("#")) {
+                    cntTotal++;
+                    l = PStringUtils.fastSplit(temp);
+                    List<String> lgeno = new ArrayList<>();
+                    for (int i = 9; i < l.size(); i++) {
+                        lgeno.add(l.get(i));
+                    }
+                    String[] genoArray = lgeno.toArray(new String[lgeno.size()]);
+                    double heterRate = CalVCF.calSNPSitesHeter(genoArray);
+                    if (heterRate < ratio ) {
+                        StringBuilder sb = new StringBuilder();
+                        sb.append(temp);
+                        bw.write(sb.toString());
+                        bw.newLine();
+                        cntKeep++;
+                    }
+                }
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println("****************************** LOG ******************************");
+            System.out.println("Total SNP number    " + cntTotal + "    Kept SNP number " + cntKeep);
+            System.out.println(infileS + " is completed at " + outfileS);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
 
     /**
      * return the site heterozygosity from vcf

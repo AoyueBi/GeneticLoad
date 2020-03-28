@@ -139,7 +139,7 @@ public class FilterVCF {
 
 
 //        this.filterHeterbyPop();
-        this.runParallele_filterHeterbyPop();
+//        this.runParallele_filterHeterbyPop();
 
     }
 
@@ -190,7 +190,7 @@ public class FilterVCF {
         List<Integer> indexDi = new ArrayList<>();
 
         //预进行计算的数字：从过滤MAF0.01后的数据开始进行计算
-        System.out.println("Chr\tTotalSNP Num(MAF>0.01)\tBiallelic Num(MAF>0.01)\tTriallelic Num(MAF>0.01)\tIndel Num(MAF>0.01)\tInsertion Num(MAF>0.01)\tDeletion Num(MAF>0.01)");
+//        System.out.println("Chr\tTotalSNP Num(MAF>0.01)\tBiallelic Num(MAF>0.01)\tTriallelic Num(MAF>0.01)\tIndel Num(MAF>0.01)\tInsertion Num(MAF>0.01)\tDeletion Num(MAF>0.01)");
         try {
             BufferedReader br = AoFile.readFile(infileS);
             BufferedWriter bw = AoFile.writeFile(outfileS);
@@ -322,7 +322,7 @@ public class FilterVCF {
             br.close();
             bw.flush();
             bw.close();
-            System.out.println(new File(infileS).getName().substring(3, 6) + "\t" + cntSNP + "\t" + cntBi + "\t" + cntTri + "\t" + cntIndel + "\t" + cntI + "\t" + cntD);
+//            System.out.println(new File(infileS).getName().substring(3, 6) + "\t" + cntSNP + "\t" + cntBi + "\t" + cntTri + "\t" + cntIndel + "\t" + cntI + "\t" + cntD);
             System.out.println(infileS + " is completed at " + outfileS);
 
         } catch (Exception e) {

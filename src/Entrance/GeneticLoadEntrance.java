@@ -5,9 +5,11 @@
  */
 package Entrance;
 
+import AoUtils.CalVCF;
 import GermplasmInfo.GermplasmInfo;
 import Plot.PCA;
 import PopulationAnalysis.DeleteriousCountbyPop;
+import WheatGeneticLoad.FilterVCF;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -22,7 +24,7 @@ public class GeneticLoadEntrance {
 //        this.firstProcess();
 //        this.secondProcess();
 //        this.infoDB();
-        this.DBdeleterious();
+//        this.DBdeleterious();
 
 
     }
@@ -70,7 +72,7 @@ public class GeneticLoadEntrance {
 //        new PopGenParaWheat();
         //new SplitScript();
 //        new Script();
-//        new FilterVCF();
+        new FilterVCF();
 //        new Bin();
 //        new AoMath();
 //        new TreePreparation();
@@ -148,11 +150,14 @@ public class GeneticLoadEntrance {
 //        new CalVCF().reheader(args[0], args[1], args[2]);
 //        new CalVCF().extractIDHapPosRefAlt(args[0], args[1]);
 //        new CalVCF().extractIDHapPosRefAlt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/022_subsetVCF/001_singleChr0.001", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/002_snp");
+
+        CalVCF.filterHeterinVCF(args[0], Double.parseDouble(args[1]), args[2]);
 //        new XPCLR().calDensity(args[0], Integer.parseInt(args[1]), Integer.parseInt(args[2]),Integer.parseInt(args[3]), Integer.parseInt(args[4]),args[5]);
 //        new XPCLR().getGenotypeXPCLR(args[0], args[1], args[2]);
 //        new XPCLR().getGenotypeXPCLR_parallele(args[0], args[1], args[2]);
 //        new XPCLR().getGenotypeXPCLR_parallele_tetra(args[0], args[1], args[2]);
 //        new XPCLR().getGenotypeXPCLR_parallele_diploid(args[0], args[1], args[2]);
+
         System.out.println(new SimpleDateFormat().format(new Date()) + "\tend.");
         /**
          * ******************************* temporary method
