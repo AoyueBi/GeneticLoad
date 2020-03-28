@@ -148,6 +148,89 @@ public class VariantsSum {
          */
 
 
+//        this.getTranscriptSum();
+        this.test();
+
+
+    }
+
+    public void test(){
+        String infileS = "/Users/Aoyue/project/maizeGeneticLoad/001_variantSummary/003_transcriptSummary/transcriptSummary.txt";
+        AoFile.readheader(infileS);
+
+    }
+
+    /**
+     * 获取转录本的总结
+     */
+    public void getTranscriptSum(){
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/009_exonSNPAnnotation_addAnc_addDAF_barley_secalePasimony";
+        String geneFeatureFileS = "/Users/Aoyue/Documents/Data/wheat/gene/v1.1/wheat_v1.1_Lulab.pgf";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/001/transcriptSummary.txt";
+
+        double gerpCut = 0;
+        File[] fs = AoFile.getFileArrayInDir(infileDirS);
+        int chrNum = fs.length;
+        HashMap<Integer, ArrayList<String>>[] posGeneMap = new HashMap[chrNum];
+        int[][] snpPos = new int[chrNum][];
+        byte[][] snps = new byte[chrNum][];
+        byte[][] snpAnc = new byte[chrNum][];
+        for (int i = 0; i < chrNum; i++) {
+            posGeneMap[i] = new HashMap();
+        }
+        //下面这一段将posGeneMap建立完整，使每个位点对应哪些基因名字，都装进这个map里
+        GeneFeature gf = new GeneFeature(geneFeatureFileS);
+        HashMap<String, Integer> geneCDSLengthMap = new HashMap();
+        /*将所有基因的名字进行for循环输入到数组genes中，对应于每一个基因，我们通过getTranscriptName得到转录本的名字，通过getCDSList方法得到编码序列的起始位点*/
+        List<String> genesList = new ArrayList<>();
+        //String[] genes = new String[gf.getGeneNumber()];
+        int cntchr11and12 = 0;
+        int cntchr1to10 = 0;
+
+        //*********************************** START1 ***********************************//
+        //该段代码的作用是，通过读取每个基因，得到最长转录本的名字，计算该转录本的长度。
+        for (int i = 0; i < gf.getGeneNumber(); i++) {
+            int chrIndex = gf.getGeneChromosome(i)-1;
+            /*这个地方是先过滤数据，将定位在11号12号染色体上的基因过滤掉，并且跳出循环*/
+            if (chrIndex >9) {
+                cntchr11and12++;
+                continue;
+            }
+            cntchr1to10++; //能够得到1-10号染色体的基因数目
+            int longTransIndex = gf.getLongestTranscriptIndex(i);
+            String geneName = gf.getTranscriptName(i, longTransIndex); //得到最长的转录本的名字
+            //genes[i] = geneName;
+            genesList.add(geneName);
+            List<Range> cdsList = gf.getCDSList(i, longTransIndex); /*得到基因的最长转录本的CDSList*/
+            int cnt = 0;
+
+
+            /*对于每一个基因的编码序列，还有很多个cds片段，即cdsList；我们对cdsList进行for循环，得到每个cds的起始和终止位置，从而计算出总长*/
+            for (int j = 0; j < cdsList.size(); j++) {
+                int rStart = cdsList.get(j).start;
+                int rEnd = cdsList.get(j).end;
+                for (int k = rStart; k < rEnd; k++) {
+                    /*posGeneMap是一个HashMap数组，一条染色体对应一个String类型的ArrayList；
+                    故得到该位点的所属基因名字列表，如果该位点不含基因名，就将 genename赋值给该位点，完善posGeneMap
+                    否则，如果该位点含有其他基因的基因名字，依旧把genename赋值给该位点*/
+                    ArrayList<String> geneNameList = posGeneMap[chrIndex].get(k); //建立map的关系，那个位点对应哪个list HashMap<Integer, ArrayList<String>>[] posGeneMap = new HashMap[chrNum];
+                    if (geneNameList == null) {
+                        geneNameList = new ArrayList();
+                        geneNameList.add(geneName);
+                        posGeneMap[chrIndex].put(k, geneNameList);
+                    }
+                    else {
+                        geneNameList.add(geneName);
+                        posGeneMap[chrIndex].put(k, geneNameList); /*最终将posGeneMap绘图完成*/
+                    }
+                    cnt++; /*每一个CDS位点相加，最终得到这个cds的长度。*/
+                }
+
+                // 最终cnt是一个基因的所有cdslist中，每个cds的每个位点包含的基因数目的总和
+            } //该循环是一个基因的所有cds循环
+            geneCDSLengthMap.put(geneName, cnt); //
+        }
+        //*********************************** END1 ***********************************//
 
 
     }
@@ -405,89 +488,7 @@ public class VariantsSum {
     }
 
 
-    /**
-     *
-     */
-    public void getTranscriptSum(){
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/010_genicSNPAnnotation_addGERPandPhyloP";
-        String geneFeatureFileS = "/Users/Aoyue/Documents/Data/wheat/gene/v1.1/wheat_v1.1_Lulab.pgf";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/020_transcriptSum/transcriptSummary.txt";
 
-        double gerpCut = 0; // ???????????????????
-        File[] fs = new File(infileDirS).listFiles();
-        for (int i = 0; i < fs.length; i++) {
-            if (fs[i].isHidden()) {
-                System.out.println(fs[i].getName() + " is hidden");
-                fs[i].delete();
-            }
-        }
-        fs = new File(infileDirS).listFiles();
-
-
-        int chrNum = fs.length;
-        HashMap<Integer, ArrayList<String>>[] posGeneMap = new HashMap[chrNum];
-        int[][] snpPos = new int[chrNum][];
-        byte[][] snps = new byte[chrNum][];
-        byte[][] snpAnc = new byte[chrNum][];
-        for (int i = 0; i < chrNum; i++) {
-            posGeneMap[i] = new HashMap();
-        }
-        //下面这一段将posGeneMap建立完整，使每个位点对应哪些基因名字，都装进这个map里
-        GeneFeature gf = new GeneFeature(geneFeatureFileS);
-        HashMap<String, Integer> geneCDSLengthMap = new HashMap();
-        /*将所有基因的名字进行for循环输入到数组genes中，对应于每一个基因，我们通过getTranscriptName得到转录本的名字，通过getCDSList方法得到编码序列的起始位点*/
-        List<String> genesList = new ArrayList<>();
-        //String[] genes = new String[gf.getGeneNumber()];
-        int cntchr11and12 = 0;
-        int cntchr1to10 = 0;
-
-        //*********************************** START1 ***********************************//
-        //该段代码的作用是，通过读取每个基因，得到最长转录本的名字，计算该转录本的长度。
-        for (int i = 0; i < gf.getGeneNumber(); i++) {
-            int chrIndex = gf.getGeneChromosome(i)-1;
-            /*这个地方是先过滤数据，将定位在11号12号染色体上的基因过滤掉，并且跳出循环*/
-            if (chrIndex >9) {
-                cntchr11and12++;
-                continue;
-            }
-            cntchr1to10++; //能够得到1-10号染色体的基因数目
-            int longTransIndex = gf.getLongestTranscriptIndex(i);
-            String geneName = gf.getTranscriptName(i, longTransIndex); //得到最长的转录本的名字
-            //genes[i] = geneName;
-            genesList.add(geneName);
-            List<Range> cdsList = gf.getCDSList(i, longTransIndex); /*得到基因的最长转录本的CDSList*/
-            int cnt = 0;
-
-
-            /*对于每一个基因的编码序列，还有很多个cds片段，即cdsList；我们对cdsList进行for循环，得到每个cds的起始和终止位置，从而计算出总长*/
-            for (int j = 0; j < cdsList.size(); j++) {
-                int rStart = cdsList.get(j).start;
-                int rEnd = cdsList.get(j).end;
-                for (int k = rStart; k < rEnd; k++) {
-                    /*posGeneMap是一个HashMap数组，一条染色体对应一个String类型的ArrayList；
-                    故得到该位点的所属基因名字列表，如果该位点不含基因名，就将 genename赋值给该位点，完善posGeneMap
-                    否则，如果该位点含有其他基因的基因名字，依旧把genename赋值给该位点*/
-                    ArrayList<String> geneNameList = posGeneMap[chrIndex].get(k); //建立map的关系，那个位点对应哪个list HashMap<Integer, ArrayList<String>>[] posGeneMap = new HashMap[chrNum];
-                    if (geneNameList == null) {
-                        geneNameList = new ArrayList();
-                        geneNameList.add(geneName);
-                        posGeneMap[chrIndex].put(k, geneNameList);
-                    }
-                    else {
-                        geneNameList.add(geneName);
-                        posGeneMap[chrIndex].put(k, geneNameList); /*最终将posGeneMap绘图完成*/
-                    }
-                    cnt++; /*每一个CDS位点相加，最终得到这个cds的长度。*/
-                }
-
-                // 最终cnt是一个基因的所有cdslist中，每个cds的每个位点包含的基因数目的总和
-            } //该循环是一个基因的所有cds循环
-            geneCDSLengthMap.put(geneName, cnt); //
-        }
-        //*********************************** END1 ***********************************//
-
-
-    }
 
     /**
      *
