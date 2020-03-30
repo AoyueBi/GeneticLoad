@@ -24,12 +24,19 @@ public class GermplasmInfo {
 //        this.addTreeValidatedGroupbyPloid();
 //        this.addTreeValidatedGroupbySuspecies();
         this.addInfo();
+
 //        this.getWild_emmer_South2();
 //        this.getEuropeanLandrace();
 
+//        this.mergeTxt();
+
     }
 
-
+    public void mergeTxt(){
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/016_vcfQC/013_indiHeter";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/016_vcfQC/013_indiHeter/merge/heter_indivi.txt";
+        AoFile.mergeTxtbysuffix(infileDirS,outfileS,".txt");
+    }
 
     /**
      *  there 12 taxa (European materials) clustered on Asia branch, we need to remove that.
@@ -136,12 +143,16 @@ public class GermplasmInfo {
 //        HashMap<String,String> hm = new AoFile().getHashMapStringKey(dbfileS,4,27);
 //        new AoFile().addColumbyString(taxaFileS,0,hm,"TreeValidatedGroupbySubspecies");
 
-        String dbfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/002_VMapIIDepth/taxaDepth_summary.txt";
+//        String dbfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/002_VMapIIDepth/taxaDepth_summary.txt";
+//        String taxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/taxaList.txt";
+        //添加个体杂合度信息
+        String dbfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/016_vcfQC/013_indiHeter/merge/heter_indivi.txt";
         String taxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/taxaList.txt";
 
 
-        HashMap<String,String> hm = new AoFile().getHashMapStringKey(dbfileS,0,2);
-        AoFile.addColumbyString(taxaFileS,0,hm,"MeanDepth");
+        HashMap<String,String> hm = new AoFile().getHashMapStringKey(dbfileS,0,3);
+//        AoFile.addColumbyString(taxaFileS,0,hm,"MeanDepth");
+        AoFile.addColumbyString(taxaFileS,0,hm,"Heterozygosity_Indivi");
     }
 
     //
