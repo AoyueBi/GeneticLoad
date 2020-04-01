@@ -148,8 +148,8 @@ public class VariantsSum {
          */
 
 
-//        this.getTranscriptSum();
-        this.test();
+        this.getTranscriptSum();
+//        this.test();
 
 
     }
