@@ -20,7 +20,7 @@ import java.util.List;
 public class DBgene {
 
     public DBgene(){
-//        this.getTranscriptSum();
+        this.getTranscriptSum();
 
     }
 
@@ -51,40 +51,40 @@ public class DBgene {
 
         //*********************************** START1 ***********************************//
         /*将所有基因的名字进行for循环输入到数组genes中，对应于每一个基因，我们通过getTranscriptName得到转录本的名字，通过getCDSList方法得到编码序列的长度*/
-        for (int i = 0; i < gf.getGeneNumber(); i++) {
-            int chrIndex = gf.getGeneChromosome(i)-1;
-            if (! (chrIndex== 0))continue;
-            int longTransIndex = gf.getLongestTranscriptIndex(i); //根据基因获取最长转录本索引
-            String geneName = gf.getTranscriptName(i, longTransIndex); //根据索引获取最长转录本的名字
-            genesList.add(geneName); //将最长转录本的名字加入geneList
-            List<Range> cdsList = gf.getCDSList(i, longTransIndex); //根据索引获取最长转录本的CDSList
-            int cnt = 0;
-
-            /*对于每一个基因的编码序列，还有很多个cds片段，即cdsList；我们对cdsList进行for循环，得到每个cds的起始和终止位置，从而计算出总长*/
-            for (int j = 0; j < cdsList.size(); j++) {
-                int rStart = cdsList.get(j).start;
-                int rEnd = cdsList.get(j).end;
-                for (int k = rStart; k < rEnd; k++) {
-                    /*posGeneMap是一个HashMap数组，一条染色体对应一个String类型的ArrayList；
-                    故得到该位点的所属基因名字列表，如果该位点不含基因名，就将 genename赋值给该位点，完善posGeneMap
-                    否则，如果该位点含有其他基因的基因名字，依旧把genename赋值给该位点*/
-                    ArrayList<String> geneNameList = posGeneMap[chrIndex].get(k); //建立map的关系，那个位点对应哪个list HashMap<Integer, ArrayList<String>>[] posGeneMap = new HashMap[chrNum];
-                    if (geneNameList == null) {
-                        geneNameList = new ArrayList();
-                        geneNameList.add(geneName);
-                        posGeneMap[chrIndex].put(k, geneNameList);
-                    }
-                    else {
-                        geneNameList.add(geneName);
-                        posGeneMap[chrIndex].put(k, geneNameList); /*最终将posGeneMap绘图完成*/
-                    }
-                    cnt++; /*每一个CDS位点相加，最终得到这个cds的长度。*/
-                }
-
-                // 最终cnt是一个基因的所有cdslist中，每个cds的每个位点包含的基因数目的总和
-            } //该循环是一个基因的所有cds循环
-            geneCDSLengthMap.put(geneName, cnt); //
-        }
+//        for (int i = 0; i < gf.getGeneNumber(); i++) {
+//            int chrIndex = gf.getGeneChromosome(i)-1;
+//            if (! (chrIndex== 0))continue;
+//            int longTransIndex = gf.getLongestTranscriptIndex(i); //根据基因获取最长转录本索引
+//            String geneName = gf.getTranscriptName(i, longTransIndex); //根据索引获取最长转录本的名字
+//            genesList.add(geneName); //将最长转录本的名字加入geneList
+//            List<Range> cdsList = gf.getCDSList(i, longTransIndex); //根据索引获取最长转录本的CDSList
+//            int cnt = 0;
+//
+//            /*对于每一个基因的编码序列，还有很多个cds片段，即cdsList；我们对cdsList进行for循环，得到每个cds的起始和终止位置，从而计算出总长*/
+//            for (int j = 0; j < cdsList.size(); j++) {
+//                int rStart = cdsList.get(j).start;
+//                int rEnd = cdsList.get(j).end;
+//                for (int k = rStart; k < rEnd; k++) {
+//                    /*posGeneMap是一个HashMap数组，一条染色体对应一个String类型的ArrayList；
+//                    故得到该位点的所属基因名字列表，如果该位点不含基因名，就将 genename赋值给该位点，完善posGeneMap
+//                    否则，如果该位点含有其他基因的基因名字，依旧把genename赋值给该位点*/
+//                    ArrayList<String> geneNameList = posGeneMap[chrIndex].get(k); //建立map的关系，那个位点对应哪个list HashMap<Integer, ArrayList<String>>[] posGeneMap = new HashMap[chrNum];
+//                    if (geneNameList == null) {
+//                        geneNameList = new ArrayList();
+//                        geneNameList.add(geneName);
+//                        posGeneMap[chrIndex].put(k, geneNameList);
+//                    }
+//                    else {
+//                        geneNameList.add(geneName);
+//                        posGeneMap[chrIndex].put(k, geneNameList); /*最终将posGeneMap绘图完成*/
+//                    }
+//                    cnt++; /*每一个CDS位点相加，最终得到这个cds的长度。*/
+//                }
+//
+//                // 最终cnt是一个基因的所有cdslist中，每个cds的每个位点包含的基因数目的总和
+//            } //该循环是一个基因的所有cds循环
+//            geneCDSLengthMap.put(geneName, cnt); //
+//        }
 
         System.out.println(genesList.size()  + " genes in the pgf file");
         //*********************************** END1 ***********************************//
@@ -118,6 +118,44 @@ public class DBgene {
 
         fs.stream().forEach(f -> {
             int chrIndex = Integer.parseInt(f.getName().substring(3,6)) -1;
+
+            for (int i = 0; i < gf.getGeneNumber(); i++) {
+                int chrindex = gf.getGeneChromosome(i)-1;
+                if (! (chrindex== chrIndex))continue;
+                int longTransIndex = gf.getLongestTranscriptIndex(i); //根据基因获取最长转录本索引
+                String geneName = gf.getTranscriptName(i, longTransIndex); //根据索引获取最长转录本的名字
+                genesList.add(geneName); //将最长转录本的名字加入geneList
+                List<Range> cdsList = gf.getCDSList(i, longTransIndex); //根据索引获取最长转录本的CDSList
+                int cnt = 0;
+
+                /*对于每一个基因的编码序列，还有很多个cds片段，即cdsList；我们对cdsList进行for循环，得到每个cds的起始和终止位置，从而计算出总长*/
+                for (int j = 0; j < cdsList.size(); j++) {
+                    int rStart = cdsList.get(j).start;
+                    int rEnd = cdsList.get(j).end;
+                    for (int k = rStart; k < rEnd; k++) {
+                    /*posGeneMap是一个HashMap数组，一条染色体对应一个String类型的ArrayList；
+                    故得到该位点的所属基因名字列表，如果该位点不含基因名，就将 genename赋值给该位点，完善posGeneMap
+                    否则，如果该位点含有其他基因的基因名字，依旧把genename赋值给该位点*/
+                        ArrayList<String> geneNameList = posGeneMap[chrIndex].get(k); //建立map的关系，那个位点对应哪个list HashMap<Integer, ArrayList<String>>[] posGeneMap = new HashMap[chrNum];
+                        if (geneNameList == null) {
+                            geneNameList = new ArrayList();
+                            geneNameList.add(geneName);
+                            posGeneMap[chrIndex].put(k, geneNameList);
+                        }
+                        else {
+                            geneNameList.add(geneName);
+                            posGeneMap[chrIndex].put(k, geneNameList); /*最终将posGeneMap绘图完成*/
+                        }
+                        cnt++; /*每一个CDS位点相加，最终得到这个cds的长度。*/
+                    }
+
+                    // 最终cnt是一个基因的所有cdslist中，每个cds的每个位点包含的基因数目的总和
+                } //该循环是一个基因的所有cds循环
+                geneCDSLengthMap.put(geneName, cnt); //
+            }
+
+
+
             TIntArrayList snpPosList = new TIntArrayList();
             TByteArrayList snpList = new TByteArrayList();
             TByteArrayList snpAncList = new TByteArrayList();
