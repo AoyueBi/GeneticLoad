@@ -18,7 +18,7 @@ import java.util.*;
 public class DeleteriousCountbyPop {
     public DeleteriousCountbyPop(){
 
-//        this.countDeleteriousVMapII_byChr();
+        this.countDeleteriousVMapII_byChr();
 //        this.DeltoSynonymousRatio();
 
 //        this.getPopmutationBurden();

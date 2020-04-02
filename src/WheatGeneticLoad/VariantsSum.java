@@ -148,8 +148,8 @@ public class VariantsSum {
          */
 
 
-        this.getTranscriptSum();
-//        this.test();
+//        this.getTranscriptSum();
+        this.test();
 
 
     }
@@ -163,10 +163,10 @@ public class VariantsSum {
 
         int a = gf.getGeneNumber();
         Set<Integer> s = new HashSet<>();
-        for (int i = 0; i < a; i++) {
-            s.add(gf.getGeneChromosome(i));
-            gf.getIntronPositionString(1,i);
-        }
+//        for (int i = 0; i < a; i++) {
+//            s.add(gf.getGeneChromosome(i));
+//            gf.getIntronPositionString(1,i);
+//        }
 
         Integer[] chr = s.toArray(new Integer[s.size()]);
         for (int i = 0; i < s.size(); i++) {
