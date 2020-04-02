@@ -8,6 +8,7 @@ package Entrance;
 import GermplasmInfo.GermplasmInfo;
 import Plot.PCA;
 import PopulationAnalysis.DeleteriousCountbyPop;
+import WheatGeneticLoad.DBgene;
 import WheatGeneticLoad.VariantsSum;
 
 import java.text.SimpleDateFormat;
@@ -67,7 +68,7 @@ public class GeneticLoadEntrance {
 //        new SIFT();
 //        new CountSites();
         //new ScriptHapscanner2();
-        new VariantsSum();
+//        new VariantsSum();
 //        new PopGenParaWheat();
         //new SplitScript();
 //        new Script();
@@ -87,6 +88,7 @@ public class GeneticLoadEntrance {
 //        new GOanalysis();
 //        new DeleteriousXPCLR();
 //        new GermplasmInfo();
+        new DBgene();
 
 
     }
