@@ -20,7 +20,6 @@ import java.util.List;
 public class DBgene {
 
     public DBgene(){
-        System.out.println("here");
 //        this.getTranscriptSum();
 
     }
