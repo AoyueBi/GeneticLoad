@@ -33,7 +33,7 @@ public class Mode {
     public void mergeTxt(){
         String infileDirS = "";
         String outfileS = "";
-        new CountSites().mergeTxt(infileDirS,outfileS);
+        AoFile.mergeTxt(infileDirS,outfileS);
     }
 
     public void runParallele_listFile(){ //本地运行常用
