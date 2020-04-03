@@ -28,15 +28,19 @@ public class DBgene {
 //        this.getHexaploidAnnotation();
 //        this.getTranscriptSum();
 //        this.getTranscriptSum_bychr();
-        this.script_getTranscriptSum();
+//        this.script_getTranscriptSum();
         this.mergeTxt();
+
+    }
+
+    public void filterGeneSummary(){
 
     }
 
 
     public void mergeTxt(){
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/001";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/002_merge/geneSummary_vmap2.1_hexaploid.txt";
+        String infileDirS = "/Users/Aoyue/Documents/test";
+        String outfileS = "/Users/Aoyue/Documents/test.txt";
         AoFile.mergeTxt(infileDirS,outfileS);
     }
 
@@ -47,7 +51,7 @@ public class DBgene {
         for (int j = 0; j < chrArr.length; j++) {
             String infileS = new File(infileDirS,"chr" + chrArr[j] + "_SNP_hexaploid_anno.txt.gz").getAbsolutePath();
             String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_vmap2.1_hexaploid_geneSummary.txt").getAbsolutePath();
-            this.getTranscriptSum_bychr(infileS,outfileS);
+//            this.getTranscriptSum_bychr(infileS,outfileS);
             System.out.println("chr" + chrArr[j] + " is completed at " + outfileS);
         }
     }
@@ -56,13 +60,14 @@ public class DBgene {
      * 因为多线程运行，posgeneMap超过内存，
      * 故修改思路，进行一条一条计算
      */
-    public void getTranscriptSum_bychr(String infileS,String outfileS){
+//    public void getTranscriptSum_bychr(String infileS,String outfileS){
+    public void getTranscriptSum_bychr(){
 
-//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/009_exonSNPAnnotation_addAnc_addDAF_barley_secalePasimony/chr001_SNP_anno.txt.gz";
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/000_hexaploid_SNPAnnotation/chr001_SNP_hexaploid_anno.txt.gz";
         File f = new File(infileS);
         int chrIndex = Integer.parseInt(f.getName().substring(3,6)) -1;
         String geneFeatureFileS = "/Users/Aoyue/Documents/Data/wheat/gene/v1.1/wheat_v1.1_Lulab.pgf";
-//        String outfileS = "/Users/Aoyue/Documents/test.txt";
+        String outfileS = "/Users/Aoyue/Documents/test.txt";
 
         double gerpCut = 1;
 //        AoFile.readheader(f.getAbsolutePath());

@@ -5,6 +5,7 @@
  */
 package Entrance;
 
+import AoUtils.Bin;
 import GermplasmInfo.GermplasmInfo;
 import Plot.PCA;
 import PopulationAnalysis.DeleteriousCountbyPop;
