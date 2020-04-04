@@ -32,7 +32,8 @@ public class DBgene {
 //        this.script_getTranscriptSum();
 //        this.mergeTxt();
 
-        this.getsubspeciesSNPAnnotation();
+//        this.getsubspeciesSNPAnnotation();
+        this.script_getTranscriptSum();
 
     }
 
@@ -83,15 +84,40 @@ public class DBgene {
     }
 
     public void script_getTranscriptSum(){
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/000_hexaploid_SNPAnnotation";
-        String outfileDirS ="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/001";
+        //需要修改
+//        String infileDirS = ""; // 需要总结的 库 snpAnnotation 文件
+//        String outfileDirS =""; // 每条染色体上的基因生成的总结
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/000_hexaploid_SNPAnnotation";
+//        String outfileDirS ="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/001";
+
+        //Landrace_EU
+        String infileDirS = "";
+        String outfileDirS ="";
+
+        //Cultivar
+//        String infileDirS = "";
+//        String outfileDirS ="";
+
         String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
         for (int j = 0; j < chrArr.length; j++) {
+
+            //#################### 需要修改 ############################//
+//            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_SNP_hexaploid_anno.txt.gz").getAbsolutePath();
+//            String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_vmap2.1_hexaploid_geneSummary.txt").getAbsolutePath();
+
+            //Landrace_EU
             String infileS = new File(infileDirS,"chr" + chrArr[j] + "_SNP_hexaploid_anno.txt.gz").getAbsolutePath();
             String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_vmap2.1_hexaploid_geneSummary.txt").getAbsolutePath();
+
+            //Cultivar
+//            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_SNP_hexaploid_anno.txt.gz").getAbsolutePath();
+//            String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_vmap2.1_hexaploid_geneSummary.txt").getAbsolutePath();
+
 //            this.getTranscriptSum_bychr(infileS,outfileS);
             System.out.println("chr" + chrArr[j] + " is completed at " + outfileS);
         }
+
+
     }
 
     /**
