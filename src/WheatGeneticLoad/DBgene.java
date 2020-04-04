@@ -32,12 +32,25 @@ public class DBgene {
 //        this.script_getTranscriptSum();
 //        this.mergeTxt();
 
+        /**
+         *  开始处理cultivar 和 landrace 的
+         */
 //        this.getsubspeciesSNPAnnotation();
-        this.script_getTranscriptSum();
+//        this.script_getTranscriptSum();
+//        this.mergeTxt();
+        this.addGroupforgeneSummary();
 
     }
 
     /**
+     * 将 cultivar 和 landrace_EU 的geneSummary 进行合并
+     */
+    public void addGroupforgeneSummary(){
+
+    }
+
+    /**
+     * 根据亚群的个体，结合merged VCF 文件，提取亚群的 snp annotation info
      *
      */
     public void getsubspeciesSNPAnnotation(){
@@ -77,10 +90,20 @@ public class DBgene {
 
 
     public void mergeTxt(){
-//        String infileDirS = "/Users/Aoyue/Documents/test";
-//        String outfileS = "/Users/Aoyue/Documents/test.txt";
+//        String infileDirS = "";
+//        String outfileS = "";
 //        AoFile.mergeTxt(infileDirS,outfileS);
 
+        //合并landrcae_EU的
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/004_geneSummary_byChr/001_Landrcae_EU";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/004_geneSummary_byChr/003_merge/001_LandraceEU_geneSummary.txt";
+//        AoFile.mergeTxt(infileDirS,outfileS);
+
+
+        //合并 cultivar 的
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/004_geneSummary_byChr/002_Cultivar";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/004_geneSummary_byChr/003_merge/001_Cultivar_geneSummary.txt";
+        AoFile.mergeTxt(infileDirS,outfileS);
     }
 
     public void script_getTranscriptSum(){
