@@ -29,6 +29,239 @@ public class CalVCF {
 
     }
 
+
+    /**
+     * 根据提供的taxa列表，从总的VCF文件中提取所需的VCF文件，并对没有分离的位点进行去除,没有分离位点包括全部都是./.的位点
+     *
+     * @param infileS   VCF file
+     * @param outfileS  VCF file
+     * @param taxalist !!!! 没有header，一行一个taxa名字
+     */
+    public void extractVCF(String infileS, String outfileS, String taxalist) {
+
+        List<Integer> indexTaxa = new ArrayList<>();
+        String[] taxaArray = AoFile.getStringArraybyList_withoutHeader(taxalist,0);
+
+
+        System.out.println("Chr\tNum_MergedFileVariants\tNum_KeptVariants\tNum_RemovedSites\tNum_NosegregationSites\tNum_NogenotypeSites");
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cntRaw = 0; //1.总共的SNP数量
+            int cntKept = 0; //2.提取后保留的SNP数量
+            int cntRemoved = 0;  //3.去除的SNP数量
+            int cntNosegregation = 0; //4.没有分离位点的sites
+            int cntSiteNogeno = 0; //5.没有基因型的sites
+
+            while ((temp = br.readLine()) != null) {
+                int cntNogenotype = 0;
+                //***********************************************************//
+                if (temp.startsWith("##")) {//将注释信息写入表格中
+                    bw.write(temp);
+                    bw.newLine();
+                }
+                //***********************************************************//
+                //开始处理taxa的问题，先把所有taxa放入array中，记住在temp中的index
+                if (temp.startsWith("#CHROM")) {
+                    l = PStringUtils.fastSplit(temp);
+                    bw.write(l.get(0));
+                    for (int i = 1; i < 9; i++) { //先写前8列的信息
+                        bw.write("\t" + l.get(i));
+                    }
+
+                    for (int i = 9; i < l.size(); i++) {
+                        String taxon = l.get(i);
+                        int index1 = Arrays.binarySearch(taxaArray, taxon);
+
+                        if (index1 > -1) { //当找到列表中的taxa时，写列表中的taxa信息
+                            indexTaxa.add(i);
+                            bw.write("\t" + l.get(i));
+                        }
+                    }
+                    bw.newLine(); //写完之后记得换行
+                    Collections.sort(indexTaxa);
+
+                }
+                if (!temp.startsWith("#")) {
+                    cntRaw++;
+                    l = PStringUtils.fastSplit(temp);
+                    List<String> lTaxaGeno = new ArrayList<>();
+                    String altList = l.get(4);
+                    for (int i = 0; i < indexTaxa.size(); i++) { //无论有无基因型，都加进去了
+                        lTaxaGeno.add(l.get(indexTaxa.get(i)));
+                    }
+
+                    for (int i = 0; i < lTaxaGeno.size(); i++) { //判断没有基因型的taxa数目
+                        if (lTaxaGeno.get(i).startsWith(".")) {
+                            cntNogenotype++;
+                        }
+                    }
+
+                    if (cntNogenotype == lTaxaGeno.size()) { //过滤 所有taxa都没有基因型的位点
+                        cntSiteNogeno++;
+                        continue;
+                    } //若不过滤，则全是./.的位点在下面的分离测试中会统计到
+                    String[] taxaGenoArray = lTaxaGeno.toArray(new String[lTaxaGeno.size()]);
+                    boolean segregation = this.ifSegregationIncl2alt(taxaGenoArray, altList);
+                    if (segregation == false) { //过滤没有分离的位点
+                        cntNosegregation++;
+                        continue;
+                    }
+                    cntKept++;
+                    String info = this.getInfo(taxaGenoArray, altList);
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 0; i < 7; i++) {
+                        sb.append(l.get(i)).append("\t");
+                    }
+                    sb.append(info).append("\tGT:AD:PL");
+                    for (int i = 0; i < lTaxaGeno.size(); i++) {
+                        sb.append("\t").append(lTaxaGeno.get(i));
+                    }
+                    bw.write(sb.toString());
+                    bw.newLine();
+                } //
+            }
+            cntRemoved = cntSiteNogeno + cntNosegregation;
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println(new File(infileS).getName().substring(3, 6) + "\t" + cntRaw + "\t" + cntKept + "\t" + cntRemoved + "\t" + cntNosegregation + "\t" + cntSiteNogeno);
+            System.out.println(infileS + " is completed at " + outfileS + "\tActual taxa size: " + indexTaxa.size() + "\tGoal taxa size : " + l.size());
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    /**
+     * 判断该群体在一个位点是否有分离，若有分离则返回true,若无分离则返回false,若全是./.，则返回false,针对有1个或者2个alt的情况，包含D
+     * I
+     *
+     * @param genoArray
+     * @param altList
+     * @return
+     */
+    public boolean ifSegregationIncl2alt(String[] genoArray, String altList) {
+        int nAlt = PStringUtils.fastSplit(altList, ",").size();
+        int[] acCnt = new int[1 + nAlt]; //所有包括ref和alt的个数
+        int cntNogenotype = 0;
+        List<String> tempList = null;
+        List<String> temList = null;
+        for (int i = 0; i < genoArray.length; i++) {
+            if (genoArray[i].startsWith(".")) {
+                cntNogenotype++;
+                continue; //表示不再进行下面的计算，跳出该taxa基因型的统计
+            }
+            tempList = PStringUtils.fastSplit(genoArray[i], ":"); //tempList是包含基因型AD还有PL的集合
+            temList = PStringUtils.fastSplit(tempList.get(1), ","); //temList是AD所有的深度集合
+            temList = PStringUtils.fastSplit(tempList.get(0), "/"); //temList是包含基因型拆分后的集合
+            for (int j = 0; j < temList.size(); j++) {
+                int c = Integer.parseInt(temList.get(j)); // c是基因型第j个数值
+                acCnt[c]++; //acCnt[c] 是所有taxa基因型某一数值如0 1 2的总和
+            }
+        }
+        int cntgeno = genoArray.length - cntNogenotype;
+        int cntallele = 2 * cntgeno; //若全部为./.,则cntallele为0,下文也判断为没有分离！！
+        //判断该群体在一个位点是否有分离，若有分离则返回true,若无分离则返回false
+        boolean a = false;
+        if (altList.length() == 1) { //分 alt 是1个的情况
+            if ((acCnt[0] == cntallele) || (acCnt[1] == cntallele)) {
+                a = false;
+            } else {
+                a = true;
+            }
+
+        } else if (altList.length() > 1) { //alt是2个的情况
+            if (acCnt[0] == cntallele || acCnt[1] == cntallele || acCnt[2] == cntallele) {
+                a = false;
+            } else {
+                a = true;
+            }
+        }
+        return a;
+    }
+
+
+    /**
+     * 用于获取 geno 的Info信息
+     * @param genoArray
+     * @param altList
+     * @return
+     */
+    public String getInfo(String[] genoArray, String altList) {
+        int dp = 0; //总深度
+        int nz = 0; //有基因型的个体数
+        int nAlt = PStringUtils.fastSplit(altList, ",").size();
+        int[] adCnt = new int[1 + nAlt]; //所有包括ref和alt的深度统计
+        int[] acCnt = new int[1 + nAlt]; //所有包括ref和alt的基因型统计
+        int[][] gnCnt = new int[1 + nAlt][1 + nAlt]; //GN到底代表什么？
+        int ht = 0;
+        List<String> tempList = null;
+        List<String> temList = null;
+        for (int i = 0; i < genoArray.length; i++) {
+            if (genoArray[i].startsWith(".")) {
+                nz++;
+                continue;
+            }
+            tempList = PStringUtils.fastSplit(genoArray[i], ":"); //tempList是包含基因型AD还有PL的集合
+
+            //先计算深度
+            temList = PStringUtils.fastSplit(tempList.get(1), ","); //temList是AD所有的深度集合
+            for (int j = 0; j < temList.size(); j++) {
+                int c = Integer.parseInt(temList.get(j)); //c是第j个allele的深度值。注意AD的第一个是ref，第二个是次等位位点的深度，第三个是最小等位位点的深度
+                dp += c; //dp是总深度
+                adCnt[j] += c; //adCnt[j] 是第j个allele的深度值的总和，AD按照 ref alt1 alt2排序
+            }
+
+            //再计算基因型
+            temList = PStringUtils.fastSplit(tempList.get(0), "/"); //temList是包含基因型拆分后的集合
+            for (int j = 0; j < temList.size(); j++) { //0/0:13,0:0,4,25
+                int c = Integer.parseInt(temList.get(j)); // c是基因型0 1 2 其中的一个
+                acCnt[c]++; //acCnt[c] 是所有taxa基因型某一数值如0 1 2的总和
+            }
+            int index1 = Integer.parseInt(temList.get(0)); //0/0基因型的
+            int index2 = Integer.parseInt(temList.get(1));
+            gnCnt[index1][index2]++; //gnCnt[][]是二维数组，代表alt的个数的矩阵，比如有1个alt，则gnCnt[][]有gnCnt[0][0]  gnCnt[0][1] gnCnt[1][0] gnCnt[1][1]
+            if (index1 != index2) {
+                ht++;
+            }
+        }
+        nz = genoArray.length - nz;
+        int sum = 0; //所有allele的总数
+        for (int i = 0; i < acCnt.length; i++) {
+            sum += acCnt[i];
+        }
+        float maf = (float) ((double) acCnt[0] / sum);
+        if (maf >= 0.5) {
+            maf = (float) ((double) acCnt[1] / sum);
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("DP=").append(dp).append(";NZ=").append(nz).append(";AD=");
+        for (int i = 0; i < adCnt.length; i++) {
+            sb.append(adCnt[i]).append(",");
+        }
+        sb.deleteCharAt(sb.length() - 1); //删除最后一个字符","号
+        sb.append(";AC=");
+        for (int i = 1; i < acCnt.length; i++) {
+            sb.append(acCnt[i]).append(",");
+        }
+        sb.deleteCharAt(sb.length() - 1);
+        sb.append(";GN=");
+        for (int i = 0; i < gnCnt.length; i++) { //二维数组的长度是第一维的长度，这里是2（只有1个alt） 或者3 (有2个alt)
+            for (int j = i + 1; j < gnCnt.length; j++) {
+                sb.append(gnCnt[i][j]).append(",");
+            }
+        }
+        sb.deleteCharAt(sb.length() - 1);
+        sb.append(";HT=").append(ht).append(";MAF=").append(String.format("%.4f", maf));
+        return sb.toString();
+    }
+
+
     /**
      * 根据提供的taxa列表，从总的VCF文件中提取所需的VCF文件，并对没有分离的位点进行去除,没有分离位点包括全部都是./.的位点
      *

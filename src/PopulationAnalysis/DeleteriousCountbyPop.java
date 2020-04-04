@@ -19,12 +19,12 @@ public class DeleteriousCountbyPop {
     public DeleteriousCountbyPop(){
 
         this.countDeleteriousVMapII_byChr();
-//        this.DeltoSynonymousRatio();
+        this.DeltoSynonymousRatio();
 
 //        this.getPopmutationBurden();
 //        this.getFiltedExonSNPAnnotation();
 //        this.mergeExonSNPAnnotation();
-        this.getLargeDelAnnotation();
+//        this.getLargeDelAnnotation();
 
 
     }

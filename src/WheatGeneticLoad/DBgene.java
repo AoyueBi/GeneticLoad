@@ -39,9 +39,10 @@ public class DBgene {
 
 
     public void mergeTxt(){
-        String infileDirS = "/Users/Aoyue/Documents/test";
-        String outfileS = "/Users/Aoyue/Documents/test.txt";
-        AoFile.mergeTxt(infileDirS,outfileS);
+//        String infileDirS = "/Users/Aoyue/Documents/test";
+//        String outfileS = "/Users/Aoyue/Documents/test.txt";
+//        AoFile.mergeTxt(infileDirS,outfileS);
+
     }
 
     public void script_getTranscriptSum(){
