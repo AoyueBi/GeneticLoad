@@ -91,12 +91,12 @@ public class DBgene {
 //        String outfileDirS ="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/001";
 
         //Landrace_EU
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/003_hexaploid_subspecies_SNPAnnotation/001_landrace_exon_SNPAnnotation";
-        String outfileDirS ="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/004_geneSummary_byChr/001_Landrcae_EU";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/003_hexaploid_subspecies_SNPAnnotation/001_landrace_exon_SNPAnnotation";
+//        String outfileDirS ="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/004_geneSummary_byChr/001_Landrcae_EU";
 
         //Cultivar
-//        String infileDirS = "";
-//        String outfileDirS ="";
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/003_hexaploid_subspecies_SNPAnnotation/002_cultivar_exon_SNPAnnotation";
+        String outfileDirS ="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/004_geneSummary_byChr/002_Cultivar";
 
         String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
         for (int j = 0; j < chrArr.length; j++) {
@@ -106,17 +106,16 @@ public class DBgene {
 //            String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_vmap2.1_hexaploid_geneSummary.txt").getAbsolutePath();
 
             //Landrace_EU
-            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_SNP_hexaploid_anno.txt.gz").getAbsolutePath();
-            String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_vmap2.1_hexaploid_geneSummary.txt").getAbsolutePath();
+//            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_SNP_anno_landraceEU_.txt.gz").getAbsolutePath();
+//            String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_vmap2.1_LandraceEU_geneSummary.txt").getAbsolutePath();
 
             //Cultivar
-//            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_SNP_hexaploid_anno.txt.gz").getAbsolutePath();
-//            String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_vmap2.1_hexaploid_geneSummary.txt").getAbsolutePath();
+            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_SNP_anno_cultivar_.txt.gz").getAbsolutePath();
+            String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_vmap2.1_Cultivar_geneSummary.txt").getAbsolutePath();
 
-//            this.getTranscriptSum_bychr(infileS,outfileS);
+            this.getTranscriptSum_bychr(infileS,outfileS);
             System.out.println("chr" + chrArr[j] + " is completed at " + outfileS);
         }
-
 
     }
 
@@ -124,14 +123,14 @@ public class DBgene {
      * 因为多线程运行，posgeneMap超过内存，
      * 故修改思路，进行一条一条计算
      */
-//    public void getTranscriptSum_bychr(String infileS,String outfileS){
-    public void getTranscriptSum_bychr(){
+    public void getTranscriptSum_bychr(String infileS,String outfileS){
+//    public void getTranscriptSum_bychr(){
 
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/000_hexaploid_SNPAnnotation/chr001_SNP_hexaploid_anno.txt.gz";
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/000_hexaploid_SNPAnnotation/chr001_SNP_hexaploid_anno.txt.gz";
         File f = new File(infileS);
         int chrIndex = Integer.parseInt(f.getName().substring(3,6)) -1;
         String geneFeatureFileS = "/Users/Aoyue/Documents/Data/wheat/gene/v1.1/wheat_v1.1_Lulab.pgf";
-        String outfileS = "/Users/Aoyue/Documents/test.txt";
+//        String outfileS = "/Users/Aoyue/Documents/test.txt";
 
         double gerpCut = 1;
 //        AoFile.readheader(f.getAbsolutePath());
