@@ -25,6 +25,54 @@ public class AoFile {
         
     }
 
+    /**
+     *  返回满足条件的某些行，即取子集
+     *
+     * @param infileS
+     * @param columIndex
+     * @param inlist
+     * @param outfileS
+     * @return
+     */
+    public static File filterTxtLines(String infileS, int columIndex, TIntArrayList inlist, String outfileS){
+        File out = new File(outfileS);
+        inlist.sort();
+        try {
+            BufferedReader br = new AoFile().readFile(infileS);
+            BufferedWriter bw = new AoFile().writeFile(outfileS);
+            String header = br.readLine();
+            bw.write(header); bw.newLine();
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            int cntkeep = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+                int pos = Integer.parseInt(l.get(columIndex));
+                int index = inlist.binarySearch(pos);
+                if (index < 0) continue;
+                cntkeep++;
+                bw.write(temp);
+                bw.newLine();
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println(cnt + "\tkeep lines " + cntkeep + "\t" + infileS + " is completed at " + outfileS );
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        return out;
+    }
+
+    /**
+     * 获取表格的行数，不包括表头
+     * @param infileS
+     * @return
+     */
     public static int getFileRowNumber(String infileS){
         int out = 0;
         try{
@@ -43,7 +91,6 @@ public class AoFile {
         }
 
         return out;
-
     }
 
     /**

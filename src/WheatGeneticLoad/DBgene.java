@@ -1,6 +1,7 @@
 package WheatGeneticLoad;
 
 import AoUtils.AoFile;
+import AoUtils.CalVCF;
 import analysis.wheatVMap2.DBGene;
 import daxing.common.IOTool;
 import daxing.common.RowTableTool;
@@ -29,11 +30,47 @@ public class DBgene {
 //        this.getTranscriptSum();
 //        this.getTranscriptSum_bychr();
 //        this.script_getTranscriptSum();
-        this.mergeTxt();
+//        this.mergeTxt();
+
+        this.getsubspeciesSNPAnnotation();
 
     }
 
-    public void filterGeneSummary(){
+    /**
+     *
+     */
+    public void getsubspeciesSNPAnnotation(){
+//        String taxaList = "";
+//        String outfileDirS = "";
+        String vcfFileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/002_exonSNPVCF";
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/009_exonSNPAnnotation_addAnc_addDAF_barley_secalePasimony";
+
+        //需要修改
+        //landrace_EU
+//        String taxaList = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/009_treeValidatedFroup_byRegion/002_Landrace_European/Landrace_Europe.txt";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/003_hexaploid_subspecies_SNPAnnotation/001_landrace_exon_SNPAnnotation";
+
+        //cultivar
+        String taxaList = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/008_treeValidatedGroup_bySubspecies/Cultivar.txt";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/003_hexaploid_subspecies_SNPAnnotation/002_cultivar_exon_SNPAnnotation";
+
+
+        List<File> fsList = AoFile.getFileListInDir(infileDirS);
+        AoFile.readheader(fsList.get(0).getAbsolutePath());
+        fsList.parallelStream().forEach(f -> {
+            String chr = f.getName().substring(0,6); //chr001
+            String exonVCF = new File(vcfFileDirS,chr + "_exon_vmap2.1.vcf.gz").getAbsolutePath();
+            //*********************************** step1: 获取群体的 pos 信息 ***********************************//
+            TIntArrayList posl = CalVCF.extractVCFchrPos(exonVCF, taxaList);
+
+            //******* step2: 根据annotation 库， pos列， pols目标集合， 输出文件获取 注释文件的子集 ******//
+            String infileS = f.getAbsolutePath();
+            //需要修改，输出文件的名字 //需要修改，输出文件的名字 //需要修改，输出文件的名字
+//            String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "_landraceEU_.txt.gz").getAbsolutePath();
+            String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "_cultivar_.txt.gz").getAbsolutePath();
+            int colmnIndex = 2;
+            File out = AoFile.filterTxtLines(infileS,2,posl,outfileS);
+        });
 
     }
 

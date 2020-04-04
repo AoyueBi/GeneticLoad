@@ -5,7 +5,9 @@
  */
 package AoUtils;
 
+import gnu.trove.list.array.TIntArrayList;
 import pgl.format.table.RowTable;
+import pgl.format.table.TableInterface;
 import pgl.utils.IOUtils;
 import pgl.utils.PStringUtils;
 
@@ -27,6 +29,87 @@ public class CalVCF {
 //        this.mkdirs();
 
 
+    }
+
+    /**
+     * 根据提供的taxa列表，从总的VCF文件中提取所需的 chr pos 文件，并对没有分离的位点进行去除,没有分离位点包括全部都是./.的位点
+     *
+     * @param infileS   VCF file
+     * @param taxalist !!!! 没有header，一行一个taxa名字
+     */
+    public static TIntArrayList extractVCFchrPos(String infileS, String taxalist) {
+        TIntArrayList out = new TIntArrayList();
+        List<Integer> indexTaxa = new ArrayList<>();
+        String[] taxaArray = AoFile.getStringArraybyList_withoutHeader(taxalist,0);
+        System.out.println("Chr\tNum_MergedFileVariants\tNum_KeptVariants\tNum_RemovedSites\tNum_NosegregationSites\tNum_NogenotypeSites");
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cntRaw = 0; //1.总共的SNP数量
+            int cntKept = 0; //2.提取后保留的SNP数量
+            int cntRemoved = 0;  //3.去除的SNP数量
+            int cntNosegregation = 0; //4.没有分离位点的sites
+            int cntSiteNogeno = 0; //5.没有基因型的sites
+
+            while ((temp = br.readLine()) != null) {
+                int cntNogenotype = 0;
+                //***********************************************************//
+                if (temp.startsWith("##")) continue;
+                //***********************************************************//
+                //开始处理taxa的问题，先把所有taxa放入array中，记住在temp中的index
+                if (temp.startsWith("#CHROM")) {
+                    l = PStringUtils.fastSplit(temp);
+                    for (int i = 9; i < l.size(); i++) {
+                        String taxon = l.get(i);
+                        int index1 = Arrays.binarySearch(taxaArray, taxon);
+                        if (index1 > -1) { //当找到列表中的taxa时，写列表中的taxa信息
+                            indexTaxa.add(i);
+                        }
+                    }
+                    Collections.sort(indexTaxa);
+                }
+                if (!temp.startsWith("#")) {
+                    cntRaw++;
+                    l = PStringUtils.fastSplit(temp);
+                    List<String> lTaxaGeno = new ArrayList<>();
+                    String altList = l.get(4);
+                    int pos = Integer.parseInt(l.get(1));
+                    for (int i = 0; i < indexTaxa.size(); i++) { //无论有无基因型，都加进去了
+                        lTaxaGeno.add(l.get(indexTaxa.get(i)));
+                    }
+
+                    for (int i = 0; i < lTaxaGeno.size(); i++) { //判断没有基因型的taxa数目
+                        if (lTaxaGeno.get(i).startsWith(".")) {
+                            cntNogenotype++;
+                        }
+                    }
+
+                    if (cntNogenotype == lTaxaGeno.size()) { //过滤 所有taxa都没有基因型的位点
+                        cntSiteNogeno++;
+                        continue;
+                    } //若不过滤，则全是./.的位点在下面的分离测试中会统计到
+                    String[] taxaGenoArray = lTaxaGeno.toArray(new String[lTaxaGeno.size()]);
+                    boolean segregation = new CalVCF().ifSegregationIncl2alt(taxaGenoArray, altList);
+                    if (segregation == false) { //过滤没有分离的位点
+                        cntNosegregation++;
+                        continue;
+                    }
+                    cntKept++;
+                    out.add(pos);
+                } //
+            }
+            cntRemoved = cntSiteNogeno + cntNosegregation;
+            br.close();
+            System.out.println(new File(infileS).getName().substring(3, 6) + "\t" + cntRaw + "\t" + cntKept + "\t" + cntRemoved + "\t" + cntNosegregation + "\t" + cntSiteNogeno);
+            System.out.println(infileS + " is completed at " + "\tActual taxa size: " + indexTaxa.size() + "\tGoal taxa size : " + l.size());
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        return out;
     }
 
 
