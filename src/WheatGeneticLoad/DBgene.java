@@ -29,7 +29,7 @@ public class DBgene {
 //        this.getHexaploidAnnotation();
 //        this.getTranscriptSum();
 //        this.getTranscriptSum_bychr();
-//        this.script_getTranscriptSum();
+        this.script_getTranscriptSum();
 //        this.mergeTxt();
 
         /**
@@ -46,7 +46,48 @@ public class DBgene {
      * 将 cultivar 和 landrace_EU 的geneSummary 进行合并
      */
     public void addGroupforgeneSummary(){
-
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/004_geneSummary_byChr/003_merge";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/004_geneSummary_byChr/004_addGroup";
+        File[] fs = AoFile.getFileArrayInDir(infileDirS);
+        Arrays.sort(fs);
+        String group = null;
+        String sub = null;
+        String outfileS = new File(outfileDirS,"001_LandraceEU_Cultivar_geneSummary.txt.gz").getAbsolutePath();
+        try {
+            String infileS = fs[0].getAbsolutePath();
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            //read header
+            bw.write(br.readLine() + "\tGroup\tSub");
+            bw.newLine();
+            int cnttotal = 0;
+            //read context
+            for (int i = 0; i < fs.length; i++) {
+                infileS = fs[i].getAbsolutePath();
+                group = fs[i].getName().split("_")[1];
+                br = AoFile.readFile(infileS);
+                br.readLine(); //read header
+                String temp = null;
+                int cnt = 0;
+                while ((temp = br.readLine()) != null) {
+                    cnt++;
+                    cnttotal++;
+                    StringBuilder sb = new StringBuilder();
+                    sub = PStringUtils.fastSplit(temp).get(0).substring(8,9); //第八个字符是基因的亚基因组分类
+                    sb.append(temp).append("\t").append(group).append("\t").append(sub);
+                    bw.write(sb.toString());
+                    bw.newLine();
+                }
+                System.out.println(fs[i].getName() + "\t" + cnt);
+            }
+            System.out.println("Total lines without header count is " + cnttotal + " at merged file " + outfileS );
+            br.close();
+            bw.flush();
+            bw.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
     /**

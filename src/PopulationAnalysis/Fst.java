@@ -34,7 +34,7 @@ public class Fst {
 //        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/101_Fst/006_scriptbased2Mwindow1Mstep/fst_based2Mwindow_1Mstep_20200216.sh",40,7); //273
 
 //        this.extractVCFlog();
-//        this.addSubandGroup();
+        this.addSubandGroup();
 
         this.mergeFSTwindow();
     }

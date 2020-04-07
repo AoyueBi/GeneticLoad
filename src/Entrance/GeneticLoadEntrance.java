@@ -11,6 +11,7 @@ import Plot.PCA;
 import PopulationAnalysis.DeleteriousCountbyPop;
 import WheatGeneticLoad.DBgene;
 import WheatGeneticLoad.VariantsSum;
+import gnu.trove.list.array.TIntArrayList;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -22,7 +23,7 @@ import java.util.Date;
 public class GeneticLoadEntrance {
 
     public GeneticLoadEntrance() {
-        this.firstProcess();
+//        this.firstProcess();
 //        this.secondProcess();
 //        this.infoDB();
 //        this.DBdeleterious();
@@ -89,7 +90,7 @@ public class GeneticLoadEntrance {
 //        new GOanalysis();
 //        new DeleteriousXPCLR();
 //        new GermplasmInfo();
-        new DBgene();
+//        new DBgene();
 
 
     }
@@ -161,25 +162,7 @@ public class GeneticLoadEntrance {
 //        new XPCLR().getGenotypeXPCLR_parallele_diploid(args[0], args[1], args[2]);
 
         System.out.println(new SimpleDateFormat().format(new Date()) + "\tend.");
-        /**
-         * ******************************* temporary method
-         * *********************************************
-         */
-//        new GeneticLoadEntrance().test();
+
     }
 
-    public void test() {
-        try {
-            String sample = "a  b c  d";
-            String[] arrays = sample.split(" +");
-            for (String s : arrays) {
-                System.out.println(s);
-            }
-
-//           System.out.println(String.valueOf(cnt) + " SNPs output from ");
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-    }
 }

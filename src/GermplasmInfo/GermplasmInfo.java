@@ -145,14 +145,20 @@ public class GermplasmInfo {
 
 //        String dbfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/002_VMapIIDepth/taxaDepth_summary.txt";
 //        String taxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/taxaList.txt";
+
         //添加个体杂合度信息
-        String dbfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/016_vcfQC/013_indiHeter/merge/heter_indivi.txt";
-        String taxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/taxaList.txt";
-
-
-        HashMap<String,String> hm = new AoFile().getHashMapStringKey(dbfileS,0,3);
+//        String dbfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/016_vcfQC/013_indiHeter/merge/heter_indivi.txt";
+//        String taxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/taxaList.txt";
+//        HashMap<String,String> hm = new AoFile().getHashMapStringKey(dbfileS,0,3);
 //        AoFile.addColumbyString(taxaFileS,0,hm,"MeanDepth");
-        AoFile.addColumbyString(taxaFileS,0,hm,"Heterozygosity_Indivi");
+//        AoFile.addColumbyString(taxaFileS,0,hm,"Heterozygosity_Indivi");
+
+        //添加到CS的 genetic divergence
+        String dbfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/016_vcfQC/016_dxy/dxy.txt";
+        String taxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/taxaList.txt";
+        HashMap<String,String> hm = new AoFile().getHashMapStringKey(dbfileS,0,1);
+        AoFile.addColumbyString(taxaFileS,0,hm,"Dxy_geneticDivergency");
+
     }
 
     //
