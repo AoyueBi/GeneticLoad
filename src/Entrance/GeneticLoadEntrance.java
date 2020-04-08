@@ -28,6 +28,8 @@ public class GeneticLoadEntrance {
 //        this.infoDB();
 //        this.DBdeleterious();
 
+        //ternary plot analysis
+
 
     }
 
