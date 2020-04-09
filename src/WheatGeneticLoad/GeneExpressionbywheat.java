@@ -1,6 +1,7 @@
 package WheatGeneticLoad;
 
 import AoUtils.AoFile;
+import AoUtils.Triads.Triadsgenes;
 import org.apache.commons.lang.ArrayUtils;
 import pgl.utils.PStringUtils;
 
@@ -28,14 +29,12 @@ public class GeneExpressionbywheat {
         String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/001_geneExpressionDB/002_geneSummary_CS_triad_Removed169_addTPM_removeNoexpression.txt.gz";
 
         AoFile.readheader(csgeneS);
-//        List<String> geneA = AoFile.getStringList(csgeneS,5);
-//        List<String> geneB = AoFile.getStringList(csgeneS,6);
-//        List<String> geneD = AoFile.getStringList(csgeneS,7);
-//        geneA.addAll(geneB);
-//        geneA.addAll(geneD);
-//        System.out.println(geneA.size());
-
+        List<String> geneA = AoFile.getStringList(csgeneS,5);
+        List<String> geneB = AoFile.getStringList(csgeneS,6);
+        List<String> geneD = AoFile.getStringList(csgeneS,7);
         List<String> genesinCS = new ArrayList<>();
+        genesinCS.addAll(geneA);genesinCS.addAll(geneB);genesinCS.addAll(geneD);
+
         try{
             BufferedReader br = AoFile.readFile(csgeneS);
             String header = br.readLine();
@@ -47,10 +46,13 @@ public class GeneExpressionbywheat {
                 cnt++;
                 String triadID = l.get(0);
                 String loadGroup = l.get(4);
-                String geneA = l.get(5);
-                String geneB = l.get(6);
-                String geneD = l.get(7);
-                String Synteny = l.get(8);
+                String genea = l.get(5);
+                String geneb = l.get(6);
+                String gened = l.get(7);
+                String synteny = l.get(8);
+                String expressed = l.get(9);
+                if (expressed.equals("FALSE"))continue;
+
 
 
             }
@@ -72,6 +74,7 @@ public class GeneExpressionbywheat {
             while ((temp = br.readLine()) != null) {
                 l = PStringUtils.fastSplit(temp);
                 cnt++;
+                String gene = l.get(1).split("\\.")[0];
 
             }
             br.close();
