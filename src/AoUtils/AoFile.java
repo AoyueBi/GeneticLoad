@@ -282,6 +282,9 @@ public class AoFile {
         else if (infileS.endsWith(".TAB")) {
             br = IOUtils.getTextReader(infileS);
         }
+        else if (infileS.endsWith(".csv")) {
+            br = IOUtils.getTextReader(infileS);
+        }
         return br;
     }
 
@@ -469,6 +472,31 @@ public class AoFile {
     }
 
 
+    /**
+     *return a hashmap from a file
+     *
+     * @param infileS
+     * @param keycolummIndex
+     * @param valuecolumnIndex
+     * @return
+     */
+    public static HashMap<String,Double> getHashMapdoubleValue(String infileS, int keycolummIndex, int valuecolumnIndex){
+
+
+        String out = null;
+        RowTable<String> t = new RowTable<>(infileS);
+        HashMap<String,Double> hm = new HashMap<>();
+        for (int i = 0; i < t.getRowNumber() ; i++) {
+            String key = t.getCell(i,keycolummIndex);
+            String value = t.getCell(i,valuecolumnIndex);
+            double valued = Double.parseDouble(value);
+            hm.put(key,valued);
+        }
+        System.out.println("HashMap contains " + hm.size() + " pairs");
+
+
+        return hm;
+    }
 
     /**
      *return a hashmap from a file
@@ -479,6 +507,7 @@ public class AoFile {
      * @return
      */
     public static HashMap<Integer,String> getHashMapintKey(String infileS, int keycolummIndex, int valuecolumnIndex){
+
         String out = null;
         RowTable<String> t = new RowTable<>(infileS);
         HashMap<Integer,String> hm = new HashMap<>();
@@ -784,7 +813,7 @@ public class AoFile {
      * @param columnIndex
      * @return
      */
-    public List<String> getStringList(String infileS, int columnIndex){
+    public static List<String> getStringList(String infileS, int columnIndex){
         List<String> out = new ArrayList<>();
         try {
             BufferedReader br = null;

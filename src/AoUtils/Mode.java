@@ -206,11 +206,12 @@ public class Mode {
      */
 
     public void txtSinglethread(){
+        String infileS = "";
+        String outfileS = "";
         try {
-            String infileS = "";
-            String outfileS = "";
-            BufferedReader br = new AoFile().readFile(infileS);
-            BufferedWriter bw = new AoFile().writeFile(outfileS);
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String header = br.readLine();
             String temp = null;
             List<String> l = new ArrayList<>();
             int cnt = 0;
@@ -227,7 +228,6 @@ public class Mode {
             e.printStackTrace();
             System.exit(1);
         }
-
     }
 
     public void TryCatch(){
