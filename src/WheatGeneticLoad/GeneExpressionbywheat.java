@@ -15,8 +15,64 @@ import java.util.List;
 public class GeneExpressionbywheat {
     public GeneExpressionbywheat(){
 //        this.addTPM();
-        this.getCSgeneSummary();
+//        this.getCSgeneSummary();
+        this.getCSgeneSummary_usingTriadsClass();
 
+    }
+
+    /**
+     * 选取CS的800个基因，进行相关性分析
+     * 去除不表达的基因,并添加 ternary分组和是否共线等信息
+     */
+    public void getCSgeneSummary_usingTriadsClass(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/001_geneExpressionDB/001_geneSummary_hexaploid_triad_Removed169_addTPM.txt.gz";
+        String csgeneFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/002_merge/CS_geneSummary_triads_Remove169_wideTable.txt.gz";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/001_geneExpressionDB/002_geneSummary_CS_triad_testTriadsClass.txt";
+
+        List<String> genesinCS = new ArrayList<>();
+        List<String> geneA = AoFile.getStringList(csgeneFileS,5);
+        List<String> geneB = AoFile.getStringList(csgeneFileS,6);
+        List<String> geneD = AoFile.getStringList(csgeneFileS,7);
+        genesinCS.addAll(geneA);genesinCS.addAll(geneB);genesinCS.addAll(geneD);
+        HashMap<String,String> hmTriadIDLoadGroup;
+        AoFile.readheader(csgeneFileS);
+        hmTriadIDLoadGroup = AoFile.getHashMapStringKey(csgeneFileS,0,4);
+        Collections.sort(genesinCS);
+        Triadsgenes triad = new Triadsgenes();
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String header = br.readLine();
+            bw.write(header + "\tTernaryGroup\tIfSyntenic");
+            bw.newLine();
+            String temp;
+            List<String> l;
+            int cnt = 0;
+            String syntenicState;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+                String gene = l.get(1).split("\\.")[0];
+                int index = Collections.binarySearch(genesinCS,gene);
+                if (index < 0)continue;
+                boolean out = triad.ifExpressedBasedGene(gene); //判断是否表达
+                if (!out)continue;
+                String triadID = triad.getTriadID(gene);
+                String loadGroup = hmTriadIDLoadGroup.get(triadID); //获取 分组信息
+                boolean syntenic = triad.ifSyntenicBasedTriadID(triadID);
+                if (syntenic) syntenicState = "1";
+                else syntenicState = "0";
+                bw.write(temp+"\t"+ loadGroup + "\t" + syntenicState);
+                bw.newLine();
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
     /**
@@ -35,12 +91,6 @@ public class GeneExpressionbywheat {
         HashMap<String,String> hmgeneIfsyntenic = new HashMap<>();
 
         AoFile.readheader(csgeneFileS);
-        List<String> geneA = AoFile.getStringList(csgeneFileS,5);
-        List<String> geneB = AoFile.getStringList(csgeneFileS,6);
-        List<String> geneD = AoFile.getStringList(csgeneFileS,7);
-
-//        genesinCS.addAll(geneA);genesinCS.addAll(geneB);genesinCS.addAll(geneD);
-//        HashMap<String,String> hmTriadIDLoadGroup = AoFile.getHashMapStringKey(csgeneFileS,0,4);
 
         try{
             BufferedReader br = AoFile.readFile(csgeneFileS);
@@ -91,8 +141,8 @@ public class GeneExpressionbywheat {
             String header = br.readLine();
             bw.write(header + "\tTernaryGroup\tIfSyntenic");
             bw.newLine();
-            String temp = null;
-            List<String> l = new ArrayList<>();
+            String temp;
+            List<String> l;
             int cnt = 0;
             String syntenicState = null;
             while ((temp = br.readLine()) != null) {
@@ -108,14 +158,6 @@ public class GeneExpressionbywheat {
                 if (express.equals("FALSE"))continue;
                 String loadGroup = hmTriadIDLoadGroup.get(gene);
                 syntenicState = hmgeneIfsyntenic.get(gene);
-
-//                boolean out = Triadsgenes.ifExpressedBasedGene(gene); //判断是否表达
-//                if (!out)continue;
-//                String triadID = Triadsgenes.getTriadID(gene);
-//                String loadGroup = hmTriadIDLoadGroup.get(triadID); //获取 分组信息
-//                boolean syntenic = Triadsgenes.ifSyntenicBasedTriadID(triadID);
-//                if (syntenic) syntenicState = "1";
-//                else syntenicState = "0";
                 bw.write(temp+"\t"+ loadGroup + "\t" + syntenicState);
                 bw.newLine();
             }

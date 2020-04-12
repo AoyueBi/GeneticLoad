@@ -24,7 +24,7 @@ public class DeleteriousBiologyAoyue {
 //        this.countDeleteriousVMapII(); //这是算出所有的总和
 //        this.countDeleteriousVMapII_byChr(); //step2
 
-//        this.mkDepthOfVMapII();
+        this.mkDepthOfVMapII();
 //        this.mkDepthSummary();
 //        this.mergeDepthSummary();
 

@@ -32,7 +32,11 @@ public class Triadsgenes {
     static List<String> geneB = new ArrayList<>();
     static List<String> geneD = new ArrayList<>();
 
-    private static void readDBfile(){
+    public Triadsgenes(){
+        this.readDBfile();
+    }
+
+    private void readDBfile(){
         triadsGeneAMap = new HashMap<>();
         triadsGeneBMap = new HashMap<>();
         triadsGeneDMap = new HashMap<>();
@@ -78,7 +82,6 @@ public class Triadsgenes {
 
     public static boolean ifTriads (String gene){
         boolean out = false;
-        readDBfile();
         List<String> l = new ArrayList<>();
         l.addAll(geneA);
         l.addAll(geneB);
@@ -97,7 +100,6 @@ public class Triadsgenes {
      * @return
      */
     public static boolean ifExpressedBasedGene(String gene){
-        readDBfile();
         boolean out = false;
         String triadID = getTriadID(gene);
         String result = triadsExpressedMap.get(triadID);
@@ -111,7 +113,6 @@ public class Triadsgenes {
      * @return
      */
     public static boolean ifExpressedBasedTriadID(String triadID){
-        readDBfile();
         boolean out = false;
         String result = triadsExpressedMap.get(triadID);
         if (result.equals("TRUE"))out=true;
@@ -124,7 +125,6 @@ public class Triadsgenes {
      * @return
      */
     public static boolean ifSyntenicBasedGene(String gene){
-        readDBfile();
         boolean out = false;
         String triadID = getTriadID(gene);
         String result = triadsSyntenicMap.get(triadID);
@@ -138,7 +138,6 @@ public class Triadsgenes {
      * @return
      */
     public static boolean ifSyntenicBasedTriadID(String triadID){
-        readDBfile();
         boolean out = false;
         String result = triadsSyntenicMap.get(triadID);
         if (result.equals("syntenic"))out=true;
@@ -151,7 +150,6 @@ public class Triadsgenes {
      * @param gene
      */
     public static String getTriadID(String gene){
-        readDBfile();
         String out;
         out = geneTriadsMap.get(gene);
         return out;
@@ -163,7 +161,6 @@ public class Triadsgenes {
      * @return
      */
     public static String getGeneinAsub(String triadID){
-        readDBfile();
         String out;
         out = triadsGeneAMap.get(triadID);
         return out;
@@ -175,7 +172,6 @@ public class Triadsgenes {
      * @return
      */
     public static String getGeneinBsub(String triadID){
-        readDBfile();
         String out;
         out = triadsGeneBMap.get(triadID);
         return out;
@@ -187,7 +183,6 @@ public class Triadsgenes {
      * @return
      */
     public static String getGeneinDsub(String triadID){
-        readDBfile();
         String out;
         out = triadsGeneDMap.get(triadID);
         return out;
