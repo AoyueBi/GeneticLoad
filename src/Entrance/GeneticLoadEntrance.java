@@ -6,6 +6,7 @@
 package Entrance;
 
 import AoUtils.Bin;
+import AoUtils.CalVCF;
 import GermplasmInfo.GermplasmInfo;
 import Plot.PCA;
 import PopulationAnalysis.DeleteriousCountbyPop;
@@ -93,8 +94,8 @@ public class GeneticLoadEntrance {
 //        new GOanalysis();
 //        new DeleteriousXPCLR();
 //        new GermplasmInfo();
-//        new DBgene();
-        new GeneExpressionbywheat();
+        new DBgene();
+//        new GeneExpressionbywheat();
 
 
     }

@@ -1047,6 +1047,9 @@ public class AoFile {
             else if (infileS.endsWith(".TAB")) {
                 br = IOUtils.getTextReader(infileS);
             }
+            else if (infileS.endsWith(".tsv")) {
+                br = IOUtils.getTextReader(infileS);
+            }
             String temp = br.readLine();
             List<String> l = PStringUtils.fastSplit(temp);
             int cnt = -1;
