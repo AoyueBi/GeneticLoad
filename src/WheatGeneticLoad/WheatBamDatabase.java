@@ -5,6 +5,7 @@
  */
 package WheatGeneticLoad;
 
+import AoUtils.AoFile;
 import pgl.format.table.RowTable;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -17,6 +18,7 @@ import java.util.List;
 import pgl.utils.IOFileFormat;
 import pgl.utils.IOUtils;
 import pgl.utils.PStringUtils;
+import smile.stat.Stat;
 
 /**
  *
@@ -48,9 +50,108 @@ public class WheatBamDatabase {
         //this.wheatLu_ABgenome();
         //this.wheatLu_Dgenome();
         //this.mergeVMapI_JiaoABD_LuABD_AB_D_bamDB();
-        this.getTaxaBamMap_Lu_AB_D();
+//        this.getTaxaBamMap_Lu_AB_D();
+//        this.mkHashMapfromNEW2OLD();
+        this.getBamTaxaMap();
         
         
+    }
+
+    /**
+     * //先获取原来bamTaxa的 Map
+     * //再根据新命名的 newBam oldBam 的Map
+     * //进行文件的重新编排
+     */
+    public void getBamTaxaMap(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/001_germplasm/GermplasmDB/001_toFeiLu/wheatVMapII_germplasmInfo_20191225.txt";
+        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/001_bamDatabase/008_step8_mergeVMapI_JiaoABD_LuABD_AB_D/All725WheatBamDatabase_20190716.txt";
+        String bamS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/001_bamDatabase/010_BamHashMap/001_/001_new2old_NameHashMap.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/001_bamDatabase/010_BamHashMap/001_/002_oldBam2TaxaMap.txt";
+
+
+        RowTable<String> t = new RowTable<>(bamS);
+        List<String> oldBamList = t.getColumn(1);
+        HashMap<String,String> hmBamTaxainVMapII = AoFile.getHashMapStringKey(infileS,0,4);
+        for (int i = 0; i < t.getRowNumber(); i++) {
+
+
+        }
+        try {
+
+
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String header = br.readLine();
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+
+    }
+
+    public void mkHashMapfromNEW2OLD(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/001_bamDatabase/010_BamHashMap/bam_Old2New.map.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/001_bamDatabase/010_BamHashMap/001_/001_new2old_NameHashMap.txt";
+        RowTable<String> t = new RowTable<>(infileS);
+        HashMap<String,String> hm = new HashMap<>();
+        try {
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            bw.write("NewName\tOldName");
+            bw.newLine();
+            for (int i = 0; i < t.getRowNumber(); i++) {
+                String oldFileS = t.getCell(i,0);
+                String newFileS = t.getCell(i,1);
+                if (oldFileS.endsWith("bai"))continue;
+                // A A0001.rmdup.bam
+                // AB B0115.rmdup.bam    NAFU S13.markdup.bam
+                //ABD TW0059.rmdup.bam   NAFU ALS.sort.dedup.bam
+                // D D0030.rmdup.bam     NAFU A2.markdup.bam
+                // new name is endwith ".bam"
+                String oldname = new File(oldFileS).getName();
+                String newname = new File(newFileS).getName();
+                if (oldname.endsWith(".rmdup.bam")){
+                    oldname = oldname.split(".rmdup.bam")[0];
+                }
+                if (oldname.endsWith(".markdup.bam")){
+                    oldname = oldname.split(".markdup.bam")[0];
+                }
+                if (oldname.endsWith(".sort.dedup.bam")){
+                    oldname = oldname.split(".sort.dedup.bam")[0];
+                }
+                if(oldname.equals("CSmarkdup.bam")){
+                    oldname = "CS_8X";
+                }
+                if(oldname.equals("CS.rmdup.bam")){
+                    oldname = "CS_8X";
+                }
+                newname = newname.split(".bam")[0];
+                hm.put(oldname,newname);
+                System.out.println(oldname + "\t" + newname);
+                bw.write(newname + "\t" + oldname);
+                bw.newLine();
+            }
+            bw.flush();
+            bw.close();
+            System.out.println(hm.size());
+
+        }catch (Exception e){
+            e.printStackTrace();
+            System.out.print(1);
+        }
+
     }
     
     

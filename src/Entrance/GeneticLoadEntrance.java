@@ -13,6 +13,7 @@ import PopulationAnalysis.DeleteriousCountbyPop;
 import WheatGeneticLoad.DBgene;
 import WheatGeneticLoad.GeneExpressionbywheat;
 import WheatGeneticLoad.VariantsSum;
+import WheatGeneticLoad.WheatBamDatabase;
 import gnu.trove.list.array.TIntArrayList;
 
 import java.text.SimpleDateFormat;
@@ -60,7 +61,7 @@ public class GeneticLoadEntrance {
         //new MapMake();
         //new Wheat120cleandataProcessor();  //Jiao
         //new Wheat120bamProcessor(); //Jiao
-        //new WheatBamDatabase();
+        new WheatBamDatabase();
 
         /**
          * *************************************
@@ -94,7 +95,7 @@ public class GeneticLoadEntrance {
 //        new GOanalysis();
 //        new DeleteriousXPCLR();
 //        new GermplasmInfo();
-        new DBgene();
+//        new DBgene();
 //        new GeneExpressionbywheat();
 
 
