@@ -3,17 +3,18 @@ package PopulationAnalysis;
 import AoUtils.AoFile;
 import AoUtils.AoMath;
 import AoUtils.CountSites;
-import analysis.wheatVMap2.VMapDBUtils;
+
+import analysis.wheat.VMap2.VMapDBUtils;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TFloatArrayList;
 import gnu.trove.list.array.TIntArrayList;
-import pgl.format.table.ColumnTable;
-import pgl.format.table.RowTable;
 import pgl.graphcis.tablesaw.TablesawUtils;
-import pgl.utils.Dyad;
-import pgl.utils.IOUtils;
-import pgl.utils.PStringUtils;
-import pgl.utils.wheat.RefV1Utils;
+import pgl.infra.table.ColumnTable;
+import pgl.infra.table.RowTable;
+import pgl.infra.utils.Dyad;
+import pgl.infra.utils.IOUtils;
+import pgl.infra.utils.PStringUtils;
+import pgl.infra.utils.wheat.RefV1Utils;
 import tech.tablesaw.api.IntColumn;
 import tech.tablesaw.api.Table;
 
@@ -249,7 +250,7 @@ public class XPCLR {
             StringBuilder sb = new StringBuilder();
             while ((temp = br.readLine()) != null){
                 sb.setLength(0);
-                l=PStringUtils.fastSplit(temp);
+                l= PStringUtils.fastSplit(temp);
                 int chrIndex = Integer.parseInt(l.get(0));
                 currentPos = Integer.parseInt(l.get(3));
                 // 对 currentPos所在region内的所有pos进行判断

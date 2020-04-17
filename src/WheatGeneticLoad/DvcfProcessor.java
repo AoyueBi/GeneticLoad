@@ -6,16 +6,6 @@
 package WheatGeneticLoad;
 
 import AoUtils.CountSites;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import pgl.utils.IOUtils;
-import pgl.utils.PStringUtils;
 
 /**
  *

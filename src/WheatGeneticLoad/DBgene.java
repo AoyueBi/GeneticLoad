@@ -2,16 +2,16 @@ package WheatGeneticLoad;
 
 import AoUtils.AoFile;
 import AoUtils.CalVCF;
-import analysis.wheatVMap2.DBGene;
+import pgl.infra.utils.IOFileFormat;
+import pgl.infra.utils.IOUtils;
+import pgl.infra.utils.PStringUtils;
+import pgl.infra.table.RowTable;
 import daxing.common.IOTool;
 import daxing.common.RowTableTool;
 import gnu.trove.list.array.TByteArrayList;
 import gnu.trove.list.array.TIntArrayList;
 import org.sqlite.core.DB;
-import pgl.format.genomeAnnotation.GeneFeature;
-import pgl.format.range.Range;
-import pgl.utils.IOFileFormat;
-import pgl.utils.PStringUtils;
+
 import smile.stat.Stat;
 
 import java.io.BufferedReader;
@@ -22,6 +22,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Predicate;
+import pgl.infra.genomeAnnotation.GeneFeature;
+import pgl.infra.range.Range;
 
 public class DBgene {
 

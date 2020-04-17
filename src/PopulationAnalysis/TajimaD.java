@@ -1,7 +1,7 @@
 package PopulationAnalysis;
 
 import AoUtils.SplitScript;
-import pgl.utils.IOUtils;
+import pgl.infra.utils.IOUtils;
 
 import java.io.File;
 import java.util.List;

@@ -6,7 +6,6 @@
 package WheatGeneticLoad;
 
 import AoUtils.AoFile;
-import pgl.format.table.RowTable;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -15,10 +14,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import pgl.utils.IOFileFormat;
-import pgl.utils.IOUtils;
-import pgl.utils.PStringUtils;
-import smile.stat.Stat;
+import pgl.infra.table.RowTable;
+import pgl.infra.utils.IOUtils;
+import pgl.infra.utils.PStringUtils;
+import pgl.infra.utils.IOFileFormat;
 
 /**
  *
@@ -68,36 +67,36 @@ public class WheatBamDatabase {
         String bamS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/001_bamDatabase/010_BamHashMap/001_/001_new2old_NameHashMap.txt";
         String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/001_bamDatabase/010_BamHashMap/001_/002_oldBam2TaxaMap.txt";
 
-
+        System.out.println("HAHHAHHAHA");
         RowTable<String> t = new RowTable<>(bamS);
-        List<String> oldBamList = t.getColumn(1);
-        HashMap<String,String> hmBamTaxainVMapII = AoFile.getHashMapStringKey(infileS,0,4);
-        for (int i = 0; i < t.getRowNumber(); i++) {
-
-
-        }
-        try {
-
-
-            BufferedReader br = AoFile.readFile(infileS);
-            BufferedWriter bw = AoFile.writeFile(outfileS);
-            String header = br.readLine();
-            String temp = null;
-            List<String> l = new ArrayList<>();
-            int cnt = 0;
-            while ((temp = br.readLine()) != null) {
-                l = PStringUtils.fastSplit(temp);
-                cnt++;
-
-            }
-            br.close();
-            bw.flush();
-            bw.close();
-            System.out.println();
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
+//        List<String> oldBamList = t.getColumn(1);
+//        HashMap<String,String> hmBamTaxainVMapII = AoFile.getHashMapStringKey(infileS,0,4);
+//        for (int i = 0; i < t.getRowNumber(); i++) {
+//
+//
+//        }
+//        try {
+//
+//
+//            BufferedReader br = AoFile.readFile(infileS);
+//            BufferedWriter bw = AoFile.writeFile(outfileS);
+//            String header = br.readLine();
+//            String temp = null;
+//            List<String> l = new ArrayList<>();
+//            int cnt = 0;
+//            while ((temp = br.readLine()) != null) {
+//                l = PStringUtils.fastSplit(temp);
+//                cnt++;
+//
+//            }
+//            br.close();
+//            bw.flush();
+//            bw.close();
+//            System.out.println();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            System.exit(1);
+//        }
 
 
     }

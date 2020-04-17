@@ -11,12 +11,12 @@ import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.set.hash.TIntHashSet;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
-import pgl.format.position.ChrPos;
-import pgl.format.table.RowTable;
-import pgl.utils.IOFileFormat;
-import pgl.utils.IOUtils;
-import pgl.utils.PArrayUtils;
-import pgl.utils.PStringUtils;
+import pgl.infra.position.ChrPos;
+import pgl.infra.utils.PArrayUtils;
+import pgl.infra.utils.IOFileFormat;
+import pgl.infra.utils.IOUtils;
+import pgl.infra.utils.PStringUtils;
+import pgl.infra.table.RowTable;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -2433,7 +2433,7 @@ public class FilterVCF {
                         }
                     }
 
-                    int[] indices = PArrayUtils.getIndexByDescendingValue(fre);
+                    int[] indices = PArrayUtils.getIndicesByDescendingValue(fre);
                     sb.append(chr1).append("\t").append(posList1.get(index1)).append("\t").append(referList1.get(index1)).append("\t");
                     for (int j = 0; j < 2; j++) {
                         if (fre[indices[j]] > 0) {

@@ -5,10 +5,10 @@
  */
 package AoUtils;
 
-import pgl.format.table.RowTable;
-import pgl.utils.IOUtils;
-import pgl.utils.PStringUtils;
 
+import pgl.infra.table.RowTable;
+import pgl.infra.utils.IOUtils;
+import pgl.infra.utils.PStringUtils;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;

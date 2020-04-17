@@ -3,7 +3,8 @@ package WheatGeneticLoad;
 import AoUtils.AoFile;
 import AoUtils.Triads.Triadsgenes;
 import org.apache.commons.lang.ArrayUtils;
-import pgl.utils.PStringUtils;
+import pgl.infra.utils.PStringUtils;
+
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

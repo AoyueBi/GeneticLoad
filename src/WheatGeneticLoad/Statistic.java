@@ -5,7 +5,7 @@
  */
 package WheatGeneticLoad;
 
-import pgl.utils.IOUtils;
+import pgl.infra.utils.IOUtils;
 
 import java.io.BufferedWriter;
 import java.io.File;

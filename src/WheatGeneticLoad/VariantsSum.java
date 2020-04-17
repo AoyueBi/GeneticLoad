@@ -7,14 +7,14 @@ package WheatGeneticLoad;
 
 import AoUtils.AoFile;
 import AoUtils.CountSites;
-import pgl.format.genomeAnnotation.GeneFeature;
-import pgl.format.range.Range;
-import pgl.format.table.RowTable;
+import pgl.infra.genomeAnnotation.GeneFeature;
+import pgl.infra.range.Range;
 import gnu.trove.list.array.TByteArrayList;
 import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TIntArrayList;
-import pgl.utils.IOUtils;
-import pgl.utils.PStringUtils;
+import pgl.infra.table.RowTable;
+import pgl.infra.utils.IOUtils;
+import pgl.infra.utils.PStringUtils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
