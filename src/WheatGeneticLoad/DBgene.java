@@ -2,17 +2,16 @@ package WheatGeneticLoad;
 
 import AoUtils.AoFile;
 import AoUtils.CalVCF;
-import pgl.infra.utils.IOFileFormat;
-import pgl.infra.utils.IOUtils;
-import pgl.infra.utils.PStringUtils;
-import pgl.infra.table.RowTable;
-import daxing.common.IOTool;
+import AoUtils.Triads.Triadsgenes;
 import daxing.common.RowTableTool;
+
+
+
+import pgl.infra.utils.PStringUtils;
+
 import gnu.trove.list.array.TByteArrayList;
 import gnu.trove.list.array.TIntArrayList;
-import org.sqlite.core.DB;
 
-import smile.stat.Stat;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -42,7 +41,16 @@ public class DBgene {
 //        this.mergeTxt();
 //        this.addGroupforgeneSummary();
 
-        AoFile.readheader("/Users/Aoyue/Downloads/CS_methylome_tpm.tsv");
+        /**
+         * TriadsID
+         */
+        Triadsgenes a = new Triadsgenes();
+        a.checkGenesNotInPGF();
+
+
+
+
+
 
     }
 

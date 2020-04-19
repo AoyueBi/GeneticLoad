@@ -34,8 +34,7 @@ public class Script {
 
 //        this.script_AB_byRef();
 //        this.script_ABD_byRef();
-//        this.mkmd5();
-        this.splitScript();
+//        this.splitScript();
 
 
 //        
@@ -54,29 +53,7 @@ public class Script {
         }
     }
 
-    /**
-     * 对bam文件库进行md5的建立
-     */
-    public void mkmd5(){
-//        for (int i = 1; i < 92; i++) {
-//            String num = PStringUtils.getNDigitNumber(4,i);
-//            String name = "A_" + num + ".bam";
-//            System.out.println("md5sum " + name + " > " + name + ".md5" );
-//        }
 
-//        for (int i = 1; i < 232; i++) {
-//            String num = PStringUtils.getNDigitNumber(4,i);
-//            String name = "AB_" + num + ".bam";
-//            System.out.println("md5sum " + name + " > " + name + ".md5" );
-//        }
-        for (int i = 1; i < 434; i++) {
-            String num = PStringUtils.getNDigitNumber(4,i);
-            String name = "ABD_" + num + ".bam";
-            System.out.println("md5sum " + name + " > " + name + ".md5" );
-        }
-        System.out.println("md5sum CS_mp_2018_8X.bam > CS_mp_2018_8X.bam.md5");
-        System.out.println("md5sum CS_sg_2014_3X.bam > CS_sg_2014_3X.bam.md5");
-    }
 
 //vcftools --gzvcf /data4/home/aoyue/vmap2/analysis/013_subsetvcf/all/chr.ABsubgenome.maf0.005.bi_subset.vcf.gz --keep /data4/home/aoyue/vmap2/analysis/013_subsetvcf/all/BreadWheat_S424.txt --recode --recode-INFO-all --stdout | bgzip -c -@ 40 > /data4/home/aoyue/vmap2/analysis/013_subsetvcf/all/chrA_Bsubgenome.breadWheat_S424.vcf.gz &
 

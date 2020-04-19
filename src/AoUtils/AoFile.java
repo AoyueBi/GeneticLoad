@@ -286,6 +286,12 @@ public class AoFile {
         else if (infileS.endsWith(".csv")) {
             br = IOUtils.getTextReader(infileS);
         }
+        else if (infileS.endsWith(".sh")) {
+            br = IOUtils.getTextReader(infileS);
+        }
+        else if (infileS.endsWith(".md5")) {
+            br = IOUtils.getTextReader(infileS);
+        }
         return br;
     }
 
@@ -300,6 +306,10 @@ public class AoFile {
             bw=IOUtils.getTextWriter(outfileS);
         }else if (outfileS.endsWith(".vcf.gz")) {
             bw = IOUtils.getTextGzipWriter(outfileS);
+        }else if (outfileS.endsWith(".sh")){
+            bw=IOUtils.getTextWriter(outfileS);
+        }else if (outfileS.endsWith(".md5")){
+            bw=IOUtils.getTextWriter(outfileS);
         }
         return bw;
     }

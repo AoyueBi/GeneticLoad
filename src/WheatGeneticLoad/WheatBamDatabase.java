@@ -14,6 +14,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+
+import AoUtils.AoMath;
+import AoUtils.SplitScript;
 import pgl.infra.table.RowTable;
 import pgl.infra.utils.IOUtils;
 import pgl.infra.utils.PStringUtils;
@@ -50,9 +53,19 @@ public class WheatBamDatabase {
         //this.wheatLu_Dgenome();
         //this.mergeVMapI_JiaoABD_LuABD_AB_D_bamDB();
 //        this.getTaxaBamMap_Lu_AB_D();
+
+        /**
+         * update bam database
+         */
+//        this.mkmd5();
+//        this.checkIfRunOK();
+//        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/001_bamDatabase/009_mkMD5/mkMD5_ABD_bamfile_remaining_20200419.sh",2,122);
+        this.modifyResult();
+
 //        this.mkHashMapfromNEW2OLD();
-        this.getBamTaxaMap();
-        
+//        this.getBamTaxaMap();
+
+
         
     }
 
@@ -69,35 +82,142 @@ public class WheatBamDatabase {
 
         System.out.println("HAHHAHHAHA");
         RowTable<String> t = new RowTable<>(bamS);
-//        List<String> oldBamList = t.getColumn(1);
-//        HashMap<String,String> hmBamTaxainVMapII = AoFile.getHashMapStringKey(infileS,0,4);
-//        for (int i = 0; i < t.getRowNumber(); i++) {
-//
-//
-//        }
-//        try {
-//
-//
-//            BufferedReader br = AoFile.readFile(infileS);
-//            BufferedWriter bw = AoFile.writeFile(outfileS);
-//            String header = br.readLine();
-//            String temp = null;
-//            List<String> l = new ArrayList<>();
-//            int cnt = 0;
-//            while ((temp = br.readLine()) != null) {
-//                l = PStringUtils.fastSplit(temp);
-//                cnt++;
-//
-//            }
-//            br.close();
-//            bw.flush();
-//            bw.close();
-//            System.out.println();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            System.exit(1);
+        List<String> oldBamList = t.getColumn(1);
+        HashMap<String,String> hmBamTaxainVMapII = AoFile.getHashMapStringKey(infileS,0,4);
+        for (int i = 0; i < t.getRowNumber(); i++) {
+
+
+        }
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String header = br.readLine();
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+
+    }
+
+    /**
+     * 将计算的md5结果，路径去掉，保持 MD5value  taxa.bam 格式
+     */
+    public void modifyResult(){
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/001_bamDatabase/009_mkMD5/out_bamfile_md5";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/001_bamDatabase/009_mkMD5/out";
+        List<File> fsList = AoFile.getFileListInDir(infileDirS);
+        fsList.parallelStream().forEach(f -> {
+            try {
+                String infileS = f.getAbsolutePath();
+                String outfileS = new File(outfileDirS, f.getName()).getAbsolutePath();
+                BufferedReader br = AoFile.readFile(infileS);
+                BufferedWriter bw = AoFile.writeFile(outfileS);
+                String temp = null;
+                List<String> l = new ArrayList<>();
+                while ((temp = br.readLine()) != null) {
+                    l = PStringUtils.fastSplit(temp,"  ");
+                    String name = l.get(1).substring(19);
+                    System.out.println(name);
+                    bw.write(l.get(0) + "  " + name);
+                    bw.newLine();
+                }
+                bw.flush();
+                bw.close();
+                br.close();
+//                System.out.println(f.getName() + "\tis completed at " + outfileS);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+    }
+
+    /**
+     * ABD基因组计算md5的程序被停掉，查看哪些没有跑完，把脚本写出来
+     */
+    public void checkIfRunOK(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/001_bamDatabase/009_mkMD5/mkMD5_ABD_bamfile_20200418.sh";
+        String md5DirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/001_bamDatabase/009_mkMD5/out_bamfile_md5";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/001_bamDatabase/009_mkMD5/mkMD5_ABD_bamfile_remaining_20200419.sh";
+        File[] fs = AoFile.getFileArrayInDir(md5DirS);
+        List<String> nameList = new ArrayList<>();
+        for (int i = 0; i < fs.length; i++) {
+            nameList.add(fs[i].getName());
+        }
+        Collections.sort(nameList);
+
+        try{
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp;
+            while((temp = br.readLine()) != null){
+                String name = PStringUtils.fastSplit(temp," ").get(3).substring(34);
+                System.out.println(name);
+                int index = Collections.binarySearch(nameList,name);
+                if (index>-1)continue; //搜到了就不写出来了
+                bw.write(temp);
+                bw.newLine();
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+
+        }catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+
+    }
+
+
+    /**
+     * 对bam文件库进行md5的建立
+     */
+    public void mkmd5(){
+//        for (int i = 1; i < 92; i++) {
+//            String num = PStringUtils.getNDigitNumber(4,i);
+//            String name = "A_" + num + ".bam";
+//            System.out.println("md5sum " + name + " > " + name + ".md5" );
 //        }
 
+//        for (int i = 1; i < 232; i++) {
+//            String num = PStringUtils.getNDigitNumber(4,i);
+//            String name = "AB_" + num + ".bam";
+//            System.out.println("md5sum " + name + " > " + name + ".md5" );
+//        }
+
+//        String infileDirS = "/data3/wgs/bam/ABD";
+//        String outfileDirS = "/data1/home/aoyue/out_bamfile_md5";
+//        for (int i = 1; i < 435; i++) {
+//            String num = PStringUtils.getNDigitNumber(4,i);
+//            String name = "ABD_" + num + ".bam";
+//            String infileS = new File(infileDirS,name).getAbsolutePath();
+//            String outfileS = new File(outfileDirS,name + ".md5").getAbsolutePath();
+//            System.out.println("md5sum " + infileS + " > " + outfileS );
+//        }
+//        String cs1infileS = new File(infileDirS,"CS_mp_2018_8X.bam").getAbsolutePath();
+//        String cs1outfileS = new File(outfileDirS,"CS_mp_2018_8X.bam.md5").getAbsolutePath();
+//        String cs2infileS = new File(infileDirS,"CS_sg_2014_3X.bam").getAbsolutePath();
+//        String cs2outfileS = new File(outfileDirS,"CS_sg_2014_3X.bam.md5").getAbsolutePath();
+//
+//        System.out.println("md5sum " + cs1infileS + " > " + cs1outfileS );
+//        System.out.println("md5sum " + cs2infileS + " > " + cs2outfileS );
+
+        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/001_bamDatabase/009_mkMD5/mkMD5_ABD_bamfile_20200418.sh",10,44);
 
     }
 

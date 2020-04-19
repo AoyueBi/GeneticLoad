@@ -19,10 +19,10 @@ import java.util.*;
 public class GermplasmInfo {
 
     public GermplasmInfo() {
-//        this.addIftaxaonVMap2Anno();
+        this.addIftaxaonVMap2Anno();
 //        this.addTreeValidatedGroupbyPloid();
 //        this.addTreeValidatedGroupbySuspecies();
-        this.addInfo();
+//        this.addInfo();
 
 //        this.getWild_emmer_South2();
 //        this.getEuropeanLandrace();

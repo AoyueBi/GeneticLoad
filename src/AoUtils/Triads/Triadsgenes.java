@@ -1,16 +1,16 @@
 package AoUtils.Triads;
 
 import AoUtils.AoFile;
+import pgl.infra.genomeAnnotation.GeneFeature;
 import pgl.infra.utils.PStringUtils;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
 /**
- * Utilities to process triads gene of wheat reference genome v1.0 (IWGSC v1.0)
+ * Utilities to process triadsList gene of wheat reference genome v1.0 (IWGSC v1.0)
  * Other functions may be provided later
  * @author AoyueBi
  */
@@ -26,10 +26,11 @@ public class Triadsgenes {
     private static HashMap<String, String> geneTriadsMap = null;
     private static HashMap<String, String> triadsSyntenicMap = null;
     private static HashMap<String, String> triadsExpressedMap = null;
-    static List<String> triads = new ArrayList<>();
-    static List<String> geneA = new ArrayList<>();
-    static List<String> geneB = new ArrayList<>();
-    static List<String> geneD = new ArrayList<>();
+    static List<String> triadsList = new ArrayList<>();
+    static List<String> genesList = new ArrayList<>();
+    static List<String> geneAList = new ArrayList<>();
+    static List<String> geneBList = new ArrayList<>();
+    static List<String> geneDList = new ArrayList<>();
 
     public Triadsgenes(){
         this.readDBfile();
@@ -42,7 +43,8 @@ public class Triadsgenes {
         geneTriadsMap = new HashMap<>();
         triadsSyntenicMap = new HashMap<>();
         triadsExpressedMap = new HashMap<>();
-        String infileS = "/Users/Aoyue/Documents/Data/wheat/gene/homoeologsGene111/triadGenes1.1.txt";
+//        String infileS = "/Users/Aoyue/Documents/Data/wheat/gene/homoeologsGene111/triadGenes1.1.txt";
+        String infileS = "/Users/Aoyue/Documents/Data/wheat/gene/homoeologsGene111/triadGene1.1_V2.txt";
         try {
             BufferedReader br = AoFile.readFile(infileS);
             String header = br.readLine();
@@ -58,10 +60,10 @@ public class Triadsgenes {
                 String gened = l.get(3);
                 String synteny = l.get(4);
                 String expressed = l.get(5);
-                triads.add(triadID);
-                geneA.add(genea);
-                geneB.add(geneb);
-                geneD.add(gened);
+                triadsList.add(triadID);
+                geneAList.add(genea);
+                geneBList.add(geneb);
+                geneDList.add(gened);
                 triadsGeneAMap.put(triadID,genea);
                 triadsGeneBMap.put(triadID,geneb);
                 triadsGeneDMap.put(triadID,gened);
@@ -72,19 +74,34 @@ public class Triadsgenes {
                 triadsExpressedMap.put(triadID,expressed);
             }
             br.close();
-            System.out.println("Finished reading triads files");
+            genesList.addAll(geneAList);genesList.addAll(geneBList);genesList.addAll(geneDList);
+            System.out.println("There is totally " + genesList.size() + " genes in " + triadsList.size() + " triads");
+            System.out.println("Finished reading triadsList files");
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
         }
     }
 
-    public static boolean ifTriads (String gene){
+    /**
+     * there are
+     */
+    public void checkGenesNotInPGF(){
+        String infileS = "/Users/Aoyue/Documents/Data/wheat/gene/v1.1/wheat_v1.1_Lulab.pgf";
+        GeneFeature gf = new GeneFeature(infileS);
+        int a = gf.getGeneNumber();
+
+        System.out.println(a);
+
+
+    }
+
+    public boolean ifTriads (String gene){
         boolean out = false;
         List<String> l = new ArrayList<>();
-        l.addAll(geneA);
-        l.addAll(geneB);
-        l.addAll(geneD);
+        l.addAll(geneAList);
+        l.addAll(geneBList);
+        l.addAll(geneDList);
         Collections.sort(l);
         int index = Collections.binarySearch(l,gene);
         if (index>-1) out = true;
@@ -98,7 +115,7 @@ public class Triadsgenes {
      * @param gene
      * @return
      */
-    public static boolean ifExpressedBasedGene(String gene){
+    public boolean ifExpressedBasedGene(String gene){
         boolean out = false;
         String triadID = getTriadID(gene);
         String result = triadsExpressedMap.get(triadID);
@@ -111,7 +128,7 @@ public class Triadsgenes {
      * @param triadID
      * @return
      */
-    public static boolean ifExpressedBasedTriadID(String triadID){
+    public boolean ifExpressedBasedTriadID(String triadID){
         boolean out = false;
         String result = triadsExpressedMap.get(triadID);
         if (result.equals("TRUE"))out=true;
@@ -123,7 +140,7 @@ public class Triadsgenes {
      * @param gene
      * @return
      */
-    public static boolean ifSyntenicBasedGene(String gene){
+    public boolean ifSyntenicBasedGene(String gene){
         boolean out = false;
         String triadID = getTriadID(gene);
         String result = triadsSyntenicMap.get(triadID);
@@ -136,7 +153,7 @@ public class Triadsgenes {
      * @param triadID
      * @return
      */
-    public static boolean ifSyntenicBasedTriadID(String triadID){
+    public boolean ifSyntenicBasedTriadID(String triadID){
         boolean out = false;
         String result = triadsSyntenicMap.get(triadID);
         if (result.equals("syntenic"))out=true;
@@ -148,7 +165,7 @@ public class Triadsgenes {
      *
      * @param gene
      */
-    public static String getTriadID(String gene){
+    public String getTriadID(String gene){
         String out;
         out = geneTriadsMap.get(gene);
         return out;
@@ -159,7 +176,7 @@ public class Triadsgenes {
      * @param triadID
      * @return
      */
-    public static String getGeneinAsub(String triadID){
+    public String getGeneinAsub(String triadID){
         String out;
         out = triadsGeneAMap.get(triadID);
         return out;
@@ -170,7 +187,7 @@ public class Triadsgenes {
      * @param triadID
      * @return
      */
-    public static String getGeneinBsub(String triadID){
+    public String getGeneinBsub(String triadID){
         String out;
         out = triadsGeneBMap.get(triadID);
         return out;
@@ -181,13 +198,13 @@ public class Triadsgenes {
      * @param triadID
      * @return
      */
-    public static String getGeneinDsub(String triadID){
+    public String getGeneinDsub(String triadID){
         String out;
         out = triadsGeneDMap.get(triadID);
         return out;
     }
 
-    public static List<String> getGenesonTriadsID(String triadID){
+    public List<String> getGenesonTriadsID(String triadID){
         List<String> out = new ArrayList<>();
         out.add(getGeneinAsub(triadID));
         out.add(getGeneinBsub(triadID));
