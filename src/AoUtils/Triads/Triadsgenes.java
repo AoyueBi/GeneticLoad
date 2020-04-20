@@ -90,10 +90,8 @@ public class Triadsgenes {
         String infileS = "/Users/Aoyue/Documents/Data/wheat/gene/v1.1/wheat_v1.1_Lulab.pgf";
         GeneFeature gf = new GeneFeature(infileS);
         int a = gf.getGeneNumber();
-
         System.out.println(a);
-
-
+//pgf genes -> triads
     }
 
     public boolean ifTriads (String gene){
