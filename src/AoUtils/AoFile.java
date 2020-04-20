@@ -900,6 +900,40 @@ public class AoFile {
      * @param columnIndex
      * @return
      */
+    public static String[] getgeneArraybyList(String infileS, int columnIndex){
+
+        List<String> out = new ArrayList<>();
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            String temp = br.readLine(); //read header
+            List<String> l = new ArrayList();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                String goal = l.get(columnIndex);
+                out.add(goal.split("\\.")[0]);
+                cnt++;
+            }
+            br.close();
+            System.out.println("Total num in the list is    " + cnt + "\t" + out.size());
+            Collections.sort(out);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        String[] outArray = out.toArray(new String[out.size()]);
+        Arrays.sort(outArray);
+        return outArray;
+    }
+
+    /**
+     *
+     * get String list from a txt file
+     * @param infileS
+     * @param columnIndex
+     * @return
+     */
     public static String[] getStringArraybyList(String infileS, int columnIndex){
 
         List<String> out = new ArrayList<>();

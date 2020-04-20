@@ -26,7 +26,7 @@ public class Triadsgenes {
     private static HashMap<String, String> geneTriadsMap = null;
     private static HashMap<String, String> triadsSyntenicMap = null;
     private static HashMap<String, String> triadsExpressedMap = null;
-    static List<String> triadsList = new ArrayList<>();
+    public List<String> triadsList = new ArrayList<>();
     static List<String> genesList = new ArrayList<>();
     static List<String> geneAList = new ArrayList<>();
     static List<String> geneBList = new ArrayList<>();
@@ -84,6 +84,14 @@ public class Triadsgenes {
     }
 
     /**
+     *
+     * @return
+     */
+    public int getTriadNum(){
+        return triadsList.size();
+    }
+
+    /**
      * there are
      */
     public void checkGenesNotInPGF(){
@@ -94,6 +102,11 @@ public class Triadsgenes {
 //pgf genes -> triads
     }
 
+    /**
+     *
+     * @param gene
+     * @return
+     */
     public boolean ifTriads (String gene){
         boolean out = false;
         List<String> l = new ArrayList<>();
@@ -202,6 +215,11 @@ public class Triadsgenes {
         return out;
     }
 
+    /**
+     *
+     * @param triadID
+     * @return
+     */
     public List<String> getGenesonTriadsID(String triadID){
         List<String> out = new ArrayList<>();
         out.add(getGeneinAsub(triadID));

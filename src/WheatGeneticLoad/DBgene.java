@@ -59,32 +59,129 @@ public class DBgene {
      * step1:
      */
     public void mkSpreadFormat_hexaploid(){
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/002_merge/001_geneSummary_hexaploid.txt.gz";
-        GeneDB genedb = new GeneDB(infileS);
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/006_TriadsGeneLoadforPop/001_hexaploid/test.txt";
+        GeneDB genedb = new GeneDB();
+        Triadsgenes tg = new Triadsgenes();
+        try {
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            bw.write("TriadID\tNonVsSynRatioA\tNonVsSynRatioB\tNonVsSynRatioD\tNonVsSynRatioRegion");
+            bw.newLine();
+            for (int i = 0; i < tg.getTriadNum(); i++) {
+                String triadID = tg.triadsList.get(i);
+                String genea = tg.getGeneinAsub(triadID);
+                String geneb = tg.getGeneinBsub(triadID);
+                String gened = tg.getGeneinDsub(triadID);
+                String ratioA = genedb.getNonVsSynRatio(genea);
+                String ratioB = genedb.getNonVsSynRatio(geneb);
+                String ratioD = genedb.getNonVsSynRatio(gened);
+
+
+
+
+            }
+
+
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
 
     }
 
-    class GeneDB{
+    class GeneDB {
+
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/002_merge/001_geneSummary_hexaploid.txt.gz";
+        String[] geneArray = AoFile.getgeneArraybyList(infileS,0);
+        List<String>[] geneInfo = new List[geneArray.length];
 
         public GeneDB(){
-            String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/002_merge/001_geneSummary_hexaploid.txt.gz";
-            this.readFile(infileS);
+            this.readFile();
         }
 
-        public GeneDB(String a){
-            this.readFile(a);
-            AoFile.readheader(a);
+        public String getPercentageHGDeleterious(String gene){
+            String out = null;
+            int index = Arrays.binarySearch(geneArray,gene);
+            if (index > -1){
+                out = geneInfo[index].get(13);
+            }else{
+                out = "NA";
+            }
+            return out;
         }
 
-        /**
-         * step1: build list list: one gene contains 27 info
-         * step2:
-         * @param infileS
-         */
-        private void readFile(String infileS){
-            String[] geneArray = AoFile.getStringArraybyList(infileS,0);
+        public String getNonVsSynRatio(String gene){
+            String out = null;
+            int index = Arrays.binarySearch(geneArray,gene);
+            if (index > -1){
+                out = geneInfo[index].get(9);
+            }else{
+                out = "NA";
+            }
+            return out;
+        }
+
+        public String getPercentageNon(String gene){
+            String out = null;
+            int index = Arrays.binarySearch(geneArray,gene);
+            if (index > -1){
+                out = geneInfo[index].get(8);
+            }else{
+                out = "NA";
+            }
+            return out;
+        }
+
+        public String getPercentageSyn(String gene){
+            String out = null;
+            int index = Arrays.binarySearch(geneArray,gene);
+            if (index > -1){
+                out = geneInfo[index].get(6);
+            }else{
+                out = "NA";
+            }
+            return out;
+        }
+
+        public String getIfSiftAligned(String gene){
+            String out = null;
+            int index = Arrays.binarySearch(geneArray,gene);
+            if (index > -1){
+                out = geneInfo[index].get(4);
+            }else{
+                out = "NA";
+            }
+            return out;
+        }
+
+        public String getSNPNumber(String gene){
+            String out = null;
+            int index = Arrays.binarySearch(geneArray,gene);
+            if (index > -1){
+                out = geneInfo[index].get(2);
+            }else{
+                out = "NA";
+            }
+            return out;
+        }
+
+        public String getCDSLength(String gene){
+            String out = null;
+            int index = Arrays.binarySearch(geneArray,gene);
+            if (index > -1){
+                out = geneInfo[index].get(1);
+            }else{
+                out = "NA";
+            }
+            return out;
+        }
+
+        public void readFile(){
+            AoFile.readheader(infileS);
             Arrays.sort(geneArray);
-            List<String>[] geneInfo = new List[geneArray.length];
             for (int i = 0; i < geneArray.length; i++) {
                 geneInfo[i] = new ArrayList<>();
             }
@@ -96,20 +193,14 @@ public class DBgene {
                 int cnt = 0;
                 while ((temp = br.readLine()) != null) {
                     l = PStringUtils.fastSplit(temp);
-                    String gene = l.get(0);
+                    String gene = l.get(0); //去掉转录本
+                    gene = gene.split("\\.")[0];
                     int index = Arrays.binarySearch(geneArray,gene);
                     for (int i = 0; i < l.size(); i++) {
                         geneInfo[index].add(l.get(i));
                     }
                 }
                 br.close();
-//                BufferedWriter bw = AoFile.writeFile("/Users/Aoyue/Documents/test.txt");
-//                for (int i = 0; i < geneInfo.length; i++) {
-//                    bw.write(geneInfo[i].toString());
-//                    bw.newLine();
-//                }
-//                bw.flush();
-//                bw.close();
                 System.out.println("Finished read the gene DB");
             } catch (Exception e) {
                 e.printStackTrace();
