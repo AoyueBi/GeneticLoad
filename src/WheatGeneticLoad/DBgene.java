@@ -44,12 +44,78 @@ public class DBgene {
         /**
          * TriadsID
          */
-        Triadsgenes a = new Triadsgenes();
-        a.checkGenesNotInPGF();
+        this.mkSpreadFormat_hexaploid();
 
 
 
 
+
+
+
+    }
+
+    /**
+     * 从最原始的geneSummary开始进行转换
+     * step1:
+     */
+    public void mkSpreadFormat_hexaploid(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/002_merge/001_geneSummary_hexaploid.txt.gz";
+        GeneDB genedb = new GeneDB(infileS);
+
+    }
+
+    class GeneDB{
+
+        public GeneDB(){
+            String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/002_merge/001_geneSummary_hexaploid.txt.gz";
+            this.readFile(infileS);
+        }
+
+        public GeneDB(String a){
+            this.readFile(a);
+            AoFile.readheader(a);
+        }
+
+        /**
+         * step1: build list list: one gene contains 27 info
+         * step2:
+         * @param infileS
+         */
+        private void readFile(String infileS){
+            String[] geneArray = AoFile.getStringArraybyList(infileS,0);
+            Arrays.sort(geneArray);
+            List<String>[] geneInfo = new List[geneArray.length];
+            for (int i = 0; i < geneArray.length; i++) {
+                geneInfo[i] = new ArrayList<>();
+            }
+            try {
+                BufferedReader br = AoFile.readFile(infileS);
+                String header = br.readLine();
+                String temp = null;
+                List<String> l = new ArrayList<>();
+                int cnt = 0;
+                while ((temp = br.readLine()) != null) {
+                    l = PStringUtils.fastSplit(temp);
+                    String gene = l.get(0);
+                    int index = Arrays.binarySearch(geneArray,gene);
+                    for (int i = 0; i < l.size(); i++) {
+                        geneInfo[index].add(l.get(i));
+                    }
+                }
+                br.close();
+//                BufferedWriter bw = AoFile.writeFile("/Users/Aoyue/Documents/test.txt");
+//                for (int i = 0; i < geneInfo.length; i++) {
+//                    bw.write(geneInfo[i].toString());
+//                    bw.newLine();
+//                }
+//                bw.flush();
+//                bw.close();
+                System.out.println("Finished read the gene DB");
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
+        }
 
 
     }
