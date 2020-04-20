@@ -61,8 +61,6 @@ public class DataStorage {
     /**
      * 目的：将所有sublist文件合并成一个文件
      *
-     * @param infileDirS
-     * @param outfileS
      */
     public void mergeTxt() {
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/000_cleandata/006_subfile";

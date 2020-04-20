@@ -9,11 +9,7 @@ import AoUtils.AoFile;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import AoUtils.AoMath;
 import AoUtils.SplitScript;
@@ -59,48 +55,180 @@ public class WheatBamDatabase {
          */
 //        this.mkmd5();
 //        this.checkIfRunOK();
-//        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/001_bamDatabase/009_mkMD5/mkMD5_ABD_bamfile_remaining_20200419.sh",2,122);
-        this.modifyResult();
+//        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/001_bamDatabase/009_mkMD5/mkMD5_ABD_bamfile_remaining_20200419.sh",2,72);
+//        this.modifyResult();
 
 //        this.mkHashMapfromNEW2OLD();
 //        this.getBamTaxaMap();
+        this.getTaxaBamMap_from817bamDB();
 
 
         
     }
 
     /**
-     * //先获取原来bamTaxa的 Map
-     * //再根据新命名的 newBam oldBam 的Map
-     * //进行文件的重新编排
+     * step1: get taxa set and build taxa list;
+     * step2: if bam is for taxa, taxalist add this bam
      */
-    public void getBamTaxaMap(){
-        String infileS = "/Users/Aoyue/project/wheatVMapII/001_germplasm/GermplasmDB/001_toFeiLu/wheatVMapII_germplasmInfo_20191225.txt";
-        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/001_bamDatabase/008_step8_mergeVMapI_JiaoABD_LuABD_AB_D/All725WheatBamDatabase_20190716.txt";
-        String bamS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/001_bamDatabase/010_BamHashMap/001_/001_new2old_NameHashMap.txt";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/001_bamDatabase/010_BamHashMap/001_/002_oldBam2TaxaMap.txt";
+    public void getTaxaBamMap_from817bamDB(){
 
-        System.out.println("HAHHAHHAHA");
-        RowTable<String> t = new RowTable<>(bamS);
-        List<String> oldBamList = t.getColumn(1);
-        HashMap<String,String> hmBamTaxainVMapII = AoFile.getHashMapStringKey(infileS,0,4);
-        for (int i = 0; i < t.getRowNumber(); i++) {
-
-
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/001_bamDatabase/010_BamHashMap/001_/All817_WGS_WheatBamDatabase_20200420.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/001_bamDatabase/010_BamHashMap/001_/003_taxa2BamsMap.txt";
+        String[] taxaSetArray = AoFile.getStringArraybySet(infileS,1);
+        Arrays.sort(taxaSetArray);
+        List<String>[] taxaBams = new List[taxaSetArray.length];
+        for (int i = 0; i < taxaBams.length; i++) {
+            taxaBams[i] = new ArrayList<>();
         }
-        try {
-            BufferedReader br = AoFile.readFile(infileS);
-            BufferedWriter bw = AoFile.writeFile(outfileS);
-            String header = br.readLine();
-            String temp = null;
-            List<String> l = new ArrayList<>();
-            int cnt = 0;
-            while ((temp = br.readLine()) != null) {
-                l = PStringUtils.fastSplit(temp);
-                cnt++;
 
+        try{
+            BufferedReader br = AoFile.readFile(infileS);
+            String temp = br.readLine();
+            List<String> l = new ArrayList<>();
+            while((temp=br.readLine()) != null){
+                l = PStringUtils.fastSplit(temp);
+                String bam = l.get(3);
+                String taxa = l.get(1);
+                int index = Arrays.binarySearch(taxaSetArray,taxa);
+                if (index <0){
+                    System.out.println(temp);
+                }
+                taxaBams[index].add(bam);
             }
             br.close();
+
+            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            bw.write("Taxa\t\"Bams(A list of bams of the taxon, seperated by the delimiter of Tab)\"");
+            bw.newLine();
+            for (int i = 0; i < taxaBams.length; i++) {
+                String taxa = taxaSetArray[i];
+                bw.write(taxa);
+                for (int j = 0; j < taxaBams[i].size(); j++) {
+                    String bam = taxaBams[i].get(j);
+                    bw.write("\t" + bam);
+                }
+                bw.newLine();
+            }
+            bw.flush(); bw.close();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    /**
+     * step1: get all bams name and build hashmap(key:bam value:taxa)
+     * step2: get value from vmap2 sheet except AA genome, and then get value from WheatBamDatabase on AA genome
+     * step3: complete bamdatabase (DataBaseID	Taxa	Accessions	Genome-type	Bam-Path	Insert-size(bp)	Sequencing-platform	Coverage	DataSource)
+     * NAFU: insert size: approximately 500 bp. read length was 150 bp, Illumina HiSeq X Ten platform; coverage ~ 8×
+     * VMapII: read length was 100 bp
+     * Jiao: read length was 150 bp
+     * VMapI: read length was 150bp
+     */
+    public void getBamTaxaMap(){
+        String vmap2fileS = "/Users/Aoyue/project/wheatVMapII/001_germplasm/GermplasmDB/001_toFeiLu/wheatVMapII_germplasmInfo_20191225.txt";
+        String bamDBfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/001_bamDatabase/008_step8_mergeVMapI_JiaoABD_LuABD_AB_D/All725WheatBamDatabase_20190716.txt";
+        String bamS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/001_bamDatabase/010_BamHashMap/001_/001_new2old_NameHashMap.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/001_bamDatabase/010_BamHashMap/001_/002_newBam2TaxaMap.txt";
+
+        System.out.println("****************************************");
+        RowTable<String> t = new RowTable<>(bamS);
+        List<String> oldBamList = t.getColumn(1);
+        Collections.sort(oldBamList);
+        System.out.println("Totally " + oldBamList.size() + " bams in /data3/wgs/bam.");
+
+        HashMap<String,String> hmBamTaxa = new HashMap<String,String>();
+        //先判断 vmap2中的bam是否都在 oldBamList中, 将在 oldBamList中的都建立HashMap
+        t = new RowTable<>(vmap2fileS);
+        List<String> bamListinVMap2 = new ArrayList<>();
+        for (int i = 0; i < t.getRowNumber(); i++) {
+            String bam = t.getCell(i,0);
+            String taxa = t.getCell(i,4);
+            int index = Collections.binarySearch(oldBamList,bam);
+            if (index<0){
+                System.out.println(bam + " " + taxa);
+                continue;
+            }
+            hmBamTaxa.put(bam,taxa);
+            bamListinVMap2.add(bam);
+        }
+        Collections.sort(bamListinVMap2);
+        System.out.println(hmBamTaxa.size() + " bam taxa map has been got from vmap2");
+
+        //获取不在vmap2中的bamTaxa HashMap
+        t = new RowTable<>(bamDBfileS);
+        for (int i = 0; i < t.getRowNumber(); i++) {
+            String bam = t.getCell(i,0);
+            String taxa = t.getCell(i,1);
+            int index = Collections.binarySearch(bamListinVMap2,bam);
+            if (index<0){
+                System.out.println(bam + " " + taxa);
+                hmBamTaxa.put(bam,taxa);
+            }
+        }
+        System.out.println(hmBamTaxa.size() + " bam taxa map has been got from vmap2 and bamDB");
+
+        //开始写出文件
+        List<String> nafuTaxaList = AoFile.getStringList("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/001_bamDatabase/010_BamHashMap/001_/NAFU_test.txt",0);
+        HashMap<String,String> hmOld2newbam = AoFile.getHashMapStringKey(bamS,1,0);
+        try {
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            bw.write("BamDataBaseID\tTaxa\tGenome-type\tBam-Path\tInsert-size(bp)\tRead-length\tSequencing-platform\tCoverage\tDataSource");
+            bw.newLine();
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            OldBamDB oldbamDB = new OldBamDB();
+            int insertSize = 500;
+            int readlength = 150;
+            String sequencingPlatform = "Illumina HiSeq X Ten";
+            String cov = "8X";
+        //* NAFU: insert size: approximately 500 bp. read length was 150 bp, Illumina HiSeq X Ten platform; coverage ~ 8×
+
+            String genometype = null;
+            String path = null;
+            for (int i = 0; i < oldBamList.size(); i++) {
+                String oldBam = oldBamList.get(i);
+                String newBam = hmOld2newbam.get(oldBam);
+                String taxa = hmBamTaxa.get(oldBam);
+
+                if (newBam.startsWith("A_")){
+                    genometype = "AA";
+                    path = "/data3/wgs/bam/A/" + newBam+ ".bam";
+                }
+                if (newBam.startsWith("AB_")){
+                    genometype = "AABB";
+                    path = "/data3/wgs/bam/AB/"+ newBam+ ".bam";
+                }
+                if (newBam.startsWith("ABD_") || newBam.startsWith("CS_") ){
+                    genometype = "AABBDD";
+                    path = "/data3/wgs/bam/ABD/"+ newBam+ ".bam";
+                }
+                if (newBam.startsWith("D_")){
+                    genometype = "DD";
+                    path = "/data3/wgs/bam/D/"+ newBam + ".bam";
+                }
+//bw.write("BamDataBaseID\tTaxa\tGenome-type\tBam-Path\tInsert-size(bp)\tRead-length\tSequencing-platform\tCoverage\tDataSource");
+                int index = Collections.binarySearch(nafuTaxaList,taxa);
+                if (index > -1){ //说明是属于西农的材料 CS不在其中
+                    bw.write(newBam + "\t" + taxa + "\t" + genometype + "\t" + path + "\t" + insertSize + "\t" + readlength + "\t" + sequencingPlatform + "\t" + cov + "\tNorthwest Agriculture and Forestry University");
+                    bw.newLine();
+                }
+                else{ //说明不属于 NAFU的材料
+                    if (newBam.startsWith("CS_mp")){
+                        bw.write(newBam + "\tCS" + "\t" + genometype + "\t" + path + "\t2-4kb, 5-7kb and 8-10kb" + "\t160" + "\tIllumina HiSeq 2500" + "\t8X" + "\tSRR5893663");
+                        bw.newLine();
+                    }
+                    else if (newBam.startsWith("CS_sg")){
+                        bw.write(newBam + "\tCS_3X" + "\t" + genometype + "\t" + path + "\t500" + "\t100 or 150" + "\tIllumina Genome Analyzer IIx" + "\t3X" + "\tERP003210");
+                        bw.newLine();
+                    }else{
+                        bw.write(newBam + "\t" + taxa + "\t" + genometype + "\t" + path + "\t" + oldbamDB.getInsertsize(oldBam) + "\t" + oldbamDB.getReadlength(oldBam) + "\t" + oldbamDB.getSequencingPlatform(oldBam) + "\t" + oldbamDB.getCoverage(oldBam) + "\t" + oldbamDB.getDataSource(oldBam));
+                        bw.newLine();
+                    }
+                }
+            }
+
             bw.flush();
             bw.close();
             System.out.println();
@@ -108,8 +236,64 @@ public class WheatBamDatabase {
             e.printStackTrace();
             System.exit(1);
         }
+    }
+
+    class OldBamDB{
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/001_bamDatabase/008_step8_mergeVMapI_JiaoABD_LuABD_AB_D/All725WheatBamDatabase_20190716.txt";
+        private HashMap<String,Integer> hmBamInsertsize = new HashMap<>();
+        private HashMap<String,Integer> hmBamReadlength = new HashMap<>();
+        private HashMap<String,String> hmBamSequencingPlatform = new HashMap<>();
+        private HashMap<String,String> hmBamCoverage = new HashMap<>();
+        private HashMap<String,String> hmBamDataSource = new HashMap<>();
 
 
+
+        public OldBamDB(){
+            this.readBamFile();
+        }
+
+        public void readBamFile(){
+            RowTable<String> t = new RowTable<>(infileS);
+            int readlength = Integer.MIN_VALUE;
+            for (int i = 0; i < t.getRowNumber(); i++) {
+                String bam = t.getCell(i,0);
+                int insertSize = t.getCellAsInteger(i,5);
+                String sequencingPlatform = t.getCell(i,6);
+                String coverage = t.getCell(i,7);
+                String dataSource = t.getCell(i,8);
+
+                hmBamInsertsize.put(bam,insertSize);
+                hmBamSequencingPlatform.put(bam,sequencingPlatform);
+                hmBamCoverage.put(bam,coverage);
+                hmBamDataSource.put(bam,dataSource);
+                if (sequencingPlatform.equals("BGISEQ500")){
+                    readlength = 100;
+                }
+                else{
+                    readlength = 150;
+                }
+                hmBamReadlength.put(bam,readlength);
+            }
+        }
+
+        public int getInsertsize(String bam){
+           return hmBamInsertsize.get(bam);
+        }
+
+        public int getReadlength(String bam){
+            return hmBamReadlength.get(bam);
+        }
+        public String getSequencingPlatform(String bam){
+            return hmBamSequencingPlatform.get(bam);
+        }
+
+        public String getCoverage(String bam){
+            return hmBamCoverage.get(bam);
+        }
+
+        public String getDataSource(String bam){
+            return hmBamDataSource.get(bam);
+        }
     }
 
     /**
