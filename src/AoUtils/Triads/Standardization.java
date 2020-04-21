@@ -16,13 +16,22 @@ public class Standardization {
 
     public enum PointIndex{
 
-        POINTA(0, "M100"),
-        POINTB(1, "M010"),
-        POINTD(2, "M001"),
-        POINTE(3, "M110"),
-        POINTF(4, "M011"),
-        POINTG(5, "M101"),
-        POINTO(6, "M111"),
+//        POINTA(0, "M100"),
+//        POINTB(1, "M010"),
+//        POINTD(2, "M001"),
+//        POINTE(3, "M110"),
+//        POINTF(4, "M011"),
+//        POINTG(5, "M101"),
+//        POINTO(6, "M111"),
+//        POINTM000(7, "M000");
+
+        POINTA(0, "A dominant"),
+        POINTB(1, "B dominant"),
+        POINTD(2, "D dominant"),
+        POINTE(3, "D suppressed"),
+        POINTF(4, "A suppressed"),
+        POINTG(5, "B suppressed"),
+        POINTO(6, "Balanced"),
         POINTM000(7, "M000");
 
         int index;

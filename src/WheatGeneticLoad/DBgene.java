@@ -2,6 +2,7 @@ package WheatGeneticLoad;
 
 import AoUtils.AoFile;
 import AoUtils.CalVCF;
+import AoUtils.Triads.Standardization;
 import AoUtils.Triads.Triadsgenes;
 import daxing.common.RowTableTool;
 
@@ -66,7 +67,10 @@ public class DBgene {
             BufferedWriter bw = AoFile.writeFile(outfileS);
             bw.write("TriadID\tNonVsSynRatioA\tNonVsSynRatioB\tNonVsSynRatioD\tNonVsSynRatioRegion");
             bw.newLine();
+            int cnt=0;
+            int cntremaining =0;
             for (int i = 0; i < tg.getTriadNum(); i++) {
+                cnt++;
                 String triadID = tg.triadsList.get(i);
                 String genea = tg.getGeneinAsub(triadID);
                 String geneb = tg.getGeneinBsub(triadID);
@@ -74,13 +78,15 @@ public class DBgene {
                 String ratioA = genedb.getNonVsSynRatio(genea);
                 String ratioB = genedb.getNonVsSynRatio(geneb);
                 String ratioD = genedb.getNonVsSynRatio(gened);
-
-
-
-
+                //filter NA
+                if (ratioA.startsWith("N") || ratioB.startsWith("N") || ratioD.startsWith("N")) continue;
+                double[] ratiodABD = {Double.parseDouble(ratioA),Double.parseDouble(ratioB),Double.parseDouble(ratioD)};
+                String region = Standardization.getNearestPointIndex(ratiodABD).getRegion();
+                bw.write(triadID+"\t"+ratioA+"\t"+ratioB+"\t"+ratioD+"\t"+region);
+                bw.newLine();
+                cntremaining++;
             }
-
-
+            System.out.println(cnt + " triads totally, " + cntremaining + " triads kept");
             bw.flush();
             bw.close();
             System.out.println();
@@ -207,8 +213,6 @@ public class DBgene {
                 System.exit(1);
             }
         }
-
-
     }
 
     /**
