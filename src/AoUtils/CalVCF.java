@@ -28,7 +28,7 @@ public class CalVCF {
 //        this.reheader();
 //        this.mkPhylipFormat();
 //        this.mkdirs();
-        this.extractVCF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/002_exonSNPVCF/chr032_exon_vmap2.1.vcf.gz","/Users/Aoyue/Documents/test.vcf","/Users/Aoyue/Documents/test.txt");
+//        this.extractVCF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/002_exonSNPVCF/chr032_exon_vmap2.1.vcf.gz","/Users/Aoyue/Documents/test.vcf","/Users/Aoyue/Documents/test.txt");
 
 
     }

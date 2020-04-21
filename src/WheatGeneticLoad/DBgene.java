@@ -7,7 +7,7 @@ import AoUtils.Triads.Triadsgenes;
 import daxing.common.RowTableTool;
 
 
-
+import pgl.infra.table.RowTable;
 import pgl.infra.utils.PStringUtils;
 
 import gnu.trove.list.array.TByteArrayList;
@@ -45,7 +45,13 @@ public class DBgene {
         /**
          * TriadsID
          */
-        this.mkSpreadFormat_hexaploid();
+//        this.mkSpreadFormat_hexaploid();
+//        this.getsubspeciesSNPAnnotation_Tetraploid_diploid();
+//        this.script_getTranscriptSum();
+//        this.mergeTxt();
+//                this.mkSpreadFormat_tetraploid_diploid();
+                this.mergeSpreadTable_HexaploidTetraploidDiploid();
+
 
 
 
@@ -56,8 +62,115 @@ public class DBgene {
     }
 
     /**
+     *  求出2个表格的交集
+     */
+    public void mergeSpreadTable_HexaploidTetraploidDiploid(){
+        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/006_TriadsGeneLoadforPop/001_hexaploid/test.txt";
+        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/006_TriadsGeneLoadforPop/002_tetraploid_diploid/002_geneSummary/003_spreadTable/001_triadsLoad_tetraploid_diploid.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/006_TriadsGeneLoadforPop/002_tetraploid_diploid/002_geneSummary/004_alluvia/001_spreadTble_merged_alluvia.txt";
+
+        try{
+            //1.
+            RowTable<String> t = new RowTable<>(infileS1);
+            for (int i = 0; i < t.getRowNumber(); i++) {
+
+
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+
+    }
+
+    /**
      * 从最原始的geneSummary开始进行转换
-     * step1:
+     *
+     */
+    public void mkSpreadFormat_tetraploid_diploid(){
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/006_TriadsGeneLoadforPop/002_tetraploid_diploid/002_geneSummary/003_spreadTable/001_triadsLoad_tetraploid_diploid.txt";
+        GeneDB genedb = new GeneDB();
+        Triadsgenes tg = new Triadsgenes();
+        try {
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            bw.write("TriadID\tNonVsSynRatioA\tNonVsSynRatioB\tNonVsSynRatioD\tNonVsSynRatioRegion");
+            bw.newLine();
+            int cnt=0;
+            int cntremaining =0;
+            for (int i = 0; i < tg.getTriadNum(); i++) {
+                cnt++;
+                String triadID = tg.triadsList.get(i);
+                String genea = tg.getGeneinAsub(triadID);
+                String geneb = tg.getGeneinBsub(triadID);
+                String gened = tg.getGeneinDsub(triadID);
+                String ratioA = genedb.getNonVsSynRatio(genea);
+                String ratioB = genedb.getNonVsSynRatio(geneb);
+                String ratioD = genedb.getNonVsSynRatio(gened);
+                //filter NA
+                if (ratioA.startsWith("N") || ratioB.startsWith("N") || ratioD.startsWith("N")) continue;
+                double[] ratiodABD = {Double.parseDouble(ratioA),Double.parseDouble(ratioB),Double.parseDouble(ratioD)};
+                String region = Standardization.getNearestPointIndex(ratiodABD).getRegion();
+                bw.write(triadID+"\t"+ratioA+"\t"+ratioB+"\t"+ratioD+"\t"+region);
+                bw.newLine();
+                cntremaining++;
+            }
+            System.out.println(cnt + " triads totally, " + cntremaining + " triads kept");
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    /**
+     * 根据亚群的个体，结合merged VCF 文件，提取亚群的 snp annotation info
+     *
+     */
+    public void getsubspeciesSNPAnnotation_Tetraploid_diploid(){
+// need modify need modify need modify need modify
+        //        String taxaList = "";
+//        String outfileDirS = "";
+
+        String vcfFileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/002_exonSNPVCF";
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/009_exonSNPAnnotation_addAnc_addDAF_barley_secalePasimony"; //chr001_SNP_anno.txt.gz
+
+        //tetraploid
+//        String taxaList = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/008_treeValidatedGroup_byPloidy/Tetraploid.txt";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/006_TriadsGeneLoadforPop/002_tetraploid_diploid/001_annotation/001";
+
+        //diploid
+        String taxaList = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/008_treeValidatedGroup_byPloidy/Ae.tauschii.txt";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/006_TriadsGeneLoadforPop/002_tetraploid_diploid/001_annotation/001";
+
+
+        List<File> fsList = AoFile.getFileListInDir(infileDirS);
+        AoFile.readheader(fsList.get(0).getAbsolutePath());
+//        String[] chrArr ={"001","002","003","004","007","008","009","010","013","014","015","016","019","020","021","022","025","026","027","028","031","032","033","034","037","038","039","040"};
+        String[] chrArr ={"005","006","011","012","017","018","023","024","029","030","035","036","041","042"};
+
+        for (int i = 0; i < chrArr.length; i++) {
+            String chr = "chr" + chrArr[i]; // = chr001
+            String exonVCF = new File(vcfFileDirS,chr + "_exon_vmap2.1.vcf.gz").getAbsolutePath();
+            //*********************************** step1: 获取群体的 pos 信息 ***********************************//
+            TIntArrayList posl = CalVCF.extractVCFchrPos(exonVCF, taxaList);
+
+            //******* step2: 根据annotation 库， pos列， pols目标集合， 输出文件获取 注释文件的子集 ******//
+            String infileS = new File(infileDirS, chr + "_SNP_anno.txt.gz").getAbsolutePath(); //chr001_SNP_anno.txt.gz
+            //需要修改，输出文件的名字 //需要修改，输出文件的名字 //需要修改，输出文件的名字
+//            String outfileS = new File(outfileDirS, chr + "_SNP_anno_tetraploid.txt.gz").getAbsolutePath();
+            String outfileS = new File(outfileDirS, chr + "_SNP_anno_diploid.txt.gz").getAbsolutePath();
+
+            File out = AoFile.filterTxtLines(infileS,2,posl,outfileS);
+        }
+    }
+
+
+    /**
+     * 从最原始的geneSummary开始进行转换
+     *
      */
     public void mkSpreadFormat_hexaploid(){
         String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/006_TriadsGeneLoadforPop/001_hexaploid/test.txt";
@@ -94,13 +207,13 @@ public class DBgene {
             e.printStackTrace();
             System.exit(1);
         }
-
-
     }
 
     class GeneDB {
 
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/002_merge/001_geneSummary_hexaploid.txt.gz";
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/002_merge/001_geneSummary_hexaploid.txt.gz";
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/006_TriadsGeneLoadforPop/002_tetraploid_diploid/002_geneSummary/002_merge/001_tetraploid_diploid_geneSummary.txt.gz";
+
         String[] geneArray = AoFile.getgeneArraybyList(infileS,0);
         List<String>[] geneInfo = new List[geneArray.length];
 
@@ -315,17 +428,23 @@ public class DBgene {
 
 
         //合并 cultivar 的
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/004_geneSummary_byChr/002_Cultivar";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/004_geneSummary_byChr/003_merge/001_Cultivar_geneSummary.txt";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/004_geneSummary_byChr/002_Cultivar";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/004_geneSummary_byChr/003_merge/001_Cultivar_geneSummary.txt";
+//        AoFile.mergeTxt(infileDirS,outfileS);
+
+        //合并 tetraploid diploid
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/006_TriadsGeneLoadforPop/002_tetraploid_diploid/002_geneSummary/001_bychr";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/006_TriadsGeneLoadforPop/002_tetraploid_diploid/002_geneSummary/002_merge/001_tetraploid_diploid_geneSummary.txt.gz";
         AoFile.mergeTxt(infileDirS,outfileS);
+
     }
 
     public void script_getTranscriptSum(){
         //需要修改
 //        String infileDirS = ""; // 需要总结的 库 snpAnnotation 文件
 //        String outfileDirS =""; // 每条染色体上的基因生成的总结
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/000_hexaploid_SNPAnnotation";
-        String outfileDirS ="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/001";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/000_hexaploid_SNPAnnotation";
+//        String outfileDirS ="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/001";
 
         //Landrace_EU
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/003_hexaploid_subspecies_SNPAnnotation/001_landrace_exon_SNPAnnotation";
@@ -335,12 +454,23 @@ public class DBgene {
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/003_hexaploid_subspecies_SNPAnnotation/002_cultivar_exon_SNPAnnotation";
 //        String outfileDirS ="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/004_geneSummary_byChr/002_Cultivar";
 
+        //Tetraploid
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/006_TriadsGeneLoadforPop/002_tetraploid_diploid/001_annotation/001"; // 需要总结的 库 snpAnnotation 文件
+        String outfileDirS ="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/006_TriadsGeneLoadforPop/002_tetraploid_diploid/002_geneSummary/001_bychr"; // 每条染色体上的基因生成的总结
+
+
         String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
+        String[] chrArrAB ={"001","002","003","004","007","008","009","010","013","014","015","016","019","020","021","022","025","026","027","028","031","032","033","034","037","038","039","040"};
+        String[] chrArrD ={"005","006","011","012","017","018","023","024","029","030","035","036","041","042"};
+
+        Arrays.sort(chrArrAB); Arrays.sort(chrArrD);
         for (int j = 0; j < chrArr.length; j++) {
 
             //#################### 需要修改 ############################//
-            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_SNP_hexaploid_anno.txt.gz").getAbsolutePath();
-            String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_vmap2.1_hexaploid_geneSummary.txt").getAbsolutePath();
+//            String infileS = "";
+//            String outfileS = "";
+//            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_SNP_hexaploid_anno.txt.gz").getAbsolutePath();
+//            String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_vmap2.1_hexaploid_geneSummary.txt").getAbsolutePath();
 
             //Landrace_EU
 //            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_SNP_anno_landraceEU_.txt.gz").getAbsolutePath();
@@ -350,6 +480,17 @@ public class DBgene {
 //            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_SNP_anno_cultivar_.txt.gz").getAbsolutePath();
 //            String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_vmap2.1_Cultivar_geneSummary.txt").getAbsolutePath();
 
+            //Tetraploid and Diploid
+            String infileS = null;
+            String outfileS = null;
+            int index = Arrays.binarySearch(chrArrAB,chrArr[j]);
+            if (index > -1){ // is AABB
+                infileS = new File(infileDirS,"chr" + chrArr[j] + "_SNP_anno_tetraploid.txt.gz").getAbsolutePath();
+                outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_vmap2.1_tetraploid_geneSummary.txt.gz").getAbsolutePath();
+            }else{ //is DD
+                infileS = new File(infileDirS,"chr" + chrArr[j] + "_SNP_anno_diploid.txt.gz").getAbsolutePath();
+                outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_vmap2.1_diploid_geneSummary.txt.gz").getAbsolutePath();
+            }
             this.getTranscriptSum_bychr(infileS,outfileS);
             System.out.println("chr" + chrArr[j] + " is completed at " + outfileS);
         }
