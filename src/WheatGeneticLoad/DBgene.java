@@ -50,7 +50,15 @@ public class DBgene {
 //        this.script_getTranscriptSum();
 //        this.mergeTxt();
 //                this.mkSpreadFormat_tetraploid_diploid();
-                this.mergeSpreadTable_HexaploidTetraploidDiploid();
+//                this.mergeSpreadTable_HexaploidTetraploidDiploid();
+//        this.mergeSpreadTable();
+
+        Triadsgenes tg = new Triadsgenes();
+        tg.checkGenesNotInPGF();
+
+         /**
+          *
+          */
 
 
 
@@ -62,26 +70,135 @@ public class DBgene {
     }
 
     /**
+     *  求出3个表格的交集,即 landrace cultivar and Tetraploid Diploid
+     */
+    public void mergeSpreadTable(){
+        //landrace
+        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/006_TriadsGeneLoadforPop/001_hexaploid/001_spreadTable_landraceCultivar/001_triadsLoad_landrace.txt";
+        //cultivar
+        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/006_TriadsGeneLoadforPop/001_hexaploid/001_spreadTable_landraceCultivar/001_triadsLoad_cultivar.txt";
+        // merged tetraploid diploid
+        String infileS3 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/006_TriadsGeneLoadforPop/002_tetraploid_diploid/002_geneSummary/003_spreadTable/001_triadsLoad_tetraploid_diploid.txt";
+
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/006_TriadsGeneLoadforPop/002_tetraploid_diploid/002_geneSummary/004_alluvia/002_spreadTable_merged_alluvia_LR_CL.txt";
+        List<String> l1 = new ArrayList<>();
+        List<String> l2 = new ArrayList<>();
+        List<String> l3 = new ArrayList<>();
+        HashMap<String,String> hm1 = new HashMap<>();
+        HashMap<String,String> hm2 = new HashMap<>();
+        HashMap<String,String> hm3 = new HashMap<>();
+        AoFile.readheader(infileS1);
+        RowTable<String> t = new RowTable<>(infileS1);
+        //1.kept the triad which are not the M000 model
+        for (int i = 0; i < t.getRowNumber(); i++) {
+            String triad = t.getCell(i,0);
+            String region = t.getCell(i,4);
+            if (region.equals("M000"))continue;
+            hm1.put(triad,region);
+            l1.add(triad);
+        }
+        System.out.println(l1.size() + " l1 size");
+
+        t = new RowTable<>(infileS2);
+        for (int i = 0; i < t.getRowNumber(); i++) {
+            String triad = t.getCell(i,0);
+            String region = t.getCell(i,4);
+            if (region.equals("M000"))continue;
+            hm2.put(triad,region);
+            l2.add(triad);
+        }
+        System.out.println(l2.size() + " l2 size");
+
+        t = new RowTable<>(infileS3);
+        for (int i = 0; i < t.getRowNumber(); i++) {
+            String triad = t.getCell(i,0);
+            String region = t.getCell(i,4);
+            if (region.equals("M000"))continue;
+            hm3.put(triad,region);
+            l3.add(triad);
+        }
+        System.out.println(l3.size() + " l3 size");
+        l1.retainAll(l2);
+        l1.retainAll(l3);
+        System.out.println(l1.size() + " l1 and l2 and l3 intersection.");
+        int a=3;
+
+        try{
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            bw.write("TriadID\tnonsynVSsynRatio_RegionOnAABB_DD\tnonsynVSsynRatio_RegionOnLandrace\tnonsynVSsynRatio_RegionOnCultivar\tFreq");
+            bw.newLine();
+            for (int i = 0; i < l1.size(); i++) {
+                String triad = l1.get(i);
+                String region1 = hm1.get(triad);
+                String region2 = hm2.get(triad);
+                String region3 = hm3.get(triad);
+                bw.write(triad + "\t" + region3 + "\t" + region1+ "\t" + region2 + "\t1");
+                bw.newLine();
+            }
+            bw.flush();
+            bw.close();
+            //3364 l1 size
+            //4055 l2 size
+            //9852 l3 size
+            //2868 l1 and l2 and l3 intersection.
+        }catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    /**
      *  求出2个表格的交集
      */
     public void mergeSpreadTable_HexaploidTetraploidDiploid(){
         String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/006_TriadsGeneLoadforPop/001_hexaploid/test.txt";
         String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/006_TriadsGeneLoadforPop/002_tetraploid_diploid/002_geneSummary/003_spreadTable/001_triadsLoad_tetraploid_diploid.txt";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/006_TriadsGeneLoadforPop/002_tetraploid_diploid/002_geneSummary/004_alluvia/001_spreadTble_merged_alluvia.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/006_TriadsGeneLoadforPop/002_tetraploid_diploid/002_geneSummary/004_alluvia/001_spreadTable_merged_alluvia.txt";
+        List<String> l1 = new ArrayList<>();
+        List<String> l2 = new ArrayList<>();
+        HashMap<String,String> hm1 = new HashMap<>();
+        HashMap<String,String> hm2 = new HashMap<>();
+        AoFile.readheader(infileS1);
+        RowTable<String> t = new RowTable<>(infileS1);
+        //1.kept the triad which are not the M000 model
+        for (int i = 0; i < t.getRowNumber(); i++) {
+            String triad = t.getCell(i,0);
+            String region = t.getCell(i,4);
+            if (region.equals("M000"))continue;
+            hm1.put(triad,region);
+            l1.add(triad);
+        }
+        System.out.println(l1.size() + " l1 size");
+        t = new RowTable<>(infileS2);
+        for (int i = 0; i < t.getRowNumber(); i++) {
+            String triad = t.getCell(i,0);
+            String region = t.getCell(i,4);
+            if (region.equals("M000"))continue;
+            hm2.put(triad,region);
+            l2.add(triad);
+        }
+        System.out.println(l2.size() + " l2 size");
+        l1.retainAll(l2);
+        System.out.println(l1.size() + " l1 and l2 intersection.");
+        int a=3;
 
         try{
-            //1.
-            RowTable<String> t = new RowTable<>(infileS1);
-            for (int i = 0; i < t.getRowNumber(); i++) {
-
-
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            bw.write("TriadID\tnonsynVSsynRatio_RegionOnAABBDD\tnonsynVSsynRatio_RegionOnAABB_DD\tFreq");
+            bw.newLine();
+            for (int i = 0; i < l1.size(); i++) {
+                String triad = l1.get(i);
+                String region1 = hm1.get(triad);
+                String region2 = hm2.get(triad);
+                bw.write(triad + "\t" + region1 + "\t" + region2 + "\t1");
+                bw.newLine();
             }
+            bw.flush();
+            bw.close();
         }catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
         }
-
-
     }
 
     /**
@@ -173,7 +290,10 @@ public class DBgene {
      *
      */
     public void mkSpreadFormat_hexaploid(){
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/006_TriadsGeneLoadforPop/001_hexaploid/test.txt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/006_TriadsGeneLoadforPop/001_hexaploid/test.txt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/006_TriadsGeneLoadforPop/001_hexaploid/001_spreadTable_landraceCultivar/001_triadsLoad_landrace.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/006_TriadsGeneLoadforPop/001_hexaploid/001_spreadTable_landraceCultivar/001_triadsLoad_cultivar.txt";
+
         GeneDB genedb = new GeneDB();
         Triadsgenes tg = new Triadsgenes();
         try {
@@ -212,7 +332,12 @@ public class DBgene {
     class GeneDB {
 
 //        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/002_merge/001_geneSummary_hexaploid.txt.gz";
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/006_TriadsGeneLoadforPop/002_tetraploid_diploid/002_geneSummary/002_merge/001_tetraploid_diploid_geneSummary.txt.gz";
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/006_TriadsGeneLoadforPop/002_tetraploid_diploid/002_geneSummary/002_merge/001_tetraploid_diploid_geneSummary.txt.gz";
+
+        // landrace
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/004_geneSummary_byChr/003_merge/001_LandraceEU_geneSummary.txt.gz";
+        //cultivar
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/004_geneSummary_byChr/003_merge/001_Cultivar_geneSummary.txt.gz";
 
         String[] geneArray = AoFile.getgeneArraybyList(infileS,0);
         List<String>[] geneInfo = new List[geneArray.length];
