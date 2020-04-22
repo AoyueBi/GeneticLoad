@@ -53,14 +53,14 @@ public class WheatBamDatabase {
         /**
          * update bam database
          */
-//        this.mkmd5();
+        this.mkmd5();
 //        this.checkIfRunOK();
 //        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/001_bamDatabase/009_mkMD5/mkMD5_ABD_bamfile_remaining_20200419.sh",2,72);
 //        this.modifyResult();
 
 //        this.mkHashMapfromNEW2OLD();
 //        this.getBamTaxaMap();
-        this.getTaxaBamMap_from817bamDB();
+//        this.getTaxaBamMap_from817bamDB();
 
 
         
@@ -401,8 +401,20 @@ public class WheatBamDatabase {
 //        System.out.println("md5sum " + cs1infileS + " > " + cs1outfileS );
 //        System.out.println("md5sum " + cs2infileS + " > " + cs2outfileS );
 
-        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/001_bamDatabase/009_mkMD5/mkMD5_ABD_bamfile_20200418.sh",10,44);
+//        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/001_bamDatabase/009_mkMD5/mkMD5_ABD_bamfile_20200418.sh",10,44);
 
+        /******************************* D bam ********************************************/
+//        String infileDirS = "/data3/wgs/bam/D";
+//        String outfileDirS = "/data1/home/aoyue/out_bamfile_md5";
+//        for (int i = 1; i < 61; i++) {
+//            String num = PStringUtils.getNDigitNumber(4,i);
+//            String name = "D_" + num + ".bam";
+//            String infileS = new File(infileDirS,name).getAbsolutePath();
+//            String outfileS = new File(outfileDirS,name + ".md5").getAbsolutePath();
+//            System.out.println("md5sum " + infileS + " > " + outfileS );
+//        }
+
+        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/001_bamDatabase/009_mkMD5/D_mkmd5.sh",10,6);
     }
 
     public void mkHashMapfromNEW2OLD(){

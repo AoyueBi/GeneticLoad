@@ -61,7 +61,7 @@ public class GeneticLoadEntrance {
         //new MapMake();
         //new Wheat120cleandataProcessor();  //Jiao
         //new Wheat120bamProcessor(); //Jiao
-//        new WheatBamDatabase();
+        new WheatBamDatabase();
 
         /**
          * *************************************
@@ -95,7 +95,7 @@ public class GeneticLoadEntrance {
 //        new GOanalysis();
 //        new DeleteriousXPCLR();
 //        new GermplasmInfo();
-        new DBgene();
+//        new DBgene();
 //        new GeneExpressionbywheat();
 
 
