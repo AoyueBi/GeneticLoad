@@ -22,8 +22,18 @@ import java.util.List;
 public class PCA {
     
     public PCA(){
-        this.addGrouptoPCA();
+//        this.addGrouptoPCA();
+//        this.addPloidy();
         
+    }
+
+    public void addPloidy(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/026_depth/001_file/depth_PopDepth_VCF.txt";
+        String ourfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/026_depth/001_file/depth_PopDepth_VCF_addPloidy.txt";
+        AoFile.readheader("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/taxaList.txt");
+        HashMap<String,String> hm = AoFile.getHashMapStringKey("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/taxaList.txt",0,8);
+        AoFile.addColumbyString(infileS,0,hm,"Ploidy");
+
     }
 
 

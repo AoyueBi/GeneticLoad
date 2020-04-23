@@ -53,7 +53,7 @@ public class WheatBamDatabase {
         /**
          * update bam database
          */
-        this.mkmd5();
+//        this.mkmd5();
 //        this.checkIfRunOK();
 //        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/001_bamDatabase/009_mkMD5/mkMD5_ABD_bamfile_remaining_20200419.sh",2,72);
 //        this.modifyResult();
@@ -65,6 +65,7 @@ public class WheatBamDatabase {
 
         
     }
+
 
     /**
      * step1: get taxa set and build taxa list;
@@ -313,7 +314,8 @@ public class WheatBamDatabase {
                 List<String> l = new ArrayList<>();
                 while ((temp = br.readLine()) != null) {
                     l = PStringUtils.fastSplit(temp,"  ");
-                    String name = l.get(1).substring(19);
+//                    String name = l.get(1).substring(19); //should modify should modify should modify should modify
+                    String name = l.get(1).substring(17);
                     System.out.println(name);
                     bw.write(l.get(0) + "  " + name);
                     bw.newLine();
@@ -414,7 +416,7 @@ public class WheatBamDatabase {
 //            System.out.println("md5sum " + infileS + " > " + outfileS );
 //        }
 
-        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/001_bamDatabase/009_mkMD5/D_mkmd5.sh",10,6);
+//        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/001_bamDatabase/009_mkMD5/D_mkmd5.sh",10,6);
     }
 
     public void mkHashMapfromNEW2OLD(){

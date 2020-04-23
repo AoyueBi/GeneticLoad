@@ -26,8 +26,8 @@ import java.util.Date;
 public class GeneticLoadEntrance {
 
     public GeneticLoadEntrance() {
-        this.firstProcess();
-//        this.secondProcess();
+//        this.firstProcess();
+        this.secondProcess();
 //        this.infoDB();
 //        this.DBdeleterious();
 
@@ -61,7 +61,7 @@ public class GeneticLoadEntrance {
         //new MapMake();
         //new Wheat120cleandataProcessor();  //Jiao
         //new Wheat120bamProcessor(); //Jiao
-        new WheatBamDatabase();
+//        new WheatBamDatabase();
 
         /**
          * *************************************
