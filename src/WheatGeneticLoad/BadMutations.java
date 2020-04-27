@@ -2,6 +2,7 @@ package WheatGeneticLoad;
 
 import AoUtils.AoFile;
 import AoUtils.SplitScript;
+import AoUtils.Triads.Triadsgenes;
 import pgl.infra.utils.IOFileFormat;
 import pgl.infra.utils.IOUtils;
 import pgl.infra.utils.PStringUtils;
@@ -19,7 +20,94 @@ public class BadMutations {
 //        this.getGeneNameList();
 //        this.script();
 //        this.limitThreads();
-        this.checkIfdone();
+//        this.checkIfdone();
+//        this.checkIfdone_Prediction();
+//        this.getTriadGenesScript();
+        SplitScript.splitScript2("/Users/Aoyue/PycharmProjects/SelfFile/vmap2/003_predictionCheck/003_predictionlist_forBadMutations20200428_remained_001_triadGenes_script.sh",10,1157); //11567 genes for triad
+
+    }
+
+    /**
+     * 未跑完的 19769 genes 中，先跑是triads gene的那些
+     */
+    public void getTriadGenesScript(){
+        String infileS = "/Users/Aoyue/PycharmProjects/SelfFile/vmap2/003_predictionCheck/002_predictionlist_forBadMutations20200428_remained_script.sh";
+        String outfileS1 ="/Users/Aoyue/PycharmProjects/SelfFile/vmap2/003_predictionCheck/003_predictionlist_forBadMutations20200428_remained_001_triadGenes_script.sh";
+        String outfileS2 ="/Users/Aoyue/PycharmProjects/SelfFile/vmap2/003_predictionCheck/003_predictionlist_forBadMutations20200428_remained_002_NoneTriadGenes_script.sh";
+
+        Triadsgenes trg = new Triadsgenes();
+
+        try{
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS1);
+            BufferedWriter bw2 = AoFile.writeFile(outfileS2);
+            List<String> l = new ArrayList<>();
+            String temp = null;
+            int cnt =0;
+            while((temp = br.readLine()) != null){
+                l = PStringUtils.fastSplit(temp," ");
+                String gene = l.get(7); ///data4/home/aoyue/vmap2/daxing/analysis/017_badMutation/002_geneFa/TraesCS4D02G288600.1.fasta
+                gene = gene.substring(gene.indexOf("Traes"));
+                gene = gene.split("\\.")[0];
+                boolean out = trg.ifTriads(gene);
+                if (out){ // 说明是 triads基因
+                    bw.write(temp);
+                    bw.newLine();
+                    cnt++;
+                }else {
+                    bw2.write(temp);
+                    bw2.newLine();
+                }
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            bw2.flush();
+            bw2.close();
+        }catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+    }
+
+    /**
+     * 检查生成的prediction文件是否存在，不存在那么就重新输出脚本
+     */
+    public void checkIfdone_Prediction(){
+
+        // ori 83165 genes script
+        String infileS1 = "/Users/Aoyue/PycharmProjects/SelfFile/vmap2/001_script/sh_vmap2_predict_badmutations_20200107.sh";
+        // finished 63396 genes list
+        String infileS2 = "/Users/Aoyue/PycharmProjects/SelfFile/vmap2/003_predictionCheck/001_predictionlist_forBadMutations20200428_finishedGenes.txt";
+        String outfileS = "/Users/Aoyue/PycharmProjects/SelfFile/vmap2/003_predictionCheck/002_predictionlist_forBadMutations20200428_remained_script.sh";
+
+        List<String> genesFinishedList = AoFile.getStringListwithoutHeader(infileS2,0);
+
+        try{
+            BufferedReader br = AoFile.readFile(infileS1);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            List<String> l = new ArrayList<>();
+            String temp = null;
+            int cnt =0;
+            while((temp = br.readLine()) != null){
+                l = PStringUtils.fastSplit(temp," ");
+                String gene = l.get(7); ///data4/home/aoyue/vmap2/daxing/analysis/017_badMutation/002_geneFa/TraesCS4D02G288600.1.fasta
+                gene = gene.substring(gene.indexOf("Traes"));
+                gene = gene.replaceFirst(".fasta","");
+                int index = Collections.binarySearch(genesFinishedList,gene);
+                if (index>-1)continue;
+                bw.write(temp);
+                bw.newLine();
+                cnt++;
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+        }catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
 
 
     }
@@ -71,9 +159,6 @@ public class BadMutations {
 //        new SplitScript().splitScript(infileS,"align_",122,8);
         //predict
         new SplitScript().splitScript(infileS,"predict_",130,640);
-
-
-
     }
 
     public void script (){
@@ -104,32 +189,32 @@ public class BadMutations {
 
 
         //align
-        try {
-            BufferedReader br = IOUtils.getTextReader(genelistS);
-            BufferedWriter bw = IOUtils.getTextWriter(script1S);
-            String temp = null;
-            int cnt = 0;
-            while ((temp = br.readLine()) != null) {
-                cnt++;
-//                temp = temp.replaceFirst(".fasta","").replaceFirst("./","");
-                String fastaS = new File(fastaDirS,temp+ ".fasta").getAbsolutePath();
-                String subS = new File(subDirS,temp + ".subs").getAbsolutePath();
-                String logS = new File(logAlignmentDirS,temp + "_Alignment.log").getAbsolutePath();
-                StringBuilder sb = new StringBuilder();
-                sb.append("/data1/home/aoyue/biosoftware/BAD_Mutations/BAD_Mutations.py -v DEBUG align -c ").
-                        append(configS).append(" -f ").append(fastaS).append(" -o ").append(outfileDirS).
-                        append(" 2> ").append(logS);
-                bw.write(sb.toString());
-                bw.newLine();
-            }
-            br.close();
-            bw.flush();
-            bw.close();
-            System.out.println(cnt +"\tgenes in align cmd");
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
+//        try {
+//            BufferedReader br = IOUtils.getTextReader(genelistS);
+//            BufferedWriter bw = IOUtils.getTextWriter(script1S);
+//            String temp = null;
+//            int cnt = 0;
+//            while ((temp = br.readLine()) != null) {
+//                cnt++;
+////                temp = temp.replaceFirst(".fasta","").replaceFirst("./","");
+//                String fastaS = new File(fastaDirS,temp+ ".fasta").getAbsolutePath();
+//                String subS = new File(subDirS,temp + ".subs").getAbsolutePath();
+//                String logS = new File(logAlignmentDirS,temp + "_Alignment.log").getAbsolutePath();
+//                StringBuilder sb = new StringBuilder();
+//                sb.append("/data1/home/aoyue/biosoftware/BAD_Mutations/BAD_Mutations.py -v DEBUG align -c ").
+//                        append(configS).append(" -f ").append(fastaS).append(" -o ").append(outfileDirS).
+//                        append(" 2> ").append(logS);
+//                bw.write(sb.toString());
+//                bw.newLine();
+//            }
+//            br.close();
+//            bw.flush();
+//            bw.close();
+//            System.out.println(cnt +"\tgenes in align cmd");
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            System.exit(1);
+//        }
 
 
         //predict
@@ -186,11 +271,13 @@ public class BadMutations {
     public void getGeneNameList(){
 //        System.out.println("ls *.fasta > /data4/home/aoyue/vmap2/analysis/015_annoDB/015_BAD_Mutations/genelist_forBadMutations20200107.txt");
 
-        System.out.println("find ./ -name '*.fasta' > /data4/home/aoyue/vmap2/analysis/015_annoDB/015_BAD_Mutations/genelist_forBadMutations20200107.txt &");
-        System.out.println("find ./ -name '*.fasta'|sed 's/.fasta//g'|sed 's/\\.\\///g' | head -n 10");
-        System.out.println("find ./ -name '*.fasta'|sed 's/.fasta//g'|sed 's/\\.\\///g' > genelist_forBadMutations20200111.txt");
+//        System.out.println("find ./ -name '*.fasta' > /data4/home/aoyue/vmap2/analysis/015_annoDB/015_BAD_Mutations/genelist_forBadMutations20200107.txt &");
+//        System.out.println("find ./ -name '*.fasta'|sed 's/.fasta//g'|sed 's/\\.\\///g' | head -n 10");
+//        System.out.println("find ./ -name '*.fasta'|sed 's/.fasta//g'|sed 's/\\.\\///g' > genelist_forBadMutations20200111.txt");
+//
+//        System.out.println("find ./ -name '*.tree'|sed 's/.tree//g'|sed 's/\\.\\///g' > ../treelist_forBadMutations20200111.txt");
+//        System.out.println("find ./ -name '*_MSA.fasta'|sed 's/_MSA.fasta//g'|sed 's/\\.\\///g' > ../msalist_forBadMutations20200111.txt");
 
-        System.out.println("find ./ -name '*.tree'|sed 's/.tree//g'|sed 's/\\.\\///g' > ../treelist_forBadMutations20200111.txt");
-        System.out.println("find ./ -name '*_MSA.fasta'|sed 's/_MSA.fasta//g'|sed 's/\\.\\///g' > ../msalist_forBadMutations20200111.txt");
+        System.out.println("find ./ -name '*_Predictions.txt'|sed 's/_Predictions.txt//g'|sed 's/\\.\\///g' > ../predictionlist_forBadMutations20200428.txt");
     }
 }

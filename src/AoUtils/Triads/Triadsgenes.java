@@ -75,6 +75,7 @@ public class Triadsgenes {
             }
             br.close();
             genesList.addAll(geneAList);genesList.addAll(geneBList);genesList.addAll(geneDList);
+            Collections.sort(genesList);
             System.out.println("There is totally " + genesList.size() + " genes in " + triadsList.size() + " triads");
             System.out.println("Finished reading triadsList files");
         } catch (Exception e) {
@@ -109,12 +110,7 @@ public class Triadsgenes {
      */
     public boolean ifTriads (String gene){
         boolean out = false;
-        List<String> l = new ArrayList<>();
-        l.addAll(geneAList);
-        l.addAll(geneBList);
-        l.addAll(geneDList);
-        Collections.sort(l);
-        int index = Collections.binarySearch(l,gene);
+        int index = Collections.binarySearch(genesList,gene);
         if (index>-1) out = true;
         if (out) System.out.println("This gene is a triad gene");
         else System.out.println("This gene is not a triad gene");
