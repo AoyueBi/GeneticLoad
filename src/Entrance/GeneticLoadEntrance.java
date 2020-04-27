@@ -10,10 +10,7 @@ import AoUtils.CalVCF;
 import GermplasmInfo.GermplasmInfo;
 import Plot.PCA;
 import PopulationAnalysis.DeleteriousCountbyPop;
-import WheatGeneticLoad.DBgene;
-import WheatGeneticLoad.GeneExpressionbywheat;
-import WheatGeneticLoad.VariantsSum;
-import WheatGeneticLoad.WheatBamDatabase;
+import WheatGeneticLoad.*;
 import gnu.trove.list.array.TIntArrayList;
 
 import java.text.SimpleDateFormat;
@@ -26,8 +23,8 @@ import java.util.Date;
 public class GeneticLoadEntrance {
 
     public GeneticLoadEntrance() {
-//        this.firstProcess();
-        this.secondProcess();
+        this.firstProcess();
+//        this.secondProcess();
 //        this.infoDB();
 //        this.DBdeleterious();
 
@@ -84,7 +81,7 @@ public class GeneticLoadEntrance {
 //        new AoMath();
 //        new TreePreparation();
 //        new CalVCF();
-//        new BadMutations();
+        new BadMutations();
 //        new Heterozygosity();
 //        new Fst();
 //        new Pi();
