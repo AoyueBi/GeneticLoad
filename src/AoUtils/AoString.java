@@ -22,4 +22,60 @@ public class AoString {
         }
         return sb.toString();
     }
+
+    /**
+     * 将v1.0版本的基因中转换成 v1.1版本的gene名字，注意不是转录本
+     * @param gene
+     * @return
+     */
+    public static String getv11geneName(String gene){
+        String out = null;
+        if (gene.length() > 18){
+            out = "NA";
+            System.out.println("This gene is bad");
+        }
+        StringBuilder sb = new StringBuilder();
+        Character goal = null;
+        for (int i = 0; i < gene.length(); i++) {
+            if (i==10){
+                goal = '2';
+                sb.append(goal);
+            }
+            else if (!(i==10)){
+                goal = gene.charAt(i);
+                sb.append(goal);
+            }
+        }
+        out = sb.toString();
+        return out;
+    }
+
+    /**
+     * 将v1.1版本的基因中转换成 v1.0版本的gene名字，注意不是转录本
+     * @param gene
+     * @return
+     */
+    public static String getv10geneName(String gene){
+        String out = null;
+        if (gene.length() > 18){
+            out = "NA";
+            System.out.println("This gene is bad");
+        }
+        StringBuilder sb = new StringBuilder();
+        Character goal = gene.charAt(10);
+        for (int i = 0; i < gene.length(); i++) {
+            if (i==10){
+                goal = '1';
+                sb.append(goal);
+            }
+            else if (!(i==10)){
+                goal = gene.charAt(i);
+                sb.append(goal);
+            }
+        }
+        out = sb.toString();
+        return out;
+    }
+
+
 }

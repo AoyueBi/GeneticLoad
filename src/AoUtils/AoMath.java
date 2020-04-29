@@ -50,7 +50,7 @@ public class AoMath {
     }
 
 
-    public String getRelativeMean(TDoubleArrayList value){
+    public static String getRelativeMean(TDoubleArrayList value){
         String out = null;
         double[] array = value.toArray();
         DescriptiveStatistics d = new DescriptiveStatistics(array);
@@ -60,7 +60,7 @@ public class AoMath {
     }
 
 
-    public String getStandardDeviation(TDoubleArrayList value){
+    public static String getStandardDeviation(TDoubleArrayList value){
         String out = null;
         double[] array = value.toArray();
         DescriptiveStatistics d = new DescriptiveStatistics(array);
@@ -77,6 +77,7 @@ public class AoMath {
         double relativeMean = d.getMean(); //平均值
         double sd = d.getStandardDeviation(); //标准偏差
         double median = d.getPercentile(50); //中位数
+        double x = d.getKurtosis();
         out = String.format("%.4f", relativeMean);
         return out;
     }

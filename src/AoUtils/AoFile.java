@@ -1095,6 +1095,9 @@ public class AoFile {
             else if (infileS.endsWith(".tsv")) {
                 br = IOUtils.getTextReader(infileS);
             }
+            else if (infileS.endsWith(".gz")) {
+                br = IOUtils.getTextGzipReader(infileS);
+            }
             String temp = br.readLine();
             List<String> l = PStringUtils.fastSplit(temp);
             int cnt = -1;

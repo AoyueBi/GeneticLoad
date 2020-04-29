@@ -5,13 +5,10 @@
  */
 package Entrance;
 
-import AoUtils.Bin;
-import AoUtils.CalVCF;
 import GermplasmInfo.GermplasmInfo;
 import Plot.PCA;
 import PopulationAnalysis.DeleteriousCountbyPop;
-import WheatGeneticLoad.*;
-import gnu.trove.list.array.TIntArrayList;
+import WheatGeneticLoad.GeneExpressionbywheat;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -23,15 +20,23 @@ import java.util.Date;
 public class GeneticLoadEntrance {
 
     public GeneticLoadEntrance() {
-        this.firstProcess();
-//        this.secondProcess();
+//        this.firstProcess();
+//        this.plot();
 //        this.infoDB();
 //        this.DBdeleterious();
 
         //ternary plot analysis
+        this.geneExpression();
 
 
     }
+
+    public void geneExpression(){
+        new GeneExpressionbywheat();
+
+    }
+
+
 
     public void DBdeleterious(){
 //        new DeleteriousBiologyAoyue();
@@ -46,7 +51,7 @@ public class GeneticLoadEntrance {
     }
 
 
-    public void secondProcess() {
+    public void plot() {
         //new CalVCF()
         //new Circos();
 //        new Tree();
@@ -81,7 +86,7 @@ public class GeneticLoadEntrance {
 //        new AoMath();
 //        new TreePreparation();
 //        new CalVCF();
-        new BadMutations();
+//        new BadMutations();
 //        new Heterozygosity();
 //        new Fst();
 //        new Pi();

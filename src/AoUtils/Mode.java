@@ -239,8 +239,10 @@ public class Mode {
             String temp = null;
             String header = br.readLine();
             List<String> l = new ArrayList<>();
+            int cnt = 0;
             while ((temp = br.readLine()) != null) {
                 l = PStringUtils.fastSplit(temp);
+                cnt++;
 
             }
             br.close();

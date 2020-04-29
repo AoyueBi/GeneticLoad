@@ -93,6 +93,14 @@ public class Triadsgenes {
     }
 
     /**
+     *
+     * @return
+     */
+    public int getGeneNum(){
+        return triadsList.size()*3;
+    }
+
+    /**
      * there are
      */
     public void checkGenesNotInPGF(){

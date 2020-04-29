@@ -68,7 +68,6 @@ public class BadMutations {
             e.printStackTrace();
             System.exit(1);
         }
-
     }
 
     /**
@@ -108,8 +107,6 @@ public class BadMutations {
             e.printStackTrace();
             System.exit(1);
         }
-
-
     }
 
 
