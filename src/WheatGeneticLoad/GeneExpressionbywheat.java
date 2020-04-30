@@ -1,23 +1,18 @@
 package WheatGeneticLoad;
 
-import AoUtils.AoFile;
-import AoUtils.AoMath;
-import AoUtils.AoString;
+import AoUtils.*;
 import AoUtils.Triads.Triadsgenes;
-import AoUtils.WheatUtils;
 import gnu.trove.list.array.TDoubleArrayList;
 import org.apache.commons.lang.ArrayUtils;
 import pgl.infra.genomeAnnotation.GeneFeature;
 import pgl.infra.utils.PStringUtils;
 import pgl.infra.utils.wheat.RefV1Utils;
+import xiaohan.wheatRNAseq.test;
 
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class GeneExpressionbywheat {
     public GeneExpressionbywheat(){
@@ -26,7 +21,193 @@ public class GeneExpressionbywheat {
 //        this.getCSgeneSummary_usingTriadsClass();
 //        this.geneExpressionbyDevelopment();
 //        this.geneExpressionbyRoot_fromJun();
-        this.geneExpressionbyColeoptile_fromXiaohan();
+//        this.geneExpressionbyColeoptile_fromXiaohan();
+//        this.getTissueBreadth();
+        this.getwindowDistrbution();
+
+    }
+
+    /**
+     * 将每个基因对应的 value 进行 window 扫描 500 个值 100/500=0.2 bin 宽度
+     */
+    public void getwindowDistrbution(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/002_testGeneExpressionDistribution/002_tissueBreadth/002_Azhurnaya_tissue_breadth_miniVersion.txt";
+        AoFile.readheader(infileS);
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/002_testGeneExpressionDistribution/002_tissueBreadth/003_Azhurnaya_tissue_breadth_window.txt";
+        String[] chrS = AoFile.getStringArraybySet(infileS,0);
+        TDoubleArrayList[] posList = new TDoubleArrayList[chrS.length];
+        TDoubleArrayList[] valueList = new TDoubleArrayList[chrS.length];
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = null;
+            String header = br.readLine();
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+                String chr = l.get(0);
+                double posScale = Double.parseDouble(l.get(2));
+                double value = Double.parseDouble(l.get(4));
+                int index = Arrays.binarySearch(chrS,chr);
+                posList[index].add(posScale);
+                valueList[index].add(value);
+            }
+            br.close();
+
+            List[][] output = new List[chrS.length][];
+            for (int i = 0; i < chrS.length; i++) {
+                output[i]= Bin.windowstep_posAve(posList[i],valueList[i],100,0.2,0.2);
+            }
+
+            bw.write("Chr\tPos_scale\tCount\tExpressionBreadth");
+            for (int i = 0; i < chrS.length; i++) {
+                for (int j = 0; j < chrS[i].length(); j++) {
+
+
+                }
+
+            }
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    /**
+     * 根据azhurnaya的22个组织，求每个组织的平均表达量和方差，小于0.5就算这个组织不表达。
+     * 表格形式：
+     * Chr\tPos_start\tGene\tT1_AveExpression(SD)\tT2_AveExpression\tT3_AveExpression.... \tT22_AveExpression（ave）\tTissueBreadth
+     */
+    public void getTissueBreadth(){
+
+        String infileS = "/Users/Aoyue/Documents/Data/wheat/article/wheatRNAScience/download/Development_tpm.tsv.gz";
+        String AzhurnayaInfoS = "/Users/Aoyue/Documents/Data/wheat/article/wheatRNAScience/myself/Azhurnaya_developmentInfo.txt";
+        String geneFeatureFileS = "/Users/Aoyue/Documents/Data/wheat/gene/v1.1/wheat_v1.1_Lulab.pgf";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/002_testGeneExpressionDistribution/002_tissueBreadth/001_Azhurnaya_tissue_breadth.txt";
+        String outfileS = "";
+        GeneFeature gf = new GeneFeature (geneFeatureFileS);
+        gf.sortGeneByName();
+        Triadsgenes tg = new Triadsgenes();
+        AoFile.readheader(infileS);
+
+        /**
+         * get tissue's sample
+         */
+        String[] tissueArray = AoFile.getStringArraybySet(AzhurnayaInfoS,6);
+        for (int i = 0; i < tissueArray.length; i++) {
+            System.out.println(tissueArray[i]);
+        }
+        Arrays.sort(tissueArray);
+        /**
+         * sample <-> tissue HashMap
+         */
+        HashMap<String,String> hmSampleTissue = AoFile.getHashMapStringKey(AzhurnayaInfoS,0,6);
+        /**
+         * each tissue contains several samples, we need to know the sample index
+         */
+        List<Integer>[] tissueIndexList = new List[tissueArray.length];
+        for (int i = 0; i < tissueArray.length; i++) {
+            tissueIndexList[i] = new ArrayList<>();
+        }
+
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            //deal with header
+            String header = br.readLine();
+            l = PStringUtils.fastSplit(header);
+            for (int i = 1; i < l.size(); i++) { //从 index 1列开始
+                String sampleID = l.get(i);
+                String tissue = hmSampleTissue.get(sampleID);
+                int index = Arrays.binarySearch(tissueArray,tissue);
+                if (index < 0){
+                    System.out.println(sampleID + "\tin the expression file is not in the Tissue arrays");
+                    continue;
+                }
+                tissueIndexList[index].add(i); //获取索引
+            }
+
+            bw.write("Chr\tPos\tPos_scale\tGene");
+            for (int i = 0; i < tissueArray.length; i++) {
+                bw.write("\t" + tissueArray[i]+ "_AveExpression" + "\t" + tissueArray[i]+"_SD");
+            }
+            bw.write("\t" + "ExpressionBreadth");
+            bw.newLine();
+
+            // deal with expression values
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                String gene = AoString.getv11geneName(l.get(0));
+                boolean bl = tg.ifTriads(gene);
+                if (!bl)continue; // ******** filter gene which is not in triad
+                boolean blexpression = tg.ifExpressedBasedGene(gene);
+                if (!blexpression)continue; // ******** filter gene which is not expressed
+                cnt++;
+
+                // 目的： 找到每个组织的样品对应的基因表达量，并加入list中，求平均值方差之类的
+                // 已获取： 每个组织对应样本的索引
+                // 如何操作？ 第一：进行组织的循环，在每个组织中，进行index的循环，找到对应的index，然后添加到 tissueValueList 中
+                TDoubleArrayList[] tissueValueList = new TDoubleArrayList[tissueArray.length];
+                for (int i = 0; i < tissueArray.length; i++) {
+                    tissueValueList[i] = new TDoubleArrayList();
+                }
+                String[] ave = new String[tissueArray.length];
+                String[] sd = new String[tissueArray.length];
+                int breadth = 0;
+                for (int i = 0; i < tissueArray.length; i++) { //22 tissues
+                    for (int j = 0; j < tissueIndexList[i].size(); j++) { // 第 i 个tissue 中有
+                        String value = l.get(tissueIndexList[i].get(j));
+                        double valued = Double.parseDouble(value);
+                        tissueValueList[i].add(valued);
+                    }
+                    ave[i] = AoMath.getRelativeMean(tissueValueList[i]);
+                    sd[i] = AoMath.getStandardDeviation(tissueValueList[i]);
+
+                } //完成了一个基因所有组织的样本对应的表达量的添加，已经这个组织的平均值和标准差
+
+                for (int i = 0; i < ave.length; i++) { //判断组织中平均表达量大于0.5的，就算是表达了
+                    if (Double.parseDouble(ave[i]) > 0.5){
+                        breadth++;
+                    }
+                }
+                if (breadth == 0) continue; //过滤没有在任何组织表达的基因
+
+                //get gene chr pos start
+                int index = gf.getGeneIndex(gene);
+                int chr = gf.getGeneChromosome(index);
+                int pos = gf.getGeneStart(index);
+                String chromosome = RefV1Utils.getChromosome(chr,pos);
+                int posOnchromosome = RefV1Utils.getPosOnChromosome(chr,pos);
+                String posScaled = WheatUtils.getScaledPos(chromosome,posOnchromosome);
+
+
+                bw.write(chromosome + "\t" + posOnchromosome + "\t" + posScaled + "\t" + gene);
+                for (int i = 0; i < ave.length; i++) {
+                    bw.write("\t" + ave[i] + "\t" + sd[i]);
+                }
+                bw.write("\t" + breadth);
+                bw.newLine();
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+
+
+
 
     }
 
@@ -166,8 +347,7 @@ public class GeneExpressionbywheat {
      * Chr\tPos_start\tGene\tAveExpression\tSD
      */
     public void geneExpressionbyDevelopment(){
-        AoFile.readheader("/Users/Aoyue/Downloads/7_nor_countResult.txt");
-        AoFile.readheader("/Users/Aoyue/Documents/countResult_root_TPM.txt");
+
         String infileS = "/Users/Aoyue/Documents/Data/wheat/article/wheatRNAScience/download/Development_tpm.tsv.gz";
         String AzhurnayaInfoS = "/Users/Aoyue/Documents/Data/wheat/article/wheatRNAScience/myself/Azhurnaya_developmentInfo.txt";
         String geneFeatureFileS = "/Users/Aoyue/Documents/Data/wheat/gene/v1.1/wheat_v1.1_Lulab.pgf";

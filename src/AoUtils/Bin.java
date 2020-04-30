@@ -36,6 +36,69 @@ public class Bin {
     }
 
 
+
+    public static List<String>[] windowstep_posAve(TDoubleArrayList posList,TDoubleArrayList valueList,int length, double window, double step){
+
+        double posmax = posList.max();
+        double[][] bound = new Bin().initializeWindowStep_bydouble(length, window,step);
+
+        int count[] = new int[bound.length]; //查看每个bin里面的变异个数
+        TDoubleArrayList[] value = new TDoubleArrayList[bound.length]; //每个Bin里面的值的集合 List
+        double[] boundright = new double[bound.length]; //只看左边的bound
+        double[] boundleft = new double[bound.length]; //右边的bound
+        for (int i = 0; i < bound.length; i++) { //每个bound的左边
+            boundleft[i] = bound[i][0];
+            boundright[i] = bound[i][1];
+            value[i] = new TDoubleArrayList(); //对每一个bin中的List进行初始化
+        }
+
+
+        for (int i = 0; i < posList.size(); i++) {
+            double pos = posList.get(i);
+            double v = valueList.get(i);
+
+            int indexleft = Arrays.binarySearch(boundleft, pos);
+            if (indexleft < 0) {
+                indexleft = -indexleft - 2 +1;
+            }
+            else if (indexleft > -1) {
+                indexleft = indexleft +1;
+            }
+
+
+            int indexright = Arrays.binarySearch(boundright, pos);
+            if (indexright < 0){
+                indexright = -indexright-1;
+            }
+            else if (indexright > -1){
+                indexright = indexright +1;
+            }
+
+
+            for (int j = indexright; j < indexleft ; j++) {
+                count[j]++; //每个Bin 里面的变异个数
+                value[j].add(v); //每个bin里面的值的集合
+            }
+        }
+
+        //计算每个Bin里面的平均值
+        String[] mean = new String[bound.length];
+        for (int i = 0; i < value.length; i++) {
+            mean[i] = AoMath.getRelativeMean(value[i]);
+        }
+
+        // output
+        List outpos = Arrays.asList(boundleft);
+        List outCount = Arrays.asList(count);
+        List outvalue = Arrays.asList(value);
+
+        List[] out = new List[3];
+        out[0]=outpos;
+        out[1]=outCount;
+        out[2]=outvalue;
+        return out;
+    }
+
     /**
      * 根据 chr pos 和 value 来确定,返回 每个window内的变异个数，以及 残余杂合度 Residual Heterozygosity
      *
@@ -204,6 +267,35 @@ public class Bin {
             e.printStackTrace();
             System.exit(1);
         }
+    }
+
+    /**
+     * return the bound needed
+     *
+     * @param chrLength
+     * @param windowSize
+     * @param windowStep
+     * @return
+     */
+    private double[][] initializeWindowStep_bydouble (int chrLength, double windowSize, double windowStep) {
+
+        TDoubleArrayList startList = new TDoubleArrayList();
+        TDoubleArrayList endList = new TDoubleArrayList();
+        double start = 1;
+        double end = start+windowSize;
+        while (start < chrLength) {
+            startList.add(start);
+            endList.add(end);
+            start+=windowStep;
+            end = start+windowSize;
+        }
+
+        double[][] bound = new double[startList.size()][2];
+        for (int i = 0; i < startList.size(); i++) {
+            bound[i][0] = startList.get(i);
+            bound[i][1] = endList.get(i);
+        }
+        return bound;
     }
 
     /**

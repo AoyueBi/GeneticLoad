@@ -28,7 +28,7 @@ public class Heterozygosity {
 //        this.mergeTxt();
 
 //        this.mkGenotype("/Users/Aoyue/Documents/ok/chr7B_vmap2.1_heter_SNPbased_Cultivar.vcf.gz","/Users/Aoyue/Documents/out/chr7B_vmap2.1_heter_SNPbased_Cultivar_chrposGenotype.txt.gz");
-        this.script_mkGenotype();
+//        this.script_mkGenotype();
 
 //        this.calWindowStep_RH_indivi(); //也是多线程
 //        this.runJarParallele();
