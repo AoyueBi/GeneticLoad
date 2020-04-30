@@ -120,8 +120,8 @@ public class Triadsgenes {
         boolean out = false;
         int index = Collections.binarySearch(genesList,gene);
         if (index>-1) out = true;
-        if (out) System.out.println("This gene is a triad gene");
-        else System.out.println("This gene is not a triad gene");
+//        if (out) System.out.println("This gene is a triad gene");
+//        else System.out.println("This gene is not a triad gene");
         return out;
     }
 
