@@ -88,11 +88,17 @@ public class Bin {
         }
 
         // output
-        List outpos = Arrays.asList(boundleft);
-        List outCount = Arrays.asList(count);
-        List outvalue = Arrays.asList(value);
+        List<String> outpos = new ArrayList<>();
+        List<String> outCount = new ArrayList<>();
+        List<String> outvalue = new ArrayList<>();
 
-        List[] out = new List[3];
+        for (int i = 0; i < bound.length; i++) {
+            outpos.add((String.format("%.2f",boundleft[i])));
+            outCount.add(String.valueOf(count[i]));
+            outvalue.add(String.valueOf(mean[i]));
+        }
+
+        List<String>[] out = new List[3];
         out[0]=outpos;
         out[1]=outCount;
         out[2]=outvalue;

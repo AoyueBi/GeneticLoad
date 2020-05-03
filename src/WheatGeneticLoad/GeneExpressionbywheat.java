@@ -22,9 +22,78 @@ public class GeneExpressionbywheat {
 //        this.geneExpressionbyDevelopment();
 //        this.geneExpressionbyRoot_fromJun();
 //        this.geneExpressionbyColeoptile_fromXiaohan();
-//        this.getTissueBreadth();
-        this.getwindowDistrbution();
 
+//        this.getTissueBreadth();
+//        this.getwindowDistrbution();
+        this.mergegeneExpression_fromJun();
+
+    }
+
+    /**
+     * step 1: 找所有组织的一个样品的平均基因表达量
+     * step 2: 输出文件格式
+     * Chr\tPos_start\tGene\tAveExpression\tSD
+     */
+    public void mergegeneExpression_fromJun(){
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/002_testGeneExpressionDistribution/source/7_root_nor_countResult.txt.gz";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/002_testGeneExpressionDistribution/002_Hexaploid_root_geneExpression.txt";
+
+
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/002_testGeneExpressionDistribution/source/3_nor_countResult.txt.gz";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/002_testGeneExpressionDistribution/003_Hexaploid_cpleoptile_geneExpression.txt";
+
+        String geneFeatureFileS = "/Users/Aoyue/Documents/Data/wheat/gene/v1.1/wheat_v1.1_Lulab.pgf";
+        GeneFeature gf = new GeneFeature (geneFeatureFileS);
+        gf.sortGeneByName();
+        Triadsgenes tg = new Triadsgenes();
+        System.out.println(tg.getGeneNum());
+        AoFile.readheader(infileS);
+
+
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            bw.write("Chr\tPos_start\tGene\tAveExpression\tSD\tPos_scaled");
+            bw.newLine();
+            String temp = null;
+            String header = br.readLine();
+            List<String> l = new ArrayList<>();
+            int cnt =0;
+
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                String gene = l.get(0);
+                boolean bl = tg.ifTriads(gene);
+                if (!bl)continue; // ******** filter gene which is not in triad
+                boolean blexpression = tg.ifExpressedBasedGene(gene);
+                if (!blexpression)continue; // ******** filter gene which is not expressed
+                cnt++;
+                TDoubleArrayList tpmList = new TDoubleArrayList();
+                for (int i = 1; i < l.size(); i++) {
+                    tpmList.add(Double.parseDouble(l.get(i)));
+                }
+                String ave = AoMath.getRelativeMean(tpmList);
+                String sd = AoMath.getStandardDeviation(tpmList);
+                if (Double.parseDouble(ave) < 0.5)continue; //******** filter TPM ave less than 0.5
+                //get gene chr pos start
+                int index = gf.getGeneIndex(gene);
+                int chr = gf.getGeneChromosome(index);
+                int pos = gf.getGeneStart(index);
+                String chromosome = RefV1Utils.getChromosome(chr,pos);
+                int posOnchromosome = RefV1Utils.getPosOnChromosome(chr,pos);
+                String posScaled = WheatUtils.getScaledPos(chromosome,posOnchromosome);
+                bw.write(chromosome + "\t" + posOnchromosome + "\t" + gene + "\t" + ave + "\t" + sd + "\t" + posScaled);
+                bw.newLine();
+            }
+            System.out.println(cnt + " genes kept");
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
     /**
@@ -37,6 +106,10 @@ public class GeneExpressionbywheat {
         String[] chrS = AoFile.getStringArraybySet(infileS,0);
         TDoubleArrayList[] posList = new TDoubleArrayList[chrS.length];
         TDoubleArrayList[] valueList = new TDoubleArrayList[chrS.length];
+        for (int i = 0; i < chrS.length; i++) { //记得初始化
+            posList[i] = new TDoubleArrayList();
+            valueList[i] = new TDoubleArrayList();
+        }
         try {
             BufferedReader br = AoFile.readFile(infileS);
             BufferedWriter bw = AoFile.writeFile(outfileS);
@@ -51,6 +124,9 @@ public class GeneExpressionbywheat {
                 double posScale = Double.parseDouble(l.get(2));
                 double value = Double.parseDouble(l.get(4));
                 int index = Arrays.binarySearch(chrS,chr);
+                if (index <0){
+                    System.out.println(chr + "\t" + posScale);
+                }
                 posList[index].add(posScale);
                 valueList[index].add(value);
             }
@@ -58,17 +134,26 @@ public class GeneExpressionbywheat {
 
             List[][] output = new List[chrS.length][];
             for (int i = 0; i < chrS.length; i++) {
-                output[i]= Bin.windowstep_posAve(posList[i],valueList[i],100,0.2,0.2);
+//                output[i]= Bin.windowstep_posAve(posList[i],valueList[i],100,1,0.5);
+//                output[i]= Bin.windowstep_posAve(posList[i],valueList[i],100,2,1);
+                output[i]= Bin.windowstep_posAve(posList[i],valueList[i],100,4,2);
+
             }
 
             bw.write("Chr\tPos_scale\tCount\tExpressionBreadth");
-            for (int i = 0; i < chrS.length; i++) {
-                for (int j = 0; j < chrS[i].length(); j++) {
-
-
+            bw.newLine();
+            for (int i = 0; i < chrS.length; i++) { //第一层循环是1A到7D
+                List<String>[] out = output[i];
+                for (int j = 0; j < out[0].size(); j++) { //第二层循环是
+                    String chr = chrS[i];
+                    String pos = out[0].get(j);
+                    String count = out[1].get(j);
+                    String value = out[2].get(j);
+                    bw.write(chr + "\t" + pos + "\t" + count + "\t" + value);
+                    bw.newLine();
                 }
-
             }
+            int a=3;
             bw.flush();
             bw.close();
             System.out.println();
@@ -204,11 +289,6 @@ public class GeneExpressionbywheat {
             e.printStackTrace();
             System.exit(1);
         }
-
-
-
-
-
     }
 
     /**
@@ -279,12 +359,12 @@ public class GeneExpressionbywheat {
      * Chr\tPos_start\tGene\tAveExpression\tSD
      */
     public void geneExpressionbyRoot_fromJun(){
-//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/002_testGeneExpressionDistribution/7_root_nor_countResult.txt.gz";
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/002_testGeneExpressionDistribution/source/7_root_nor_countResult.txt.gz";
 //        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/002_testGeneExpressionDistribution/002_Hexaploid_root_geneExpression.txt";
 
 
-        String infileS = "";
-        String outfileS = "";
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/002_testGeneExpressionDistribution/source/3_nor_countResult.txt.gz";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/002_testGeneExpressionDistribution/003_Hexaploid_cpleoptile_geneExpression.txt";
 
         String geneFeatureFileS = "/Users/Aoyue/Documents/Data/wheat/gene/v1.1/wheat_v1.1_Lulab.pgf";
         GeneFeature gf = new GeneFeature (geneFeatureFileS);
