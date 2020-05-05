@@ -12,6 +12,7 @@ import xiaohan.wheatRNAseq.test;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.util.*;
 
 public class GeneExpressionbywheat {
@@ -23,13 +24,14 @@ public class GeneExpressionbywheat {
 //        this.geneExpressionbyRoot_fromJun();
 //        this.geneExpressionbyColeoptile_fromXiaohan();
 
-//        this.getTissueBreadth();
+        this.getTissueBreadth();
 //        this.getwindowDistrbution();
 //        this.mergegeneExpression_fromJun();
 //        this.calBreadth_onRootandcoleotiple();
-        this.getwindowDistrbution_general();
+//        this.getwindowDistrbution_general();
 
     }
+
 
     /**
      * 将每个基因对应的 value 进行 window 扫描 500 个值 100/500=0.2 bin 宽度
@@ -285,9 +287,15 @@ public class GeneExpressionbywheat {
      * 将每个基因对应的 value 进行 window 扫描 500 个值 100/500=0.2 bin 宽度
      */
     public void getwindowDistrbution(){
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/002_testGeneExpressionDistribution/002_tissueBreadth/002_Azhurnaya_tissue_breadth_miniVersion.txt";
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/002_testGeneExpressionDistribution/002_tissueBreadth/002_Azhurnaya_tissue_breadth_miniVersion.txt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/002_testGeneExpressionDistribution/002_tissueBreadth/003_Azhurnaya_tissue_breadth_window.txt";
+
+
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/002_testGeneExpressionDistribution/002_tissueBreadth/005_Azhurnaya_tissue_breadth_100Kgene_miniVersion.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/002_testGeneExpressionDistribution/002_tissueBreadth/006_Azhurnaya_tissue_breadth_100Kgene_window.txt";
+
         AoFile.readheader(infileS);
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/002_testGeneExpressionDistribution/002_tissueBreadth/003_Azhurnaya_tissue_breadth_window.txt";
+
         String[] chrS = AoFile.getStringArraybySet(infileS,0);
         TDoubleArrayList[] posList = new TDoubleArrayList[chrS.length];
         TDoubleArrayList[] valueList = new TDoubleArrayList[chrS.length];
@@ -350,6 +358,7 @@ public class GeneExpressionbywheat {
 
     /**
      * 根据azhurnaya的22个组织，求每个组织的平均表达量和方差，小于0.5就算这个组织不表达。
+     * 2次测试：第一是只看1：1：1的基因；第二是看pgf中的107891个基因；
      * 表格形式：
      * Chr\tPos_start\tGene\tT1_AveExpression(SD)\tT2_AveExpression\tT3_AveExpression.... \tT22_AveExpression（ave）\tTissueBreadth
      */
@@ -359,7 +368,9 @@ public class GeneExpressionbywheat {
         String AzhurnayaInfoS = "/Users/Aoyue/Documents/Data/wheat/article/wheatRNAScience/myself/Azhurnaya_developmentInfo.txt";
         String geneFeatureFileS = "/Users/Aoyue/Documents/Data/wheat/gene/v1.1/wheat_v1.1_Lulab.pgf";
 //        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/002_testGeneExpressionDistribution/002_tissueBreadth/001_Azhurnaya_tissue_breadth.txt";
-        String outfileS = "";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/002_testGeneExpressionDistribution/002_tissueBreadth/004_Azhurnaya_tissue_breadth_100Kgene.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/002_testGeneExpressionDistribution/002_tissueBreadth/004_Azhurnaya_tissue_breadth_100Kgene.txt";
+
         GeneFeature gf = new GeneFeature (geneFeatureFileS);
         gf.sortGeneByName();
         Triadsgenes tg = new Triadsgenes();
@@ -416,11 +427,23 @@ public class GeneExpressionbywheat {
             while ((temp = br.readLine()) != null) {
                 l = PStringUtils.fastSplit(temp);
                 String gene = AoString.getv11geneName(l.get(0));
-                boolean bl = tg.ifTriads(gene);
-                if (!bl)continue; // ******** filter gene which is not in triad
-                boolean blexpression = tg.ifExpressedBasedGene(gene);
-                if (!blexpression)continue; // ******** filter gene which is not expressed
+
+                /**
+                 * ############## need to modify identify which genes will you analysis: 1:1:1
+                 */
+//                boolean bl = tg.ifTriads(gene);
+//                if (!bl)continue; // ******** filter gene which is not in triad
+//                boolean blexpression = tg.ifExpressedBasedGene(gene);
+//                if (!blexpression)continue; // ******** filter gene which is not expressed
+
+                /**
+                 * ############## need to modify identify which genes will you analysis: 107891
+                 */
+
+                int ind = gf.getGeneIndex(gene);
+                if (ind < 0) continue;
                 cnt++;
+
 
                 // 目的： 找到每个组织的样品对应的基因表达量，并加入list中，求平均值方差之类的
                 // 已获取： 每个组织对应样本的索引
