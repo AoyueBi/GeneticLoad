@@ -9,6 +9,7 @@ import GermplasmInfo.GermplasmInfo;
 import Plot.PCA;
 import PopulationAnalysis.DeleteriousCountbyPop;
 import WheatGeneticLoad.GeneExpressionbywheat;
+import WheatGeneticLoad.RebuildVCF;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -26,8 +27,14 @@ public class GeneticLoadEntrance {
 //        this.DBdeleterious();
 
         //ternary plot analysis
-        this.geneExpression();
+//        this.geneExpression();
+        this.rebuildVCF();
 
+
+    }
+
+    public void rebuildVCF(){
+        new RebuildVCF();
 
     }
 

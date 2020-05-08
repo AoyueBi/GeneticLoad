@@ -27,6 +27,39 @@ public class AoFile {
     }
 
     /**
+     * 为文本添加分组，根据文件名字
+     */
+    public static void addGrouptoFile(String infileS,int IndexBegin,int IndexEnd){
+
+//        String infileS="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/027_Rebuild_VMap2_VCF/001_depth/002_depthCal/chr1A_vmap2_subset0.001_depth.txt.gz";
+        File f = new File(infileS);
+        String outfileS = f.getName().split(".txt")[0] + "_addGroup.txt.gz";
+        outfileS= new File(f.getParent(),outfileS).getAbsolutePath();
+
+        String group = f.getName().substring(IndexBegin,IndexEnd);
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = br.readLine();
+            bw.write(temp + "\tGroup");
+            bw.newLine();
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                bw.write(temp+ "\t" +group);
+                bw.newLine();
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    /**
      *  返回满足条件的某些行，即取子集
      *
      * @param infileS

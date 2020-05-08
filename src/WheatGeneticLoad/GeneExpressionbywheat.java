@@ -24,8 +24,12 @@ public class GeneExpressionbywheat {
 //        this.geneExpressionbyRoot_fromJun();
 //        this.geneExpressionbyColeoptile_fromXiaohan();
 
-        this.getTissueBreadth();
-//        this.getwindowDistrbution();
+        /**
+         * tissue express breadth
+         */
+//        this.getTissueBreadth();
+        this.getwindowDistrbution();
+
 //        this.mergegeneExpression_fromJun();
 //        this.calBreadth_onRootandcoleotiple();
 //        this.getwindowDistrbution_general();
@@ -287,12 +291,27 @@ public class GeneExpressionbywheat {
      * 将每个基因对应的 value 进行 window 扫描 500 个值 100/500=0.2 bin 宽度
      */
     public void getwindowDistrbution(){
+
+//        String infileS = "";
+//        String outfileS = "";
 //        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/002_testGeneExpressionDistribution/002_tissueBreadth/002_Azhurnaya_tissue_breadth_miniVersion.txt";
 //        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/002_testGeneExpressionDistribution/002_tissueBreadth/003_Azhurnaya_tissue_breadth_window.txt";
 
 
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/002_testGeneExpressionDistribution/002_tissueBreadth/005_Azhurnaya_tissue_breadth_100Kgene_miniVersion.txt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/002_testGeneExpressionDistribution/002_tissueBreadth/006_Azhurnaya_tissue_breadth_100Kgene_window.txt";
+
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/002_testGeneExpressionDistribution/002_tissueBreadth/002_1TPMexpress/002_Azhurnaya_tissue_breadth_100Kgenet_1TPM_miniVersion.txt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/002_testGeneExpressionDistribution/002_tissueBreadth/002_1TPMexpress/003_Azhurnaya_tissue_breadth_100Kgenet_1TPM_miniVersion_window.txt";
+
+//                String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/002_testGeneExpressionDistribution/002_tissueBreadth/002_1TPMexpress/002_Azhurnaya_tissue_breadth_100Kgenet_50TPM_miniVersion.txt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/002_testGeneExpressionDistribution/002_tissueBreadth/002_1TPMexpress/002_Azhurnaya_tissue_breadth_100Kgenet_50TPM_miniVersion_window.txt";
+
+//                String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/002_testGeneExpressionDistribution/002_tissueBreadth/002_1TPMexpress/002_Azhurnaya_tissue_breadth_100Kgenet_100TPM_miniVersion.txt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/002_testGeneExpressionDistribution/002_tissueBreadth/002_1TPMexpress/002_Azhurnaya_tissue_breadth_100Kgenet_100TPM_miniVersion_window.txt";
+
         String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/002_testGeneExpressionDistribution/002_tissueBreadth/005_Azhurnaya_tissue_breadth_100Kgene_miniVersion.txt";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/002_testGeneExpressionDistribution/002_tissueBreadth/006_Azhurnaya_tissue_breadth_100Kgene_window.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/002_testGeneExpressionDistribution/002_tissueBreadth/007_Azhurnaya_tissue_breadth_100Kgene_miniVersion_windowBypos.txt";
 
         AoFile.readheader(infileS);
 
@@ -314,7 +333,8 @@ public class GeneExpressionbywheat {
                 l = PStringUtils.fastSplit(temp);
                 cnt++;
                 String chr = l.get(0);
-                double posScale = Double.parseDouble(l.get(2));
+                double posScale = Double.parseDouble(l.get(1));
+//                double posScale = Double.parseDouble(l.get(2));
                 double value = Double.parseDouble(l.get(4));
                 int index = Arrays.binarySearch(chrS,chr);
                 if (index <0){
@@ -329,11 +349,14 @@ public class GeneExpressionbywheat {
             for (int i = 0; i < chrS.length; i++) {
 //                output[i]= Bin.windowstep_posAve(posList[i],valueList[i],100,1,0.5);
 //                output[i]= Bin.windowstep_posAve(posList[i],valueList[i],100,2,1);
-                output[i]= Bin.windowstep_posAve(posList[i],valueList[i],100,4,2);
+//                output[i]= Bin.windowstep_posAve(posList[i],valueList[i],100,4,2);
+                output[i]= Bin.windowstep_posAve2(posList[i],valueList[i],4,2);
+
 
             }
 
-            bw.write("Chr\tPos_scale\tCount\tExpressionBreadth");
+//            bw.write("Chr\tPos_scale\tCount\tExpressionBreadth");
+            bw.write("Chr\tPos\tCount\tExpressionBreadth");
             bw.newLine();
             for (int i = 0; i < chrS.length; i++) { //第一层循环是1A到7D
                 List<String>[] out = output[i];
@@ -369,7 +392,9 @@ public class GeneExpressionbywheat {
         String geneFeatureFileS = "/Users/Aoyue/Documents/Data/wheat/gene/v1.1/wheat_v1.1_Lulab.pgf";
 //        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/002_testGeneExpressionDistribution/002_tissueBreadth/001_Azhurnaya_tissue_breadth.txt";
 //        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/002_testGeneExpressionDistribution/002_tissueBreadth/004_Azhurnaya_tissue_breadth_100Kgene.txt";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/002_testGeneExpressionDistribution/002_tissueBreadth/004_Azhurnaya_tissue_breadth_100Kgene.txt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/002_testGeneExpressionDistribution/002_tissueBreadth/002_1TPMexpress/001_Azhurnaya_tissue_breadth_100Kgenet_1TPM.txt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/002_testGeneExpressionDistribution/002_tissueBreadth/002_1TPMexpress/001_Azhurnaya_tissue_breadth_100Kgenet_50TPM.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/109_geneExpression/002_testGeneExpressionDistribution/002_tissueBreadth/002_1TPMexpress/001_Azhurnaya_tissue_breadth_100Kgenet_100TPM.txt";
 
         GeneFeature gf = new GeneFeature (geneFeatureFileS);
         gf.sortGeneByName();
@@ -444,7 +469,6 @@ public class GeneExpressionbywheat {
                 if (ind < 0) continue;
                 cnt++;
 
-
                 // 目的： 找到每个组织的样品对应的基因表达量，并加入list中，求平均值方差之类的
                 // 已获取： 每个组织对应样本的索引
                 // 如何操作？ 第一：进行组织的循环，在每个组织中，进行index的循环，找到对应的index，然后添加到 tissueValueList 中
@@ -466,8 +490,14 @@ public class GeneExpressionbywheat {
 
                 } //完成了一个基因所有组织的样本对应的表达量的添加，已经这个组织的平均值和标准差
 
-                for (int i = 0; i < ave.length; i++) { //判断组织中平均表达量大于0.5的，就算是表达了
-                    if (Double.parseDouble(ave[i]) > 0.5){
+//                for (int i = 0; i < ave.length; i++) { //判断组织中平均表达量大于0.5的，就算是表达了
+//                    if (Double.parseDouble(ave[i]) > 0.5){
+//                        breadth++;
+//                    }
+//                }
+
+                for (int i = 0; i < ave.length; i++) { //判断组织中平均表达量大于 1 的，就算是表达了
+                    if (Double.parseDouble(ave[i]) > 100){
                         breadth++;
                     }
                 }
