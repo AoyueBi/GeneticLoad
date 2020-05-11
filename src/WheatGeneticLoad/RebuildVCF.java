@@ -107,8 +107,6 @@ public class RebuildVCF {
             String outfileS = new File(outfileDirS,f.getName()).getAbsolutePath();
             this.intersection(infileS,reliableFileS,outfileS);
         });
-
-
     }
 
     private void intersection (String infileS, String reliableFile, String outfileS) {
