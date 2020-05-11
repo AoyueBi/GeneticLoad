@@ -31,7 +31,7 @@ public class RebuildVCF {
 
 //        this.addReliableGroupfromSample();
 //        this.addReliableInsecterGroupfromSample();
-        this.mergeTxt2();
+//        this.mergeTxt2();
 
     }
 
@@ -91,8 +91,6 @@ public class RebuildVCF {
             e.printStackTrace();
             System.exit(1);
         }
-
-
 
     }
 
