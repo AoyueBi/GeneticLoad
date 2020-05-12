@@ -1,6 +1,7 @@
 package WheatGeneticLoad;
 
 import AoUtils.AoFile;
+import AoUtils.AoMath;
 import gnu.trove.list.array.TDoubleArrayList;
 import pgl.infra.utils.PStringUtils;
 
@@ -26,7 +27,7 @@ public class HomoeologGenesAnalysis {
      */
     public void getAverageDistance(){
         String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/007_Global/001_hexaploid_perCDSperGenotype/001_source";
-        String outfileDirs ="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/007_Global/001_hexaploid_perCDSperGenotype/002";
+        String outfileDirs ="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/007_Global/001_hexaploid_perCDSperGenotype/002_addAvedistance";
         List<File> fsList = AoFile.getFileListInDir(infileDirS);
 
         String testFileS = fsList.get(0).getAbsolutePath();
@@ -52,15 +53,17 @@ public class HomoeologGenesAnalysis {
                     l = PStringUtils.fastSplit(temp);
                     cnt++;
                     TDoubleArrayList disList = new TDoubleArrayList();
-                    for (int i = 0; i < l.size(); i++) {
+                    for (int i = 0; i < l.size(); i++) { //注意，在达兴的程序里，任何群体为NA和M000模型的都不计算距离
                         if (i<5)continue;
                         if ((i+1)/5 == 0){
                             String value = l.get(i);
                             if (value.startsWith("N"))continue;
+                            disList.add(Double.parseDouble(l.get(i)));
                         }
-
                     }
-
+                    String ave = AoMath.getRelativeMean(disList);
+                    bw.write(temp + "\t" + ave);
+                    bw.newLine();
                 }
                 br.close();
                 bw.flush();
