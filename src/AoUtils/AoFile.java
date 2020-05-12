@@ -107,7 +107,25 @@ public class AoFile {
      * @param infileS
      * @return
      */
-    public static int getFileRowNumber(String infileS){
+    public static int countFileColumnNumber(String infileS){
+        int cntColumn = 0;
+        try{
+            BufferedReader br = AoFile.readFile(infileS);
+            String temp = br.readLine();
+            cntColumn = PStringUtils.fastSplit(temp).size();
+
+        }catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+        return cntColumn;
+    }
+    /**
+     * 获取表格的行数，不包括表头
+     * @param infileS
+     * @return
+     */
+    public static int countFileRowNumber(String infileS){
         int out = 0;
         try{
             BufferedReader br = AoFile.readFile(infileS);

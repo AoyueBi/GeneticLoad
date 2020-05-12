@@ -9,6 +9,7 @@ import GermplasmInfo.GermplasmInfo;
 import Plot.PCA;
 import PopulationAnalysis.DeleteriousCountbyPop;
 import WheatGeneticLoad.GeneExpressionbywheat;
+import WheatGeneticLoad.HomoeologGenesAnalysis;
 import WheatGeneticLoad.RebuildVCF;
 
 import java.text.SimpleDateFormat;
@@ -24,11 +25,11 @@ public class GeneticLoadEntrance {
 //        this.firstProcess();
 //        this.plot();
 //        this.infoDB();
-//        this.DBdeleterious();
+        this.DBdeleterious();
 
         //ternary plot analysis
 //        this.geneExpression();
-        this.rebuildVCF();
+//        this.rebuildVCF();
 
 
     }
@@ -48,7 +49,10 @@ public class GeneticLoadEntrance {
     public void DBdeleterious(){
 //        new DeleteriousBiologyAoyue();
 //        new EstSFS();
-        new DeleteriousCountbyPop();
+//        new DeleteriousCountbyPop();
+        new HomoeologGenesAnalysis();
+
+
 
     }
 

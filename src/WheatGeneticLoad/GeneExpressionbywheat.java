@@ -20,6 +20,7 @@ public class GeneExpressionbywheat {
 //        this.addTPM();
 //        this.getCSgeneSummary();
 //        this.getCSgeneSummary_usingTriadsClass();
+
 //        this.geneExpressionbyDevelopment();
 //        this.geneExpressionbyRoot_fromJun();
 //        this.geneExpressionbyColeoptile_fromXiaohan();
