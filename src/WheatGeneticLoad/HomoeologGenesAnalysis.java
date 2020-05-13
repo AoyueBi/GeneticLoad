@@ -1,10 +1,12 @@
 package WheatGeneticLoad;
 
+import AoUtils.AoColor;
 import AoUtils.AoFile;
 import AoUtils.AoMath;
 import gnu.trove.list.array.TDoubleArrayList;
 import pgl.infra.utils.PStringUtils;
 
+import java.awt.image.Kernel;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -16,7 +18,13 @@ import java.util.List;
 public class HomoeologGenesAnalysis {
 
     public HomoeologGenesAnalysis(){
-        this.getAverageDistance();
+//        this.getAverageDistance();
+
+        String [] key = {"M011", "M110","M010","M101"};
+        AoColor.sort(key);
+        for (int i = 0; i < key.length; i++) {
+            System.out.println(key[i]);
+        }
 
     }
 
