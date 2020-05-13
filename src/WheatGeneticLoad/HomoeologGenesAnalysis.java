@@ -20,6 +20,8 @@ public class HomoeologGenesAnalysis {
 
     }
 
+
+
     /**
      * 获取每个群体到gloable的平均距离
      * 先确定那几列的值需要进行计算，再建立 DoubleList,最后求平均值
@@ -30,15 +32,15 @@ public class HomoeologGenesAnalysis {
         String outfileDirs ="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/007_Global/001_hexaploid_perCDSperGenotype/002_addAvedistance";
         List<File> fsList = AoFile.getFileListInDir(infileDirS);
 
-        String testFileS = fsList.get(0).getAbsolutePath();
-        int cntColumn = AoFile.countFileColumnNumber(testFileS);
-        int cntList = cntColumn/5-1; //有多少个群体数
-        int[] indexCal = new int[cntList];
-        for (int i = 0; i < cntList; i++) { //从第一个群体开始计算index，依次类推
-            indexCal[i] = (i+2)*5-1;
-        }
-        Arrays.sort(indexCal);
-        int a=3;
+//        String testFileS = fsList.get(0).getAbsolutePath();
+//        int cntColumn = AoFile.countFileColumnNumber(testFileS);
+//        int cntList = cntColumn/5-1; //有多少个群体数
+//        int[] indexCal = new int[cntList];
+//        for (int i = 0; i < cntList; i++) { //从第一个群体开始计算index，依次类推
+//            indexCal[i] = (i+2)*5-1;
+//        }
+//        Arrays.sort(indexCal);
+//        int a=3;
         fsList.parallelStream().forEach(f -> {
             String infileS = f.getAbsolutePath();
             String outfileS = new File(outfileDirs,f.getName()).getAbsolutePath();
@@ -47,6 +49,8 @@ public class HomoeologGenesAnalysis {
                 BufferedWriter bw = AoFile.writeFile(outfileS);
                 String temp = null;
                 String header = br.readLine();
+                bw.write(header + "\tAveDistance");
+                bw.newLine();
                 List<String> l = new ArrayList<>();
                 int cnt = 0;
                 while ((temp = br.readLine()) != null) {
@@ -55,7 +59,7 @@ public class HomoeologGenesAnalysis {
                     TDoubleArrayList disList = new TDoubleArrayList();
                     for (int i = 0; i < l.size(); i++) { //注意，在达兴的程序里，任何群体为NA和M000模型的都不计算距离
                         if (i<5)continue;
-                        if ((i+1)/5 == 0){
+                        if ((i+1)%5 == 0){
                             String value = l.get(i);
                             if (value.startsWith("N"))continue;
                             disList.add(Double.parseDouble(l.get(i)));
@@ -73,7 +77,6 @@ public class HomoeologGenesAnalysis {
                 e.printStackTrace();
                 System.exit(1);
             }
-
         });
     }
 }
