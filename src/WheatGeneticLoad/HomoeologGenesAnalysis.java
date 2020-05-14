@@ -20,11 +20,10 @@ public class HomoeologGenesAnalysis {
     public HomoeologGenesAnalysis(){
 //        this.getAverageDistance();
 
-        String [] key = {"M011", "M110","M010","M101"};
+        String [] key = {"M011","M110"};
         AoColor.sort(key);
-        for (int i = 0; i < key.length; i++) {
-            System.out.println(key[i]);
-        }
+        AoColor.models7(key);
+
 
     }
 

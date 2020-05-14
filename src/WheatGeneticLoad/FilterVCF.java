@@ -88,7 +88,7 @@ public class FilterVCF {
 //        this.addGroupforsubsetDepthDB("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/008_cellMethod/003_getHighCumulativePos/d/chrDgenome_bin100_0.75.depthVSsd.txt.gz", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/008_cellMethod/004_subset5000sitefromDepthDB/d/002_chr1D-7D.Dgenome.depth_5049sites.txt", "7", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/008_cellMethod/005_subset.addGroup/d/chrDgenome.depthVSsd.addGroup.bin100_0.75.txt");
 //        this.addGroupforsubsetDepthDB("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/008_cellMethod/003_getHighCumulativePos/d/chrDgenome_bin100_0.85.depthVSsd.txt.gz", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/008_cellMethod/004_subset5000sitefromDepthDB/d/002_chr1D-7D.Dgenome.depth_5049sites.txt", "8", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/008_cellMethod/005_subset.addGroup/d/chrDgenome.depthVSsd.addGroup.bin100_0.85.txt");
 ////
-//        this.mergePosList("", "", "");
+        this.mergePosList("", "", "");
         //this.scriptReINFO();
         //this.bgzip_ABD();
         //new SplitScript().splitBwaScript("/Users/Aoyue/Documents/sh_bgzip_Vmap2_20191021.sh", "sh_bgzip_Vmap2_", 6 ,6 );

@@ -29,9 +29,8 @@ public class AoColor {
         }
         sb.deleteCharAt(sb.length()-1);
         sb.append(")");
-
-
         out = sb.toString();
+        System.out.println(out);
 
         return out;
     }
