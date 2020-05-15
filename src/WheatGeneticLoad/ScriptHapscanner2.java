@@ -8,10 +8,11 @@ package WheatGeneticLoad;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+
+import AoUtils.AoFile;
+import AoUtils.AoMath;
+import pgl.infra.table.RowTable;
 import pgl.infra.utils.IOUtils;
 import pgl.infra.utils.PStringUtils;
 
@@ -22,7 +23,7 @@ import pgl.infra.utils.PStringUtils;
 public class ScriptHapscanner2 {
 
     public ScriptHapscanner2() {
-        //this.mkTaxaRefBam();
+//        this.mkTaxaRefBam();
         //this.mkParameterchr1_42_ABD();
         //this.mkJavaCmdchr1_42_ABD();
 
@@ -35,6 +36,193 @@ public class ScriptHapscanner2 {
         //this.bgzip_AB();
         //this.bgzip_ABD();
         //this.bcftools_merge();
+//        this.getNewTaxaBamMapAABB();
+//        this.checkTaxaAgain();
+//        this.getNewTaxaBamMapDD();
+//        this.getNewTaxaBamMapAABBDD();
+        this.convertTaxaBamMapformat();
+
+    }
+
+    /**
+     * 转换 taxaBam文件的格式，从原来一行一个bam文件 --> 一行一个taxa 对应多个bam 文件， bam文件之间用 TAB键隔开
+     */
+    public void convertTaxaBamMapformat(){
+        String infileDirS = "";
+        String outfileDirS = "";
+        List<File> fsList = AoFile.getFileListInDir(infileDirS);
+        fsList.parallelStream().forEach(f -> {
+            try {
+                String infileS = f.getAbsolutePath();
+                String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "_subset.txt.gz").getAbsolutePath();
+                BufferedReader br = AoFile.readFile(infileS);
+                BufferedWriter bw = AoFile.writeFile(outfileS);
+                String temp = null;
+                List<String> l = new ArrayList<>();
+                while ((temp = br.readLine()) != null) {
+                    l = PStringUtils.fastSplit(temp);
+
+                }
+                bw.flush();
+                bw.close();
+                br.close();
+                System.out.println(f.getName() + "\tis completed at " + outfileS);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public void getNewTaxaBamMapAABBDD(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/011_hapScanner/taxaRefBam/abd/002_taxaRefBam.ABDgenome.manual.addNAFU.txt";
+        String bam_Old2NewfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/001_bamDatabase/010_BamHashMap/bam_Old2New.map.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/001_taxaRefBam/001_taxaRefBam_ABDgenome.txt";
+        HashMap<String, String> hmold2newBam = AoFile.getHashMapStringKey(bam_Old2NewfileS,0,1);
+        String[] removeTaxa = {"IG140057","PI583718","PI534284","Beaqle","Caruton"}; //先去除Taxa,再修改的名字
+        Arrays.sort(removeTaxa);
+        String refFileS = "/data1/publicData/wheat/reference/v1.0/ABD/abd_iwgscV1.fa.gz";
+
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = null;
+            String header = br.readLine();
+            bw.write(header);
+            bw.newLine();
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+                String taxa = l.get(0);
+                String oldBam = l.get(2);
+                String newBam = hmold2newBam.get(oldBam);
+                int index = Arrays.binarySearch(removeTaxa,taxa);
+                if (index>-1)continue; //去除坏的taxa
+//                if(taxa.equals("CS")){
+//                    taxa="CS_mp_2018_8X";
+//                }
+                bw.write(taxa + "\t" + refFileS + "\t" + newBam);
+                bw.newLine();
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            AoMath.countCaseInGroup(outfileS,0);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    public void getNewTaxaBamMapDD(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/011_hapScanner/taxaRefBam/d/003_taxaRefBam.Dgenome.addNAFU.txt";
+        String bam_Old2NewfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/001_bamDatabase/010_BamHashMap/bam_Old2New.map.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/001_taxaRefBam/001_taxaRefBam_Dgenome.txt";
+        HashMap<String, String> hmold2newBam = AoFile.getHashMapStringKey(bam_Old2NewfileS,0,1);
+        String[] removeTaxa = {"KU-2071","TA2462","AE430"}; //先去除Taxa,再修改的名字
+        Arrays.sort(removeTaxa);
+        String refFileS = "/data1/publicData/wheat/reference/v1.0/D/d_iwgscV1.fa.gz";
+
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = null;
+            String header = br.readLine();
+            bw.write(header);
+            bw.newLine();
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+                String taxa = l.get(0);
+                String oldBam = l.get(2);
+                String newBam = hmold2newBam.get(oldBam);
+                int index = Arrays.binarySearch(removeTaxa,taxa);
+                if (index>-1)continue; //去除坏的taxa
+                bw.write(taxa + "\t" + refFileS + "\t" + newBam);
+                bw.newLine();
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            AoMath.countCaseInGroup(outfileS,0);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    /**
+     * 再次验证taxaBamMap文件中
+     */
+    public void checkTaxaAgain(){
+//        String infileS ="";
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/001_taxaRefBam/ab/001_taxaRefBam_ABgenome.txt";
+//        String infileS ="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/001_taxaRefBam/001_taxaRefBam_Dgenome.txt";
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/001_taxaRefBam/001_taxaRefBam_ABDgenome.txt";
+        String taxaListFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/taxaList.txt";
+        List<String> taxaList = AoFile.getStringList(taxaListFileS,0);
+        RowTable <String> t = new RowTable<>(infileS);
+        int cnt=0;
+        for (int i = 0; i < t.getRowNumber(); i++) {
+            String taxa = t.getCell(i,0);
+            int index = Collections.binarySearch(taxaList,taxa);
+            System.out.println(cnt++ + "\t: " + index);
+            if (index <0){
+                System.out.println(taxa + "\tis not in VMap2.1" );
+            }
+        }
+    }
+
+    /**
+     * 结合第一次生成的VMap2.1，将确定的187 Taxa提取出来并进行新的 TaxaBamMap的建立，
+     * 第一： bam名字较之前有所变化，第二：Taxa在后期有去除
+     */
+    public void getNewTaxaBamMapAABB(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/011_hapScanner/taxaRefBam/ab/004_taxaRefBam.ABgenome.removeBadTaxa.addNAFU.addS1.txt";
+        String bam_Old2NewfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/001_bamDatabase/010_BamHashMap/bam_Old2New.map.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/001_taxaRefBam/ab/001_taxaRefBam_ABgenome.txt";
+        HashMap<String, String> hmold2newBam = AoFile.getHashMapStringKey(bam_Old2NewfileS,0,1);
+        String[] removeTaxa = {"PI466930","PI466959","PI272522"}; //先去除Taxa,再修改的名字
+        Arrays.sort(removeTaxa);
+        String refFileS = "/data1/publicData/wheat/reference/v1.0/AB/ab_iwgscV1.fa.gz";
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = null;
+            String header = br.readLine();
+            bw.write(header);
+            bw.newLine();
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+                String taxa = l.get(0);
+                String oldBam = l.get(2);
+                String newBam = hmold2newBam.get(oldBam);
+                int index = Arrays.binarySearch(removeTaxa,taxa);
+                if (index>-1)continue; //去除坏的taxa
+                if(taxa.equals("PI428082")){ //去除后修改taxa的名字
+                    taxa="PI428082_1";
+                }
+                if (taxa.equals("PI466959_2")){
+                    taxa="PI466959";
+                }
+                bw.write(taxa + "\t" + refFileS + "\t" + newBam);
+                bw.newLine();
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            AoMath.countCaseInGroup(outfileS,0);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
     }
 
     /**

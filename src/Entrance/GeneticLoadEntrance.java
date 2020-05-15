@@ -11,6 +11,7 @@ import PopulationAnalysis.DeleteriousCountbyPop;
 import WheatGeneticLoad.GeneExpressionbywheat;
 import WheatGeneticLoad.HomoeologGenesAnalysis;
 import WheatGeneticLoad.RebuildVCF;
+import WheatGeneticLoad.ScriptHapscanner2;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -22,10 +23,10 @@ import java.util.Date;
 public class GeneticLoadEntrance {
 
     public GeneticLoadEntrance() {
-//        this.firstProcess();
+        this.firstProcess();
 //        this.plot();
 //        this.infoDB();
-        this.DBdeleterious();
+//        this.DBdeleterious();
 
         //ternary plot analysis
 //        this.geneExpression();
@@ -50,7 +51,7 @@ public class GeneticLoadEntrance {
 //        new DeleteriousBiologyAoyue();
 //        new EstSFS();
 //        new DeleteriousCountbyPop();
-        new HomoeologGenesAnalysis();
+//        new HomoeologGenesAnalysis();
 
 
 
@@ -87,7 +88,7 @@ public class GeneticLoadEntrance {
 //        new DataStorage();
 //        new SIFT();
 //        new CountSites();
-        //new ScriptHapscanner2();
+        new ScriptHapscanner2();
 //        new VariantsSum();
 //        new PopGenParaWheat();
         //new SplitScript();
