@@ -45,7 +45,8 @@ public class ScriptHapscanner2 {
     }
 
     /**
-     * 转换 taxaBam文件的格式，从原来一行一个bam文件 --> 一行一个taxa 对应多个bam 文件， bam文件之间用 TAB键隔开
+     * 第一： 转换 taxaBam文件的格式，从原来一行一个bam文件 --> 一行一个taxa 对应多个bam 文件， bam文件之间用 TAB键隔开
+     * 第二： 添加 CS文件，至2个
      */
     public void convertTaxaBamMapformat(){
         String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/001_taxaRefBam";
@@ -81,11 +82,19 @@ public class ScriptHapscanner2 {
                 br.close();
 
                 for (int i = 0; i < taxaList.size(); i++) {
-                    bw.write(taxaList.get(i) + "\t" + refFileS);
+                    String taxa = taxaList.get(i);
+                    if(taxa.equals("CS")){
+                        taxa = "CS-2018";
+                    }
+                    bw.write(taxa + "\t" + refFileS);
                     for (int j = 0; j < bamList[i].size(); j++) {
                         bw.write("\t" + bamList[i].get(j));
                     }
                     bw.newLine();
+                }
+                String sub = f.getName().split("_")[2].substring(0,3);
+                if (sub.equals("ABD")){
+                    bw.write("CS-2017\t" + refFileS + "\t" + "/data3/wgs/bam/ABD/CS_sg_2017_60X.bam");
                 }
                 bw.flush();
                 bw.close();
