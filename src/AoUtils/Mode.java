@@ -149,6 +149,7 @@ public class Mode {
                 String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "_subset.txt.gz").getAbsolutePath();
                 BufferedReader br = AoFile.readFile(infileS);
                 BufferedWriter bw = AoFile.writeFile(outfileS);
+                String header = br.readLine();
                 String temp = null;
                 List<String> l = new ArrayList<>();
                 while ((temp = br.readLine()) != null) {

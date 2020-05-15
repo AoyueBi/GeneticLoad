@@ -48,24 +48,47 @@ public class ScriptHapscanner2 {
      * 转换 taxaBam文件的格式，从原来一行一个bam文件 --> 一行一个taxa 对应多个bam 文件， bam文件之间用 TAB键隔开
      */
     public void convertTaxaBamMapformat(){
-        String infileDirS = "";
-        String outfileDirS = "";
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/001_taxaRefBam";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/002_taxaRefBam2";
         List<File> fsList = AoFile.getFileListInDir(infileDirS);
+
         fsList.parallelStream().forEach(f -> {
             try {
+                String refFileS = null;
                 String infileS = f.getAbsolutePath();
-                String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "_subset.txt.gz").getAbsolutePath();
+                String outfileS = new File(outfileDirS, f.getName()).getAbsolutePath();
+                List<String> taxaList = AoFile.getStringListbySet(infileS,0);
+                Collections.sort(taxaList);
+                List<String>[] bamList = new List[taxaList.size()];
+                for (int i = 0; i < bamList.length; i++) {
+                    bamList[i] = new ArrayList<>();
+                }
                 BufferedReader br = AoFile.readFile(infileS);
                 BufferedWriter bw = AoFile.writeFile(outfileS);
+                bw.write("Taxa\tReference\tBams(A list of bams of the taxon, seperated by the delimiter of Tab)");
+                bw.newLine();
+                String header = br.readLine();
                 String temp = null;
                 List<String> l = new ArrayList<>();
                 while ((temp = br.readLine()) != null) {
                     l = PStringUtils.fastSplit(temp);
+                    String taxa = l.get(0);
+                    String bam = l.get(2);
+                    refFileS = l.get(1);
+                    int index = Collections.binarySearch(taxaList,taxa);
+                    bamList[index].add(bam);
+                }
+                br.close();
 
+                for (int i = 0; i < taxaList.size(); i++) {
+                    bw.write(taxaList.get(i) + "\t" + refFileS);
+                    for (int j = 0; j < bamList[i].size(); j++) {
+                        bw.write("\t" + bamList[i].get(j));
+                    }
+                    bw.newLine();
                 }
                 bw.flush();
                 bw.close();
-                br.close();
                 System.out.println(f.getName() + "\tis completed at " + outfileS);
             } catch (Exception e) {
                 e.printStackTrace();
