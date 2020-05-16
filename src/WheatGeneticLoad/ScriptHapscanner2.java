@@ -12,7 +12,7 @@ import java.util.*;
 
 import AoUtils.AoFile;
 import AoUtils.AoMath;
-import AoUtils.CountSites;
+import AoUtils.AoString;
 import pgl.infra.table.RowTable;
 import pgl.infra.utils.IOUtils;
 import pgl.infra.utils.PStringUtils;
@@ -48,10 +48,10 @@ public class ScriptHapscanner2 {
 //        this.convertTaxaBamMapformat();
 //        this.getHapPos();
 
-//        this.mkParameter_AABB();
-//        this.mkJavaCmd_AABB();
+//        this.mkParameter();
+//        this.mkJavaCmd();
 //        this.bgzip();
-        this.bcftools_merge2();
+//        this.bcftools_merge2();
     }
 
     /**
@@ -63,71 +63,29 @@ public class ScriptHapscanner2 {
      * /Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/011_hapScanner/ff/out_hapscanner/VCF/merge.vcf
      */
     public void bcftools_merge2() {
-//        String abdFileDirS = "/data4/home/aoyue/vmap2/analysis/012_hapscanner/abd/output/VCF/";
-//        String abFileDirS = "/data4/home/aoyue/vmap2/analysis/012_hapscanner/ab/output/VCF/";
-//        String dFileDirS = "/data4/home/aoyue/vmap2/analysis/012_hapscanner/d/output/VCF/";
-//        String mergedFileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/001_rawMergedVCF/";
 
-        String abdFileDirS = "/data4/home/aoyue/vmap2/analysis/019_rebackDDtauschii/004_hapscannerABD/output/VCF/";
-        String abFileDirS = "";
-        String dFileDirS = "/data4/home/aoyue/vmap2/analysis/019_rebackDDtauschii/005_hapscanner/output/VCF/";
-        String mergedFileDirS = "/data4/home/aoyue/vmap2/analysis/019_rebackDDtauschii/006_bcftoolsMerge/";
+        String abdFileDirS = "/data4/home/aoyue/vmap2/analysis/023_hapScanner_basedPopDepth/abd/out/VCF";
+        String abFileDirS = "/data4/home/aoyue/vmap2/analysis/023_hapScanner_basedPopDepth/ab/out/VCF";
+        String dFileDirS = "/data4/home/aoyue/vmap2/analysis/023_hapScanner_basedPopDepth/d/out/VCF";
+        String mergedFileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/101_rawMergedVCF";
 
-        /**
-         * pseudo-code: 1.建立3个lineage的list,然后进行循环，判断：在A lineage下合并，依次类推。
-         */
-        List<Integer> lA = new ArrayList<>();
-        List<Integer> lD = new ArrayList<>();
-        //先进行D的建立
-        int j = 5;
-        lD.add(j);
-        for (int i = 0; i < 6; i++) {
-            j = j + 6;
-            lD.add(j);
-        }
-        int k = 6;
-        lD.add(k);
-        for (int i = 0; i < 6; i++) {
-            k = k + 6;
-            lD.add(k);
-        }
-        //再进行A的建立
-        int a = 1;
-        lA.add(a);
-        for (int i = 0; i < 6; i++) {
-            a = a + 6;
-            lA.add(a);
-        }
-        int aa = 2;
-        lA.add(aa);
-        for (int i = 0; i < 6; i++) {
-            aa = aa + 6;
-            lA.add(aa);
-        }
-
-        Collections.sort(lA);
-        Collections.sort(lD);
+        String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
         for (int i = 1; i < 43; i++) {
-            String chr = PStringUtils.getNDigitNumber(3, i);
+            String chr = chrArr[i];
+            String ABorD = AoString.ABorD(chr);
             String abdPath = new File(abdFileDirS, "chr" + chr + ".vcf.gz").getAbsolutePath();
-            String abPath = new File(abFileDirS, "chr" + chr + ".vcf.gz").getAbsolutePath();
-            String dPath = new File(dFileDirS, "chr" + chr + ".vcf.gz").getAbsolutePath();
-            int index = Collections.binarySearch(lD, i);
-            int index2 = Collections.binarySearch(lA, i);
-            if (index < 0) { //说明是属于AB的
-//                if (index2 > -1) { //说明是属于A的
-//                    String mPath = new File(mergedFileDirS, "chr" + chr + ".Alineage.vcf").getAbsolutePath();
-//                    System.out.println("/data1/programs/bcftools-1.8/bcftools merge -m all --force-samples -f PASS,. --threads 2 " + abdPath + " " + abPath + " -o " + mPath + " &");
-//                } else { //说明是属于B的
-//                    String mPath = new File(mergedFileDirS, "chr" + chr + ".Blineage.vcf").getAbsolutePath();
-//                    System.out.println("/data1/programs/bcftools-1.8/bcftools merge -m all --force-samples -f PASS,. --threads 2 " + abdPath + " " + abPath + " -o " + mPath + " &");
-//                }
-            } else if (index > -1) { //说明是属于D的
-                String mPath = new File(mergedFileDirS, "chr" + chr + ".subgenome.vcf").getAbsolutePath();
-                System.out.println("/data1/programs/bcftools-1.8/bcftools merge -m all --force-samples -f PASS,. --threads 10 " + abdPath + " " + dPath + " -o " + mPath + " &");
+            String path2 = null;
+            if (ABorD.equals("ab")){
+                path2 = new File(abFileDirS, "chr" + chr + ".vcf.gz").getAbsolutePath();
+            }else {
+                path2 = new File(dFileDirS, "chr" + chr + ".vcf.gz").getAbsolutePath();
             }
+
+            String mPath = new File(mergedFileDirS, "chr" + chr + ".vcf").getAbsolutePath();
+            System.out.println("/data1/programs/bcftools-1.8/bcftools merge -m all --force-samples -f PASS,. --threads 10 " + abdPath + " " + path2 + " -o " + mPath + " &");
         }
     }
+
 
     public void bgzip() {
 
@@ -145,52 +103,89 @@ public class ScriptHapscanner2 {
     /**
      * 本方法的目的是：建立28条染色体的java 运行脚本。
      */
-    public void mkJavaCmd_AABB() {
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/006_CMD/sh_hapScanner_ABgenome_chr1_42_20200515.sh";
-        //nohup java -Xmx100g -jar TIGER_v1.0.1.jar -a HapScanner -p ./parameters_006_d_hapScanner.txt > log_006_d_hapScanner.txt &
+    public void mkJavaCmd() {
+        //AABB
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/006_CMD/sh_hapScanner_ABgenome_chr1_42_20200515.sh";
         String[] chrArr ={"001","002","003","004","007","008","009","010","013","014","015","016","019","020","021","022","025","026","027","028","031","032","033","034","037","038","039","040"};
+
+        //AABBDD
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/006_CMD/sh_hapScanner_ABDgenome_chr1_42_20200516.sh";
+//        String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
+
+        //DD
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/006_CMD/sh_hapScanner_Dgenome_chr1_42_20200515.sh";
+//        String[] chrArr ={"005","006","011","012","017","018","023","024","029","030","035","036","041","042"};
+
+        String ploidy = AoString.getPloidy(chrArr);
+        ploidy = "abd";
+
         try {
+            //nohup java -Xmx100g -jar TIGER_v1.0.1.jar -a HapScanner -p ./parameters_006_d_hapScanner.txt > log_006_d_hapScanner.txt &
             BufferedWriter bw = IOUtils.getTextWriter(outfileS);
             for (int i = 0; i < chrArr.length; i++) {
                 String chr = chrArr[i];
                 bw.write("java -Xmx100g -jar TIGER_v1.0.1.jar -a HapScanner -p ./parameters_");
                 bw.write(chr);
-                bw.write("_ab_hapScanner.txt > log_");
+                bw.write("_" + ploidy + "_hapScanner.txt > log_");
                 bw.write(chr);
-                bw.write("_ab_hapScanner2.txt");
+                bw.write("_" + ploidy + "_hapScanner2.txt");
                 bw.newLine();
             }
             bw.flush();
             bw.close();
-
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
         }
+
+        // run this script
+//        System.out.println("nohup sh sh_hapScanner_Dgenome_chr1_42_20200515.sh > log_hapScanner_Dgenome_chr1_42_20200515.txt 2>&1 &");
     }
 
 
     /**
      * 本方法的目的是：建立28条染色体的parameters文件。
      */
-    public void mkParameter_AABB() {
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/004_para_ab";
-        String[] chrArr ={"001","002","003","004","007","008","009","010","013","014","015","016","019","020","021","022","025","026","027","028","031","032","033","034","037","038","039","040"};
-        String taxaBamMapFileS = "/data4/home/aoyue/vmap2/analysis/023_hapScanner_basedPopDepth/ab/001_taxaRefBam_ABgenome.txt";
+    public void mkParameter() {
+//        // 参数文件本地输出
+//        String outfileDirS = "";
+//        // HPC Path set
+//        String[] chrArr ={};
+//        String taxaBamMapFileS = "";
+//        String outDirS = "";
 
+//        // 参数文件本地输出 AABB
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/004_para_ab";
+//        // HPC Path set
+//        String[] chrArr ={"001","002","003","004","007","008","009","010","013","014","015","016","019","020","021","022","025","026","027","028","031","032","033","034","037","038","039","040"};
+//        String taxaBamMapFileS = "/data4/home/aoyue/vmap2/analysis/023_hapScanner_basedPopDepth/ab/001_taxaRefBam_ABgenome.txt";
+//        String outDirS = "/data4/home/aoyue/vmap2/analysis/023_hapScanner_basedPopDepth/ab/out";
 
+//        // 参数文件本地输出 AABBDD
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/003_para_abd";
+//        // HPC Path set
+//        String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
+//        String taxaBamMapFileS = "/data4/home/aoyue/vmap2/analysis/023_hapScanner_basedPopDepth/abd/001_taxaRefBam_ABDgenome.txt";
+//        String outDirS = "/data4/home/aoyue/vmap2/analysis/023_hapScanner_basedPopDepth/abd/out";
+
+        // 参数文件本地输出 DD
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/005_para_d";
+        // HPC Path set
+        String[] chrArr ={"005","006","011","012","017","018","023","024","029","030","035","036","041","042"};
+        String taxaBamMapFileS = "/data4/home/aoyue/vmap2/analysis/023_hapScanner_basedPopDepth/d/001_taxaRefBam_Dgenome.txt";
+        String outDirS = "/data4/home/aoyue/vmap2/analysis/023_hapScanner_basedPopDepth/d/out";
+
+        // no change
         String posAlleleFileDirS = "/data4/home/aoyue/vmap2/feilu/variationLibrary/";
         String posFileDirS = "/data4/home/aoyue/vmap2/analysis/023_hapScanner_basedPopDepth/pileup_library/hapPos";
-        String outDirS = "/data4/home/aoyue/vmap2/analysis/023_hapScanner_basedPopDepth/ab/out";
+        String ploidy = AoString.getPloidy(chrArr);
         try {
-
             for (int i = 0; i < chrArr.length; i++) {
                 String chr = chrArr[i];
                 int chrInt = Integer.parseInt(chr);
                 String posAlleleFileS = new File(posAlleleFileDirS,"chr" + chr + ".lib.txt.gz").getAbsolutePath();
                 String posFileS = new File(posFileDirS,"chr" + chr + ".lib_HapPos.txt.gz").getAbsolutePath();
-
-                String outfileS = new File(outfileDirS, "parameters_" + chr + "_ab_hapScanner.txt").getAbsolutePath();
+                String outfileS = new File(outfileDirS, "parameters_" + chr + "_" + ploidy + "_hapScanner.txt").getAbsolutePath();
 
                 BufferedWriter bw = IOUtils.getTextWriter(outfileS);
                 StringBuilder sb = new StringBuilder();

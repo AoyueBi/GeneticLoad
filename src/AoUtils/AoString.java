@@ -1,10 +1,39 @@
 package AoUtils;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class AoString {
     public AoString(){
 
+    }
+
+    /**
+     * 根据 001 002 or 005 判断该染色体是属于 AB四倍体还是D二倍体
+     * @param chr
+     * @return
+     */
+    public static String ABorD(String chr){
+        String out = null;
+        String[] chrArr ={"005","006","011","012","017","018","023","024","029","030","035","036","041","042"};
+        Arrays.sort(chrArr);
+        int index = Arrays.binarySearch(chrArr,chr);
+        if (index > -1) out = "d";
+        if (index < 0) out = "ab";
+        return out;
+    }
+
+    /**
+     * 主要用于脚本书写，在hapScanner 脚本中用到
+     * @param chrArr
+     * @return
+     */
+    public static String getPloidy(String[] chrArr){
+        String out = null;
+        if (chrArr.length == 42) out = "abd";
+        if (chrArr.length == 28) out = "ab";
+        if (chrArr.length == 14) out = "d";
+        return  out;
     }
 //String name = new File(outPath).getName();
     //String chr = name.substring(name.indexOf("chr")+3,name.indexOf("chr")+5);
