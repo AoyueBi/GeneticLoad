@@ -9,6 +9,18 @@ public class AoString {
     }
 
     /**
+     * 将 double类型的数据格式化输出，保留4位有效数字
+     * @param value
+     * @return
+     */
+    public static String outFormatted(double value){
+        String out = null;
+        out = String.format("%.4f",value);
+
+        return out;
+    }
+
+    /**
      * 根据 001 002 or 005 判断该染色体是属于 AB四倍体还是D二倍体
      * @param chr
      * @return

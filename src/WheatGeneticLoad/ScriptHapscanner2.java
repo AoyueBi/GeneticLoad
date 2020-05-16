@@ -13,6 +13,11 @@ import java.util.*;
 import AoUtils.AoFile;
 import AoUtils.AoMath;
 import AoUtils.AoString;
+import gnu.trove.list.array.TDoubleArrayList;
+import pgl.graphcis.r.Histogram;
+import pgl.infra.dna.genotype.GenoIOFormat;
+import pgl.infra.dna.genotype.GenotypeGrid;
+import pgl.infra.dna.genotype.GenotypeOperation;
 import pgl.infra.table.RowTable;
 import pgl.infra.utils.IOUtils;
 import pgl.infra.utils.PStringUtils;
@@ -52,6 +57,153 @@ public class ScriptHapscanner2 {
 //        this.mkJavaCmd();
 //        this.bgzip();
 //        this.bcftools_merge2();
+
+        this.qualityCheck();
+
+
+    }
+
+
+    /**
+     * 对HapScanner 的结果进行质控
+     */
+    public void qualityCheck () {
+        //missing, maf, heterozygous proportion
+        String qcDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/007_qualityCheck";
+
+        String abInVCFDirS = "/data4/home/aoyue/vmap2/analysis/023_hapScanner_basedPopDepth/001_QC_test/ab";
+        String abdInVCFDirS = "/data4/home/aoyue/vmap2/analysis/023_hapScanner_basedPopDepth/001_QC_test/abd";
+        String dInVCFDirS = "/data4/home/aoyue/vmap2/analysis/023_hapScanner_basedPopDepth/001_QC_test/d";
+
+        this.checkQuality(abInVCFDirS, new File(qcDirS, "ab").getAbsolutePath(), "AB");
+        this.checkQuality(abdInVCFDirS, new File(qcDirS, "abd").getAbsolutePath(), "ABD");
+        this.checkQuality(dInVCFDirS, new File(qcDirS, "d").getAbsolutePath(), "D");
+
+    }
+
+    private void checkQuality (String vcfDirS, String outDirS, String genomeType) {
+        File outDir = new File (outDirS);
+        outDir.mkdir();
+        int fN = 2;
+        int size = 20000; //抽样数量
+        List<File> fList = AoFile.getFileListInDir(vcfDirS);
+        Collections.sort(fList);
+
+        GenotypeGrid[] gts = new GenotypeGrid[fN];
+        int totalSiteCount = 0;
+        for (int i = 0; i < gts.length; i++) { //对genotypeTable 进行初始化
+            gts[i] = new GenotypeGrid(fList.get(i).getAbsolutePath(), GenoIOFormat.VCF_GZ);
+            totalSiteCount+=gts[i].getSiteNumber(); //获取 fN 个文件的总位点数
+        }
+        GenotypeOperation.mergeGenotypesBySite(gts[0], gts[1]); // 合并两个VCF文件
+        GenotypeGrid gt = gts[0];
+        TDoubleArrayList missingSite = new TDoubleArrayList(); // calculation 1
+        TDoubleArrayList hetSite = new TDoubleArrayList(); // calculation 2
+        TDoubleArrayList maf = new TDoubleArrayList(); // calculation 3
+        TDoubleArrayList missingTaxon = new TDoubleArrayList(); // calculation 4
+        TDoubleArrayList hetTaxon = new TDoubleArrayList(); // calculation 5
+
+        int step = gt.getSiteNumber()/size;
+        for (int i = 0; i < gt.getSiteNumber(); i+=step) {
+            missingSite.add(((double) gt.getMissingNumberBySite(i)/gt.getTaxaNumber()));
+            hetSite.add(gt.getHeterozygousProportionBySite(i));
+            maf.add(gt.getMinorAlleleFrequency(i));
+        }
+        for (int i = 0; i < gt.getTaxaNumber(); i++) {
+            missingTaxon.add((double)gt.getMissingNumberByTaxon(i)/gt.getSiteNumber());
+            hetTaxon.add(gt.getHeterozygousProportionByTaxon(i));
+        }
+
+        String siteQCfileS = new File(outDirS,genomeType + "_site_QC.txt.gz").getAbsolutePath();
+        String taxaQCFileS = new File (outDirS, genomeType+"_taxa_QC.txt.gz").getAbsolutePath();
+
+        try {
+            BufferedWriter bw = AoFile.writeFile(siteQCfileS);
+            bw.write("GenomeType\tHeterozygousProportion\tMissingRate\tMaf");
+            bw.newLine();
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < missingSite.size(); i++) {
+                sb.setLength(0);
+                sb.append(genomeType).append("\t").append(hetSite.get(i)).append("\t").append(missingSite.get(i)).append("\t").append(maf.get(i));
+                bw.write(sb.toString());
+                bw.newLine();
+            }
+            bw.flush();
+            bw.close();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        try {
+            BufferedWriter bw = AoFile.writeFile(taxaQCFileS);
+            bw.write("Taxa\tHeterozygousProportion\tMissRate\tGenomeType");
+            bw.newLine();
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < gt.getTaxaNumber(); i++) {
+                sb.setLength(0);
+                sb.append(gt.getTaxonName(i)).append("\t").append(hetTaxon.get(i)).append("\t").append(missingTaxon.get(i)).append("\t").append(genomeType);
+                bw.write(sb.toString());
+                bw.newLine();
+            }
+            bw.flush();
+            bw.close();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        //        String siteMissingPdf = new File (outDirS, genomeType+"_site_missing.pdf").getAbsolutePath();
+//        String siteHetPdf = new File (outDirS, genomeType+"_site_het.pdf").getAbsolutePath();
+//        String taxaMissingPdf = new File (outDirS, genomeType+"_taxa_missing.pdf").getAbsolutePath();
+//        String taxaHetPdf = new File (outDirS, genomeType+"_taxa_het.pdf").getAbsolutePath();
+//        String mafPdf = new File (outDirS, genomeType+"__site_maf.pdf").getAbsolutePath();
+//        String taxaHetFileS = new File (outDirS, genomeType+"_site_het.txt").getAbsolutePath();
+
+//        try {
+//            BufferedWriter bw = IOUtils.getTextWriter(taxaHetFileS);
+//            bw.write("Taxa\tHeterozygousProportion");
+//            bw.newLine();
+//            StringBuilder sb = new StringBuilder();
+//            for (int i = 0; i < gt.getTaxaNumber(); i++) {
+//                sb.setLength(0);
+//                sb.append(gt.getTaxonName(i)).append("\t").append(hetTaxon.get(i));
+//                bw.write(sb.toString());
+//                bw.newLine();
+//            }
+//            bw.flush();
+//            bw.close();
+//        }
+//        catch (Exception e) {
+//            e.printStackTrace();
+//        }
+
+//        Histogram h = new Histogram(missingSite.toArray());
+//        h.setTitle(genomeType+"_missing"+"_bySite");
+//        h.setXLab("Missing rate");
+//        h.setYLab("Proportion");
+//        h.saveGraph(siteMissingPdf);
+//        h = new Histogram(hetSite.toArray());
+//        h.setTitle(genomeType+"_heterozygous"+"_bySite");
+//        h.setXLab("Heterozygous proportion by site");
+//        h.setYLab("Proportion");
+//        h.saveGraph(siteHetPdf);
+//        h = new Histogram(maf.toArray());
+//        h.setTitle(genomeType+"_MAF"+"_bySite");
+//        h.setXLab("MAF");
+//        h.setYLab("Proportion");
+//        h.saveGraph(mafPdf);
+//        h = new Histogram(missingTaxon.toArray());
+//        h.setTitle(genomeType+"_missing"+"_byTaxa");
+//        h.setXLab("Missing rate");
+//        h.setYLab("Proportion");
+//        h.saveGraph(taxaMissingPdf);
+//        h = new Histogram(hetTaxon.toArray());
+//        h.setTitle(genomeType+"_heterozygous"+"_byTaxa");
+//        h.setXLab("Heterozygous proportion by taxa");
+//        h.setYLab("Proportion");
+//        h.saveGraph(taxaHetPdf);
     }
 
     /**
@@ -90,12 +242,12 @@ public class ScriptHapscanner2 {
     public void bgzip() {
 
 //        String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
-        String[] chrArr ={"001","002","003","004","007","008","009","010","013","014","015","016","019","020","021","022","025","026","027","028","031","032","033","034","037","038","039","040"};
-//        String[] chrArr ={"005","006","011","012","017","018","023","024","029","030","035","036","041","042"};
+//        String[] chrArr ={"001","002","003","004","007","008","009","010","013","014","015","016","019","020","021","022","025","026","027","028","031","032","033","034","037","038","039","040"};
+        String[] chrArr ={"005","006","011","012","017","018","023","024","029","030","035","036","041","042"};
 
         for (int i = 0; i < chrArr.length; i++) {
             String chr = chrArr[i];
-            System.out.println("bgzip -@ 2 chr" + chr + ".vcf && tabix -p vcf chr" + chr + ".vcf.gz &");
+            System.out.println("bgzip -@ 4 chr" + chr + ".vcf && tabix -p vcf chr" + chr + ".vcf.gz &");
         }
     }
 
@@ -242,26 +394,33 @@ public class ScriptHapscanner2 {
 
     public void getHapPos(){
         String infileDirS = "/data4/home/aoyue/vmap2/feilu/variationLibrary";
-        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/023_hapScanner_basedPopDepth/pileup_library/hapPos";
+//        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/023_hapScanner_basedPopDepth/pileup_library/hapPos";
+        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/023_hapScanner_basedPopDepth/pileup_library/d_hapPos";
         List<File> fsList = AoFile.getFileListInDir(infileDirS);
+        String[] chrArr ={"005","006","011","012","017","018","023","024","029","030","035","036","041","042"};
+        Arrays.sort(chrArr);
         fsList.parallelStream().forEach(f -> {
             try {
                 String infileS = f.getAbsolutePath();
-                String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "_HapPos.txt.gz").getAbsolutePath();
-                BufferedReader br = AoFile.readFile(infileS);
-                BufferedWriter bw = AoFile.writeFile(outfileS);
-                String header = br.readLine();
-                String temp = null;
-                List<String> l = new ArrayList<>();
-                while ((temp = br.readLine()) != null) {
-                    l = PStringUtils.fastSplit(temp);
-                    bw.write(l.get(0) + "\t" + l.get(1));
-                    bw.newLine();
+                String chr = f.getName().substring(3,6);
+                int index = Arrays.binarySearch(chrArr,chr);
+                if (index > -1){
+                    String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "_HapPos.txt.gz").getAbsolutePath();
+                    BufferedReader br = AoFile.readFile(infileS);
+                    BufferedWriter bw = AoFile.writeFile(outfileS);
+                    String header = br.readLine();
+                    String temp = null;
+                    List<String> l = new ArrayList<>();
+                    while ((temp = br.readLine()) != null) {
+                        l = PStringUtils.fastSplit(temp);
+                        bw.write(l.get(0) + "\t" + l.get(1));
+                        bw.newLine();
+                    }
+                    bw.flush();
+                    bw.close();
+                    br.close();
+                    System.out.println(f.getName() + "\tis completed at " + outfileS);
                 }
-                bw.flush();
-                bw.close();
-                br.close();
-                System.out.println(f.getName() + "\tis completed at " + outfileS);
             } catch (Exception e) {
                 e.printStackTrace();
             }
