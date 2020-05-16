@@ -19,15 +19,58 @@ public class HomoeologGenesAnalysis {
 
     public HomoeologGenesAnalysis(){
 //        this.getAverageDistance();
+//        this.getCol();
+        this.extractDistance();
 
-        String [] key = {"M011","M110"};
-        AoColor.sort(key);
-        AoColor.models7(key);
+
 
 
     }
 
+    public void extractDistance(){
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/007_Global/002_hexaploid_byIndividual/002_addAvedistance";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/007_Global/002_hexaploid_byIndividual/003_extractAve";
+        List<File> fsList = AoFile.getFileListInDir(infileDirS);
+        AoFile.readheader(fsList.get(0).getAbsolutePath());
+        int a=3;
+        fsList.parallelStream().forEach(f -> {
+            try {
+                String infileS = f.getAbsolutePath();
+                String outfileS = new File(outfileDirS, f.getName()).getAbsolutePath();
+                BufferedReader br = AoFile.readFile(infileS);
+                BufferedWriter bw = AoFile.writeFile(outfileS);
+                bw.write("AveDistance");
+                bw.newLine();
+                String header = br.readLine();
+                String temp = null;
+                List<String> l = new ArrayList<>();
+                while ((temp = br.readLine()) != null) {
+                    l = PStringUtils.fastSplit(temp);
+                    for (int i = 0; i < 5; i++) {
 
+
+                    }
+                    String ave = l.get(2010);
+                    bw.write(ave);
+                    bw.newLine();
+                }
+                bw.flush();
+                bw.close();
+                br.close();
+                System.out.println(f.getName() + "\tis completed at " + outfileS);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+
+    public void getCol(){
+        String [] key = {"M011","M110"};
+        AoColor.sort(key);
+        AoColor.models7(key);
+
+    }
 
     /**
      * 获取每个群体到gloable的平均距离
@@ -35,8 +78,13 @@ public class HomoeologGenesAnalysis {
      *
      */
     public void getAverageDistance(){
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/007_Global/001_hexaploid_perCDSperGenotype/001_source";
-        String outfileDirs ="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/007_Global/001_hexaploid_perCDSperGenotype/002_addAvedistance";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/007_Global/001_hexaploid_perCDSperGenotype/001_source";
+//        String outfileDirs = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/007_Global/001_hexaploid_perCDSperGenotype/002_addAvedistance";
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/007_Global/002_hexaploid_byIndividual/001_source";
+        String outfileDirs = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/007_Global/002_hexaploid_byIndividual/002_addAvedistance";
+        new File(outfileDirs).mkdirs();
+
         List<File> fsList = AoFile.getFileListInDir(infileDirS);
 
 //        String testFileS = fsList.get(0).getAbsolutePath();

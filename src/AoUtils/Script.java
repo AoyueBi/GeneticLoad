@@ -35,10 +35,59 @@ public class Script {
 //        this.script_AB_byRef();
 //        this.script_ABD_byRef();
 //        this.splitScript();
+//
+//        this.script_bw();
+//        this.script_sout();
 
 
 //        
 //        this.mergelogTxt("/Users/Aoyue/Documents/log_024", "/Users/Aoyue/Documents/ploidy.txt");
+    }
+
+    public void script_sout() {
+//        String[] chrArr = {"1A", "1B", "2A", "2B", "3A", "3B", "4A", "4B", "5A", "5B", "6A", "6B", "7A", "7B"};
+//        String[] chrArr = {"1D","2D", "3D", "4D", "5D", "6D","7D"};
+//        String[] chrArr = {"1A", "2A", "3A","4A", "5A", "6A", "7A", "1B", "2B", "3B", "4B", "5B", "6B", "7B", "1D", "2D", "3D",  "4D", "5D", "6D", "7D"};
+//        String[] chrArr = {"1A", "2A", "3A","4A", "5A", "6A", "7A", "1B", "2B", "3B", "4B", "5B", "6B", "7B"};
+
+//        String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
+        String[] chrArr ={"001","002","003","004","007","008","009","010","013","014","015","016","019","020","021","022","025","026","027","028","031","032","033","034","037","038","039","040"};
+//        String[] chrArr ={"005","006","011","012","017","018","023","024","029","030","035","036","041","042"};
+
+        for (int i = 0; i < chrArr.length; i++) {
+            String chr = chrArr[i];
+            System.out.println("");
+
+        }
+
+    }
+
+    public void script_bw() {
+        String outfileS = "";
+//        String[] chrArr = {"1A", "1B", "1D", "2A", "2B", "2D", "3A", "3B", "3D", "4A", "4B", "4D", "5A", "5B", "5D", "6A", "6B", "6D", "7A", "7B", "7D"};
+//        String[] chrArr = {"1A", "1B", "2A", "2B", "3A", "3B", "4A", "4B", "5A", "5B", "6A", "6B", "7A", "7B"};
+//        String[] chrArr = {"1D","2D", "3D", "4D", "5D", "6D","7D"};
+//        String[] chrArr = {"1A", "2A", "3A","4A", "5A", "6A", "7A", "1B", "2B", "3B", "4B", "5B", "6B", "7B", "1D", "2D", "3D",  "4D", "5D", "6D", "7D"};
+//        String[] chrArr = {"1A", "2A", "3A","4A", "5A", "6A", "7A", "1B", "2B", "3B", "4B", "5B", "6B", "7B"};
+
+//        String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
+        String[] chrArr ={"001","002","003","004","007","008","009","010","013","014","015","016","019","020","021","022","025","026","027","028","031","032","033","034","037","038","039","040"};
+//        String[] chrArr ={"005","006","011","012","017","018","023","024","029","030","035","036","041","042"};
+
+        try {
+            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            for (int i = 0; i < chrArr.length; i++) {
+                String chr = chrArr[i];
+                bw.write("");
+                bw.newLine();
+            }
+            bw.flush();
+            bw.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
     public void splitScript(){
@@ -216,6 +265,7 @@ public class Script {
 //                System.out.println("mv chr" + chr + ".subgenome.vcf ../004_rawMergedVCF_removeBadTaxa_Dsubgenome_threshold1/");
 //                System.out.println("java -jar 028_extractVCF.jar  /data4/home/aoyue/vmap2/genotype/mergedVCF/011_VMapII/chr" + chr + "_vmap2.1.vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/012_VCFbyPop/001_byPloid/diploid/chr" + chr + "_vmap2.1_diploid.vcf /data4/home/aoyue/vmap2/analysis/000_taxaList/Ae.tauschii_S36.txt > log_028/log_extractVCF_chr" + chr + "_diploid20191107.txt 2>&1");
 //                this.splitBwaScript("/Users/Aoyue/Documents/extractVCF20191107.sh", "extractVCF", 18, 3);
+                System.out.println("bgzip -@ 6 chr" + chr + ".vcf &" );
             }
         }
     }

@@ -2715,30 +2715,17 @@ public class CountSites {
      *
      * @param infileDirS
      */
-    public void countSitesinFastCallformat(String infileDirS) {
-        File[] fs = new File(infileDirS).listFiles();
-        for (int i = 0; i < fs.length; i++) {
-            if (fs[i].isHidden()) {
-                fs[i].delete();
-            }
-        }
-        fs = new File(infileDirS).listFiles();
-        List<File> fsList = Arrays.asList(fs);
-        Collections.sort(fsList);
+    public static void countSitesinFastCallformat_fromTxt(String infileDirS) {
 
-        System.out.println("Chr\tRaw SNPs\tBiallelic SNPs\tTriallelic SNPs\tIndels\tInsertions\tDeletions");
+        List<File> fsList = AoFile.getFileListInDir(infileDirS);
+
+        System.out.println("Chr\tN_RawSNPs\tN_BiallelicSNPs\tN_TriallelicSNPs\tIndels\tInsertions\tDeletions");
         fsList.parallelStream().forEach(f -> {
             try {
                 String infileS = f.getAbsolutePath();
-                BufferedReader br = null;
-                if (infileS.endsWith(".vcf")) {
-                    br = IOUtils.getTextReader(infileS);
-                } else if (infileS.endsWith(".vcf.gz")) {
-                    br = IOUtils.getTextGzipReader(infileS);
-                }
+                BufferedReader br = AoFile.readFile(infileS);
                 String chr = f.getName().substring(3, 6); //提取染色体号 001
                 int chrint = Integer.parseInt(chr); //将染色体号转化为数字
-
                 int cntSNP = 0;
                 int cntBi = 0;
                 int cntTri = 0;
@@ -2746,12 +2733,16 @@ public class CountSites {
                 int cntI = 0;
                 int cntD = 0;
                 String temp = null;
+                String header = br.readLine();
                 while ((temp = br.readLine()) != null) { //是否含有D I
-                    if (temp.startsWith("#")) {
-                        continue;
-                    }
-                    temp = temp.substring(0, 100);
-                    String alt = PStringUtils.fastSplit(temp).get(4);
+                    String alt = PStringUtils.fastSplit(temp).get(3);
+                    /**
+                     * 含有逗号，即有2个alt.
+                     * case 1: A,T
+                     * case 2: D,I
+                     * case 3: D,G
+                     * case 4: I,T
+                     */
                     if (!(alt.length() == 1)) { //2个alt的情况;若该位点含有D或I ，那么就属于Indel，如果没有D 或者I，那么就属于SNP
                         boolean ifD = false;
                         if (!alt.contains("D") && (!alt.contains("I"))) {
@@ -2765,7 +2756,85 @@ public class CountSites {
                         }
                         if (alt.contains("I")) {
                             cntI++;
-                            if (ifD == false) {
+                            if (ifD == false) { //针对 case 2的情况，即含有D又含有I， 这时在上面的D中已经加过 cntIndel了，所以不用再加了
+                                cntIndel++;
+                            }
+                        }
+
+                    } else if (alt.length() == 1) { //1个alt的情况;
+                        if (!alt.equals("D") && (!alt.equals("I"))) {
+                            cntBi++;
+                            cntSNP++;
+                        }
+                        if (alt.equals("D")) {
+                            cntD++;
+                            cntIndel++;
+                        }
+                        if (alt.equals("I")) {
+                            cntI++;
+                            cntIndel++;
+                        }
+                    }
+                }
+                br.close();
+                System.out.println(String.valueOf(chrint) + "\t" + String.valueOf(cntSNP) + "\t" + String.valueOf(cntBi) + "\t" + String.valueOf(cntTri) + "\t" + String.valueOf(cntIndel) + "\t" + String.valueOf(cntI) + "\t" + String.valueOf(cntD));
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
+        });
+    }
+
+    /**
+     * 对已生成的14条染色体进行计数.注意加log文件，结果在log文件中显示
+     *
+     * @param infileDirS
+     */
+    public static void countSitesinFastCallformat(String infileDirS) {
+
+        List<File> fsList = AoFile.getFileListInDir(infileDirS);
+
+        System.out.println("Chr\tN_RawSNPs\tN_BiallelicSNPs\tN_TriallelicSNPs\tIndels\tInsertions\tDeletions");
+        fsList.parallelStream().forEach(f -> {
+            try {
+                String infileS = f.getAbsolutePath();
+                BufferedReader br = AoFile.readFile(infileS);
+                String chr = f.getName().substring(3, 6); //提取染色体号 001
+                int chrint = Integer.parseInt(chr); //将染色体号转化为数字
+                int cntSNP = 0;
+                int cntBi = 0;
+                int cntTri = 0;
+                int cntIndel = 0;
+                int cntI = 0;
+                int cntD = 0;
+                String temp = null;
+                while ((temp = br.readLine()) != null) { //是否含有D I
+                    if (temp.startsWith("#")) {
+                        continue;
+                    }
+                    temp = temp.substring(0, 150);
+                    String alt = PStringUtils.fastSplit(temp).get(4);
+                    /**
+                     * 含有逗号，即有2个alt.
+                     * case 1: A,T
+                     * case 2: D,I
+                     * case 3: D,G
+                     * case 4: I,T
+                     */
+                    if (!(alt.length() == 1)) { //2个alt的情况;若该位点含有D或I ，那么就属于Indel，如果没有D 或者I，那么就属于SNP
+                        boolean ifD = false;
+                        if (!alt.contains("D") && (!alt.contains("I"))) {
+                            cntTri++;
+                            cntSNP++;
+                        }
+                        if (alt.contains("D")) {
+                            cntD++;
+                            cntIndel++;
+                            ifD = true;
+                        }
+                        if (alt.contains("I")) {
+                            cntI++;
+                            if (ifD == false) { //针对 case 2的情况，即含有D又含有I， 这时在上面的D中已经加过 cntIndel了，所以不用再加了
                                 cntIndel++;
                             }
                         }

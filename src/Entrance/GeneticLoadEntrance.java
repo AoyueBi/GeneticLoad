@@ -8,10 +8,7 @@ package Entrance;
 import GermplasmInfo.GermplasmInfo;
 import Plot.PCA;
 import PopulationAnalysis.DeleteriousCountbyPop;
-import WheatGeneticLoad.GeneExpressionbywheat;
-import WheatGeneticLoad.HomoeologGenesAnalysis;
-import WheatGeneticLoad.RebuildVCF;
-import WheatGeneticLoad.ScriptHapscanner2;
+import WheatGeneticLoad.*;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -51,7 +48,7 @@ public class GeneticLoadEntrance {
 //        new DeleteriousBiologyAoyue();
 //        new EstSFS();
 //        new DeleteriousCountbyPop();
-//        new HomoeologGenesAnalysis();
+        new HomoeologGenesAnalysis();
 
 
 
