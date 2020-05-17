@@ -10,6 +10,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.util.*;
 
+import AoUtils.AoColor;
 import AoUtils.AoFile;
 import AoUtils.AoMath;
 import AoUtils.AoString;
@@ -58,9 +59,30 @@ public class ScriptHapscanner2 {
 //        this.bgzip();
 //        this.bcftools_merge2();
 
-        this.qualityCheck();
+//        this.qualityCheck();
+//        this.mergeCheckFile();
 
+        String[] in = {"AB","ABD","D"};
+        AoColor.genomeType(in);
 
+    }
+
+    /**
+     * 将生成的以site和taxa为单位的质控的结果进行合并，使六倍体，四倍体，二倍体在一个文件中
+     */
+    public void mergeCheckFile(){
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/007_qualityCheck/001";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/007_qualityCheck/002_merge";
+
+        // change every time
+//        String suffix = "_site_QC.txt.gz";
+        String suffix = "_taxa_QC.txt.gz";
+
+        String outfileS = new File(outfileDirS,"001" + suffix).getAbsolutePath();
+        File[] fs = IOUtils.listRecursiveFiles(new File(infileDirS));
+        fs = IOUtils.listFilesEndsWith(fs,suffix);
+        AoFile.mergeTxt_byFileArray(fs,outfileS);
     }
 
 
@@ -69,7 +91,7 @@ public class ScriptHapscanner2 {
      */
     public void qualityCheck () {
         //missing, maf, heterozygous proportion
-        String qcDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/007_qualityCheck";
+        String qcDirS = "/data4/home/aoyue/vmap2/analysis/023_hapScanner_basedPopDepth/001_QC_test/001_qualityCheck";
 
         String abInVCFDirS = "/data4/home/aoyue/vmap2/analysis/023_hapScanner_basedPopDepth/001_QC_test/ab";
         String abdInVCFDirS = "/data4/home/aoyue/vmap2/analysis/023_hapScanner_basedPopDepth/001_QC_test/abd";

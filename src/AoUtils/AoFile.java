@@ -225,6 +225,46 @@ public class AoFile {
         }
     }
 
+
+    public static void mergeTxt_byFileArray(File[] fs, String outfileS) {
+        Arrays.sort(fs);
+        try {
+            String infileS = fs[0].getAbsolutePath();
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            //read header
+            bw.write(br.readLine());
+            bw.newLine();
+
+            int cnttotal = 0;
+            //read context
+            for (int i = 0; i < fs.length; i++) {
+                infileS = fs[i].getAbsolutePath();
+                br = AoFile.readFile(infileS);
+                br.readLine(); //read header
+                String temp = null;
+                int cnt = 0;
+                while ((temp = br.readLine()) != null) {
+                    cnt++;
+                    cnttotal++;
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(temp);
+                    bw.write(sb.toString());
+                    bw.newLine();
+                }
+                System.out.println(fs[i].getName() + "\t" + cnt);
+            }
+            System.out.println("Total lines without header count is " + cnttotal + " at merged file " + outfileS );
+            br.close();
+            bw.flush();
+            bw.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
     /**
      *
      * @param infileDirS

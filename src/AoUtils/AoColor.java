@@ -11,6 +11,30 @@ public class AoColor {
 
     }
 
+    public static String genomeType(String[] input){
+        String out=null;
+
+        HashMap<String,String> hm = new HashMap<>();
+        String[] value = {"#ffd702","#fc6e6e","#87cef9"};
+        String[] key = {"AB","ABD","D"};
+        for (int i = 0; i < value.length; i++) {
+            hm.put(key[i],value[i]);
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("c(");
+        for (int i = 0; i < input.length; i++) {
+            String col = hm.get(input[i]);
+            sb.append("'").append(col).append("',");
+        }
+        sb.deleteCharAt(sb.length()-1);
+        sb.append(")");
+        out = sb.toString();
+        System.out.println(out);
+
+        return out;
+    }
+
     public static String models7(String[] input){
         String out=null;
 
