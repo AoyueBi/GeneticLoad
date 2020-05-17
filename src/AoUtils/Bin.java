@@ -35,6 +35,248 @@ public class Bin {
 
     }
 
+    public static void frequency2_byGroup (String infileS,int columnIndexGroup,int columnIndexValue,double windowSize,double windowStep,String outfileS){
+        String[] groupArray = AoFile.getStringArraybySet(infileS,columnIndexGroup);
+        TDoubleArrayList[] valueList = new TDoubleArrayList[groupArray.length];
+        for (int i = 0; i < groupArray.length; i++) { //记得初始化
+            valueList[i] = new TDoubleArrayList();
+        }
+
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = null;
+            String header = br.readLine();
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+                String group = l.get(columnIndexGroup);
+                if (l.get(columnIndexValue).startsWith("N"))continue; //过滤时N的一行
+                double value = Double.parseDouble(l.get(columnIndexValue));
+                int index = Arrays.binarySearch(groupArray,group);
+                if (index <0){
+                    System.out.println(group + "\t" + value);
+                }
+                valueList[index].add(value);
+            }
+            br.close();
+
+            List[][] output = new List[groupArray.length][];
+            for (int i = 0; i < groupArray.length; i++) {
+                output[i]= Bin.frequency2(valueList[i],windowSize,windowStep);
+            }
+
+            bw.write("Group\tXcoord\tCount\tFrequency");
+            bw.newLine();
+            for (int i = 0; i < groupArray.length; i++) { //第一层循环是1A到7D
+                List<String>[] out = output[i];
+                for (int j = 0; j < out[0].size(); j++) { //第二层循环是bin返回的内容
+                    String group = groupArray[i];
+                    String Xcoord = out[0].get(j);
+                    String count = out[1].get(j);
+                    String value = out[2].get(j);
+                    bw.write(group + "\t" + Xcoord + "\t" + count + "\t" + value);
+                    bw.newLine();
+                }
+            }
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    public static List<String>[] frequency2(TDoubleArrayList valueList,double window, double step){
+        /**
+         * 初始化bins
+         */
+        double valuemax = valueList.max();
+        double[][] bound = new Bin().initializeWindowStep_bydouble_start0(valuemax, window, step);
+
+        int count[] = new int[bound.length]; //查看每个bin里面的变异个数
+        double[] boundright = new double[bound.length]; //只看左边的bound
+        double[] boundleft = new double[bound.length]; //右边的bound
+        for (int i = 0; i < bound.length; i++) { //每个bound的左边
+            boundleft[i] = bound[i][0];
+            boundright[i] = bound[i][1];
+        }
+
+        for (int i = 0; i < valueList.size(); i++) {
+            double value = valueList.get(i);
+
+            int indexleft = Arrays.binarySearch(boundleft, value);
+            if (indexleft < 0) {
+                indexleft = -indexleft - 2 +1;
+            }
+            else if (indexleft > -1) {
+                indexleft = indexleft +1;
+            }
+
+
+            int indexright = Arrays.binarySearch(boundright, value);
+            if (indexright < 0){
+                indexright = -indexright-1;
+            }
+            else if (indexright > -1){
+                indexright = indexright +1;
+            }
+
+
+            for (int j = indexright; j < indexleft ; j++) {
+                count[j]++; //每个Bin 里面的变异个数
+            }
+        }
+
+        //计算每个Bin里面的平均值
+        double[] fre = new double[bound.length];
+        for (int i = 0; i < count.length; i++) {
+            fre[i] = (double) count[i]/valueList.size();
+        }
+
+        // output
+        List<String> outpos = new ArrayList<>();
+        List<String> outCount = new ArrayList<>();
+        List<String> outvalue = new ArrayList<>();
+
+        for (int i = 0; i < bound.length; i++) {
+            String coordinate = String.format("%.3f", (double) boundleft[i] + (double) (window) / (double) 2); //取中间值
+            outpos.add(coordinate);
+            outCount.add(String.valueOf(count[i]));
+            outvalue.add(String.valueOf(fre[i]));
+        }
+
+        List<String>[] out = new List[3];
+        out[0]=outpos;
+        out[1]=outCount;
+        out[2]=outvalue;
+        return out;
+    }
+
+    public static void frequency_byGroup (String infileS,int columnIndexGroup,int columnIndexValue,double max,double windowSize,double windowStep,String outfileS){
+        String[] groupArray = AoFile.getStringArraybySet(infileS,columnIndexGroup);
+        TDoubleArrayList[] valueList = new TDoubleArrayList[groupArray.length];
+        for (int i = 0; i < groupArray.length; i++) { //记得初始化
+            valueList[i] = new TDoubleArrayList();
+        }
+
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = null;
+            String header = br.readLine();
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+                String group = l.get(columnIndexGroup);
+                if (l.get(columnIndexValue).startsWith("N"))continue; //过滤时N的一行
+                double value = Double.parseDouble(l.get(columnIndexValue));
+                int index = Arrays.binarySearch(groupArray,group);
+                if (index <0){
+                    System.out.println(group + "\t" + value);
+                }
+                valueList[index].add(value);
+            }
+            br.close();
+
+            List[][] output = new List[groupArray.length][];
+            for (int i = 0; i < groupArray.length; i++) {
+                output[i]= Bin.frequency(valueList[i],max,windowSize,windowStep);
+            }
+
+            bw.write("Group\tXcoord\tCount\tFrequency");
+            bw.newLine();
+            for (int i = 0; i < groupArray.length; i++) { //第一层循环是1A到7D
+                List<String>[] out = output[i];
+                for (int j = 0; j < out[0].size(); j++) { //第二层循环是bin返回的内容
+                    String group = groupArray[i];
+                    String Xcoord = out[0].get(j);
+                    String count = out[1].get(j);
+                    String value = out[2].get(j);
+                    bw.write(group + "\t" + Xcoord + "\t" + count + "\t" + value);
+                    bw.newLine();
+                }
+            }
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    public static List<String>[] frequency(TDoubleArrayList valueList, double max,double window, double step){
+        /**
+         * 初始化bins
+         */
+        double valuemax = max;
+        double[][] bound = new Bin().initializeWindowStep_bydouble_start0(valuemax, window, step);
+
+        int count[] = new int[bound.length]; //查看每个bin里面的变异个数
+        double[] boundright = new double[bound.length]; //只看左边的bound
+        double[] boundleft = new double[bound.length]; //右边的bound
+        for (int i = 0; i < bound.length; i++) { //每个bound的左边
+            boundleft[i] = bound[i][0];
+            boundright[i] = bound[i][1];
+        }
+
+        for (int i = 0; i < valueList.size(); i++) {
+            double value = valueList.get(i);
+
+            int indexleft = Arrays.binarySearch(boundleft, value);
+            if (indexleft < 0) {
+                indexleft = -indexleft - 2 +1;
+            }
+            else if (indexleft > -1) {
+                indexleft = indexleft +1;
+            }
+
+
+            int indexright = Arrays.binarySearch(boundright, value);
+            if (indexright < 0){
+                indexright = -indexright-1;
+            }
+            else if (indexright > -1){
+                indexright = indexright +1;
+            }
+
+
+            for (int j = indexright; j < indexleft ; j++) {
+                count[j]++; //每个Bin 里面的变异个数
+            }
+        }
+
+        //计算每个Bin里面的平均值
+        double[] fre = new double[bound.length];
+        for (int i = 0; i < count.length; i++) {
+            fre[i] = (double) count[i]/valueList.size();
+        }
+
+        // output
+        List<String> outpos = new ArrayList<>();
+        List<String> outCount = new ArrayList<>();
+        List<String> outvalue = new ArrayList<>();
+
+        for (int i = 0; i < bound.length; i++) {
+            String coordinate = String.format("%.3f", (double) boundleft[i] + (double) (window) / (double) 2); //取中间值
+            outpos.add(coordinate);
+            outCount.add(String.valueOf(count[i]));
+            outvalue.add(String.valueOf(fre[i]));
+        }
+
+        List<String>[] out = new List[3];
+        out[0]=outpos;
+        out[1]=outCount;
+        out[2]=outvalue;
+        return out;
+    }
+
 
     public static List<String>[] windowstep_posAve2(TDoubleArrayList posList,TDoubleArrayList valueList, double window, double step){
 
@@ -355,6 +597,27 @@ public class Bin {
             e.printStackTrace();
             System.exit(1);
         }
+    }
+
+    private double[][] initializeWindowStep_bydouble_start0 (double chrLength, double windowSize, double windowStep) {
+
+        TDoubleArrayList startList = new TDoubleArrayList();
+        TDoubleArrayList endList = new TDoubleArrayList();
+        double start = 0;
+        double end = start+windowSize;
+        while (start < chrLength-0.0001) {
+            startList.add(start);
+            endList.add(end);
+            start+=windowStep;
+            end = start+windowSize;
+        }
+
+        double[][] bound = new double[startList.size()][2];
+        for (int i = 0; i < startList.size(); i++) {
+            bound[i][0] = startList.get(i);
+            bound[i][1] = endList.get(i);
+        }
+        return bound;
     }
 
 

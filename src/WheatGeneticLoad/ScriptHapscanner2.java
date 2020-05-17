@@ -10,10 +10,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.util.*;
 
-import AoUtils.AoColor;
-import AoUtils.AoFile;
-import AoUtils.AoMath;
-import AoUtils.AoString;
+import AoUtils.*;
 import gnu.trove.list.array.TDoubleArrayList;
 import pgl.graphcis.r.Histogram;
 import pgl.infra.dna.genotype.GenoIOFormat;
@@ -61,10 +58,47 @@ public class ScriptHapscanner2 {
 
 //        this.qualityCheck();
 //        this.mergeCheckFile();
+        this.getBinTable();
 
+
+
+    }
+
+    public void getBinTable(){
+
+//        int indexGroup = 0;
+//        int indexValue = 3;
+//        double window = 0.05;
+//        double max =0.5;
+//        String outfileS = "";
+
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/007_qualityCheck/002_merge/001_site_QC.txt.gz";
+        AoFile.readheader(infileS);
+
+//        int indexGroup = 0;
+//        int indexValue = 3;
+//        double window = 0.05;
+//        double max =0.5;
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/007_qualityCheck/003_binTable/maf.txt";
+//        Bin.frequency_byGroup(infileS,indexGroup,indexValue,max,window,window,outfileS);
+
+//        int indexGroup = 0;
+//        int indexValue = 1;
+//        double window = 0.05;
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/007_qualityCheck/003_binTable/site_heter.txt";
+//        Bin.frequency2_byGroup(infileS,indexGroup,indexValue,window,window,outfileS);
+
+        int indexGroup = 0;
+        int indexValue = 1;
+        double window = 0.05;
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/007_qualityCheck/003_binTable/site_heter.txt";
+        Bin.frequency2_byGroup(infileS,indexGroup,indexValue,window,window,outfileS);
+
+    }
+
+    public void getCol(){
         String[] in = {"AB","ABD","D"};
         AoColor.genomeType(in);
-
     }
 
     /**
