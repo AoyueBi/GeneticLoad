@@ -52,7 +52,7 @@ public class CalVCF {
             BufferedWriter bw = AoFile.writeFile(outfileS);
             String temp = null;
             List<String> l = new ArrayList<>();
-
+            int cnt = 0;
             while ((temp = br.readLine()) != null) {
                 //***********************************************************//
                 if (temp.startsWith("##")) {//将注释信息写入表格中
@@ -62,8 +62,7 @@ public class CalVCF {
                 //开始处理taxa的问题，先把所有taxa放入array中，记住在temp中的index
                 if (temp.startsWith("#CHROM")) {
                     l = PStringUtils.fastSplit(temp);
-                    bw.write(l.get(0) + "\t" + l.get(1));
-
+                    bw.write("CHROM" + "\t" + l.get(1));
                     for (int i = 9; i < l.size(); i++) {
                         String taxon = l.get(i);
                         int index1 = Arrays.binarySearch(taxaArray, taxon);
@@ -78,30 +77,39 @@ public class CalVCF {
                 }
                 if (!temp.startsWith("#")) {
                     l = PStringUtils.fastSplit(temp);
-                    List<String> lTaxaGeno = new ArrayList<>();
                     String altList = l.get(4);
+                    int nAlt = PStringUtils.fastSplit(altList, ",").size();
+                    if (nAlt > 1) continue; //filter alt num with 2 or more
+                    if (altList.equals("D") || altList.equals("I")) continue; //filter D I
+
+                    String chr = l.get(0);
+                    String pos = l.get(1);
+                    bw.write(chr + "\t" + pos);
+
                     for (int i = 0; i < indexTaxa.size(); i++) { //无论有无基因型，都加进去了
-                        lTaxaGeno.add(l.get(indexTaxa.get(i)));
+                        String geno = l.get(indexTaxa.get(i));
+                        geno = PStringUtils.fastSplit(geno,":").get(0);
+                        System.out.println(geno);
+                        if(geno.equals("0/0")){
+                            bw.write( "\t0");
+                        }
+                        if(geno.equals("0/1") || geno.equals("1/0")){
+                            bw.write(  "\t1");
+                        }
+                        if(geno.equals("1/1")){
+                            bw.write( "\t2");
+                        }
+                        if(geno.equals("./.")){
+                            bw.write("\tNA");
+                        }
                     }
-
-
-                    String[] taxaGenoArray = lTaxaGeno.toArray(new String[lTaxaGeno.size()]);
-
-                    StringBuilder sb = new StringBuilder();
-                    for (int i = 0; i < 7; i++) {
-                        sb.append(l.get(i)).append("\t");
-                    }
-                    for (int i = 0; i < lTaxaGeno.size(); i++) {
-                        sb.append("\t").append(lTaxaGeno.get(i));
-                    }
-                    bw.write(sb.toString());
                     bw.newLine();
                 } //
             }
             br.close();
             bw.flush();
             bw.close();
-            System.out.println(infileS + " is completed at " + outfileS + "\tActual taxa size: " + indexTaxa.size() + "\tGoal taxa size : " + l.size());
+            System.out.println(infileS + " is completed at " + outfileS + "\tActual taxa size: " + indexTaxa.size() + "\tTotal sites : " + cnt);
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);

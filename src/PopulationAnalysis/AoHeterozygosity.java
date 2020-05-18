@@ -46,11 +46,29 @@ public class AoHeterozygosity {
      * 获取相应taxa的基因型信息。结果为TXT格式的table
      */
     public void getGenotypeTable(){
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/027_Rebuild_VMap2_VCF/001_depth/001_subsetData/chr1D_vmap2_subset0.001.vcf.gz";
-        String taxaListFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/004_heterogozysity/003_indi_test/001_taxalist/Ae.tauschii.txt";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/008_indiviHeteralongChrom/001_test/chr1D_Ae.tauschii_genoTable.txt";
+
+        // just test
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/027_Rebuild_VMap2_VCF/001_depth/001_subsetData/chr1D_vmap2_subset0.001.vcf.gz";
+//        String taxaListFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/008_indiviHeteralongChrom/001_test/Ae.tauschii.txt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/008_indiviHeteralongChrom/001_test/chr1D_Ae.tauschii_genoTable.txt";
 //        CalVCF.extractVCFtable(infileS,taxaListFileS,outfileS);
-        AoFile.readheader("/Users/Aoyue/Documents/test.txt");
+
+        // run HPC
+        String infileDirS = "/data4/home/aoyue/vmap2/analysis/023_hapScanner_basedPopDepth/ab/out/VCF";
+        String outfileDirS ="/data4/home/aoyue/vmap2/analysis/023_hapScanner_basedPopDepth/002_heter_Indiv/002_out_genoTable";
+        String logDirS = "/data4/home/aoyue/vmap2/analysis/023_hapScanner_basedPopDepth/002_heter_Indiv/z_log";
+        String taxaListFileS = "/data4/home/aoyue/vmap2/analysis/023_hapScanner_basedPopDepth/002_heter_Indiv/001_taxalist/Wild_emmer.txt";
+        String name = new File(taxaListFileS).getName().split(".txt")[0];
+
+        String[] chrArr ={"001","002","003","004"};
+        for (int i = 0; i < chrArr.length; i++) {
+            String infileS = new File(infileDirS,"chr" + chrArr[i] + ".vcf.gz").getAbsolutePath();
+            String outfileS = new File(outfileDirS,"chr" + chrArr[i] + "_" + name + "_genoTable.txt.gz").getAbsolutePath();
+            String logfileS = new File(logDirS,"log_" + new File(outfileS).getName().split(".gz")[0]).getAbsolutePath(); //不管是不是gz结尾，我们只取gz前的部分，妙！
+            System.out.println("nohup java -jar 042_extractVCFtable.jar " + infileS + " " + taxaListFileS + " " + outfileS + " > " + logfileS  + " 2>&1 &" );
+        }
+
+
 
     }
 
@@ -67,8 +85,6 @@ public class AoHeterozygosity {
         String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/004_heterogozysity/004_indi_RH/006_out_AABB";
         String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/004_heterogozysity/004_indi_RH/007_merge/heter_SNPbased_DomesticatedEmmer_PI355466_chrposGenotype_RH_2Mwindow_1Mstep.txt";
         new CountSites().mergeTxt(infileDirS,outfileS);
-
-
     }
 
 

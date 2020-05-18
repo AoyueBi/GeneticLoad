@@ -5,6 +5,7 @@
  */
 package Entrance;
 
+import AoUtils.CalVCF;
 import GermplasmInfo.GermplasmInfo;
 import Plot.PCA;
 import PopulationAnalysis.AoHeterozygosity;
@@ -20,20 +21,22 @@ import java.util.Date;
 public class GeneticLoadEntrance {
 
     public GeneticLoadEntrance() {
-        this.firstProcess();
+//        this.firstProcess();
 //        this.plot();
 //        this.infoDB();
 //        this.DBdeleterious();
 
         //ternary plot analysis
 //        this.geneExpression();
-//        this.rebuildVCF();
+        this.rebuildVCF();
 
 
     }
 
     public void rebuildVCF(){
-        new RebuildVCF();
+//        new RebuildVCF();
+//        new ScriptHapscanner2();
+        new AoHeterozygosity();
 
     }
 
@@ -177,6 +180,8 @@ public class GeneticLoadEntrance {
 //        new XPCLR().getGenotypeXPCLR_parallele(args[0], args[1], args[2]);
 //        new XPCLR().getGenotypeXPCLR_parallele_tetra(args[0], args[1], args[2]);
 //        new XPCLR().getGenotypeXPCLR_parallele_diploid(args[0], args[1], args[2]);
+
+//        CalVCF.extractVCFtable(args[0], args[1], args[2]);
 
         System.out.println(new SimpleDateFormat().format(new Date()) + "\tend.");
 
