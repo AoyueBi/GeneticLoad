@@ -1,10 +1,7 @@
 package PopulationAnalysis;
 
 
-import AoUtils.AoFile;
-import AoUtils.Bin;
-import AoUtils.CountSites;
-import AoUtils.SplitScript;
+import AoUtils.*;
 import pgl.infra.utils.IOUtils;
 import pgl.infra.utils.PStringUtils;
 import java.io.BufferedReader;
@@ -19,22 +16,41 @@ import java.util.List;
  *
  * @author Aoyue
  */
-public class Heterozygosity {
-    public Heterozygosity(){
+public class AoHeterozygosity {
+    public AoHeterozygosity(){
 //        this.scriptSNPbased();
 //        this.windowCal();
 //        this.scriptforIndi();
 //        this.script_calWindowStep();
 //        this.mergeTxt();
-
+//
+//        /**
+//         * 把个体在每个位点的基因型提取出来，并进行滑窗计算区段的杂合度，即在染色体2M内杂合子的个数除以2M的基因型个数
+//         */
 //        this.mkGenotype("/Users/Aoyue/Documents/ok/chr7B_vmap2.1_heter_SNPbased_Cultivar.vcf.gz","/Users/Aoyue/Documents/out/chr7B_vmap2.1_heter_SNPbased_Cultivar_chrposGenotype.txt.gz");
 //        this.script_mkGenotype();
-
+//
 //        this.calWindowStep_RH_indivi(); //也是多线程
 //        this.runJarParallele();
 //        this.mergeTxt_calWindowStep_RH_indivi();
 
+        this.getGenotypeTable();
 
+
+
+
+
+    }
+
+    /**
+     * 获取相应taxa的基因型信息。结果为TXT格式的table
+     */
+    public void getGenotypeTable(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/027_Rebuild_VMap2_VCF/001_depth/001_subsetData/chr1D_vmap2_subset0.001.vcf.gz";
+        String taxaListFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/004_heterogozysity/003_indi_test/001_taxalist/Ae.tauschii.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/008_indiviHeteralongChrom/001_test/chr1D_Ae.tauschii_genoTable.txt";
+//        CalVCF.extractVCFtable(infileS,taxaListFileS,outfileS);
+        AoFile.readheader("/Users/Aoyue/Documents/test.txt");
 
     }
 
@@ -224,29 +240,19 @@ public class Heterozygosity {
 //        String outfileS = "/Users/Aoyue/Documents/1/chr1A_vmap2.1_heter_SNPbased_Cultivar_heter.txt.gz";
 
         try {
-            BufferedReader br = null;
-            BufferedWriter bw = null;
-            if (infileS.endsWith(".vcf")) {
-                br = IOUtils.getTextReader(infileS);
-            }else if (infileS.endsWith(".vcf.gz")) {
-                br = IOUtils.getTextGzipReader(infileS);
-            }
-
-            if(outfileS.endsWith(".txt")){
-                bw = IOUtils.getTextWriter(outfileS);
-            }else if(outfileS.endsWith(".txt.gz")){
-                bw = IOUtils.getTextGzipWriter(outfileS);
-            }
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
             bw.write("Chr\tPos\tGenotype");
             bw.newLine();
 
-            String temp = null;
+
             //特殊情况，VCFTOOL把log文件也读到文件中去了，所以要过滤开头那几行
 //            for (int i = 0; i < 13 ; i++) {
 //                br.readLine();
 //            }
             int cnt =0;
             List<String> l = new ArrayList<>();
+            String temp = null;
             while ((temp = br.readLine()) != null) {
                 if (temp.startsWith("#")) {
                 } else {
@@ -350,6 +356,7 @@ public class Heterozygosity {
 
     /**
      * 提取个体的0/1位点信息，以及杂合度标记为1
+     * 这里只是把一个个体的基因型是 0/1 的位点找出来了，并没有做其他任何措施
      */
     public void scriptforIndi(){
         //程序运行时，输入输出路径设置

@@ -34,6 +34,81 @@ public class CalVCF {
     }
 
     /**
+     * convert specific taxa in taxaListFileS(without header) into genotype table,
+     * aims to calculate the heterozygous genotype proportion along chromosome later or for other pipeline.
+     * Here, I define 0/0 -> 0, 0/1 -> 1, 1/1 -> 2, ./. -> NA
+     * @param infileS VCF file
+     * @param taxaListFileS taxalist without header
+     * @param outfileS TXT file
+     */
+    public static void extractVCFtable(String infileS, String taxaListFileS, String outfileS){
+
+        List<Integer> indexTaxa = new ArrayList<>();
+        String[] taxaArray = AoFile.getStringArraybyList_withoutHeader(taxaListFileS,0);
+        Arrays.sort(taxaArray);
+
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = null;
+            List<String> l = new ArrayList<>();
+
+            while ((temp = br.readLine()) != null) {
+                //***********************************************************//
+                if (temp.startsWith("##")) {//将注释信息写入表格中
+
+                }
+                //***********************************************************//
+                //开始处理taxa的问题，先把所有taxa放入array中，记住在temp中的index
+                if (temp.startsWith("#CHROM")) {
+                    l = PStringUtils.fastSplit(temp);
+                    bw.write(l.get(0) + "\t" + l.get(1));
+
+                    for (int i = 9; i < l.size(); i++) {
+                        String taxon = l.get(i);
+                        int index1 = Arrays.binarySearch(taxaArray, taxon);
+
+                        if (index1 > -1) { //当找到列表中的taxa时，写列表中的taxa信息
+                            indexTaxa.add(i);
+                            bw.write("\t" + l.get(i));
+                        }
+                    }
+                    bw.newLine(); //写完之后记得换行
+                    Collections.sort(indexTaxa);
+                }
+                if (!temp.startsWith("#")) {
+                    l = PStringUtils.fastSplit(temp);
+                    List<String> lTaxaGeno = new ArrayList<>();
+                    String altList = l.get(4);
+                    for (int i = 0; i < indexTaxa.size(); i++) { //无论有无基因型，都加进去了
+                        lTaxaGeno.add(l.get(indexTaxa.get(i)));
+                    }
+
+
+                    String[] taxaGenoArray = lTaxaGeno.toArray(new String[lTaxaGeno.size()]);
+
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 0; i < 7; i++) {
+                        sb.append(l.get(i)).append("\t");
+                    }
+                    for (int i = 0; i < lTaxaGeno.size(); i++) {
+                        sb.append("\t").append(lTaxaGeno.get(i));
+                    }
+                    bw.write(sb.toString());
+                    bw.newLine();
+                } //
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println(infileS + " is completed at " + outfileS + "\tActual taxa size: " + indexTaxa.size() + "\tGoal taxa size : " + l.size());
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    /**
      * 根据提供的taxa列表，从总的VCF文件中提取所需的 chr pos 文件，并对没有分离的位点进行去除,没有分离位点包括全部都是./.的位点
      *
      * @param infileS   VCF file

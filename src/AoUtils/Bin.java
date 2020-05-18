@@ -430,7 +430,7 @@ public class Bin {
     }
 
     /**
-     * 根据 chr pos 和 value 来确定,返回 每个window内的变异个数，以及 残余杂合度 Residual Heterozygosity
+     * 根据 chr pos 和 value 来确定,返回 每个window内的变异个数，以及 残余杂合度 Residual AoHeterozygosity
      *
      */
     public void calwindowstep_ResidualHeterozygosity(String infileS, int window, int step, String outfileS){

@@ -7,7 +7,7 @@ package Entrance;
 
 import GermplasmInfo.GermplasmInfo;
 import Plot.PCA;
-import PopulationAnalysis.DeleteriousCountbyPop;
+import PopulationAnalysis.AoHeterozygosity;
 import WheatGeneticLoad.*;
 
 import java.text.SimpleDateFormat;
@@ -96,7 +96,7 @@ public class GeneticLoadEntrance {
 //        new TreePreparation();
 //        new CalVCF();
 //        new BadMutations();
-//        new Heterozygosity();
+        new AoHeterozygosity();
 //        new Fst();
 //        new Pi();
 //        new TajimaD();
@@ -164,7 +164,7 @@ public class GeneticLoadEntrance {
 //        new CalVCF().getSNPHeter(args[0], args[1], args[2]);
 
 //        new CountSites().extractVCF(infileS,outfileS,taxaList);
-//        new Heterozygosity().mkGenotype(args[0], args[1]);
+//        new AoHeterozygosity().mkGenotype(args[0], args[1]);
 //        new Bin().calwindowstep_ResidualHeterozygosity(args[0], Integer.parseInt(args[1]),Integer.parseInt(args[2]), args[3]);
 //        new Fst().mkFstTable(args[0], args[1]);
 //        new CalVCF().reheader(args[0], args[1], args[2]);
