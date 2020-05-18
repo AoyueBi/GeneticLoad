@@ -85,7 +85,7 @@ public class GeneticLoadEntrance {
 //        new DataStorage();
 //        new SIFT();
 //        new CountSites();
-        new ScriptHapscanner2();
+//        new ScriptHapscanner2();
 //        new VariantsSum();
 //        new PopGenParaWheat();
         //new SplitScript();

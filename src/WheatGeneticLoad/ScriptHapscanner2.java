@@ -58,8 +58,31 @@ public class ScriptHapscanner2 {
 
 //        this.qualityCheck();
 //        this.mergeCheckFile();
-        this.getBinTable();
+//        this.getBinTable();
+        this.addSubspecies();
 
+
+
+    }
+
+    /**
+     * 为部分taxa添加亚群信息
+     */
+    public void addSubspecies(){
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/taxaList.txt";
+//        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/007_qualityCheck/002_merge/001_taxa_QC.txt.gz";
+//        AoFile.readheader(infileS);
+//        String outfileS = "";
+//        HashMap<String,String> hm = AoFile.getHashMapStringKey(infileS,0,11);
+//        AoFile.addColumbyString(infileS2,0,hm,"Subspecies");
+
+
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/taxaList.txt";
+        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/016_vcfQC/013_indiHeter/merge/heter_indivi.txt";
+        AoFile.readheader(infileS);
+        String outfileS = "";
+        HashMap<String,String> hm = AoFile.getHashMapStringKey(infileS,0,8);
+        AoFile.addColumbyString(infileS2,0,hm,"Subspecies");
 
 
     }
@@ -72,8 +95,8 @@ public class ScriptHapscanner2 {
 //        double max =0.5;
 //        String outfileS = "";
 
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/007_qualityCheck/002_merge/001_site_QC.txt.gz";
-        AoFile.readheader(infileS);
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/007_qualityCheck/002_merge/001_site_QC.txt.gz";
+//        AoFile.readheader(infileS);
 
 //        int indexGroup = 0;
 //        int indexValue = 3;
@@ -88,11 +111,15 @@ public class ScriptHapscanner2 {
 //        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/007_qualityCheck/003_binTable/site_heter.txt";
 //        Bin.frequency2_byGroup(infileS,indexGroup,indexValue,window,window,outfileS);
 
-        int indexGroup = 0;
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/007_qualityCheck/002_merge/001_taxa_QC.txt.gz";
+        AoFile.readheader(infileS);
+
+        int indexGroup = 3;
         int indexValue = 1;
-        double window = 0.05;
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/007_qualityCheck/003_binTable/site_heter.txt";
+        double window = 0.01;
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/007_qualityCheck/003_binTable/taxa_heter.txt";
         Bin.frequency2_byGroup(infileS,indexGroup,indexValue,window,window,outfileS);
+
 
     }
 
