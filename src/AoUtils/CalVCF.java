@@ -89,7 +89,7 @@ public class CalVCF {
                     for (int i = 0; i < indexTaxa.size(); i++) { //无论有无基因型，都加进去了
                         String geno = l.get(indexTaxa.get(i));
                         geno = PStringUtils.fastSplit(geno,":").get(0);
-                        System.out.println(geno);
+//                        System.out.println(geno);
                         if(geno.equals("0/0")){
                             bw.write( "\t0");
                         }

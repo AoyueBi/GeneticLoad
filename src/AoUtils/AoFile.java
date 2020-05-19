@@ -16,6 +16,7 @@ import java.util.*;
 import pgl.infra.table.RowTable;
 import pgl.infra.utils.IOUtils;
 import pgl.infra.utils.PStringUtils;
+import pgl.infra.utils.wheat.RefV1Utils;
 
 /**
  *
@@ -177,6 +178,82 @@ public class AoFile {
         }
         Collections.sort(fList);
         return fList;
+    }
+
+
+    /**
+     *
+     * @param fs
+     * @param colomnIndexChr
+     * @param columnIndexPos
+     * @param outfileS
+     */
+    public static void mergeTxtandChangeChrPos(File[] fs, int colomnIndexChr, int columnIndexPos,String outfileS){
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/027_Rebuild_VMap2_VCF/001_depth/004_50000_Sites/004_AddReliableIntersectGroup";
+//        File[] fs = new File(infileDirS).listFiles();
+
+//        fs = IOUtils.listFilesEndsWith(fs,"_AB_sample.txt.gz");
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/027_Rebuild_VMap2_VCF/001_depth/004_50000_Sites/005_changeChrPos/AB_Popdepth_sample.txt.gz";
+
+//        fs = IOUtils.listFilesEndsWith(fs,"_ABD_sample.txt.gz");
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/027_Rebuild_VMap2_VCF/001_depth/004_50000_Sites/005_changeChrPos/ABD_Popdepth_sample.txt.gz";
+
+//        fs = IOUtils.listFilesEndsWith(fs,"_D_sample.txt.gz");
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/027_Rebuild_VMap2_VCF/001_depth/004_50000_Sites/005_changeChrPos/D_Popdepth_sample.txt.gz";
+
+        try{
+            Arrays.sort(fs);
+            String infileS = fs[0].getAbsolutePath();
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            //read header
+            bw.write( br.readLine());
+            bw.newLine();
+
+            int cnttotal=0;
+            for (int i = 0; i < fs.length; i++) {
+                infileS = fs[i].getAbsolutePath();
+
+                br = AoFile.readFile(infileS);
+                br.readLine();
+                String temp = null; //read header
+                int cnt = 0;
+                List<String> l = new ArrayList<>();
+                while ((temp = br.readLine()) != null) {
+                    l = PStringUtils.fastSplit(temp);
+                    cnt++;
+                    cnttotal++;
+                    int chrID = Integer.parseInt(l.get(colomnIndexChr));
+                    int pos = Integer.parseInt(l.get(columnIndexPos));
+                    String chr = RefV1Utils.getChromosome(chrID,pos);
+                    int posOnChrosome = RefV1Utils.getPosOnChromosome(chrID,pos);
+                    //先找到 chr 所在的列
+                    StringBuilder sb = new StringBuilder();
+                    for (int j = 0; j < l.size(); j++) {
+                        if (j == colomnIndexChr){
+                            sb.append(chr).append("\t");
+                        }
+                        if (j == columnIndexPos){
+                            sb.append(posOnChrosome).append("\t");
+                        }
+                        sb.append(l.get(j)).append("\t");
+                    }
+                    sb.deleteCharAt(sb.length()-1);
+                    bw.write(sb.toString());
+                    bw.newLine();
+                }
+                System.out.println(fs[i].getName() + "\t" + cnt);
+            }
+            System.out.println("Total lines without header count is " + cnttotal + " at merged file " + outfileS );
+            br.close();
+            bw.flush();
+            bw.close();
+
+        }catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
     }
 
     /**
@@ -1098,6 +1175,37 @@ public class AoFile {
     }
 
 
+    /**
+     * get the pos database from txt file
+     *
+     * @param infileS
+     * @param columnIndex
+     * @return
+     */
+    public static TIntArrayList getTIntList(String infileS, int columnIndex){
+        TIntArrayList ll = new TIntArrayList();
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            String temp = br.readLine(); //read header
+            List<String> l = new ArrayList();
+            int cnttotal = 0;
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                cnttotal++;
+                l = PStringUtils.fastSplit(temp);
+                String goal = l.get(columnIndex);
+                if (goal.startsWith("N") | goal.startsWith("inf")) continue;
+                ll.add(Integer.parseInt(goal));
+                cnt++;
+            }
+            br.close();
+            System.out.println("Total num in the list is " + cnt + "\tTDoubleArrayList size is " + ll.size());
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ll;
+    }
 
     /**
      * get the pos database from txt file
@@ -1199,6 +1307,48 @@ public class AoFile {
         return ll;
     }
 
+    /**
+     *
+     * @param infileS
+     */
+    public static List<String> getheader(String infileS){
+
+        List<String> l = new ArrayList<>();
+        try {
+            BufferedReader br = null;
+            if (infileS.endsWith(".txt")) {
+                br = IOUtils.getTextReader(infileS);
+            } else if (infileS.endsWith(".txt.gz")) {
+                br = IOUtils.getTextGzipReader(infileS);
+            }
+            else if (infileS.endsWith(".vcf.gz")) {
+                br = IOUtils.getTextGzipReader(infileS);
+            }else if (infileS.endsWith(".vcf")) {
+                br = IOUtils.getTextReader(infileS);
+            }
+            else if (infileS.endsWith(".xls")) {
+                br = IOUtils.getTextReader(infileS);
+            }
+            else if (infileS.endsWith(".TAB")) {
+                br = IOUtils.getTextReader(infileS);
+            }
+            else if (infileS.endsWith(".tsv")) {
+                br = IOUtils.getTextReader(infileS);
+            }
+            else if (infileS.endsWith(".gz")) {
+                br = IOUtils.getTextGzipReader(infileS);
+            }
+            String temp = br.readLine();
+            l = PStringUtils.fastSplit(temp);
+            br.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return l;
+
+    }
     /**
      *
      * @param infileS

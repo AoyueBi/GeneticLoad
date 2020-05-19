@@ -34,13 +34,51 @@ public class AoHeterozygosity {
 //        this.runJarParallele();
 //        this.mergeTxt_calWindowStep_RH_indivi();
 
-        this.getGenotypeTable();
+        /**
+         * 新一波的计算
+         */
+//        this.getGenotypeTable();
+//        this.changeChrPosandMergeGenoTable();
+        this.mkBinRH();
 
 
 
 
 
     }
+
+    public void mkBinRH(){
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/008_indiviHeteralongChrom/003_merge";
+        String outfileDirS ="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/008_indiviHeteralongChrom/004_mkBinTable";
+        int window = 2000000;
+        int step = 1000000;
+
+        String[] chrArr = {"1A", "1B"};
+        for (int i = 0; i < chrArr.length; i++) {
+            String infileS = new File(infileDirS,"chr" + chrArr[i] + "_Wild_emmer_genoTable.txt.gz").getAbsolutePath();
+            List<String> headerList = AoFile.getheader(infileS);
+            //CHROM	BIN_START	BIN_END	N_VARIANTS	HETEROZYGOSITY
+            //CHROM	POS	PI362699	PI487260	PI94648	W11	W13	W14	W15	W16	W18	W19	W20	W5	W7	W8
+            for (int j = 2; j < headerList.size(); j++) {
+                String taxa = headerList.get(j);
+                String outfileS = new File(outfileDirS,"chr" + chrArr[i] + "_Wild_emmer" + taxa + "_RH_" + window + "_" + step + ".txt").getAbsolutePath();
+                Bin.ResidualHeterozygosity(infileS,chrArr[i],1,j,window,step,outfileS);
+            }
+            System.out.println();
+        }
+
+
+    }
+
+    public void changeChrPosandMergeGenoTable(){
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/008_indiviHeteralongChrom/002_out_genoTable";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/008_indiviHeteralongChrom/003_merge";
+
+        new CountSites().mergefileandChangeChrPos_chr1and2(infileDirS,outfileDirS);
+
+    }
+
+
 
     /**
      * 获取相应taxa的基因型信息。结果为TXT格式的table
@@ -67,9 +105,6 @@ public class AoHeterozygosity {
             String logfileS = new File(logDirS,"log_" + new File(outfileS).getName().split(".gz")[0]).getAbsolutePath(); //不管是不是gz结尾，我们只取gz前的部分，妙！
             System.out.println("nohup java -jar 042_extractVCFtable.jar " + infileS + " " + taxaListFileS + " " + outfileS + " > " + logfileS  + " 2>&1 &" );
         }
-
-
-
     }
 
 

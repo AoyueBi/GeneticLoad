@@ -35,6 +35,16 @@ public class Bin {
 
     }
 
+
+    /**
+     * 未指定最大值
+     * @param infileS
+     * @param columnIndexGroup
+     * @param columnIndexValue
+     * @param windowSize
+     * @param windowStep
+     * @param outfileS
+     */
     public static void frequency2_byGroup (String infileS,int columnIndexGroup,int columnIndexValue,double windowSize,double windowStep,String outfileS){
         String[] groupArray = AoFile.getStringArraybySet(infileS,columnIndexGroup);
         TDoubleArrayList[] valueList = new TDoubleArrayList[groupArray.length];
@@ -156,6 +166,16 @@ public class Bin {
         return out;
     }
 
+    /**
+     * 指定最大值
+     * @param infileS
+     * @param columnIndexGroup
+     * @param columnIndexValue
+     * @param max
+     * @param windowSize
+     * @param windowStep
+     * @param outfileS
+     */
     public static void frequency_byGroup (String infileS,int columnIndexGroup,int columnIndexValue,double max,double windowSize,double windowStep,String outfileS){
         String[] groupArray = AoFile.getStringArraybySet(infileS,columnIndexGroup);
         TDoubleArrayList[] valueList = new TDoubleArrayList[groupArray.length];
@@ -429,6 +449,131 @@ public class Bin {
         return out;
     }
 
+
+    /**
+     *
+     * 根据 chr pos 和 value 来确定,返回 每个window内的变异个数，以及 残余杂合度 Residual AoHeterozygosity
+     * 一个文件一条染色体，不能用于分组的文件
+     * @param infileS
+     * @param groupName
+     * @param columnIndexPos
+     * @param columnIndexValue
+     * @param window
+     * @param step
+     * @param outfileS
+     */
+    public static void ResidualHeterozygosity(String infileS, String groupName, int columnIndexPos, int columnIndexValue, int window, int step, String outfileS){
+        // 1.将pos转为为list,找到最大值，根据最大值确定bin的数目
+        // 2.建立count数目和list数组，对pos进行循环，找到每个bin的左边的数目和value的集合，求这个集合的平均值，最大值，方差等
+        // 3.输出，每个bin的值
+        //************************
+
+        TIntArrayList posList= AoFile.getTIntList(infileS,columnIndexPos);
+        int chrlength = posList.max();
+
+        String chr = groupName;
+        System.out.println(new File(infileS).getName().substring(0,5) + " length is " + chrlength);
+
+        int[][] bound = new Bin().initializeWindowStep(chrlength, window,step);
+
+        int count[] = new int[bound.length]; //查看每个bin里面的变异个数
+        List<String>[] value = new ArrayList[bound.length]; //每个Bin里面的值的集合 List
+
+        int[] boundright = new int[bound.length]; //只看左边的bound
+        int[] boundleft = new int[bound.length]; //右边的bound
+        for (int i = 0; i < bound.length; i++) { //每个bound的左边
+            boundleft[i] = bound[i][0];
+            boundright[i] = bound[i][1];
+            value[i] = new ArrayList(); //对每一个bin中的List进行初始化
+        }
+        try {
+
+        BufferedReader br = AoFile.readFile(infileS);
+        String header = br.readLine();
+        String temp = null;
+        List<String> l = new ArrayList<>();
+        while((temp=br.readLine()) != null){
+            l = PStringUtils.fastSplit(temp);
+            int pos = Integer.parseInt(l.get(columnIndexPos));
+            String va = l.get(columnIndexValue);
+            int indexleft = Arrays.binarySearch(boundleft, pos);
+            if (indexleft < 0) {
+                indexleft = -indexleft - 2 +1;
+            }
+            else if (indexleft > -1) {
+                indexleft = indexleft +1;
+            }
+
+
+            int indexright = Arrays.binarySearch(boundright, pos);
+            if (indexright < 0){
+                indexright = -indexright-1;
+            }
+            else if (indexright > -1){
+                indexright = indexright +1;
+            }
+
+
+            for (int j = indexright; j < indexleft ; j++) {
+                count[j]++; //每个Bin 里面的变异个数
+                value[j].add(va); //每个bin里面的值的集合
+            }
+        }
+
+//        for (int i = 0; i < t.getRowNumber(); i++) {
+//            int pos = Integer.parseInt(t.getCell(i,columnIndexPos));
+//            String va = t.getCell(i,columnIndexValue);
+//
+//            int indexleft = Arrays.binarySearch(boundleft, pos);
+//            if (indexleft < 0) {
+//                indexleft = -indexleft - 2 +1;
+//            }
+//            else if (indexleft > -1) {
+//                indexleft = indexleft +1;
+//            }
+//
+//
+//            int indexright = Arrays.binarySearch(boundright, pos);
+//            if (indexright < 0){
+//                indexright = -indexright-1;
+//            }
+//            else if (indexright > -1){
+//                indexright = indexright +1;
+//            }
+//
+//
+//            for (int j = indexright; j < indexleft ; j++) {
+//                count[j]++; //每个Bin 里面的变异个数
+//                value[j].add(va); //每个bin里面的值的集合
+//            }
+//        }
+
+        //计算每个Bin里面的0 1 2 NA 的个数
+        String[] mean = new String[bound.length];
+        for (int i = 0; i < value.length; i++) {
+            mean[i] = new AoMath().getResidualHeterozygosity(value[i]);
+        }
+
+
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            bw.write("CHROM\tBIN_START\tBIN_END\tN_VARIANTS\tHETEROZYGOSITY");
+            bw.newLine();
+            for (int i = 0; i < bound.length; i++) {
+                StringBuilder sb = new StringBuilder();
+                sb.append(chr).append("\t").append(bound[i][0]).append("\t").append(bound[i][1]).append("\t").append(count[i])
+                        .append("\t").append(mean[i]);
+                bw.write(sb.toString());
+                bw.newLine();
+            }
+            bw.flush();
+            bw.close();
+            System.out.println( "Bin calculation is completed at "+ outfileS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
     /**
      * 根据 chr pos 和 value 来确定,返回 每个window内的变异个数，以及 残余杂合度 Residual AoHeterozygosity
      *
@@ -519,9 +664,11 @@ public class Bin {
         }
     }
 
+
+
     /**
      * 根据 chr pos 和 value 来确定,返回 每个window内的变异个数，以及pos对应值的集合的平均值
-     *
+     * @Deprecated
      * @param chr
      * @param hm
      */

@@ -1244,13 +1244,7 @@ public class CountSites {
             }
         }
 
-        File[] fs = new File(infileDirS).listFiles();
-        for (int i = 0; i < fs.length; i++) {
-            if (fs[i].isHidden()) {
-                fs[i].delete();
-            }
-        }
-        fs = new File(infileDirS).listFiles();
+        File[] fs = AoFile.getFileArrayInDir(infileDirS);
         Arrays.sort(fs);
 
         try {
@@ -1262,21 +1256,15 @@ public class CountSites {
                         if (chr == j) {
                             //读入文件
                             String infileS = fs[i].getAbsolutePath();
-                            BufferedReader br = null;
-                            String outfileS = null;
-                            if (infileS.endsWith(".txt")) {
-                                br = IOUtils.getTextReader(infileS);
-                                outfileS = new File(outfileDirS, "chr" + hmcntchr.get(chr) + fs[i].getName().substring(6) + ".gz").getAbsolutePath();
-                            } else if (infileS.endsWith(".txt.gz")) {
-                                br = IOUtils.getTextGzipReader(infileS);
-                                outfileS = new File(outfileDirS, "chr" + hmcntchr.get(chr) + fs[i].getName().substring(6)).getAbsolutePath();
-                            }
+                            BufferedReader br = AoFile.readFile(infileS);
+                            String outfileS = new File(outfileDirS, "chr" + hmcntchr.get(chr) + fs[i].getName().substring(6)).getAbsolutePath();
+
 
                             //确定输出文件的路径，并读入header
                             String secondchr = PStringUtils.getNDigitNumber(3, chr + 1);
                             //名字变一下：
 
-                            BufferedWriter bw = IOUtils.getTextGzipWriter(outfileS);
+                            BufferedWriter bw = AoFile.writeFile(outfileS);
                             bw.write(br.readLine()); //先读表头
                             bw.newLine();
                             ///开始合并文件1和2
@@ -1299,11 +1287,7 @@ public class CountSites {
                             int a = 3;
                             //开始读入第2个文件
                             infileS = new File(fs[i].getParent(), fs[i].getName().replaceFirst(PStringUtils.getNDigitNumber(3, chr), secondchr)).getAbsolutePath();
-                            if (infileS.endsWith(".txt")) {
-                                br = IOUtils.getTextReader(infileS);
-                            } else if (infileS.endsWith(".txt.gz")) {
-                                br = IOUtils.getTextGzipReader(infileS);
-                            }
+                            br = AoFile.readFile(infileS);
 
                             temp = br.readLine(); //read header
                             while ((temp = br.readLine()) != null) {
