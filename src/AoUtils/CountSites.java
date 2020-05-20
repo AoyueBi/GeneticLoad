@@ -2775,8 +2775,9 @@ public class CountSites {
      * @param infileDirS
      */
     public static void countSitesinFastCallformat(String infileDirS) {
-
-        List<File> fsList = AoFile.getFileListInDir(infileDirS);
+        File[] fs = new File(infileDirS).listFiles();
+        fs = IOUtils.listFilesEndsWith(fs,"vcf.gz");
+        List<File> fsList = Arrays.asList(fs);
 
         System.out.println("Chr\tN_RawSNPs\tN_BiallelicSNPs\tN_TriallelicSNPs\tIndels\tInsertions\tDeletions");
         fsList.parallelStream().forEach(f -> {

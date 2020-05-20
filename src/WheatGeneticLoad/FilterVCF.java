@@ -88,7 +88,7 @@ public class FilterVCF {
 //        this.addGroupforsubsetDepthDB("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/008_cellMethod/003_getHighCumulativePos/d/chrDgenome_bin100_0.75.depthVSsd.txt.gz", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/008_cellMethod/004_subset5000sitefromDepthDB/d/002_chr1D-7D.Dgenome.depth_5049sites.txt", "7", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/008_cellMethod/005_subset.addGroup/d/chrDgenome.depthVSsd.addGroup.bin100_0.75.txt");
 //        this.addGroupforsubsetDepthDB("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/008_cellMethod/003_getHighCumulativePos/d/chrDgenome_bin100_0.85.depthVSsd.txt.gz", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/008_cellMethod/004_subset5000sitefromDepthDB/d/002_chr1D-7D.Dgenome.depth_5049sites.txt", "8", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/008_cellMethod/005_subset.addGroup/d/chrDgenome.depthVSsd.addGroup.bin100_0.85.txt");
 ////
-        this.mergePosList("", "", "");
+//        this.mergePosList("", "", "");
         //this.scriptReINFO();
         //this.bgzip_ABD();
         //new SplitScript().splitBwaScript("/Users/Aoyue/Documents/sh_bgzip_Vmap2_20191021.sh", "sh_bgzip_Vmap2_", 6 ,6 );
@@ -125,7 +125,7 @@ public class FilterVCF {
 //        new Bin().mkBarplotofMAF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/016_vcfQC/011_mafHeterMiss", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/016_vcfQC/014_bintable/003_MissRate", "50", "1");
 //            new Bin().mkBarplotofMAF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/016_vcfQC/012_depth", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/016_vcfQC/014_bintable/004_depth", "25", "25");
 //        new Bin().mkBarplotofMAF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/016_vcfQC/013_indiHeter", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/016_vcfQC/014_bintable/005_indiHeter", "50", "1");
-//        this.scriptFilterMafbyPopHexaDi();
+        this.scriptFilterMafbyPopHexaDi();
 //        this.scriptFilterMafbyPopHexaTetra();
 //        new SplitScript().splitBwaScript("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/013_fixVmap2/002_sh_filterMafbyPop_HexaTetraploid20191031.sh", "sh_filterMafbyPop_HexaTetraploid", 10, 3);
 //        this.mergeTxt("/Users/Aoyue/Documents/log_023", "/Users/Aoyue/Documents/001.txt");
@@ -1475,7 +1475,9 @@ public class FilterVCF {
             } else { //说明是属于D的
                 String chr = PStringUtils.getNDigitNumber(3, i);
 //                System.out.println("java -jar 021_filterMafbyPopHexaDi.jar /data4/home/aoyue/vmap2/analysis/019_rebackDDtauschii/006_bcftoolsMerge/chr" + chr + ".subgenome.vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/008_maf0.01SNPbyPop/chr" + chr + ".subgenome.maf0.01byPop.SNP.vcf > log_021/log_filterMafbyPopHexaDi.chr" + chr + ".txt");
-                System.out.println("java -jar 023_filterMafbyPopHexaDiKeepIndel.jar /data4/home/aoyue/vmap2/analysis/019_rebackDDtauschii/006_bcftoolsMerge/chr" + chr + ".subgenome.vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/009_maf0.01SNPbyPop/chr" + chr + ".subgenome.maf0.01byPop.SNP.vcf > log_023/log_filterMafbyPopHexaDi.chr" + chr + ".txt 2>&1 &");
+//                System.out.println("java -jar 023_filterMafbyPopHexaDiKeepIndel.jar /data4/home/aoyue/vmap2/analysis/019_rebackDDtauschii/006_bcftoolsMerge/chr" + chr + ".subgenome.vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/009_maf0.01SNPbyPop/chr" + chr + ".subgenome.maf0.01byPop.SNP.vcf > log_023/log_filterMafbyPopHexaDi.chr" + chr + ".txt 2>&1 &");
+
+                System.out.println("java -jar 023_filterMafbyPopHexaDiKeepIndel.jar /data4/home/aoyue/vmap2/genotype/mergedVCF/101_rawMergedVCF/chr" + chr + ".vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/102_MAF0.01/chr" + chr + "_maf0.01byPop.vcf > /data4/home/aoyue/vmap2/genotype/mergedVCF/log_102/log_filterMafbyPopHexaDi.chr" + chr + ".txt 2>&1 &");
 
             }
         }

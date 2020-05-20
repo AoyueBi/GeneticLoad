@@ -52,7 +52,7 @@ public class ScriptHapscanner2 {
 //        this.getHapPos();
 
 //        this.mkParameter();
-        this.mkJavaCmd();
+//        this.mkJavaCmd();
 //        this.bgzip();
 //        this.bcftools_merge2();
 
@@ -63,7 +63,11 @@ public class ScriptHapscanner2 {
 
 
 
+
+
     }
+
+
 
     /**
      * 为部分taxa添加亚群信息
@@ -305,7 +309,7 @@ public class ScriptHapscanner2 {
         String mergedFileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/101_rawMergedVCF";
 
         String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
-        for (int i = 1; i < 43; i++) {
+        for (int i = 0; i < 42; i++) {
             String chr = chrArr[i];
             String ABorD = AoString.ABorD(chr);
             String abdPath = new File(abdFileDirS, "chr" + chr + ".vcf.gz").getAbsolutePath();
@@ -330,7 +334,7 @@ public class ScriptHapscanner2 {
 
         for (int i = 0; i < chrArr.length; i++) {
             String chr = chrArr[i];
-            System.out.println("bgzip -@ 4 chr" + chr + ".vcf && tabix -p vcf chr" + chr + ".vcf.gz &");
+            System.out.println("bgzip -@ 10 chr" + chr + ".vcf && tabix -p vcf chr" + chr + ".vcf.gz &");
         }
     }
 

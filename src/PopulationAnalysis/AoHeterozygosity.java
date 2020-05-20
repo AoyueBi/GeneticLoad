@@ -7,10 +7,7 @@ import pgl.infra.utils.PStringUtils;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  *
@@ -39,12 +36,65 @@ public class AoHeterozygosity {
          */
 //        this.getGenotypeTable();
 //        this.changeChrPosandMergeGenoTable();
-        this.mkBinRH();
+//        this.mkBinRH();
+        this.mergeTxtandAddGroup();
 
 
 
 
 
+    }
+
+
+    public void mergeTxtandAddGroup() {
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/008_indiviHeteralongChrom/004_mkBinTable";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/008_indiviHeteralongChrom/005_mergefrom004/chr1A1B_Wild_emmer_RH_2000000_1000000.txt";
+        File[] fs = AoFile.getFileArrayInDir(infileDirS);
+        Arrays.sort(fs);
+        try {
+            String infileS = fs[0].getAbsolutePath();
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            /**
+             * 需要改动,header的名字可以自定义
+             */
+            //read header
+            bw.write(br.readLine() + "\tTaxa");
+            bw.newLine();
+
+            int cnttotal = 0;
+            //read context
+            for (int i = 0; i < fs.length; i++) {
+                infileS = fs[i].getAbsolutePath();
+                /**
+                 * 需要改动
+                 */
+                String name = fs[i].getName();
+                String group = name.split("emmer")[1].split("_RH")[0];
+
+                br = AoFile.readFile(infileS);
+                br.readLine(); //read header
+                String temp = null;
+                int cnt = 0;
+                while ((temp = br.readLine()) != null) {
+                    cnt++;
+                    cnttotal++;
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(temp).append("\t").append(group);
+                    bw.write(sb.toString());
+                    bw.newLine();
+                }
+                System.out.println(fs[i].getName() + "\t" + cnt);
+            }
+            System.out.println("Total lines without header count is " + cnttotal + " at merged file " + outfileS );
+            br.close();
+            bw.flush();
+            bw.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
     public void mkBinRH(){

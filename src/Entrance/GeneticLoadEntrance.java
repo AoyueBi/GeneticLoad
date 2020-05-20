@@ -6,6 +6,7 @@
 package Entrance;
 
 import AoUtils.CalVCF;
+import AoUtils.CountSites;
 import GermplasmInfo.GermplasmInfo;
 import Plot.PCA;
 import PopulationAnalysis.AoHeterozygosity;
@@ -21,14 +22,14 @@ import java.util.Date;
 public class GeneticLoadEntrance {
 
     public GeneticLoadEntrance() {
-//        this.firstProcess();
+        this.firstProcess();
 //        this.plot();
 //        this.infoDB();
 //        this.DBdeleterious();
 
         //ternary plot analysis
 //        this.geneExpression();
-        this.rebuildVCF();
+//        this.rebuildVCF();
 
 
     }
@@ -36,7 +37,7 @@ public class GeneticLoadEntrance {
     public void rebuildVCF(){
 //        new RebuildVCF();
 //        new ScriptHapscanner2();
-        new AoHeterozygosity();
+//        new AoHeterozygosity();
 
     }
 
@@ -93,13 +94,13 @@ public class GeneticLoadEntrance {
 //        new PopGenParaWheat();
         //new SplitScript();
 //        new Script();
-//        new FilterVCF();
+        new FilterVCF();
 //        new Bin();
 //        new AoMath();
 //        new TreePreparation();
 //        new CalVCF();
 //        new BadMutations();
-        new AoHeterozygosity();
+//        new AoHeterozygosity();
 //        new Fst();
 //        new Pi();
 //        new TajimaD();
@@ -182,6 +183,7 @@ public class GeneticLoadEntrance {
 //        new XPCLR().getGenotypeXPCLR_parallele_diploid(args[0], args[1], args[2]);
 
 //        CalVCF.extractVCFtable(args[0], args[1], args[2]);
+//        CountSites.countSitesinFastCallformat(args[0]);
 
         System.out.println(new SimpleDateFormat().format(new Date()) + "\tend.");
 
