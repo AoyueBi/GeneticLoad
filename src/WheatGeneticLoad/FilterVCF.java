@@ -110,7 +110,7 @@ public class FilterVCF {
 //    new Bin().mkBarplotofMAF_single("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/023_rebackDDtauschii/002_subsetVCFandMAF/012_calMAF_byPop/di.maf.txt.gz", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/023_rebackDDtauschii/002_subsetVCFandMAF/013_bintable_byPop", "10", "0.5");
         //对新版的VMAPII进行计数
         //this.mergeTxt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/012_countsiteFrommergedVCF/zzzzlog文件/log_021", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/012_countsiteFrommergedVCF/005_maf0.01SNPbyPop/001_filterIndelMaf0.01_20191016.txt");
-//    new CountSites().mergeChr1and2txt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/012_countsiteFrommergedVCF/005_maf0.01SNPbyPop/002_filterIndelMaf0.01_20191016.txt", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/012_countsiteFrommergedVCF/005_maf0.01SNPbyPop/003_filterIndelMaf0.01byRefChr_20191028.txt");
+//    new CountSites().mergeChr1and2txt_double("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/012_countsiteFrommergedVCF/005_maf0.01SNPbyPop/002_filterIndelMaf0.01_20191016.txt", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/012_countsiteFrommergedVCF/005_maf0.01SNPbyPop/003_filterIndelMaf0.01byRefChr_20191028.txt");
         /**
          * 对MAF>0.01byPo过滤的位点，进行最后的质控
          */

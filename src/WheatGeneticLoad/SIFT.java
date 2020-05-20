@@ -43,7 +43,7 @@ public class SIFT {
         //new SplitScript().splitBwaScript("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/004_newScript/sh_vcfAnnotator.sh", "vcfAnnotator", 7, 6);
 
         //this.calVariantsType2("/data4/home/aoyue/vmap2/analysis/015_annoDB/003_addSIFT/", "/data4/home/aoyue/vmap2/analysis/015_annoDB/004_calSIFTNum/cal_sift20190930.txt");
-        //new CountSites().mergeChr1and2txt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/005_result2/cal_sift20190930.txt", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/005_result2/cal_sift.byChrRef.txt");
+        //new CountSites().mergeChr1and2txt_double("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/005_result2/cal_sift20190930.txt", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/005_result2/cal_sift.byChrRef.txt");
         /**
          * ******** 正式数据的计算**************
          */

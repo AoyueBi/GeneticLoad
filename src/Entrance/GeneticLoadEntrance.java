@@ -88,13 +88,13 @@ public class GeneticLoadEntrance {
         //new DvcfProcessor();
 //        new DataStorage();
 //        new SIFT();
-//        new CountSites();
+        new CountSites();
 //        new ScriptHapscanner2();
 //        new VariantsSum();
 //        new PopGenParaWheat();
         //new SplitScript();
 //        new Script();
-        new FilterVCF();
+//        new FilterVCF();
 //        new Bin();
 //        new AoMath();
 //        new TreePreparation();

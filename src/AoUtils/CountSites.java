@@ -33,13 +33,19 @@ public class CountSites {
 //        this.extractVCF("/Users/Aoyue/Documents/chr001.ABDgenome.filtered0.75_10000lines.vcf", "/Users/Aoyue/Documents/test.vcf", "/Users/Aoyue/Documents/a.txt");
 
 //        this.cntSitesinMergedVCFtoPop("/Users/Aoyue/Documents/a/chr036.vcf", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/removeBadTaxa/BreadWheat_S419.txt");
-//        this.mergeChr1and2txt("/Users/Aoyue/Documents/a.txt", "/Users/Aoyue/Documents/b.txt");
+//        this.mergeChr1and2txt_double("/Users/Aoyue/Documents/a.txt", "/Users/Aoyue/Documents/b.txt");
 //        this.getRefChrPos(2, 2);
 //        mergefileandChangeChrPos_chr1and2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/001_ori/delSNP","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/103_snpClassify/002_changeChrPos");
 
 
 //        this.changechrPosOnVCF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/002_exonSNPVCF","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/008_VCF/001_exonVCF/000_exonVCF");
 //    this.mergeVCFfile1and2_chr1and2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/008_VCF/001_exonVCF/000_exonVCF","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/008_VCF/001_exonVCF/001_mergeVCF");
+//        this.mergeChr1and2txt_int("/Users/Aoyue/Downloads/log_abd_countSitesinFastCallformat_20200519.txt","/Users/Aoyue/Downloads/log_abd.txt");
+//        this.mergeChr1and2txt_int("/Users/Aoyue/Downloads/log_maf0.01_countSitesinFastCallformat20200520.txt","/Users/Aoyue/Downloads/log_maf0.01_d_countSitesinFastCallformat20200520.txt");
+//        this.mergeChr1and2_Dgenome("/Users/Aoyue/Downloads/log_maf0.01_countSitesinFastCallformat20200520.txt","/Users/Aoyue/Downloads/log_maf0.01_ddd_countSitesinFastCallformat20200520.txt");
+
+        CountSites.countSitesinFastCallformat("/Users/Aoyue/project/wheatVMapII/005_preTest/fastCall/004_fastV2_JiaoDataParameters/003_testvcf/000_sampleVCF");
+
     }
 
 
@@ -2776,9 +2782,17 @@ public class CountSites {
      */
     public static void countSitesinFastCallformat(String infileDirS) {
         File[] fs = new File(infileDirS).listFiles();
-        fs = IOUtils.listFilesEndsWith(fs,"vcf.gz");
-        List<File> fsList = Arrays.asList(fs);
+        File[] fs1 = IOUtils.listFilesEndsWith(fs,"vcf.gz");
+        File[] fs2 = IOUtils.listFilesEndsWith(fs,"vcf");
+        List<File> fsList = new ArrayList<>();
+        for (int i = 0; i < fs1.length; i++) {
+            fsList.add(fs1[i]);
+        }
+        for (int i = 0; i < fs2.length; i++) {
+            fsList.add(fs2[i]);
+        }
 
+        Collections.sort(fsList);
         System.out.println("Chr\tN_RawSNPs\tN_BiallelicSNPs\tN_TriallelicSNPs\tIndels\tInsertions\tDeletions");
         fsList.parallelStream().forEach(f -> {
             try {
@@ -2851,16 +2865,15 @@ public class CountSites {
     /**
      * 将计算出的snp位点数进行合并，成1D 2D 3D 4D 5D 6D 7D形式；
      */
-    public void mergeChr1and2_Dgenome(String infileS, String outfileS) {
+    public void mergeChr1and2_ABgenome(String infileS, String outfileS) {
 //        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/002_countSites/countSites.txt";
 //        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/002_countSites/countSites_mergeChr1and2.txt";
 
         //infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/004_gVCF/002_vcf_GATK/002_countSites/countSites_fromGATK.txt";
         //outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/004_gVCF/002_vcf_GATK/002_countSites/countSites_fromGATK_mergeChr1and2.txt";
-        String[] chr = {"1D", "2D", "3D", "4D", "5D", "6D", "7D"};
-        int[] cnts = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14};
+        String[] chr = {"1A", "1B", "2A", "2B", "3A", "3B", "4A", "4B", "5A", "5B", "6A", "6B", "7A", "7B"};
+        int[] cnts = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,15,16,17,18,19,20,21};
         HashMap<Integer, String> hmcntchr = new HashMap<>();
-        HashMap<Integer, Integer> hmcntSNPNum = new HashMap<>();
         for (int i = 0; i < chr.length; i++) {
             hmcntchr.put(cnts[i], chr[i]);
         }
@@ -2872,17 +2885,32 @@ public class CountSites {
             bw.write(temp);
             bw.newLine(); //writer header
             int cnt = 0;
+            List<String> l = new ArrayList<>();
             while ((temp = br.readLine()) != null) {
-                int site1 = Integer.parseInt(PStringUtils.fastSplit(temp).get(1));
-                if ((temp = br.readLine()) != null) {
-                    int site2 = Integer.parseInt(PStringUtils.fastSplit(temp).get(1));
-                    int site = site1 + site2;
-                    cnt++;
-                    hmcntSNPNum.put(cnt, site);
-                    bw.write(hmcntchr.get(cnt) + "\t" + hmcntSNPNum.get(cnt));
-                    bw.newLine();
-                } else {
+                l = PStringUtils.fastSplit(temp);
+                int[] site1 = new int[l.size()];
+                int[] site2 = new int[l.size()];
+                int[] site = new int[l.size()];
+                HashMap<Integer, Integer>[] hmcnt = new HashMap[l.size()];
+                for (int i = 1; i < l.size(); i++) {
+                    site1[i] = Integer.parseInt(l.get(i));
+                }
 
+                if ((temp = br.readLine()) != null) { //then the second line
+                    cnt++;
+                    l = PStringUtils.fastSplit(temp);
+                    for (int i = 1; i < l.size(); i++) { //record site2
+                        site2[i] = Integer.parseInt(l.get(i));
+                    }
+                    for (int i = 1; i < l.size(); i++) { //calculate the sum site
+                        site[i] = site1[i] + site2[i];
+                    }
+
+                    bw.write(hmcntchr.get(cnt)); // + "\t" + hmcnt.get(cnt));
+                    for (int i = 1; i < l.size(); i++) {
+                        bw.write("\t" + site[i]);
+                    }
+                    bw.newLine();
                 }
             }
             br.close();
@@ -2896,12 +2924,135 @@ public class CountSites {
     }
 
     /**
+     * 将计算出的snp位点数进行合并，成1D 2D 3D 4D 5D 6D 7D形式；
+     */
+    public void mergeChr1and2_Dgenome(String infileS, String outfileS) {
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/002_countSites/countSites.txt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/002_countSites/countSites_mergeChr1and2.txt";
+
+        //infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/004_gVCF/002_vcf_GATK/002_countSites/countSites_fromGATK.txt";
+        //outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/004_gVCF/002_vcf_GATK/002_countSites/countSites_fromGATK_mergeChr1and2.txt";
+        String[] chr = {"1D", "2D", "3D", "4D", "5D", "6D", "7D"};
+        int[] cnts = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14};
+        HashMap<Integer, String> hmcntchr = new HashMap<>();
+        for (int i = 0; i < chr.length; i++) {
+            hmcntchr.put(cnts[i], chr[i]);
+        }
+
+        try {
+            BufferedReader br = IOUtils.getTextReader(infileS);
+            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            String temp = br.readLine(); //read header
+            bw.write(temp);
+            bw.newLine(); //writer header
+            int cnt = 0;
+            List<String> l = new ArrayList<>();
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                int[] site1 = new int[l.size()];
+                int[] site2 = new int[l.size()];
+                int[] site = new int[l.size()];
+                HashMap<Integer, Integer>[] hmcnt = new HashMap[l.size()];
+                for (int i = 1; i < l.size(); i++) {
+                    site1[i] = Integer.parseInt(l.get(i));
+                }
+
+                if ((temp = br.readLine()) != null) { //then the second line
+                    cnt++;
+                    l = PStringUtils.fastSplit(temp);
+                    for (int i = 1; i < l.size(); i++) { //record site2
+                        site2[i] = Integer.parseInt(l.get(i));
+                    }
+                    for (int i = 1; i < l.size(); i++) { //calculate the sum site
+                        site[i] = site1[i] + site2[i];
+                    }
+
+                    bw.write(hmcntchr.get(cnt)); // + "\t" + hmcnt.get(cnt));
+                    for (int i = 1; i < l.size(); i++) {
+                        bw.write("\t" + site[i]);
+                    }
+                    bw.newLine();
+                }
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    /**
+     * 针对特定的小麦42条染色体，
      * 将表格汇总的每一列数值按照1A 1B 1D 相加，产生一个新的表格，表格中可以有很多列的值,但必须为int类型
      *
      * @param infileS
      * @param outfileS
      */
-    public void mergeChr1and2txt(String infileS, String outfileS) {
+    public void  mergeChr1and2txt_int(String infileS, String outfileS) {
+        String[] chr = {"1A", "1B", "1D", "2A", "2B", "2D", "3A", "3B", "3D", "4A", "4B", "4D", "5A", "5B", "5D", "6A", "6B", "6D", "7A", "7B", "7D"};
+        int[] cnts = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21};
+        HashMap<Integer, String> hmcntchr = new HashMap<>();
+
+        for (int i = 0; i < chr.length; i++) {
+            hmcntchr.put(cnts[i], chr[i]);
+        }
+
+        try {
+            BufferedReader br = IOUtils.getTextReader(infileS);
+            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            String temp = br.readLine(); //read header
+            bw.write(temp);
+            bw.newLine(); //writer header
+            int cnt = 0;
+
+            List<String> l = new ArrayList<>();
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                int[] site1 = new int[l.size()];
+                int[] site2 = new int[l.size()];
+                int[] site = new int[l.size()];
+                HashMap<Integer, Integer>[] hmcnt = new HashMap[l.size()];
+                for (int i = 1; i < l.size(); i++) {
+                    site1[i] = Integer.parseInt(l.get(i));
+                }
+
+                if ((temp = br.readLine()) != null) { //then the second line
+                    cnt++;
+                    l = PStringUtils.fastSplit(temp);
+                    for (int i = 1; i < l.size(); i++) { //record site2
+                        site2[i] = Integer.parseInt(l.get(i));
+                    }
+                    for (int i = 1; i < l.size(); i++) { //calculate the sum site
+                        site[i] = site1[i] + site2[i];
+                    }
+
+                    bw.write(hmcntchr.get(cnt)); // + "\t" + hmcnt.get(cnt));
+                    for (int i = 1; i < l.size(); i++) {
+                        bw.write("\t" + site[i]);
+                    }
+                    bw.newLine();
+                }
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    /**
+     * 将表格汇总的每一列数值按照1A 1B 1D 相加，产生一个新的表格，表格中可以有很多列的值,为int类型 或者 double 类型
+     *
+     * @param infileS
+     * @param outfileS
+     */
+    public void mergeChr1and2txt_double(String infileS, String outfileS) {
         String[] chr = {"1A", "1B", "1D", "2A", "2B", "2D", "3A", "3B", "3D", "4A", "4B", "4D", "5A", "5B", "5D", "6A", "6B", "6D", "7A", "7B", "7D"};
         int[] cnts = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21};
         HashMap<Integer, String> hmcntchr = new HashMap<>();
@@ -2954,12 +3105,13 @@ public class CountSites {
             e.printStackTrace();
             System.exit(1);
         }
-
     }
 
     /**
      * 将计算出的snp位点数进行合并，成1A 1B 1D形式；
+     *
      */
+    @Deprecated
     public void mergeChr1and2_deprecated(String infileS, String outfileS) {
 //        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/002_countSites/countSites.txt";
 //        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/002_countSites/countSites_mergeChr1and2.txt";
