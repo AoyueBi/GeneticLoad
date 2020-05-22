@@ -770,10 +770,10 @@ public class SIFT {
                 String chr = PStringUtils.getNDigitNumber(3, i);
                 String outfileS = new File(outfileDirS, "chr" + chr + "_create_wheat_sift4g_db.sh").getAbsolutePath();
                 BufferedWriter bw = IOUtils.getTextWriter(outfileS);
-                bw.write("date\n"
+                bw.write("annotationHeader\n"
                         + "echo \"chr" + chr + "    :Create wheat sif4G database begins\"" + "\n"
                         + "perl make-SIFT-db-all.pl -config /data4/home/aoyue/vmap2/analysis/008_sift/abd_iwgscV1_SIFT4G_db/config/abd_iwgscV1_SIFT4G_Create_Genomic_DB_config" + chr + ".txt > log_chr" + chr + ".wheat_sift4G_pipeline.step.txt\n"
-                        + "date\n"
+                        + "annotationHeader\n"
                         + "echo \"chr" + chr + "    :Create wheat sif4G database ends\"" + "\n");
 
                 bw.flush();

@@ -384,7 +384,7 @@ public class CalVCF {
             }
 
             //再计算基因型
-            temList = PStringUtils.fastSplit(tempList.get(0), "/"); //temList是包含基因型拆分后的集合
+            temList = PStringUtils.fastSplit(tempList.get(0), "/"); //temList是包含基因型拆分后的集合  如： 0 0
             for (int j = 0; j < temList.size(); j++) { //0/0:13,0:0,4,25
                 int c = Integer.parseInt(temList.get(j)); // c是基因型0 1 2 其中的一个
                 acCnt[c]++; //acCnt[c] 是所有taxa基因型某一数值如0 1 2的总和

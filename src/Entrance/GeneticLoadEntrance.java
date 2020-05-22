@@ -22,14 +22,14 @@ import java.util.Date;
 public class GeneticLoadEntrance {
 
     public GeneticLoadEntrance() {
-        this.firstProcess();
+//        this.firstProcess();
 //        this.plot();
 //        this.infoDB();
 //        this.DBdeleterious();
 
         //ternary plot analysis
 //        this.geneExpression();
-//        this.rebuildVCF();
+        this.rebuildVCF();
 
 
     }
@@ -38,6 +38,7 @@ public class GeneticLoadEntrance {
 //        new RebuildVCF();
 //        new ScriptHapscanner2();
 //        new AoHeterozygosity();
+        new  FilterVCF2();
 
     }
 
@@ -184,6 +185,8 @@ public class GeneticLoadEntrance {
 
 //        CalVCF.extractVCFtable(args[0], args[1], args[2]);
 //        CountSites.countSitesinFastCallformat(args[0]);
+
+//        new FilterVCF2().filter2(args[0]);
 
         System.out.println(new SimpleDateFormat().format(new Date()) + "\tend.");
 

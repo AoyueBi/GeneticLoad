@@ -38,7 +38,7 @@ public class SplitScript {
         String parentS = new File(infileS).getParent();
         new File(parentS,"splitScript").mkdirs();
         String outfileDirS = new File(parentS,"splitScript").getAbsolutePath();
-        String shfileS = new File(parentS,"sh_split.sh").getAbsolutePath();
+        String shfileS = new File(outfileDirS,"sh_split.sh").getAbsolutePath();
         String nameprefix = new File(infileS).getName().split(".sh")[0];
 
         try {
