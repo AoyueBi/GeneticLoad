@@ -1,6 +1,7 @@
 package WheatGeneticLoad;
 
 import AoUtils.AoFile;
+import AoUtils.SplitScript;
 import gnu.trove.list.array.TIntArrayList;
 import pgl.infra.dna.genotype.GenoIOFormat;
 import pgl.infra.dna.genotype.GenotypeGrid;
@@ -21,6 +22,7 @@ public class FilterVCF2 {
 //        this.filter2();
 //        this.script();
 //        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/030_FixVMap2/003_script/sh_filterMAFmissOccurrence20200522.sh",3,11);
+//        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/030_FixVMap2/003_script/sh_filterMAFmissOccurrence_2_20200522.sh",4,2);
 
 //        this.filter_parallel();
 
@@ -28,7 +30,74 @@ public class FilterVCF2 {
 //        String b = "";
 //        this.filter_singleThread(a,b);
 
-        this.filterMafbyPopHTD();
+//        this.filterMafbyPopHTD();
+//        this.extractField();
+        this.getOccurrenceSite();
+
+    }
+
+
+    /**
+     * 检查哪些 MAF 小于 0.01 但是又属于 occurrence 大于 2 （即在2个个体中出现 minor allele 的位点）
+      */
+    public void getOccurrenceSite(){
+
+        String posMAFfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/030_FixVMap2/002_out/chr001_occu2_maf0.01_miss0.2.txt";
+        String posOccurrenceFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/030_FixVMap2/002_out/occurrence/chr001_occu2_maf0.01_miss0.2.txt";
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/030_FixVMap2/001_data/chr001.vcf.gz";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/030_FixVMap2/002_out/002_occurrenceFile/chr001.vcf";
+
+        TIntArrayList posmaf = AoFile.getTIntList_withoutHeader(posMAFfileS,0);
+        TIntArrayList posoccurr = AoFile.getTIntList_withoutHeader(posOccurrenceFileS,0);
+        posmaf.sort();
+        posoccurr.sort();
+
+        try {
+
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = null;
+            String header = br.readLine();
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                if (temp.startsWith("#")) continue;
+                l = PStringUtils.fastSplit(temp);
+                int pos = Integer.parseInt(l.get(1));
+                int index = posmaf.binarySearch(pos);
+                int index2 = posoccurr.binarySearch(pos);
+                if (index > -1) continue;
+                if (index2 < 0) continue;
+                bw.write(temp);
+                bw.newLine();
+                cnt++;
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+    }
+
+
+    /**
+     * 提取VCF文件的某几列信息
+     */
+    public void extractField(){
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/030_FixVMap2/003_out2_byAomethod";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/030_FixVMap2/004_extractColumn";
+        String[] chrArr ={"001","005"};
+
+        for (int i = 0; i < chrArr.length; i++) {
+            String infileS = new File(infileDirS,"chr" + chrArr[i] + "_occu2_maf0.01_miss0.2.vcf").getAbsolutePath();
+            String outfileS = new File(outfileDirS,new File(infileS).getName()).getAbsolutePath();
+            int[] column = {1};
+            AoFile.extractFileColumn(infileS,"#",column,outfileS);
+        }
     }
 
     public void script(){
@@ -38,7 +107,9 @@ public class FilterVCF2 {
 
 
         String logDirS = "/data4/home/aoyue/vmap2/analysis/023_hapScanner_basedPopDepth/log/004";
-        String[] chrArr = {"010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
+
+//        String[] chrArr = {"010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
+        String[] chrArr = {"003","004","005","006","007","008","009"};
 
         for (int i = 0; i < chrArr.length; i++) {
             String infileS = new File(infileDirS,"chr" + chrArr[i] + ".vcf").getAbsolutePath();
@@ -305,7 +376,9 @@ public class FilterVCF2 {
 
 
         String inputVCFDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/030_FixVMap2/001_data";
-        String outputVCFDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/030_FixVMap2/002_out";
+//        String outputVCFDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/030_FixVMap2/002_out";
+        String outputVCFDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/030_FixVMap2/002_out/occurrence";
+
         String ABTaxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/010_taxaList/EmmerWheat_S187.txt";
         String ABDTaxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/010_taxaList/BreadWheat_S420.txt";
         String DTaxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/010_taxaList/Ae.tauschii_S36.txt";
@@ -373,15 +446,22 @@ public class FilterVCF2 {
                 for (int j = 0; j < gts.length; j++) { //判断2个群体的maf值和occurrence 值
 
                     double maf = gts[j].getMinorAlleleFrequency(i);
-                    if (!(maf < mafThresh)) { //
-                        posList.add(gt.getPosition(i));
-                        break;
-                    }
+//                    if (!(maf < mafThresh)) { //
+//                        posList.add(gt.getPosition(i));
+//                        break;
+//                    }
 //                    else if (!(gts[j].getAlternativeAlleleOccurrenceBySite(i) < occu)) {
 //                        posList.add(gt.getPosition(i));
 //                        break;
 //                    }
+
+                    if (!(gts[j].getAlternativeAlleleOccurrenceBySite(i) < occu)) {
+                        posList.add(gt.getPosition(i));
+                        break;
+                    }
+
                 }
+
             }
             int[] positions = posList.toArray();
             Arrays.sort(positions);
@@ -391,6 +471,7 @@ public class FilterVCF2 {
 
             /**
              * 测试老师的MAF和我的MAF之间的差别
+             *
              */
             try{
                 BufferedWriter bw = AoFile.writeFile(outfileS);
@@ -664,7 +745,7 @@ public class FilterVCF2 {
 
     }
 
-    public String getInfo(String[] genoArray, String altList) {
+    private String getInfo(String[] genoArray, String altList) {
         int dp = 0; //总深度
         int nz = 0; //有基因型的个体数
         int nAlt = PStringUtils.fastSplit(altList, ",").size();
@@ -735,7 +816,7 @@ public class FilterVCF2 {
         return sb.toString();
     }
 
-    public String getSubgenomeInfo(String[] PopGenoArray, String altList) {
+    private String getSubgenomeInfo(String[] PopGenoArray, String altList) {
 //        int   dp = 0;
         int nz = 0;
         int nAlt = PStringUtils.fastSplit(altList, ",").size();

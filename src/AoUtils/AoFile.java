@@ -27,6 +27,43 @@ public class AoFile {
         
     }
 
+
+    public static void extractFileColumn(String infileS, String skipString, int[] columns,String outfileS){
+
+        Arrays.sort(columns);
+
+        try{
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = null;
+            String header = br.readLine();
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+                if (temp.startsWith(skipString))continue;
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < l.size(); i++) {
+                    int index = Arrays.binarySearch(columns,i);
+                    if (index < 0) continue;
+                    sb.append(l.get(i)).append("\t");
+                }
+                sb.deleteCharAt(sb.length()-1);
+                bw.write(sb.toString());
+                bw.newLine();
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+
+        }catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
     /**
      * 为文本添加分组，根据文件名字
      */
@@ -1174,6 +1211,37 @@ public class AoFile {
         return outArray;
     }
 
+
+    /**
+     * get the pos database from txt file without header
+     * @param infileS
+     * @param columnIndex
+     * @return
+     */
+    public static TIntArrayList getTIntList_withoutHeader(String infileS, int columnIndex){
+        TIntArrayList ll = new TIntArrayList();
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            String temp = null;
+            List<String> l = new ArrayList();
+            int cnttotal = 0;
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                cnttotal++;
+                l = PStringUtils.fastSplit(temp);
+                String goal = l.get(columnIndex);
+                if (goal.startsWith("N") | goal.startsWith("inf")) continue;
+                ll.add(Integer.parseInt(goal));
+                cnt++;
+            }
+            br.close();
+            System.out.println("Total num in the list is " + cnt + "\tTDoubleArrayList size is " + ll.size());
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ll;
+    }
 
     /**
      * get the pos database from txt file
