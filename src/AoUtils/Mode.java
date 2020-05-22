@@ -5,6 +5,7 @@
  */
 package AoUtils;
 
+import gnu.trove.list.array.TIntArrayList;
 import pgl.infra.position.ChrPos;
 import pgl.infra.utils.IOUtils;
 import pgl.infra.utils.PStringUtils;
@@ -28,6 +29,52 @@ public class Mode {
     //***************************** step one : 确定其倍性，根据倍性计算 ****************************//
 
     public Mode() {
+
+    }
+
+    /**
+     * 获取符合条件的某些行
+     */
+    public void getLinesinPosList(){
+
+        String posMAFfileS = "";
+        String posOccurrenceFileS = "";
+        String infileS = "";
+        String outfileS = "";
+
+        TIntArrayList posmaf = AoFile.getTIntList_withoutHeader(posMAFfileS,0);
+        TIntArrayList posoccurr = AoFile.getTIntList_withoutHeader(posOccurrenceFileS,0);
+        posmaf.sort();
+        posoccurr.sort();
+
+        try {
+
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = null;
+            String header = br.readLine();
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                if (temp.startsWith("#")) continue;
+                l = PStringUtils.fastSplit(temp);
+                int pos = Integer.parseInt(l.get(1));
+                int index = posmaf.binarySearch(pos);
+                int index2 = posoccurr.binarySearch(pos);
+                if (index > -1) continue;
+                if (index2 < 0) continue;
+                bw.write(temp);
+                bw.newLine();
+                cnt++;
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println(infileS + " is completed at " + outfileS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
 
     }
 

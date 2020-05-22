@@ -44,7 +44,6 @@ public class CountSites {
 //        this.mergeChr1and2txt_int("/Users/Aoyue/Downloads/log_maf0.01_countSitesinFastCallformat20200520.txt","/Users/Aoyue/Downloads/log_maf0.01_d_countSitesinFastCallformat20200520.txt");
 //        this.mergeChr1and2_Dgenome("/Users/Aoyue/Downloads/log_maf0.01_countSitesinFastCallformat20200520.txt","/Users/Aoyue/Downloads/log_maf0.01_ddd_countSitesinFastCallformat20200520.txt");
 
-        CountSites.countSitesinFastCallformat("/Users/Aoyue/project/wheatVMapII/005_preTest/fastCall/004_fastV2_JiaoDataParameters/003_testvcf/000_sampleVCF");
 
     }
 
