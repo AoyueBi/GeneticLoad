@@ -57,7 +57,6 @@ public class Script {
         for (int i = 0; i < chrArr.length; i++) {
             String chr = chrArr[i];
             System.out.println("");
-
         }
 
     }

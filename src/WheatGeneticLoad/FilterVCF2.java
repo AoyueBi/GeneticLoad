@@ -1,6 +1,7 @@
 package WheatGeneticLoad;
 
 import AoUtils.AoFile;
+import AoUtils.CountSites;
 import gnu.trove.list.array.TIntArrayList;
 import pgl.infra.dna.genotype.GenoIOFormat;
 import pgl.infra.dna.genotype.GenotypeGrid;
@@ -22,7 +23,7 @@ public class FilterVCF2 {
 //        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/030_FixVMap2/003_script/sh_filterMAFmissOccurrence20200522.sh",3,11);
 //        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/030_FixVMap2/003_script/sh_filterMAFmissOccurrence_2_20200522.sh",4,2);
 
-        this.filter_parallel();
+//        this.filter_parallel();
 
 //        String a = "";
 //        String b = "";
@@ -39,7 +40,81 @@ public class FilterVCF2 {
 //        this.getOccurrenceByTaxa();
 //        this.identifyFinalResult();
 
+        /**
+         * fix VMap2.0
+         */
+//        this.modifyVMap2();
+//        new CountSites().mergeChr1and2txt_int("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/029_countSiteSummary/002_vmap2.0/log_043_countSitesinFastCallformat_fixVMap2.0_20200522.txt","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/029_countSiteSummary/002_vmap2.0/CountVariants_fixVMap2.0_20200522.txt");
+//        this.bgzip();
+        this.sortTaxaName();
     }
+
+    public void sortTaxaName(){
+
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/010_taxaList/BreadWheat_S420.txt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/010_taxaList/BreadWheat_S420.txt";
+
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/010_taxaList/EmmerWheat_S187.txt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/010_taxaList/EmmerWheat_S187.txt";
+
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/010_taxaList/Ae.tauschii_S36.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/010_taxaList/Ae.tauschii_S36.txt";
+
+
+        String[] taxaArray = AoFile.getStringArraybyList_withoutHeader(infileS,0);
+        Arrays.sort(taxaArray);
+        try {
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            for (int i = 0; i < taxaArray.length; i++) {
+                bw.write(taxaArray[i]);
+                bw.newLine();
+            }
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+    }
+
+    /**
+     * step 1: modify GL yo PL
+     * step 2: rename VCF name like chr001_vmap2.0.vcf
+     * step 3: bgzip vcf file and make index for vcf
+     * step 4: make readme file for vmap2.0
+     */
+
+
+    public void bgzip() { // 重定向
+
+        String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
+//        String[] chrArr ={"001","002","003","004","007","008","009","010","013","014","015","016","019","020","021","022","025","026","027","028","031","032","033","034","037","038","039","040"};
+//        String[] chrArr ={"005","006","011","012","017","018","023","024","029","030","035","036","041","042"};
+
+        for (int i = 0; i < chrArr.length; i++) {
+            String chr = chrArr[i];
+            System.out.println("bgzip chr" + chr + "_vmap2.0.vcf && tabix -p vcf chr" + chr + "_vmap2.0.vcf.gz &");
+        }
+    }
+
+    public void modifyVMap2(){
+
+        //sed -i '6s/GL/PL/' chr004_occu2_maf0.01_miss0.2.vcf
+        String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
+
+        for (int i = 0; i < chrArr.length; i++) {
+            String chr = chrArr[i];
+//            System.out.println("sed -i '6s/GL/PL/' chr" + chr + "_occu2_maf0.01_miss0.2.vcf &");
+
+            //chr042_occu2_maf0.01_miss0.2.vcf
+            System.out.println("mv chr" +  chr + "_occu2_maf0.01_miss0.2.vcf chr" + chr + "_vmap2.0.vcf" );
+        }
+
+    }
+
+    //chr041_vmap2.1.vcf.gz
 
     public void identifyFinalResult(){
         String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/030_FixVMap2/002_out/003_occurenceCount/chr001_occu2_maf0.01_miss0.2.vcf";
@@ -719,118 +794,118 @@ public class FilterVCF2 {
              * 测试老师的MAF和我的MAF之间的差别
              *
              */
+//            try{
+//                BufferedWriter bw = AoFile.writeFile(outfileS);
+//                for (int i = 0; i < positions.length; i++) {
+//                    bw.write(String.valueOf(positions[i]));
+//                    bw.newLine();
+//                }
+//                bw.flush();
+//                bw.close();
+//
+//            }catch (Exception e) {
+//                e.printStackTrace();
+//                System.exit(1);
+//            }
+
+
+
+            /**
+             * begin to write the kept site in vcf file
+             */
             try{
-                BufferedWriter bw = AoFile.writeFile(outfileS);
-                for (int i = 0; i < positions.length; i++) {
-                    bw.write(String.valueOf(positions[i]));
-                    bw.newLine();
+                List<Integer> indexABD = new ArrayList<>();
+                List<Integer> indexABorD = new ArrayList<>();
+                String[] taxaABorDArray = null;
+                String aaf = null;
+                String annoHeader = null;
+                if (subgenome.equals("D")){
+                    taxaABorDArray = dTaxa;
+                    aaf = "AAF_D";
+                    annoHeader = this.annotationHeader_Dsub();
+                }else{
+                    taxaABorDArray = abTaxa;
+                    aaf = "AAF_AB";
+                    annoHeader = this.annotationHeader_ABsub();
                 }
+
+                BufferedReader br = AoFile.readFile(f.getAbsolutePath());
+                BufferedWriter bw = AoFile.writeFile(outfileS);
+                bw.write(annoHeader); bw.newLine();
+                String temp = null;
+                List<String> l = new ArrayList<>();
+                while((temp=br.readLine()) != null){
+                    if (temp.startsWith("##")) continue;
+                    if (temp.startsWith("#CHROM")){
+                        l = PStringUtils.fastSplit(temp);
+                        bw.write(temp);
+                        bw.newLine();
+                        for (int i = 9; i < l.size(); i++) {
+                            String taxon = l.get(i);
+                            int index1 = Arrays.binarySearch(abdTaxa, taxon);
+                            int index2 = Arrays.binarySearch(taxaABorDArray, taxon);
+                            if (index1 > -1) {
+                                indexABD.add(i);
+                            }
+                            if (index2 > -1) {
+                                indexABorD.add(i);
+                            }
+                        }
+                        Collections.sort(indexABD);
+                        Collections.sort(indexABorD);
+                    }
+                    if (!temp.startsWith("#")) {
+                        l = PStringUtils.fastSplit(temp);
+                        int pos = Integer.parseInt(l.get(1));
+                        int kk = Arrays.binarySearch(positions,pos);
+                        if (kk < 0) continue;
+                        String altList = l.get(4);
+                        List<String> lgeno = new ArrayList<>();
+                        List<String> lABDGeno = new ArrayList<>();
+                        List<String> lABorDGeno = new ArrayList<>();
+
+                        for (int i = 9; i < l.size(); i++) {
+                            lgeno.add(l.get(i));
+                        }
+                        for (int i = 0; i < indexABD.size(); i++) {
+                            lABDGeno.add(l.get(indexABD.get(i)));
+                        }
+                        for (int i = 0; i < indexABorD.size(); i++) {
+                            lABorDGeno.add(l.get(indexABorD.get(i)));
+                        }
+
+                        String[] genoArray = lgeno.toArray(new String[lgeno.size()]);
+                        String[] hexaGenoArray = lABDGeno.toArray(new String[lABDGeno.size()]);
+                        String[] ABorDGenoArray = lABorDGeno.toArray(new String[lABorDGeno.size()]);
+
+                        String INFO = this.getInfo(genoArray, altList);
+                        String hexaAAF = this.getSubgenomeInfo(hexaGenoArray, altList).split(",")[0];
+                        String ABorDAAF = this.getSubgenomeInfo(ABorDGenoArray, altList).split(",")[0];
+
+
+                        StringBuilder sbb = new StringBuilder();
+                        for (int i = 0; i < 7; i++) {
+                            sbb.append(l.get(i)).append("\t");
+                        }
+
+                        sbb.append(INFO).append(";AAF_ABD=").append(hexaAAF).append(";").append(aaf).append("=").append(ABorDAAF).append("\tGT:AD:GL");
+                        for (int i = 9; i < l.size(); i++) {
+                            sbb.append("\t").append(l.get(i));
+                        }
+                        bw.write(sbb.toString());
+                        bw.newLine();
+                    }
+                }
+                br.close();
                 bw.flush();
                 bw.close();
+                System.out.println(outfileS + " is completed.");
 
             }catch (Exception e) {
                 e.printStackTrace();
                 System.exit(1);
             }
 
-
-
-//            /**
-//             * begin to write the kept site in vcf file
-//             */
-//            try{
-//                List<Integer> indexABD = new ArrayList<>();
-//                List<Integer> indexABorD = new ArrayList<>();
-//                String[] taxaABorDArray = null;
-//                String aaf = null;
-//                String annoHeader = null;
-//                if (subgenome.equals("D")){
-//                    taxaABorDArray = dTaxa;
-//                    aaf = "AAF_D";
-//                    annoHeader = this.annotationHeader_Dsub();
-//                }else{
-//                    taxaABorDArray = abTaxa;
-//                    aaf = "AAF_AB";
-//                    annoHeader = this.annotationHeader_ABsub();
-//                }
-//
-//                BufferedReader br = AoFile.readFile(f.getAbsolutePath());
-//                BufferedWriter bw = AoFile.writeFile(outfileS);
-//                bw.write(annoHeader); bw.newLine();
-//                String temp = null;
-//                List<String> l = new ArrayList<>();
-//                while((temp=br.readLine()) != null){
-//                    if (temp.startsWith("##")) continue;
-//                    if (temp.startsWith("#CHROM")){
-//                        l = PStringUtils.fastSplit(temp);
-//                        bw.write(temp);
-//                        bw.newLine();
-//                        for (int i = 9; i < l.size(); i++) {
-//                            String taxon = l.get(i);
-//                            int index1 = Arrays.binarySearch(abdTaxa, taxon);
-//                            int index2 = Arrays.binarySearch(taxaABorDArray, taxon);
-//                            if (index1 > -1) {
-//                                indexABD.add(i);
-//                            }
-//                            if (index2 > -1) {
-//                                indexABorD.add(i);
-//                            }
-//                        }
-//                        Collections.sort(indexABD);
-//                        Collections.sort(indexABorD);
-//                    }
-//                    if (!temp.startsWith("#")) {
-//                        l = PStringUtils.fastSplit(temp);
-//                        int pos = Integer.parseInt(l.get(1));
-//                        int kk = Arrays.binarySearch(positions,pos);
-//                        if (kk < 0) continue;
-//                        String altList = l.get(4);
-//                        List<String> lgeno = new ArrayList<>();
-//                        List<String> lABDGeno = new ArrayList<>();
-//                        List<String> lABorDGeno = new ArrayList<>();
-//
-//                        for (int i = 9; i < l.size(); i++) {
-//                            lgeno.add(l.get(i));
-//                        }
-//                        for (int i = 0; i < indexABD.size(); i++) {
-//                            lABDGeno.add(l.get(indexABD.get(i)));
-//                        }
-//                        for (int i = 0; i < indexABorD.size(); i++) {
-//                            lABorDGeno.add(l.get(indexABorD.get(i)));
-//                        }
-//
-//                        String[] genoArray = lgeno.toArray(new String[lgeno.size()]);
-//                        String[] hexaGenoArray = lABDGeno.toArray(new String[lABDGeno.size()]);
-//                        String[] ABorDGenoArray = lABorDGeno.toArray(new String[lABorDGeno.size()]);
-//
-//                        String INFO = this.getInfo(genoArray, altList);
-//                        String hexaAAF = this.getSubgenomeInfo(hexaGenoArray, altList).split(",")[0];
-//                        String ABorDAAF = this.getSubgenomeInfo(ABorDGenoArray, altList).split(",")[0];
-//
-//
-//                        StringBuilder sbb = new StringBuilder();
-//                        for (int i = 0; i < 7; i++) {
-//                            sbb.append(l.get(i)).append("\t");
-//                        }
-//
-//                        sbb.append(INFO).append(";AAF_ABD=").append(hexaAAF).append(";").append(aaf).append("=").append(ABorDAAF).append("\tGT:AD:PL");
-//                        for (int i = 9; i < l.size(); i++) {
-//                            sbb.append("\t").append(l.get(i));
-//                        }
-//                        bw.write(sbb.toString());
-//                        bw.newLine();
-//                    }
-//                }
-//                br.close();
-//                bw.flush();
-//                bw.close();
-//                System.out.println(outfileS + " is completed.");
-//
-//            }catch (Exception e) {
-//                e.printStackTrace();
-//                System.exit(1);
-//            }
-//
         });
 
     }
@@ -853,7 +928,6 @@ public class FilterVCF2 {
         int occu = 2;
         float mafThresh = (float) 0.01;
         float missingThresh = (float) 0.2;
-
 
 
         String[] abdTaxa = AoFile.getStringArraybyList_withoutHeader(hexaFileS,0);
@@ -901,11 +975,8 @@ public class FilterVCF2 {
                 int cntkept = 0;
 
                 while ((temp = br.readLine()) != null) {
-                    //***********************************************************//
+                    //*********************** # section ************************************//
                     if (temp.startsWith("##")) continue;
-
-                    //***********************************************************//
-
                     if (temp.startsWith("#CHROM")) {
                         l = PStringUtils.fastSplit(temp);
                         bw.write(temp);
@@ -926,6 +997,7 @@ public class FilterVCF2 {
                         Collections.sort(indexABD);
                         Collections.sort(indexABorD);
                     }
+                    //*********************** pos section ************************************//
                     if (!temp.startsWith("#")) { //
                         cntSNP++;
                         l = PStringUtils.fastSplit(temp);
@@ -934,7 +1006,6 @@ public class FilterVCF2 {
                         List<String> lgeno = new ArrayList<>();
                         List<String> lABDGeno = new ArrayList<>();
                         List<String> lABorDGeno = new ArrayList<>();
-
 
                         for (int i = 9; i < l.size(); i++) {
                             lgeno.add(l.get(i));
@@ -975,7 +1046,7 @@ public class FilterVCF2 {
                             bw.write(sb.toString());
                             bw.newLine();
                         }
-                    } //
+                    }
                 }
                 br.close();
                 bw.flush();
