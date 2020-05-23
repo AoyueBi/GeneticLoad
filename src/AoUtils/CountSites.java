@@ -666,63 +666,103 @@ public class CountSites {
      * @param outfileDirS
      */
     public void mergeVCFbysubgenome(String infileDirS, String outfileDirS) {
+
         //建立1-42 一一对应的亚基因组的关系，根据chr001找到chr.Asub
         int[] arra = {1, 2, 7, 8, 13, 14, 19, 20, 25, 26, 31, 32, 37, 38};
         int[] arrb = {3, 4, 9, 10, 15, 16, 21, 22, 27, 28, 33, 34, 39, 40};
         int[] arrd = {5, 6, 11, 12, 17, 18, 23, 24, 29, 30, 35, 36, 41, 42};
-        HashMap<Integer, String> hml = new HashMap<>();
+        HashMap<Integer, Integer> hml = new HashMap<>();
         Arrays.sort(arra);
         Arrays.sort(arrb);
         Arrays.sort(arrd);
         for (int i = 0; i < arra.length; i++) {
-            hml.put(arra[i], "A");
-            hml.put(arrb[i], "B");
-            hml.put(arrd[i], "D");
+            hml.put(arra[i],0);
+            hml.put(arrb[i], 1);
+            hml.put(arrd[i], 2);
         }
 
-        //列出文件
-        File[] fs = new File(infileDirS).listFiles();
-        for (int i = 0; i < fs.length; i++) {
-            if (fs[i].isHidden()) {
-                System.out.println(fs[i].getName() + " is hidden");
-                fs[i].delete();
-            }
+        //列出文件,并加入对应的文件列表 ## 解释：3个数组，一个数组是一个文件列表，里面含有每个亚基因组对应的文件列表
+        List<File>[] fs = new List[3];
+        for (int i = 0; i < fs.length; i++) { // 一定记得初始化
+            fs[i] = new ArrayList<>();
         }
-        fs = new File(infileDirS).listFiles();
-        Arrays.sort(fs);
+        File[] fall = AoFile.getFileArrayInDir(infileDirS);
+        Arrays.sort(fall);
+        for (int i = 0; i < fall.length; i++) {
+            String name = fall[i].getName().substring(3,6);
+            int chr = Integer.parseInt(name);
+            int index = hml.get(chr);
+            fs[index].add(fall[i]);
+        }
 
+        //设定输出文件的路径及名字
         String[] outfileS = new String[3];
-        outfileS[0] = new File(outfileDirS, "chr.Asubgenome.vcf.gz").getAbsolutePath();
-        outfileS[1] = new File(outfileDirS, "chr.Bsubgenome.vcf.gz").getAbsolutePath();
-        outfileS[2] = new File(outfileDirS, "chr.Dsubgenome.vcf.gz").getAbsolutePath();
-        //建立文件和Sub的关系,从而根据Sub找到要写入的文件
-        HashMap<String, String> hmSuboutfileS = new HashMap<>();
-        hmSuboutfileS.put(outfileS[0], "A");
-        hmSuboutfileS.put(outfileS[1], "B");
-        hmSuboutfileS.put(outfileS[2], "D");
+        outfileS[0] = new File(outfileDirS, "Asubgenome.vcf").getAbsolutePath();
+        outfileS[1] = new File(outfileDirS, "Bsubgenome.vcf").getAbsolutePath();
+        outfileS[2] = new File(outfileDirS, "Dsubgenome.vcf").getAbsolutePath();
 
         //开始进行写文件
-        try {
-            for (int i = 0; i < outfileS.length; i++) {
-                BufferedWriter bw = IOUtils.getTextGzipWriter(outfileS[i]);
-            }
-
-            for (int i = 0; i < fs.length; i++) {
-                String infileS = fs[i].getAbsolutePath();
-                BufferedReader br = null;
-                if (infileS.endsWith(".vcf")) {
-                    br = IOUtils.getTextReader(infileS);
-                } else if (infileS.endsWith(".vcf.gz")) {
-                    br = IOUtils.getTextGzipReader(infileS);
-                }
-
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-
+        BufferedWriter[] bws = new BufferedWriter[3];
+        for (int i = 0; i < bws.length; i++) {
+            bws[i] = AoFile.writeFile(outfileS[i]);
         }
 
+        //根据亚基因组文件列表，确定输出文件的index
+        HashMap<List<File>,BufferedWriter> hmFilesubOutS = new HashMap<>();
+        hmFilesubOutS.put(fs[0],bws[0]);
+        hmFilesubOutS.put(fs[1],bws[1]);
+        hmFilesubOutS.put(fs[2],bws[2]);
+
+
+        List<List<File>> fsSubList = Arrays.asList(fs); //表明数组是list类型，list又是file类型
+        fsSubList.stream().forEach(p ->{ //
+
+            try{
+                //先写表头
+                String infileS = p.get(0).getAbsolutePath();
+                BufferedWriter bw = hmFilesubOutS.get(p);
+                BufferedReader br = AoFile.readFile(infileS);
+                String temp;
+                while ((temp = br.readLine()) != null) {
+                    if (temp.startsWith("#")) {
+                        bw.write(temp);
+                        bw.newLine();
+                    }
+                }
+                br.close();
+
+                int total = 0;
+                for (int i = 0; i < p.size(); i++) {
+                    br = AoFile.readFile(p.get(i).getAbsolutePath());
+                    int cnt =0;
+                    while ((temp = br.readLine()) != null) {
+                        if (temp.startsWith("#")) {
+
+                        } else {
+                            cnt++;
+                            StringBuilder sb = new StringBuilder();
+                            sb.append(temp);
+                            bw.write(sb.toString());
+                            bw.newLine();
+
+                        }
+                    }
+                    total = total + cnt;
+                    System.out.println(cnt + "\tsnps in " + p.get(i).getName());
+
+                }
+                System.out.println(total + "\tsnps totally, mergevcf pipeline is completed at\t");
+                br.close();
+                bw.flush();
+                bw.close();
+
+            }catch (Exception e) {
+                e.printStackTrace();
+                System.exit(1);
+
+            }
+
+        });
     }
 
     /**

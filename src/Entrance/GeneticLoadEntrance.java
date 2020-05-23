@@ -35,7 +35,7 @@ public class GeneticLoadEntrance {
     }
 
     public void rebuildVCF(){
-        new RebuildVCF();
+//        new RebuildVCF();
 //        new ScriptHapscanner2();
 //        new AoHeterozygosity();
         new  FilterVCF2();
@@ -117,15 +117,25 @@ public class GeneticLoadEntrance {
 
     }
 
+
     public static void main(String[] args) {
         //ChrConvertionRule c=new ChrConvertionRule(Paths.get("/Users/Aoyue/Documents/Data/wheat/chrConvertionRule.txt"));
 //        ChrConvertionRule c = new ChrConvertionRule(Paths.get("/data4/home/aoyue/vmap2/analysis/000_taxaList/chrConvertionRule.txt"));
 //        VCF.mergeVCFtoLineage(args[0], args[1], c);
         System.out.println("Aoyue Repository --- Here is the entrance of GeneticLoad!\n");
         System.out.println(new SimpleDateFormat().format(new Date()) + "\tbegin.");
-        new GeneticLoadEntrance();
 
-//        VCF vcf=new VCF("/data4/home/aoyue/vmap2/analysis/020_subsetvcf_fromMAF0.01byPop/002_mergedbySub/chr.lineageA.vcf.gz");
+        new GeneticLoadEntrance();
+//        new GeneticLoadEntrance(args);
+
+
+
+        System.out.println(new SimpleDateFormat().format(new Date()) + "\tend.");
+
+    }
+
+    public GeneticLoadEntrance(String[] args){
+        //        VCF vcf=new VCF("/data4/home/aoyue/vmap2/analysis/020_subsetvcf_fromMAF0.01byPop/002_mergedbySub/chr.lineageA.vcf.gz");
 //        vcf.addVCF(new VCF("/data4/home/aoyue/vmap2/analysis/020_subsetvcf_fromMAF0.01byPop/002_mergedbySub/chr.lineageB.vcf.gz"));
 //        vcf.write("/data4/home/aoyue/vmap2/analysis/020_subsetvcf_fromMAF0.01byPop/003_all/chr.ABsubgenome.vcf.gz");
         //new VariantsSum().classifySNPs(args[0], args[1]);
@@ -137,7 +147,7 @@ public class GeneticLoadEntrance {
         //new CountSites().calVcfAverageDepth(args[0], args[1]);
         //new CountSites().calSNPHetMissMaf(args[0], args[1]);
 //        new CountSites().countSitesinFastCallformat(args[0]);
-        //new CountSites().filterAlleleMaf(args[0], args[1]);
+//        new CountSites().filterAlleleMaf(args[0], args[1]);
 //        new CountSites().filterAllele(args[0], args[1]);
 //        new CountSites().subsetVCF(args[0], args[1],args[2]);
         //new FilterVCF().statVcfDepth_SD_PValue(args[0], args[1]);
@@ -185,11 +195,9 @@ public class GeneticLoadEntrance {
 
 
 //        CalVCF.extractVCFtable(args[0], args[1], args[2]);
-//        CountSites.countSitesinFastCallformat(args[0]);
+        CountSites.countSitesinFastCallformat(args[0]);
 
 //        new FilterVCF2().filter2(args[0]);
-
-        System.out.println(new SimpleDateFormat().format(new Date()) + "\tend.");
 
     }
 

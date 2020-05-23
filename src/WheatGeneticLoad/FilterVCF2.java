@@ -51,7 +51,10 @@ public class FilterVCF2 {
          *  VCF quality control
          */
 
+        this.mergeVCF();
+
     }
+
 
     /**
      * VCF quality control
@@ -60,6 +63,16 @@ public class FilterVCF2 {
      * step 2:
      * step 2: abd ab d   Site: MAF miss heter depth  Taxa: Miss Heter
      */
+
+    public void mergeVCF(){
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/022_subsetVCF/001_singleChr0.001";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/001_subsetVCF";
+
+        new CountSites().mergeVCFbysubgenome(infileDirS,outfileDirS);
+
+
+    }
 
     private void checkQuality (String vcfDirS, String outDirS, String genomeType) {
         File outDir = new File (outDirS);

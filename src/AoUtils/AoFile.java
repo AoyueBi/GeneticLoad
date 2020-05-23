@@ -219,7 +219,7 @@ public class AoFile {
 
 
     /**
-     *
+     * ############## 该程序待验证
      * @param fs
      * @param colomnIndexChr
      * @param columnIndexPos
@@ -273,7 +273,9 @@ public class AoFile {
                         if (j == columnIndexPos){
                             sb.append(posOnChrosome).append("\t");
                         }
-                        sb.append(l.get(j)).append("\t");
+                        else{
+                            sb.append(l.get(j)).append("\t");
+                        }
                     }
                     sb.deleteCharAt(sb.length()-1);
                     bw.write(sb.toString());

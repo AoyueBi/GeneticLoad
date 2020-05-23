@@ -59,7 +59,7 @@ public class ScriptHapscanner2 {
         /**
          * QC
          */
-        this.qualityCheck();
+//        this.qualityCheck();
 //        this.mergeCheckFile();
 //        this.getBinTable();
 //        this.addSubspecies();
