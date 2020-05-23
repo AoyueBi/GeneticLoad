@@ -22,7 +22,7 @@ import java.util.*;
 public class CountSites {
 
     public CountSites() {
-        //this.getSharedSNP();
+//        this.getSharedSNP();
         //this.mergesubsetVCF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/022_subsetVCF/Asub", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/022_subsetVCF/004_merged/chr.Asubgenome.maf0.01.SNP_bi.subset.vcf.gz");
         //this.mergesubsetVCF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/022_subsetVCF/Bsub", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/022_subsetVCF/004_merged/chr.Bsubgenome.maf0.01.SNP_bi.subset.vcf.gz");
         //this.mergesubsetVCF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/022_subsetVCF/Dsub", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/022_subsetVCF/004_merged/chr.Dsubgenome.maf0.01.SNP_bi.subset.vcf.gz");
@@ -2134,28 +2134,16 @@ public class CountSites {
      */
     public void subsetVCF(String infileDirS, String outfileDirS, String extractRatio) {
 
-        File[] fs = new File(infileDirS).listFiles();
-        for (int i = 0; i < fs.length; i++) {
-            if (fs[i].isHidden()) {
-                fs[i].delete();
-            }
-        }
-        fs = new File(infileDirS).listFiles();
-        List<File> fsList = Arrays.asList(fs);
+
+
+        List<File> fsList = AoFile.getFileListInDir(infileDirS);
         Collections.sort(fsList);
         fsList.parallelStream().forEach(f -> {
             try {
                 String infileS = f.getAbsolutePath();
-                String outfileS = null;
-                BufferedReader br = null;
-                if (infileS.endsWith(".vcf")) {
-                    br = IOUtils.getTextReader(infileS);
-                    outfileS = new File(outfileDirS, f.getName().split(".vcf")[0] + "_bi.subset.vcf.gz").getAbsolutePath();
-                } else if (infileS.endsWith(".vcf.gz")) {
-                    br = IOUtils.getTextGzipReader(infileS);
-                    outfileS = new File(outfileDirS, f.getName().split(".vcf.gz")[0] + "_bi.subset.vcf.gz").getAbsolutePath();
-                }
-                BufferedWriter bw = IOUtils.getTextGzipWriter(outfileS);
+                String outfileS = new File(outfileDirS,f.getName().split(".vcf")[0] + "_bi.subset.vcf").getAbsolutePath(); //输出非压缩格式，到最后统一压缩
+                BufferedReader br = AoFile.readFile(infileS);
+                BufferedWriter bw = AoFile.writeFile(outfileS);
                 String temp = null;
                 int cnttotal = 0;
                 int cntsubset = 0;

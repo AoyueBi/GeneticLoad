@@ -125,7 +125,7 @@ public class FilterVCF {
 //        new Bin().mkBarplotofMAF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/016_vcfQC/011_mafHeterMiss", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/016_vcfQC/014_bintable/003_MissRate", "50", "1");
 //            new Bin().mkBarplotofMAF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/016_vcfQC/012_depth", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/016_vcfQC/014_bintable/004_depth", "25", "25");
 //        new Bin().mkBarplotofMAF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/016_vcfQC/013_indiHeter", "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/016_vcfQC/014_bintable/005_indiHeter", "50", "1");
-        this.scriptFilterMafbyPopHexaDi();
+//        this.scriptFilterMafbyPopHexaDi();
 //        this.scriptFilterMafbyPopHexaTetra();
 //        new SplitScript().splitBwaScript("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/014_filterVCF/013_fixVmap2/002_sh_filterMafbyPop_HexaTetraploid20191031.sh", "sh_filterMafbyPop_HexaTetraploid", 10, 3);
 //        this.mergeTxt("/Users/Aoyue/Documents/log_023", "/Users/Aoyue/Documents/001.txt");

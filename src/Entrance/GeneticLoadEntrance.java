@@ -35,7 +35,7 @@ public class GeneticLoadEntrance {
     }
 
     public void rebuildVCF(){
-//        new RebuildVCF();
+        new RebuildVCF();
 //        new ScriptHapscanner2();
 //        new AoHeterozygosity();
         new  FilterVCF2();
@@ -182,6 +182,7 @@ public class GeneticLoadEntrance {
 //        new XPCLR().getGenotypeXPCLR_parallele(args[0], args[1], args[2]);
 //        new XPCLR().getGenotypeXPCLR_parallele_tetra(args[0], args[1], args[2]);
 //        new XPCLR().getGenotypeXPCLR_parallele_diploid(args[0], args[1], args[2]);
+
 
 //        CalVCF.extractVCFtable(args[0], args[1], args[2]);
 //        CountSites.countSitesinFastCallformat(args[0]);

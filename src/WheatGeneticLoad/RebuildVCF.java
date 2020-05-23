@@ -94,6 +94,9 @@ public class RebuildVCF {
 
     }
 
+    /**
+     * 为抽样的文件加上分组信息，1 代表即属于 reliable 又属于 insertion 的位点， 0 代表不属于 intersection 的位点
+     */
     public void addReliableInsecterGroupfromSample(){
         String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/027_Rebuild_VMap2_VCF/001_depth/004_50000_Sites/003_AddReliableGroup";
         String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/027_Rebuild_VMap2_VCF/001_depth/004_50000_Sites/004_AddReliableIntersectGroup";
@@ -168,6 +171,10 @@ public class RebuildVCF {
 
         }
     }
+
+    /**
+     * 为抽样的文件加上分组信息，1 代表即属于 reliable 的位点， 0 代表不属于 reliable 的位点
+     */
 
     public void addReliableGroupfromSample(){
         String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/027_Rebuild_VMap2_VCF/001_depth/004_50000_Sites/002_split";
@@ -286,6 +293,13 @@ public class RebuildVCF {
         }
     }
 
+    /**
+     * 自己写的
+     * @param proportionOfSite
+     * @param sampleFileS
+     * @param infileS
+     * @param outfileS
+     */
     public void densityFilterAB(double proportionOfSite, String sampleFileS,String infileS,String outfileS) {
         RowTable<String> t = new RowTable<>(sampleFileS);
         double depthStart = 2;
@@ -333,9 +347,9 @@ public class RebuildVCF {
     }
 
 
-
-
-
+    /**
+     * 以下是老师写的程序，以上都是自己写的程序
+     */
     public void intersectionCheck () {
         String abSampleFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/027_Rebuild_VMap2_VCF/001_depth/004_50000_Sites/abPopDep_sample.txt";
         String abdSampleFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/027_Rebuild_VMap2_VCF/001_depth/004_50000_Sites/abdPopDep_sample.txt";

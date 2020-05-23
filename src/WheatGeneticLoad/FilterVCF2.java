@@ -2,6 +2,8 @@ package WheatGeneticLoad;
 
 import AoUtils.AoFile;
 import AoUtils.CountSites;
+import AoUtils.SplitScript;
+import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TIntArrayList;
 import pgl.infra.dna.genotype.GenoIOFormat;
 import pgl.infra.dna.genotype.GenotypeGrid;
@@ -19,17 +21,14 @@ public class FilterVCF2 {
 
     public FilterVCF2(){
 
+//        this.filter_parallel(); //老师的方法
+//        this.filterMafbyPopHTD(); //我的方法
+//        String a = "";
+//        String b = "";
+//        this.filter_singleThread(a,b); //最终过滤的时候采用的方法
 //        this.script();
 //        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/030_FixVMap2/003_script/sh_filterMAFmissOccurrence20200522.sh",3,11);
 //        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/030_FixVMap2/003_script/sh_filterMAFmissOccurrence_2_20200522.sh",4,2);
-
-//        this.filter_parallel();
-
-//        String a = "";
-//        String b = "";
-//        this.filter_singleThread(a,b);
-
-//        this.filterMafbyPopHTD();
 
 
         /**
@@ -46,8 +45,105 @@ public class FilterVCF2 {
 //        this.modifyVMap2();
 //        new CountSites().mergeChr1and2txt_int("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/029_countSiteSummary/002_vmap2.0/log_043_countSitesinFastCallformat_fixVMap2.0_20200522.txt","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/029_countSiteSummary/002_vmap2.0/CountVariants_fixVMap2.0_20200522.txt");
 //        this.bgzip();
-        this.sortTaxaName();
+//        this.sortTaxaName();
+
+        /**
+         *  VCF quality control
+         */
+
     }
+
+    /**
+     * VCF quality control
+     * 先对合并的VCF进行群体的变异数目统计，再进行拆分群体 vcf
+     * step 1: sample data all genome 0.001 即241K的数据 and then merge all
+     * step 2:
+     * step 2: abd ab d   Site: MAF miss heter depth  Taxa: Miss Heter
+     */
+
+    private void checkQuality (String vcfDirS, String outDirS, String genomeType) {
+        File outDir = new File (outDirS);
+        outDir.mkdir();
+        int fN = 2;
+        int size = 20000; //抽样数量
+        List<File> fList = AoFile.getFileListInDir(vcfDirS);
+        Collections.sort(fList);
+
+        GenotypeGrid[] gts = new GenotypeGrid[fN];
+        int totalSiteCount = 0;
+        for (int i = 0; i < gts.length; i++) { //对genotypeTable 进行初始化
+            gts[i] = new GenotypeGrid(fList.get(i).getAbsolutePath(), GenoIOFormat.VCF_GZ);
+            totalSiteCount+=gts[i].getSiteNumber(); //获取 fN 个文件的总位点数
+        }
+        GenotypeOperation.mergeGenotypesBySite(gts[0], gts[1]); // 合并两个VCF文件
+        GenotypeGrid gt = gts[0];
+        TDoubleArrayList missingSite = new TDoubleArrayList(); // calculation 1
+        TDoubleArrayList hetSite = new TDoubleArrayList(); // calculation 2
+        TDoubleArrayList maf = new TDoubleArrayList(); // calculation 3
+        TDoubleArrayList missingTaxon = new TDoubleArrayList(); // calculation 4
+        TDoubleArrayList hetTaxon = new TDoubleArrayList(); // calculation 5
+
+        int step = gt.getSiteNumber()/size;
+        for (int i = 0; i < gt.getSiteNumber(); i+=step) {
+            missingSite.add(((double) gt.getMissingNumberBySite(i)/gt.getTaxaNumber()));
+            hetSite.add(gt.getHeterozygousProportionBySite(i));
+            maf.add(gt.getMinorAlleleFrequency(i));
+
+        }
+        for (int i = 0; i < gt.getTaxaNumber(); i++) {
+            missingTaxon.add((double)gt.getMissingNumberByTaxon(i)/gt.getSiteNumber());
+            hetTaxon.add(gt.getHeterozygousProportionByTaxon(i));
+        }
+
+        String siteQCfileS = new File(outDirS,genomeType + "_site_QC.txt.gz").getAbsolutePath();
+        String taxaQCFileS = new File (outDirS, genomeType+"_taxa_QC.txt.gz").getAbsolutePath();
+
+        try {
+            BufferedWriter bw = AoFile.writeFile(siteQCfileS);
+            bw.write("GenomeType\tHeterozygousProportion\tMissingRate\tMaf");
+            bw.newLine();
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < missingSite.size(); i++) {
+                sb.setLength(0);
+                sb.append(genomeType).append("\t").append(hetSite.get(i)).append("\t").append(missingSite.get(i)).append("\t").append(maf.get(i));
+                bw.write(sb.toString());
+                bw.newLine();
+            }
+            bw.flush();
+            bw.close();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        try {
+            BufferedWriter bw = AoFile.writeFile(taxaQCFileS);
+            bw.write("Taxa\tHeterozygousProportion\tMissRate\tGenomeType");
+            bw.newLine();
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < gt.getTaxaNumber(); i++) {
+                sb.setLength(0);
+                sb.append(gt.getTaxonName(i)).append("\t").append(hetTaxon.get(i)).append("\t").append(missingTaxon.get(i)).append("\t").append(genomeType);
+                bw.write(sb.toString());
+                bw.newLine();
+            }
+            bw.flush();
+            bw.close();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * Fix:VMapII
+     * step 1: modify GL yo PL
+     * step 2: rename VCF name like chr001_vmap2.0.vcf
+     * step 3: bgzip vcf file and make index for vcf
+     * step 4: make readme file for vmap2.0
+     */
 
     public void sortTaxaName(){
 
@@ -78,13 +174,6 @@ public class FilterVCF2 {
         }
 
     }
-
-    /**
-     * step 1: modify GL yo PL
-     * step 2: rename VCF name like chr001_vmap2.0.vcf
-     * step 3: bgzip vcf file and make index for vcf
-     * step 4: make readme file for vmap2.0
-     */
 
 
     public void bgzip() { // 重定向

@@ -53,10 +53,13 @@ public class ScriptHapscanner2 {
 
 //        this.mkParameter();
 //        this.mkJavaCmd();
-        this.bgzip();
+//        this.bgzip();
 //        this.bcftools_merge2();
 
-//        this.qualityCheck();
+        /**
+         * QC
+         */
+        this.qualityCheck();
 //        this.mergeCheckFile();
 //        this.getBinTable();
 //        this.addSubspecies();
