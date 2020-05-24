@@ -18,7 +18,7 @@ import java.util.*;
 public class RebuildVCF {
 
     public RebuildVCF(){
-//        this.statVcfDepth_SD_PValue();
+        this.statVcfDepth_SD_PValue();
 //        this.mergeTxt();
         /**
          * Fei's test

@@ -2325,13 +2325,12 @@ public class CountSites {
      * @param outfileS
      */
     public void mergesubsetVCF(String infileDirS, String outfileS) {
-        File[] fs = new File(infileDirS).listFiles();
-        fs = IOUtils.listFilesEndsWith(fs, ".vcf.gz");
+        File[] fs = AoFile.getFileArrayInDir(infileDirS);
         Arrays.sort(fs);
         try {
             long startTime = System.nanoTime();
-            BufferedReader br = IOUtils.getTextGzipReader(fs[0].getAbsolutePath());
-            BufferedWriter bw = IOUtils.getTextGzipWriter(outfileS);
+            BufferedReader br = AoFile.readFile(fs[0].getAbsolutePath());
+            BufferedWriter bw = AoFile.writeFile(outfileS);
             String temp;
             while ((temp = br.readLine()) != null) {
                 if (temp.startsWith("#")) {
@@ -2363,8 +2362,6 @@ public class CountSites {
             br.close();
             bw.flush();
             bw.close();
-
-            br = IOUtils.getTextGzipReader(outfileS);
 
             long endTime = System.nanoTime();
             float excTime = (float) (endTime - startTime) / 1000000000;

@@ -1,13 +1,13 @@
 package WheatGeneticLoad;
 
-import AoUtils.AoFile;
-import AoUtils.CountSites;
-import AoUtils.SplitScript;
+import AoUtils.*;
 import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TIntArrayList;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import pgl.infra.dna.genotype.GenoIOFormat;
 import pgl.infra.dna.genotype.GenotypeGrid;
 import pgl.infra.dna.genotype.GenotypeOperation;
+import pgl.infra.utils.IOUtils;
 import pgl.infra.utils.PStringUtils;
 import pgl.infra.utils.wheat.RefV1Utils;
 
@@ -51,7 +51,14 @@ public class FilterVCF2 {
          *  VCF quality control
          */
 
-        this.mergeVCF();
+//        this.mergeVCF();
+//        this.QC();
+//        this.mergeCheckFile();
+//        this.getBinTable();
+//        this.statVcfDepth_SD();
+        this.mergeTxtandAddGroup();
+//        this.getCol();
+
 
     }
 
@@ -64,43 +71,213 @@ public class FilterVCF2 {
      * step 2: abd ab d   Site: MAF miss heter depth  Taxa: Miss Heter
      */
 
-    public void mergeVCF(){
+    public void getCol(){
+        String[] in = {"AB","ABD","D"};
+        AoColor.genomeType(in);
+    }
 
-//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/022_subsetVCF/001_singleChr0.001";
-//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/015_subesetVCF/singleChr";
-        String infileDirS = "/Users/Aoyue/Documents/001_singleChr0.001";
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/001_subsetVCF";
+    public void mergeTxtandAddGroup() {
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/003_siteDepth";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/003_siteDepth/merge/site_depth.txt.gz";
 
-//        new CountSites().mergeVCFbysubgenome(infileDirS,outfileDirS);
-//        new CountSites().mergeVCFtoAB_Dsubgenome(infileDirS,outfileDirS);
-        new CountSites().mergeVCFtoAandBsubgenome(infileDirS,outfileDirS);
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/003_siteDepth/bySub";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/003_siteDepth/bySub/merge/site_depth_bySubgenome.txt.gz";
+
+        File[] fs = AoFile.getFileArrayInDir(infileDirS);
+        Arrays.sort(fs);
+        try {
+            String infileS = fs[0].getAbsolutePath();
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            /**
+             * 需要改动,header的名字可以自定义
+             */
+            //read header
+//            bw.write(br.readLine() + "\tPloidy");
+            bw.write(br.readLine() + "\tSub");
+            bw.newLine();
+
+            int cnttotal = 0;
+            //read context
+            for (int i = 0; i < fs.length; i++) {
+                infileS = fs[i].getAbsolutePath();
+                /**
+                 * 需要改动
+                 */
+                String name = fs[i].getName();
+                String group = name.split("subgenome")[0];
+
+                br = AoFile.readFile(infileS);
+                br.readLine(); //read header
+                String temp = null;
+                int cnt = 0;
+                while ((temp = br.readLine()) != null) {
+                    cnt++;
+                    cnttotal++;
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(temp).append("\t").append(group);
+                    bw.write(sb.toString());
+                    bw.newLine();
+                }
+                System.out.println(fs[i].getName() + "\t" + cnt);
+            }
+            System.out.println("Total lines without header count is " + cnttotal + " at merged file " + outfileS );
+            br.close();
+            bw.flush();
+            bw.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    public void statVcfDepth_SD() {
+
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/001_subsetVCF";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/003_siteDepth";
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/001_subset";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/003_siteDepth/bySub";
+        List<File> fsList = AoFile.getFileListInDir(infileDirS);
+        fsList.parallelStream().forEach(f  -> {
+            String infileS = f.getAbsolutePath();
+            String outfileS = new File(outfileDirS,f.getName().split(".vcf")[0] + "_depth.txt.gz").getAbsolutePath();
+
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = null;
+            String[] taxa = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            try {
+                while ((temp = br.readLine()) != null) {
+                    if (temp.startsWith("##"))continue;
+                    if(temp.startsWith("#C")){
+                        List<String> linetaxa = PStringUtils.fastSplit(temp, "\t");
+                        bw.write(linetaxa.get(0).replaceFirst("#", "") + "\t" + linetaxa.get(1) + "\t" + "AverageDepth\tSD");
+                        bw.newLine();
+                        taxa = new String[linetaxa.size() - 9];
+                        continue;
+                    }
+                    cnt++; // 对snp开始计数
+                    if (cnt % 1000000 == 0) {
+                        System.out.println(String.valueOf(cnt) + " lines");
+                    }
+                    l = PStringUtils.fastSplit(temp, "\t");
+                    String chr = l.get(0);
+                    String pos = l.get(1);
+                    TDoubleArrayList depthList = new TDoubleArrayList();
+                    for (int i = 0; i < taxa.length; i++) {
+                        String genoS = l.get(i + 9);
+                        if (genoS.startsWith(".")) {
+                            depthList.add(0);
+                            continue;
+                        }
+                        List<String> ll = PStringUtils.fastSplit(genoS, ":");
+                        List<String> lll = PStringUtils.fastSplit(ll.get(1), ",");
+                        int depth = Integer.valueOf(lll.get(0)) + Integer.valueOf(lll.get(1));
+                        depthList.add(depth);
+                    }
+                    double[] dep = depthList.toArray();
+                    DescriptiveStatistics d = new DescriptiveStatistics(dep);
+                    double relativeMean = d.getMean();
+                    double sd = d.getStandardDeviation();
+                    //计算完毕，接下来开始写入文件
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(chr).append("\t").append(pos).append("\t").append(String.format("%.6f", relativeMean)).append("\t").append(String.format("%.6f", sd));
+                    bw.write(sb.toString());
+                    bw.newLine();
+                }
+                br.close();
+                bw.flush();
+                bw.close();
+            } catch (Exception e) {
+                System.out.println(temp);
+                e.printStackTrace();
+                System.exit(1);
+            }
+            System.out.println(infileS + " is calculated well done");
+
+        });
 
     }
 
-    private void checkQuality (String vcfDirS, String outDirS, String genomeType) {
-        File outDir = new File (outDirS);
-        outDir.mkdir();
-        int fN = 2;
-        int size = 20000; //抽样数量
-        List<File> fList = AoFile.getFileListInDir(vcfDirS);
-        Collections.sort(fList);
+    public void getBinTable(){
+//        int indexGroup = 0;
+//        int indexValue = 3;
+//        double window = 0.05;
+//        double max =0.5;
+//        String outfileS = "";
 
-        GenotypeGrid[] gts = new GenotypeGrid[fN];
-        int totalSiteCount = 0;
-        for (int i = 0; i < gts.length; i++) { //对genotypeTable 进行初始化
-            gts[i] = new GenotypeGrid(fList.get(i).getAbsolutePath(), GenoIOFormat.VCF_GZ);
-            totalSiteCount+=gts[i].getSiteNumber(); //获取 fN 个文件的总位点数
-        }
-        GenotypeOperation.mergeGenotypesBySite(gts[0], gts[1]); // 合并两个VCF文件
-        GenotypeGrid gt = gts[0];
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/002_QC/002_merge/001_site_QC.txt.gz";
+//        AoFile.readheader(infileS);
+
+//        int indexGroup = 0;
+//        int indexValue = 3;
+//        double window = 0.05;
+//        double max = 0.5;
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/002_QC/003_binTable/maf.txt";
+//        Bin.frequency_byGroup(infileS,indexGroup,indexValue,max,window,window,outfileS);
+
+//        int indexGroup = 0;
+//        int indexValue = 1;
+//        double window = 0.05;
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/002_QC/003_binTable/site_heter.txt";
+//        Bin.frequency2_byGroup(infileS,indexGroup,indexValue,window,window,outfileS);
+
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/002_QC/002_merge/001_taxa_QC.txt.gz";
+        AoFile.readheader(infileS);
+
+//        int indexGroup = 3;
+//        int indexValue = 1;
+//        double window = 0.01;
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/002_QC/003_binTable/taxa_heter.txt";
+//        Bin.frequency2_byGroup(infileS,indexGroup,indexValue,window,window,outfileS);
+
+    }
+
+
+    /**
+     * 将生成的以site和taxa为单位的质控的结果进行合并，使六倍体，四倍体，二倍体在一个文件中
+     */
+    public void mergeCheckFile(){
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/002_QC/001";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/002_QC/002_merge";
+
+        // change every time
+        String suffix = "_site_QC.txt.gz";
+//        String suffix = "_taxa_QC.txt.gz";
+
+        String outfileS = new File(outfileDirS,"001" + suffix).getAbsolutePath();
+        File[] fs = new File(infileDirS).listFiles();
+        fs = IOUtils.listFilesEndsWith(fs,suffix);
+        AoFile.mergeTxt_byFileArray(fs,outfileS);
+    }
+
+    public void QC(){
+        String abdinfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/001_subsetVCF/ABDsubgenome_hexa.vcf.gz";
+        String abinfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/001_subsetVCF/ABsubgenome_tetra.vcf.gz";
+        String dinfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/001_subsetVCF/Dsubgenome_diploid.vcf.gz";
+
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/002_QC/001";
+
+        this.checkQuality(abinfileS,outfileDirS,"AB");
+        this.checkQuality(abdinfileS,outfileDirS,"ABD");
+        this.checkQuality(dinfileS,outfileDirS,"D");
+
+
+    }
+
+    private void checkQuality (String infileS, String outDirS, String genomeType) {
+        GenotypeGrid gt = new GenotypeGrid(infileS,GenoIOFormat.VCF_GZ);
         TDoubleArrayList missingSite = new TDoubleArrayList(); // calculation 1
         TDoubleArrayList hetSite = new TDoubleArrayList(); // calculation 2
         TDoubleArrayList maf = new TDoubleArrayList(); // calculation 3
         TDoubleArrayList missingTaxon = new TDoubleArrayList(); // calculation 4
         TDoubleArrayList hetTaxon = new TDoubleArrayList(); // calculation 5
 
-        int step = gt.getSiteNumber()/size;
-        for (int i = 0; i < gt.getSiteNumber(); i+=step) {
+        for (int i = 0; i < gt.getSiteNumber(); i++) {
             missingSite.add(((double) gt.getMissingNumberBySite(i)/gt.getTaxaNumber()));
             hetSite.add(gt.getHeterozygousProportionBySite(i));
             maf.add(gt.getMinorAlleleFrequency(i));
@@ -111,8 +288,8 @@ public class FilterVCF2 {
             hetTaxon.add(gt.getHeterozygousProportionByTaxon(i));
         }
 
-        String siteQCfileS = new File(outDirS,genomeType + "_site_QC.txt.gz").getAbsolutePath();
-        String taxaQCFileS = new File (outDirS, genomeType+"_taxa_QC.txt.gz").getAbsolutePath();
+        String siteQCfileS = new File(outDirS,  genomeType + "_site_QC.txt.gz").getAbsolutePath();
+        String taxaQCFileS = new File (outDirS, genomeType + "_taxa_QC.txt.gz").getAbsolutePath();
 
         try {
             BufferedWriter bw = AoFile.writeFile(siteQCfileS);
@@ -152,6 +329,26 @@ public class FilterVCF2 {
         }
 
     }
+
+    public void mergeVCF(){
+
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/022_subsetVCF/001_singleChr0.001";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/015_subesetVCF/singleChr";
+//        String infileDirS = "/Users/Aoyue/Documents/001_singleChr0.001";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/001_subsetVCF";
+
+//        String infileDirS = "/data4/home/aoyue/vmap2/analysis/025_subsetVCF/001_fromVMap2.0_singleChr0.001";
+//        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/025_subsetVCF/002_mergeVCFtoSub";
+
+//        new CountSites().mergeVCFbysubgenome(infileDirS,outfileDirS);
+//        new CountSites().mergeVCFtoAB_Dsubgenome(infileDirS,outfileDirS);
+//        new CountSites().mergeVCFtoAandBsubgenome(infileDirS,outfileDirS);
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/001_subsetVCF";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/temp/ABDsubgenome_hexa.vcf";
+        new CountSites().mergesubsetVCF(infileDirS,outfileS);
+    }
+
 
     /**
      * Fix:VMapII

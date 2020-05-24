@@ -193,6 +193,7 @@ public class AoFile {
         List<File> fList = new ArrayList<>();
         for (int i = 0; i < fs.length; i++) {
             if (fs[i].isHidden()) continue;
+            if(fs[i].isDirectory()) continue;
             fList.add(fs[i]);
         }
         Collections.sort(fList);
@@ -211,6 +212,7 @@ public class AoFile {
         List<File> fList = new ArrayList<>();
         for (int i = 0; i < fs.length; i++) {
             if (fs[i].isHidden()) continue;
+            if(fs[i].isDirectory()) continue;
             fList.add(fs[i]);
         }
         Collections.sort(fList);

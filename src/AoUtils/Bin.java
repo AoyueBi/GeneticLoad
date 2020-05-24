@@ -1209,7 +1209,7 @@ public class Bin {
      * @param outfileDirS
      * @param binNum the number of bins that would be divided
      */
-    public void mkBarplotofMAF_single(String infileS, String outfileDirS, String binNum, String max) {
+    public static void mkBarplot_single(String infileS, String outfileDirS, String binNum, String max) {
         int bins = Integer.parseInt(binNum);
         double length = Double.parseDouble(max);
         new File(outfileDirS).mkdirs();
@@ -1254,7 +1254,7 @@ public class Bin {
         //开始写出文件
         try {
             BufferedWriter bw = IOUtils.getTextWriter(outfileS);
-            bw.write("Maf\tDensity");
+            bw.write("Xaxes\tProportion");
             bw.newLine();
             for (int i = 0; i < bound.length; i++) {
                 StringBuilder sb = new StringBuilder();
@@ -1400,61 +1400,6 @@ public class Bin {
                 bw.flush();
                 bw.close();
                 System.out.println(f.getName() + " is completed.");
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.exit(1);
-            }
-        });
-    }
-
-    /**
-     * extract pos info from vcf file. eg: vcf ---- Chr Pos
-     *
-     * @param infileDirS
-     * @param outfileDirS
-     */
-    public void mkHapPos(String infileDirS, String outfileDirS) {
-        File[] fs = new File(infileDirS).listFiles();
-        List<File> fsList = Arrays.asList(fs);
-        fsList.parallelStream().forEach(f -> {
-            try {
-                String infileS = f.getAbsolutePath();
-                String outfileS = null;
-                BufferedReader br = null;
-                if (infileS.endsWith(".vcf")) {
-                    br = IOUtils.getTextReader(infileS);
-                    outfileS = new File(outfileDirS, f.getName().replaceFirst(".vcf", ".pos.txt.gz")).getAbsolutePath();
-                } else if (infileS.endsWith(".vcf.gz")) {
-                    br = IOUtils.getTextGzipReader(infileS);
-                    outfileS = new File(outfileDirS, f.getName().replaceFirst(".vcf.gz", ".pos.txt.gz")).getAbsolutePath();
-                }
-
-                BufferedWriter bw = IOUtils.getTextGzipWriter(outfileS);
-                String temp = null;
-                int cnt = 0;
-                bw.write("Chr\tPos\n");
-                List<String> l = null;
-                while ((temp = br.readLine()) != null) {
-                    if (temp.startsWith("#")) {
-                        continue;
-                    }
-                    temp = temp.substring(0, 40); //肯定够                 
-                    l = PStringUtils.fastSplit(temp);
-                    StringBuilder sb = new StringBuilder();
-                    sb = new StringBuilder(l.get(0));
-                    sb.append("\t").append(l.get(1));
-                    bw.write(sb.toString());
-                    bw.newLine();
-                    if (cnt % 1000 == 0) {
-                        System.out.println("Output " + String.valueOf(cnt) + " SNPs");
-                    }
-                    cnt++;
-                }
-                bw.flush();
-                bw.close();
-                br.close();
-                System.out.println(String.valueOf(cnt) + " SNPs output from " + f.getAbsolutePath());
-
             } catch (Exception e) {
                 e.printStackTrace();
                 System.exit(1);
