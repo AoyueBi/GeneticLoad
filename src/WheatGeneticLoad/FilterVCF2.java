@@ -66,11 +66,14 @@ public class FilterVCF2 {
 
     public void mergeVCF(){
 
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/022_subsetVCF/001_singleChr0.001";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/022_subsetVCF/001_singleChr0.001";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/015_subesetVCF/singleChr";
+        String infileDirS = "/Users/Aoyue/Documents/001_singleChr0.001";
         String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/001_subsetVCF";
 
-        new CountSites().mergeVCFbysubgenome(infileDirS,outfileDirS);
-
+//        new CountSites().mergeVCFbysubgenome(infileDirS,outfileDirS);
+//        new CountSites().mergeVCFtoAB_Dsubgenome(infileDirS,outfileDirS);
+        new CountSites().mergeVCFtoAandBsubgenome(infileDirS,outfileDirS);
 
     }
 
