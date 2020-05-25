@@ -7,6 +7,7 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import pgl.infra.dna.genotype.GenoIOFormat;
 import pgl.infra.dna.genotype.GenotypeGrid;
 import pgl.infra.dna.genotype.GenotypeOperation;
+import pgl.infra.table.RowTable;
 import pgl.infra.utils.IOUtils;
 import pgl.infra.utils.PStringUtils;
 import pgl.infra.utils.wheat.RefV1Utils;
@@ -56,8 +57,10 @@ public class FilterVCF2 {
 //        this.mergeCheckFile();
 //        this.getBinTable();
 //        this.statVcfDepth_SD();
-        this.mergeTxtandAddGroup();
+//        this.mergeTxtandAddGroup();
 //        this.getCol();
+
+        this.mkDepthOfVMapII();
 
 
     }
@@ -70,6 +73,109 @@ public class FilterVCF2 {
      * step 2:
      * step 2: abd ab d   Site: MAF miss heter depth  Taxa: Miss Heter
      */
+
+    public void mkDepthSummary () {
+        //思想：对每一个taxa做统计，每读进一个taxa，就统计所有深度的和，再除以表格的行数，也即是抽查的位点数，最终得出总得深度除以位点数，得出平均每个位点的深度。
+//        String taxaDepthDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/002_VMapIIDepth/taxa_Asub";
+//        String taxaSummaryFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/002_VMapIIDepth/taxaDepth_Asub.summary.txt";
+
+        String taxaDepthDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/002_VMapIIDepth/taxa_Dsub";
+        String taxaSummaryFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/002_VMapIIDepth/taxaDepth_Dsub.summary.txt";
+
+
+        File[] fs = new File (taxaDepthDirS).listFiles();
+        Arrays.sort(fs);
+        try {
+            BufferedWriter bw = IOUtils.getTextWriter(taxaSummaryFileS);
+            bw.write("Taxa\tID\tMeanDepth");
+            bw.newLine();
+            for (int i = 0; i < fs.length; i++) {
+                RowTable t = new RowTable (fs[i].getAbsolutePath());
+                String taxaName = String.valueOf(t.getHeader().get(0)).replaceFirst("_siteDepth", "");
+                double value = 0;
+                for (int j = 0; j < t.getRowNumber(); j++) {
+                    value+=t.getCellAsDouble(j, 0);
+                }
+                double dd = (double)value/t.getRowNumber();
+                bw.write(taxaName+"\t"+String.valueOf(i+1)+"\t"+String.format("%.2f", dd));
+                bw.newLine();
+            }
+            bw.flush();
+            bw.close();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void mkDepthOfVMapII(){
+
+        String vcfFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/024_subsetVCF_maf0.01byPop/002_merged/chr.Dsub.maf0.01byPop.vcf.gz";
+        String hmpInfoFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/014_merge/chr_D.SNP_anno.txt.gz";
+        String taxaDepthDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/002_VMapIIDepth/taxa_Dsub";
+
+        int snpNum = 0;
+        int size = 500000;  // 50wan
+        try {
+            BufferedReader br = AoFile.readFile(hmpInfoFileS);
+            String temp = br.readLine();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                cnt++;
+            }
+            snpNum = cnt;
+            int[] indices = new int[size];
+            for (int i = 0; i < size; i++) {
+                indices[i] = (int)(Math.random()*snpNum);
+            }
+            Arrays.sort(indices);
+            br = IOUtils.getTextGzipReader(vcfFileS);
+            while ((temp = br.readLine()).startsWith("##")) {}
+            List<String> l = PStringUtils.fastSplit(temp, "\t");
+            String[] taxa = new String[l.size()-9];
+            for (int i = 0; i < taxa.length; i++) {
+                taxa[i] = l.get(i+9);
+            }
+            TIntArrayList[] depthList = new TIntArrayList[taxa.length];
+            for (int i = 0; i < taxa.length; i++) depthList[i] = new TIntArrayList();
+            cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                cnt++; // 对snp开始计数
+                if (cnt%1000000 == 0) System.out.println(String.valueOf(cnt)+" lines");
+                int idx = Arrays.binarySearch(indices, cnt-1);
+                if (idx < 0) continue;
+                l = PStringUtils.fastSplit(temp, "\t");
+                for (int i = 0; i < taxa.length; i++) {
+                    String genoS = l.get(i+9);
+                    if (genoS.startsWith(".")) {
+                        depthList[i].add(0);
+                        continue;
+                    }
+                    List<String> ll = PStringUtils.fastSplit(genoS, ":");
+                    List<String> lll = PStringUtils.fastSplit(ll.get(1), ",");
+                    int depth = Integer.valueOf(lll.get(0))+Integer.valueOf(lll.get(1));
+                    depthList[i].add(depth);
+                }
+            }
+            for (int i = 0; i < taxa.length; i++) {
+                String outfileS = new File (taxaDepthDirS, PStringUtils.getNDigitNumber(3, i+1)+"depth.txt").getAbsolutePath();
+                BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+                bw.write(taxa[i]+"_siteDepth");
+                bw.newLine();
+                int[] depth = depthList[i].toArray();
+                for (int j = 0; j < depth.length; j++) {
+                    bw.write(String.valueOf(depth[j]));
+                    bw.newLine();
+                }
+                bw.flush();
+                bw.close();
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
 
     public void getCol(){
         String[] in = {"AB","ABD","D"};
