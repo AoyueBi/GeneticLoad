@@ -11,6 +11,21 @@ public class AoColor {
 
     }
 
+
+    /**
+     * e.g.
+     */
+    public void getCol(){
+        String[] in = {"AB","ABD","D"};
+        AoColor.genomeType(in);
+    }
+
+    /**
+     *
+     * @param input
+     * @return
+     */
+
     public static String ploidy(String[] input){
         String out=null;
 
@@ -98,7 +113,5 @@ public class AoColor {
             input[i] = l.get(i);
         }
     }
-
-
 
 }

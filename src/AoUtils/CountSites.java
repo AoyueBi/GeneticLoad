@@ -3441,6 +3441,29 @@ public class CountSites {
     /**
      * Count the snp sites via single stream and print it into the inputstream.
      *
+     */
+    public static int countSites_fromVCF(String infileS) {
+        int cnt = 0;
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            String temp = null;
+            while ((temp = br.readLine()) != null) {
+                if (temp.startsWith("#")) {
+                    continue;
+                }
+                cnt++;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println("Total SNP num is "+ String.valueOf(cnt));
+
+        return cnt;
+    }
+
+    /**
+     * Count the snp sites via single stream and print it into the inputstream.
+     *
      * @param infileDirS
      */
     public static void countSites_singleStream(String infileDirS) {

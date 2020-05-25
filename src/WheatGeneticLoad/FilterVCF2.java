@@ -60,10 +60,13 @@ public class FilterVCF2 {
 //        this.mergeTxtandAddGroup();
 //        this.getCol();
 
-        this.mkDepthOfVMapII();
+//        this.mkDepthOfVMapII();
+        this.mkDepthSummary();
 
 
     }
+
+
 
 
     /**
@@ -76,14 +79,17 @@ public class FilterVCF2 {
 
     public void mkDepthSummary () {
         //思想：对每一个taxa做统计，每读进一个taxa，就统计所有深度的和，再除以表格的行数，也即是抽查的位点数，最终得出总得深度除以位点数，得出平均每个位点的深度。
-//        String taxaDepthDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/002_VMapIIDepth/taxa_Asub";
-//        String taxaSummaryFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/002_VMapIIDepth/taxaDepth_Asub.summary.txt";
 
-        String taxaDepthDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/002_VMapIIDepth/taxa_Dsub";
-        String taxaSummaryFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/002_VMapIIDepth/taxaDepth_Dsub.summary.txt";
+//        String taxaDepthDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/004_taxaDepth/abd";
+//        String taxaSummaryFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/004_taxaDepth/taxaDepth_abd.summary.txt";
 
+//        String taxaDepthDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/004_taxaDepth/ab";
+//        String taxaSummaryFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/004_taxaDepth/taxaDepth_ab.summary.txt";
 
-        File[] fs = new File (taxaDepthDirS).listFiles();
+        String taxaDepthDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/004_taxaDepth/d";
+        String taxaSummaryFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/004_taxaDepth/taxaDepth_d.summary.txt";
+
+        File[] fs = AoFile.getFileArrayInDir(taxaDepthDirS);
         Arrays.sort(fs);
         try {
             BufferedWriter bw = IOUtils.getTextWriter(taxaSummaryFileS);
@@ -97,7 +103,7 @@ public class FilterVCF2 {
                     value+=t.getCellAsDouble(j, 0);
                 }
                 double dd = (double)value/t.getRowNumber();
-                bw.write(taxaName+"\t"+String.valueOf(i+1)+"\t"+String.format("%.2f", dd));
+                bw.write(taxaName+"\t"+String.valueOf(i+1)+"\t"+String.format("%.4f", dd));
                 bw.newLine();
             }
             bw.flush();
@@ -110,40 +116,31 @@ public class FilterVCF2 {
 
     public void mkDepthOfVMapII(){
 
-        String vcfFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/024_subsetVCF_maf0.01byPop/002_merged/chr.Dsub.maf0.01byPop.vcf.gz";
-        String hmpInfoFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/014_merge/chr_D.SNP_anno.txt.gz";
-        String taxaDepthDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/024_deleteriousBiology/003_VMap2.1DelCount/002_VMapIIDepth/taxa_Dsub";
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/001_subsetVCF/ABDsubgenome_hexa.vcf.gz";
+//        String taxaDepthDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/004_taxaDepth/abd";
 
-        int snpNum = 0;
-        int size = 500000;  // 50wan
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/001_subsetVCF/ABsubgenome_tetra.vcf.gz";
+//        String taxaDepthDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/004_taxaDepth/ab";
+
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/001_subsetVCF/Dsubgenome_diploid.vcf.gz";
+        String taxaDepthDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/004_taxaDepth/d";
+
+
         try {
-            BufferedReader br = AoFile.readFile(hmpInfoFileS);
-            String temp = br.readLine();
-            int cnt = 0;
-            while ((temp = br.readLine()) != null) {
-                cnt++;
-            }
-            snpNum = cnt;
-            int[] indices = new int[size];
-            for (int i = 0; i < size; i++) {
-                indices[i] = (int)(Math.random()*snpNum);
-            }
-            Arrays.sort(indices);
-            br = IOUtils.getTextGzipReader(vcfFileS);
+            String temp = null;
+            BufferedReader br = AoFile.readFile(infileS);
             while ((temp = br.readLine()).startsWith("##")) {}
             List<String> l = PStringUtils.fastSplit(temp, "\t");
-            String[] taxa = new String[l.size()-9];
+            String[] taxa = new String[l.size()-9]; //确定 taxa 的列表
             for (int i = 0; i < taxa.length; i++) {
                 taxa[i] = l.get(i+9);
             }
-            TIntArrayList[] depthList = new TIntArrayList[taxa.length];
-            for (int i = 0; i < taxa.length; i++) depthList[i] = new TIntArrayList();
-            cnt = 0;
+            TIntArrayList[] depthList = new TIntArrayList[taxa.length]; //每个taxa建立一个深度集合
+            for (int i = 0; i < taxa.length; i++) depthList[i] = new TIntArrayList(); //并初始化
+            int cnt = 0;
             while ((temp = br.readLine()) != null) {
                 cnt++; // 对snp开始计数
-                if (cnt%1000000 == 0) System.out.println(String.valueOf(cnt)+" lines");
-                int idx = Arrays.binarySearch(indices, cnt-1);
-                if (idx < 0) continue;
+                if (cnt%100000 == 0) System.out.println(String.valueOf(cnt)+" lines");
                 l = PStringUtils.fastSplit(temp, "\t");
                 for (int i = 0; i < taxa.length; i++) {
                     String genoS = l.get(i+9);
@@ -177,10 +174,7 @@ public class FilterVCF2 {
 
     }
 
-    public void getCol(){
-        String[] in = {"AB","ABD","D"};
-        AoColor.genomeType(in);
-    }
+
 
     public void mergeTxtandAddGroup() {
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/003_siteDepth";
