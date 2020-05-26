@@ -19,7 +19,7 @@ import java.util.*;
 public class GermplasmInfo {
 
     public GermplasmInfo() {
-        this.addIftaxaonVMap2Anno();
+//        this.addIftaxaonVMap2Anno();
 //        this.addTreeValidatedGroupbyPloid();
 //        this.addTreeValidatedGroupbySuspecies();
 //        this.addInfo();
@@ -28,6 +28,38 @@ public class GermplasmInfo {
 //        this.getEuropeanLandrace();
 
 //        this.mergeTxt();
+
+        this.addColumntoTaxaDB();
+
+    }
+
+    /**
+     * 向新建立的 vmap2.0 taxa info DB 添加各种信息库
+     */
+    public void addColumntoTaxaDB(){
+//        String dbfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/002_QC/002_merge/001_taxa_QC.txt";
+//        String taxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/taxa_InfoDB.txt";
+////        HashMap<String,String> hm = new AoFile().getHashMapStringKey(dbfileS,0,1);
+////        AoFile.addColumbyString(taxaFileS,0,hm,"HeterozygousProportion");
+//        HashMap<String,String> hm = new AoFile().getHashMapStringKey(dbfileS,0,2);
+//        AoFile.addColumbyString(taxaFileS,0,hm,"MissingRate");
+
+//        String dbfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/007_qualityCheck/004_addInfo/001_taxa_QC.txt.gz";
+//        String taxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/taxa_InfoDB.txt";
+//        HashMap<String,String> hm = new AoFile().getHashMapStringKey(dbfileS,0,1);
+//        AoFile.addColumbyString(taxaFileS,0,hm,"HeterozygousProportion_onHapscanner");
+
+//        String dbfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/taxaList.txt";
+//        AoFile.readheader(dbfileS);
+//        String taxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/temp/taxa_InfoDB.txt";
+//        HashMap<String,String> hm = new AoFile().getHashMapStringKey(dbfileS,0,12);
+//        AoFile.addColumbyString(taxaFileS,0,hm,"MeanDepth_onVmap2.1");
+
+        String dbfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/026_depth/001_file/depth_PopDepth_VCF.txt";
+        AoFile.readheader(dbfileS);
+        String taxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/temp/taxa_InfoDB.txt";
+        HashMap<String,String> hm = new AoFile().getHashMapStringKey(dbfileS,0,1);
+        AoFile.addColumbyString(taxaFileS,0,hm,"MeanDepth_fromPopdepth");
 
     }
 

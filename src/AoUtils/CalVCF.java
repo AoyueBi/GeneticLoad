@@ -116,6 +116,44 @@ public class CalVCF {
         }
     }
 
+
+    /**
+     * 从VCF文件中提取 pos 文件，
+     *
+     * @param infileS   VCF file
+     */
+    public static TIntArrayList extractVCFPos(String infileS) {
+        TIntArrayList out = new TIntArrayList();
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cntRaw = 0; //1.总共的SNP数量
+
+            while ((temp = br.readLine()) != null) {
+                //***********************************************************//
+                if (temp.startsWith("#")) continue;
+                //***********************************************************//
+                if (!temp.startsWith("#")) {
+                    cntRaw++;
+                    temp = temp.substring(0,20);
+                    l = PStringUtils.fastSplit(temp);
+                    int pos = Integer.parseInt(l.get(1));
+                    out.add(pos);
+                } //
+            }
+            br.close();
+//            System.out.println(infileS + " is completed. snpNum is\t" + out.size());
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        return out;
+    }
+
+
     /**
      * 根据提供的taxa列表，从总的VCF文件中提取所需的 chr pos 文件，并对没有分离的位点进行去除,没有分离位点包括全部都是./.的位点
      *

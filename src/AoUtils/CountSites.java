@@ -2805,7 +2805,7 @@ public class CountSites {
     public void filterAllele(String infileDirS, String outfileDirS) {
         new File(outfileDirS).mkdirs();
         File[] fs = new File(infileDirS).listFiles();
-        fs = IOUtils.listFilesEndsWith(fs, ".vcf");
+        fs = IOUtils.listFilesEndsWith(fs, ".vcf.gz");
         List<File> fsList = Arrays.asList(fs);
         Collections.sort(fsList);
 //        System.out.println("Chr\tSNPNum\tBiallelicNum\tIndelNum\tInsertionNum\tDelectionNum\t");
@@ -2813,9 +2813,9 @@ public class CountSites {
             try {
                 String chr = f.getName().substring(3, 6); //提取染色体号 001
                 int chrint = Integer.parseInt(chr); //将染色体号转化为数字
-                String outfileS = new File(outfileDirS, f.getName().replaceFirst(".vcf", ".bi.vcf")).getAbsolutePath();
-                BufferedReader br = IOUtils.getTextReader(f.getAbsolutePath());
-                BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+                String outfileS = new File(outfileDirS, f.getName().replaceFirst("_vmap2.0.vcf.gz", "_vmap2.1.vcf")).getAbsolutePath();
+                BufferedReader br = AoFile.readFile(f.getAbsolutePath());
+                BufferedWriter bw = AoFile.writeFile(outfileS);
                 String temp = null;
                 int cnt = 0;
 //                int snpNum = 0;
@@ -2837,12 +2837,19 @@ public class CountSites {
 //                            insertionNum++;
 //                        }
 
-                        if (!(alt.contains(",")) && !(alt.equals("D")) && !(alt.equals("I"))) {
-                            biallelicNum++;
-                            bw.write(temp);
-                            bw.newLine();
-                        }
+//                        if (!(alt.contains(",")) && !(alt.equals("D")) && !(alt.equals("I"))) {
+//                            biallelicNum++;
+//                            bw.write(temp);
+//                            bw.newLine();
+//                        }
+
+                        if (alt.contains(",")) continue;
+                        if (alt.equals("D")) continue;
+                        if (alt.equals("I")) continue;
                         cnt++;
+                        biallelicNum++;
+                        bw.write(temp);
+                        bw.newLine();
 
                     }
 

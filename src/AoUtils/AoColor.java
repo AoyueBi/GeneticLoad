@@ -8,6 +8,7 @@ import java.util.List;
 public class AoColor {
 
     public AoColor(){
+        this.getCol();
 
     }
 
@@ -18,6 +19,7 @@ public class AoColor {
     public void getCol(){
         String[] in = {"AB","ABD","D"};
         AoColor.genomeType(in);
+
     }
 
     /**
@@ -31,7 +33,7 @@ public class AoColor {
 
         HashMap<String,String> hm = new HashMap<>();
         String[] value = {"#ffd702","#fc6e6e","#87cef9"};
-        String[] key = {"AB","ABD","D"};
+        String[] key = {"AABB","AABBDD","DD"};
         for (int i = 0; i < value.length; i++) {
             hm.put(key[i],value[i]);
         }
@@ -112,6 +114,11 @@ public class AoColor {
         for (int i = 0; i < l.size(); i++) {
             input[i] = l.get(i);
         }
+    }
+
+    public static void main(String[] args) {
+        new AoColor();
+
     }
 
 }

@@ -39,6 +39,7 @@ public class GeneticLoadEntrance {
 //        new ScriptHapscanner2();
 //        new AoHeterozygosity();
         new  FilterVCF2();
+//        new GermplasmInfo();
 
     }
 
@@ -127,6 +128,7 @@ public class GeneticLoadEntrance {
 
         new GeneticLoadEntrance();
 //        new GeneticLoadEntrance(args);
+//        new CountSites().filterAllele(args[0], args[1]);
 
 
 
@@ -195,9 +197,11 @@ public class GeneticLoadEntrance {
 
 
 //        CalVCF.extractVCFtable(args[0], args[1], args[2]);
-        CountSites.countSitesinFastCallformat(args[0]);
+//        CountSites.countSitesinFastCallformat(args[0]);
 
 //        new FilterVCF2().filter2(args[0]);
+//        new FilterVCF2().generateBiSNP(args[0], args[1]);
+
 
     }
 

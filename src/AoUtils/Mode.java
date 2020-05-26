@@ -29,6 +29,14 @@ public class Mode {
     //***************************** step one : 确定其倍性，根据倍性计算 ****************************//
 
     public Mode() {
+        String infileS = "";
+        String outfileS = "";
+
+        String infileDirS = "";
+        String outfileDirS = "";
+
+
+
 
     }
 

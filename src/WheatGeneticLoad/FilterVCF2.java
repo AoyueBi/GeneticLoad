@@ -61,9 +61,96 @@ public class FilterVCF2 {
 //        this.getCol();
 
 //        this.mkDepthOfVMapII();
-        this.mkDepthSummary();
+//        this.mkDepthSummary();
+//        this.mergeTaxaDepth();
+
+//        this.calSite();
+//        this.runJarParallele();
+//        SplitScript.splitScript2("/Users/Aoyue/Documents/sh_vmap2.0tovmap2.1_20200526.sh",21,2);
+//        this.getsharedSNP();
+        this.mergeSharedSNP();
+
+    }
 
 
+    public void mergeSharedSNP(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/029_countSiteSummary/003_pop/log_getsharedSNP_20200526.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/029_countSiteSummary/003_pop/001_getsharedSNP_merged.txt";
+        new CountSites().mergeChr1and2txt_int(infileS,outfileS);
+
+    }
+
+    public void getsharedSNP(){
+        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/104_VCFbyPop/001_byPloidy/003_hexaploid";
+        String abfileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/104_VCFbyPop/001_byPloidy/002_tetraploid";
+        String dfileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/104_VCFbyPop/001_byPloidy/001_diploid";
+        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/026_sharedSNPpos";
+
+        List<File> fsList = AoFile.getFileListInDir(infileDirS);
+        Collections.sort(fsList);
+        System.out.println("Chr" + "\t" + "Num_total_AABBDD" + "\t" + "Num_unique_AABBDD" + "\t" + "Num_shared" + "\t" + "Num_unique_AABBorDD" + "\t" + "Num_tatol_AABBorDD");
+        fsList.parallelStream().forEach(f -> {
+            String infileS = f.getAbsolutePath();
+            String chr = f.getName().substring(3,6);
+            int chrID = Integer.parseInt(chr);
+            String subgenome = RefV1Utils.getSubgenomeFromChrID(chrID);
+            String infileDirS2 = null;
+            String infileS2 = null;
+            String outfileS = new File(outfileDirS,f.getName().substring(0,6) + "_sharedSNP_pos.txt").getAbsolutePath();
+            if (subgenome.equals("D")) {
+                infileDirS2 = dfileDirS;
+                infileS2 = new File(infileDirS2,"chr" + chr + "_vmap2.1_diploid.vcf").getAbsolutePath();
+
+            }else{
+                infileDirS2 = abfileDirS;
+                infileS2 = new File(infileDirS2,"chr" + chr + "_vmap2.1_tetraploid.vcf").getAbsolutePath();
+            }
+
+            int cntHexaSNP = 0;
+            int cntsharedSNP = 0;
+            int cntuniqueHexa = 0;
+            int cntTDSNP = 0;
+            int cntuniqueTD = 0;
+
+            TIntArrayList polistHexa = CalVCF.extractVCFPos(infileS);
+            polistHexa.sort();
+
+            try {
+                BufferedReader br = AoFile.readFile(infileS2);
+                BufferedWriter bw = AoFile.writeFile(outfileS);
+                bw.write("Pos");
+                bw.newLine();
+                String temp = null;
+                List<String> l = new ArrayList<>();
+                int cnt = 0;
+                while ((temp = br.readLine()) != null) {
+                    if (temp.startsWith("#"))continue;
+                    temp = temp.substring(0,20);
+                    l = PStringUtils.fastSplit(temp);
+                    int pos = Integer.parseInt(l.get(1));
+                    cntTDSNP++;
+                    int index = polistHexa.binarySearch(pos);
+                    if (index > -1){ //说明搜到了，是共享的
+                        cntsharedSNP++;
+                        bw.write(l.get(1));
+                        bw.newLine();
+                    }else if (index < 0){ //说明没搜到，是独有的
+                        cntuniqueTD++;
+                    }
+                }
+
+                cntHexaSNP = polistHexa.size();
+                cntuniqueHexa = cntHexaSNP - cntsharedSNP;
+                System.out.println(chrID + "\t" + cntHexaSNP + "\t" + cntuniqueHexa + "\t" + cntsharedSNP + "\t" + cntuniqueTD + "\t" + cntTDSNP);
+                br.close();
+                bw.flush();
+                bw.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
+            // java -Xmx200g -jar PlantGenetics.jar > log_getsharedSNP_20200526.txt 2>&1 &
+        });
     }
 
 
@@ -76,6 +163,172 @@ public class FilterVCF2 {
      * step 2:
      * step 2: abd ab d   Site: MAF miss heter depth  Taxa: Miss Heter
      */
+
+
+    //java -Xms50g -Xmx200g -jar 028_extractVCF.jar /data4/home/aoyue/vmap2/genotype/mergedVCF/011_VMapII/chr001_vmap2.1.vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/012_VCFbyPop/001_byPloid/hexaploid/chr001_vmap2.1_hexaploid.vcf /data4/home/aoyue/vmap2/analysis/000_taxaList/BreadWheat_S419.txt > log_028/log_extractVCF_chr001_hexaploid20191107.txt 2>&1 &
+
+    public void runJarParallele(){ //一次性将所有的jar都运行上
+//        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/102_VMap2.0";
+//        String outfileDirS ="/data4/home/aoyue/vmap2/genotype/mergedVCF/103_VMap2.1";
+//        String logDirS = "/data4/home/aoyue/vmap2/aaPlantGenetics/log_20200526";
+//
+//        String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
+//        for (int i = 0; i < chrArr.length; i++) {
+//            String infileS = new File(infileDirS,"chr" + chrArr[i] + "_vmap2.0.vcf.gz").getAbsolutePath();
+//            String outfileS = new File(outfileDirS,"chr" + chrArr[i] + "_vmap2.1.vcf").getAbsolutePath();
+//            String logfileS = new File(logDirS,"log_" + new File(outfileS).getName().split(".gz")[0]).getAbsolutePath(); //不管是不是gz结尾，我们只取gz前的部分，妙！
+//            System.out.println("java -jar PlantGenetics.jar " + infileS + " " + outfileS + " > " + logfileS);
+//        }
+
+        // java -jar PlantGenetics.jar /data4/home/aoyue/vmap2/genotype/mergedVCF/102_VMap2.0 /data4/home/aoyue/vmap2/genotype/mergedVCF/103_VMap2.1 > log_filterAlleletoBi_20200525.txt 2>&1 &
+
+//        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/103_VMap2.1";
+//        String outfileDirS ="/data4/home/aoyue/vmap2/genotype/mergedVCF/104_VCFbyPop/001_byPloidy";
+//        String logDirS = "/data4/home/aoyue/vmap2/aaPlantGenetics/log_20200526";
+//        String taxaListS = "/data4/home/aoyue/vmap2/analysis/000_taxaList/101_taxaListbyPloidy/BreadWheat_S420.txt";
+//
+//        String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
+//        for (int i = 0; i < chrArr.length; i++) {
+//            String infileS = new File(infileDirS,"chr" + chrArr[i] + "_vmap2.1.vcf").getAbsolutePath();
+//            String outfileS = new File(outfileDirS,"chr" + chrArr[i] + "_vmap2.1_hexaploid.vcf").getAbsolutePath();
+//            String logfileS = new File(logDirS,"log_" + new File(outfileS).getName().split(".gz")[0]).getAbsolutePath(); //不管是不是gz结尾，我们只取gz前的部分，妙！
+//            System.out.println("java -jar 028_extractVCF.jar " + infileS + " " + outfileS + " " + taxaListS + " > " + logfileS + " 2>&1 &");
+//        }
+
+//        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/103_VMap2.1";
+//        String outfileDirS ="/data4/home/aoyue/vmap2/genotype/mergedVCF/104_VCFbyPop/001_byPloidy/002_tetraploid";
+//        String logDirS = "/data4/home/aoyue/vmap2/aaPlantGenetics/log_20200526";
+//        String taxaListS = "/data4/home/aoyue/vmap2/analysis/000_taxaList/101_taxaListbyPloidy/EmmerWheat_S187.txt";
+//
+//        String[] chrArr ={"001","002","003","004","007","008","009","010","013","014","015","016","019","020","021","022","025","026","027","028","031","032","033","034","037","038","039","040"};
+//        for (int i = 0; i < chrArr.length; i++) {
+//            String infileS = new File(infileDirS,"chr" + chrArr[i] + "_vmap2.1.vcf").getAbsolutePath();
+//            String outfileS = new File(outfileDirS,"chr" + chrArr[i] + "_vmap2.1_tetraploid.vcf").getAbsolutePath();
+//            String logfileS = new File(logDirS,"log_" + new File(outfileS).getName().split(".gz")[0]).getAbsolutePath(); //不管是不是gz结尾，我们只取gz前的部分，妙！
+//            System.out.println("java -jar 028_extractVCF.jar " + infileS + " " + outfileS + " " + taxaListS + " > " + logfileS + " 2>&1 &");
+//        }
+//
+
+        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/103_VMap2.1";
+        String outfileDirS ="/data4/home/aoyue/vmap2/genotype/mergedVCF/104_VCFbyPop/001_byPloidy/001_diploid/";
+        String logDirS = "/data4/home/aoyue/vmap2/aaPlantGenetics/log_20200526";
+        String taxaListS = "/data4/home/aoyue/vmap2/analysis/000_taxaList/101_taxaListbyPloidy/Ae.tauschii_S36.txt";
+
+        String[] chrArr ={"005","006","011","012","017","018","023","024","029","030","035","036","041","042"};
+        for (int i = 0; i < chrArr.length; i++) {
+            String infileS = new File(infileDirS,"chr" + chrArr[i] + "_vmap2.1.vcf").getAbsolutePath();
+            String outfileS = new File(outfileDirS,"chr" + chrArr[i] + "_vmap2.1_diploid.vcf").getAbsolutePath();
+            String logfileS = new File(logDirS,"log_" + new File(outfileS).getName().split(".gz")[0]).getAbsolutePath(); //不管是不是gz结尾，我们只取gz前的部分，妙！
+            System.out.println("java -jar 028_extractVCF.jar " + infileS + " " + outfileS + " " + taxaListS + " > " + logfileS + " 2>&1 &");
+        }
+
+
+
+    }
+
+
+    public void generateBiSNP(String infileS, String outfileS){
+
+        File f = new File(infileS);
+
+        try {
+            String chr = f.getName().substring(3, 6); //提取染色体号 001
+            BufferedReader br = AoFile.readFile(f.getAbsolutePath());
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = null;
+            int biallelicNum = 0;
+            while ((temp = br.readLine()) != null) {
+                if (temp.startsWith("#")) {
+                    bw.write(temp);
+                    bw.newLine();
+                } else {
+                    String kk = temp.substring(0,150);
+                    String alt = PStringUtils.fastSplit(kk).get(4);
+                    if (alt.contains(",")) continue;
+                    if (alt.equals("D")) continue;
+                    if (alt.equals("I")) continue;
+                    biallelicNum++;
+                }
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println(chr + "\t" + biallelicNum);
+            System.out.println(f.getName() + " is completed at " + outfileS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+    }
+
+    public void calSite(){
+        CountSites.countSites_fromVCF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/001_subset/Dsubgenome.vcf.gz");
+
+    }
+    public void mergeTaxaDepth(){
+        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/004_taxaDepth/taxaDepth_abd.summary.txt";
+        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/004_taxaDepth/taxaDepth_ab.summary.txt";
+        String infileS3 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/004_taxaDepth/taxaDepth_d.summary.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/004_taxaDepth/taxaDepth.summary.txt";
+        File f1 = new File(infileS1);
+        File f2 = new File(infileS2);
+        File f3 = new File(infileS3);
+        File[] fs = {f1,f2,f3};
+        try {
+            String infileS = fs[0].getAbsolutePath();
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            /**
+             * 需要改动,header的名字可以自定义
+             */
+            //read header
+            bw.write(br.readLine() + "\tGenomeType");
+            bw.newLine();
+
+            int cnttotal = 0;
+            //read context
+            int cnt = 0;
+            for (int i = 0; i < fs.length; i++) {
+                infileS = fs[i].getAbsolutePath();
+                /**
+                 * 需要改动
+                 */
+                String name = fs[i].getName();
+                String group = name.split(".summary")[0].split("_")[1];
+                if (group.equals("abd")){
+                    group="AABBDD";
+                }else if (group.equals("ab")){
+                    group="AABB";
+                }else if (group.equals("d")){
+                    group="DD";
+                }
+                br = AoFile.readFile(infileS);
+                br.readLine(); //read header
+                String temp = null;
+
+                List<String> l = new ArrayList<>();
+                while ((temp = br.readLine()) != null) {
+                    l = PStringUtils.fastSplit(temp);
+                    cnt++;
+                    cnttotal++;
+                    String id = PStringUtils.getNDigitNumber(3,cnt);
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(l.get(0)).append("\t").append("vmap2_").append(id).append("\t").append(l.get(2)).append("\t").append(group);
+                    bw.write(sb.toString());
+                    bw.newLine();
+                }
+            }
+            System.out.println("Total lines without header count is " + cnttotal + " at merged file " + outfileS );
+            br.close();
+            bw.flush();
+            bw.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
 
     public void mkDepthSummary () {
         //思想：对每一个taxa做统计，每读进一个taxa，就统计所有深度的和，再除以表格的行数，也即是抽查的位点数，最终得出总得深度除以位点数，得出平均每个位点的深度。
