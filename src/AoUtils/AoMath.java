@@ -25,6 +25,15 @@ public class AoMath {
 
     }
 
+    public static int listSum_byint(List<Integer> l){
+        int out = 0;
+        for (int i = 0; i < l.size() ; i++) {
+            out = out + l.get(i);
+        }
+
+        return out;
+    }
+
     /**
      *
      * @return

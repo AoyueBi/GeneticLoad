@@ -68,9 +68,13 @@ public class FilterVCF2 {
 //        this.runJarParallele();
 //        SplitScript.splitScript2("/Users/Aoyue/Documents/sh_vmap2.0tovmap2.1_20200526.sh",21,2);
 //        this.getsharedSNP();
-        this.mergeSharedSNP();
+//        this.mergeSharedSNP();
+
+//        new CountSites().mergeChr1Aand2A_bysubgenome();
 
     }
+
+
 
 
     public void mergeSharedSNP(){

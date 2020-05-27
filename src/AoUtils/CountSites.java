@@ -3105,6 +3105,150 @@ public class CountSites {
     }
 
     /**
+     * 根据1 -42 条染色体的统计，转换成 1A- 7A 形式的统计，再装换成 A sub  B sub 的统计；
+     * 本方法只解决 1A 2A 3A 到 A sub  的统计
+     */
+    public void mergeChr1Aand2A_bysubgenome(){
+        String infileS = "/Users/Aoyue/Documents/test.txt";
+        String outfileS = "/Users/Aoyue/Documents/out.txt";
+
+        int cntcolumn = AoFile.countFileColumnNumber(infileS)-1;
+
+
+        File parent = new File(outfileS).getParentFile();
+        String outfileS1 = new File(parent,"Asub_aoyue.txt").getAbsolutePath();
+        String outfileS2 = new File(parent,"Bsub_aoyue.txt").getAbsolutePath();
+        String outfileS3 = new File(parent,"Dsub_aoyue.txt").getAbsolutePath();
+
+        try {
+            List<Integer>[] valueArray = new List[cntcolumn];
+            for (int i = 0; i < valueArray.length; i++) {
+                valueArray[i] = new ArrayList<>();
+            }
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS1);
+            String header = br.readLine();
+            bw.write(header);bw.newLine();
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            String temp = null;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+                String chr = l.get(0).substring(1);
+                if (!chr.equals("A")) continue;
+                for (int i = 1; i < l.size(); i++) {
+                    int index = i - 1;
+                    valueArray[index].add(Integer.parseInt(l.get(i)));
+                }
+                bw.write(temp);
+                bw.newLine();
+            }
+
+            bw.write("Asub");
+            for (int i = 0; i < valueArray.length; i++) {
+                int sum = AoMath.listSum_byint(valueArray[i]);
+                bw.write("\t" + sum);
+            }
+            bw.newLine();
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        try {
+            List<Integer>[] valueArray = new List[cntcolumn];
+            for (int i = 0; i < valueArray.length; i++) {
+                valueArray[i] = new ArrayList<>();
+            }
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS2);
+            String header = br.readLine();
+            bw.write(header);bw.newLine();
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            String temp = null;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+                String chr = l.get(0).substring(1);
+                if (!chr.equals("B")) continue;
+                for (int i = 1; i < l.size(); i++) {
+                    int index = i - 1;
+                    valueArray[index].add(Integer.parseInt(l.get(i)));
+                }
+                bw.write(temp);
+                bw.newLine();
+            }
+
+            bw.write("Bsub");
+            for (int i = 0; i < valueArray.length; i++) {
+                int sum = AoMath.listSum_byint(valueArray[i]);
+                bw.write("\t" + sum);
+            }
+            bw.newLine();
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        try {
+            List<Integer>[] valueArray = new List[cntcolumn];
+            for (int i = 0; i < valueArray.length; i++) {
+                valueArray[i] = new ArrayList<>();
+            }
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS3);
+            String header = br.readLine();
+            bw.write(header);bw.newLine();
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            String temp = null;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+                String chr = l.get(0).substring(1);
+                if (!chr.equals("D")) continue;
+                for (int i = 1; i < l.size(); i++) {
+                    int index = i - 1;
+                    valueArray[index].add(Integer.parseInt(l.get(i)));
+                }
+                bw.write(temp);
+                bw.newLine();
+            }
+
+            bw.write("Dsub");
+            for (int i = 0; i < valueArray.length; i++) {
+                int sum = AoMath.listSum_byint(valueArray[i]);
+                bw.write("\t" + sum);
+            }
+            bw.newLine();
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        File f1 = new File(outfileS1);
+        File f2 = new File(outfileS2);
+        File f3 = new File(outfileS3);
+
+        File[] fs = {f1,f2,f3};
+        AoFile.mergeTxt_byFileArray(fs,outfileS);
+    }
+
+    /**
      * 将计算出的snp位点数进行合并，成1D 2D 3D 4D 5D 6D 7D形式；
      */
     public void mergeChr1and2_ABgenome(String infileS, String outfileS) {
