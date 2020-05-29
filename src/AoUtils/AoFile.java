@@ -525,6 +525,51 @@ public class AoFile {
 
 
     /**
+     * add more than one column to a file
+     */
+    public static void addColumsbyString(String infileS,int keyIDindex, HashMap<String,String>[] hm,String headername){
+        String outfileS = null;
+        String outfileDirS = new File(infileS).getParent(); //获取输入文件的目录
+        outfileDirS = new File(outfileDirS).getParent(); //根据输入文件的目录获取上一级父目录；
+        outfileDirS = outfileDirS + "/A_out"; //根据父目录路径 创建输出文件目录
+        new File(outfileDirS).mkdirs(); //创建输出文件目录
+        outfileS = new File(outfileDirS,new File(infileS).getName()).getAbsolutePath();
+
+        try{
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+
+            String temp = br.readLine(); //read header
+            bw.write(temp + headername);
+            bw.newLine();
+            List<String> l = new ArrayList<>();
+            while((temp=br.readLine()) != null){
+                l = PStringUtils.fastSplit(temp);
+                String key = l.get(keyIDindex); //注意，如果string类型不能转化为pos,这里也不会报错
+                bw.write(temp);
+
+                for (int i = 0; i < hm.length; i++) {
+                    String value = hm[i].get(key);
+                    if(value == null || value == ""){  //!!!!! if there is no value, we should set the value as "NA".
+                        value = "NA";
+                    }
+                    bw.write("\t" + value);
+                }
+                bw.newLine();
+            }
+            bw.flush();
+            bw.close();
+            br.close();
+            System.out.println(infileS + "\tis completed at\t" + outfileS);
+        }
+        catch(Exception e){
+            System.exit(1);
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
      * add colum to a file
      */
     public static void addColumbyString(String infileS,int keyIDindex, HashMap<String,String> hm,String headername){
@@ -737,6 +782,34 @@ public class AoFile {
             hm.put(key,value);
         }
         System.out.println("HashMap contains " + hm.size() + " pairs");
+
+
+        return hm;
+    }
+
+    /**
+     *return a hashmap from a file
+     *
+     * @param infileS
+     * @param keycolummIndex
+     * @param valuecolumnIndexs
+     * @return
+     */
+    public static HashMap<String,String>[] getHashMapsStringKey(String infileS, int keycolummIndex, int[] valuecolumnIndexs){
+        String out = null;
+        RowTable<String> t = new RowTable<>(infileS);
+        HashMap<String,String>[] hm = new HashMap[valuecolumnIndexs.length];
+        for (int i = 0; i < hm.length; i++) {
+            hm[i] = new HashMap<String,String>();
+        }
+        for (int i = 0; i < t.getRowNumber() ; i++) {
+            String key = t.getCell(i,keycolummIndex);
+            for (int j = 0; j < valuecolumnIndexs.length; j++) {
+                String value = t.getCell(i,valuecolumnIndexs[j]);
+                hm[j].put(key,value);
+            }
+        }
+        System.out.println("HashMap contains " + hm[0].size() + " pairs and totally " + valuecolumnIndexs.length + " HashMaps are built");
 
 
         return hm;

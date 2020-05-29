@@ -43,9 +43,13 @@ public class GermplasmInfo {
 
         String dbfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/taxa_InfoDB.txt";
         AoFile.readheader(dbfileS);
-        String taxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/032_pca/001_input/002_matrix_Asub.txt";
-        HashMap<String,String> hm = new AoFile().getHashMapStringKey(dbfileS,0,3);
-        AoFile.addColumbyString(taxaFileS,0,hm,"GenomeType");
+//        String taxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/032_pca/001_input/002_matrix_Dsub.txt";
+//        String taxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/032_pca/001_input/003_matrix_hexa.txt";
+//        String taxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/032_pca/001_input/004_matrix_tetra.txt";
+        String taxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/032_pca/001_input/005_matrix_DD.txt";
+        int[] columnIndexes = {3,8,10,15};
+        HashMap<String,String>[] hm = new AoFile().getHashMapsStringKey(dbfileS,0,columnIndexes);
+        AoFile.addColumsbyString(taxaFileS,0,hm,"\tGenomeType\tPart_Continent\tContinent_forTree\tSubspecies");
 
     }
 

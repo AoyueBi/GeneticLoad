@@ -20,8 +20,54 @@ public class AoColor {
 //        String[] in = {"AB","ABD","D"};
 //        AoColor.genomeType(in);
 
-        String[] in = {"Ae.tauschii","Cultivar","Domesticated_emmer","Free_threshing_tetraploid","Landrace","OtherHexaploid","OtherTetraploid","Wild_emmer"};
-        AoColor.subspecies(in);
+//        String[] in = {"Ae.tauschii","Cultivar","Domesticated_emmer","Free_threshing_tetraploid","Landrace","OtherHexaploid","OtherTetraploid","Wild_emmer"};
+//        String[] in = {"Cultivar","Domesticated_emmer","Free_threshing_tetraploid","Landrace","OtherHexaploid","OtherTetraploid","Wild_emmer"};
+//        String[] in = {"Ae.tauschii","Cultivar","Landrace","OtherHexaploid"};
+//        String[] in = {"Domesticated_emmer","Free_threshing_tetraploid","OtherTetraploid","Wild_emmer"};
+
+//        AoColor.subspecies(in);
+
+//        String[] in = {"Africa" , "America" ,"Asia" ,   "Europe" , "Oceania"};
+//        String[] in = {"Africa",  "America" ,"Asia"   , "Europe"};
+        String[] in = {"America" ,"Asia" ,   "Europe" };
+
+        AoColor.continent(in);
+
+    }
+
+
+    //分组2为：大洋洲 非洲 北美洲 南美洲 欧洲 亚洲
+    //"Oceania","Africa","North America","South America","Europe","Asia"
+    //颜色为："#F1E1FF","#F4D03F","#5DADE2","#7B241C","#FF9900","#82C782"
+    //
+    /**
+     *
+     * @param input
+     * @return
+     */
+
+    public static String continent (String[] input){
+        String out=null;
+
+        HashMap<String,String> hm = new HashMap<>();
+        String[] value = {"#7dbde8", "#7B241C", "#dbb3ff","#FF9900", "#82C782"};
+        String[] key = {"Oceania","Africa","America","Europe","Asia"};
+        for (int i = 0; i < value.length; i++) {
+            hm.put(key[i],value[i]);
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("c(");
+        for (int i = 0; i < input.length; i++) {
+            String col = hm.get(input[i]);
+            sb.append("'").append(col).append("',");
+        }
+        sb.deleteCharAt(sb.length()-1);
+        sb.append(")");
+        out = sb.toString();
+        System.out.println(out);
+
+        return out;
     }
 
     /**
