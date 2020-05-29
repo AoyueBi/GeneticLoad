@@ -29,9 +29,9 @@ public class GeneExpressionbywheat {
          * tissue express breadth
          */
 //        this.getTissueBreadth();
-        this.getwindowDistrbution();
+//        this.getwindowDistrbution();
 
-//        this.mergegeneExpression_fromJun();
+        this.mergegeneExpression_fromJun();
 //        this.calBreadth_onRootandcoleotiple();
 //        this.getwindowDistrbution_general();
 

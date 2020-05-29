@@ -71,10 +71,42 @@ public class FilterVCF2 {
 //        this.mergeSharedSNP();
 
 //        new CountSites().mergeChr1Aand2A_bysubgenome();
+        this.getScaledPos();
 
     }
 
 
+    public void getScaledPos(){
+        String infileS = "/Users/Aoyue/Documents/Data/wheat/article/iwgsc_refseqv1.0_recombination_rate_analysis/iwgsc_refseqv1.0_recombination_rate.txt";
+        String outfileS = "/Users/Aoyue/Documents/Data/wheat/article/iwgsc_refseqv1.0_recombination_rate_analysis/iwgsc_refseqv1.0_recombination_rate_addScalePos.txt";
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = null;
+            String header = br.readLine();
+            bw.write(header + "\tPosScale");
+            bw.newLine();
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+
+                String chromosome = l.get(0).substring(3);
+                int posOnchromosome = Integer.parseInt(l.get(1));
+                String posScaled = WheatUtils.getScaledPos(chromosome,posOnchromosome);
+                bw.write(temp + "\t" + posScaled);
+                bw.newLine();
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
 
 
     public void mergeSharedSNP(){

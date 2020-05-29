@@ -29,7 +29,23 @@ public class GermplasmInfo {
 
 //        this.mergeTxt();
 
-        this.addColumntoTaxaDB();
+//        this.addColumntoTaxaDB();
+        this.addGroup();
+
+    }
+
+    public void addGroup(){
+//        String dbfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/taxa_InfoDB.txt";
+//        AoFile.readheader(dbfileS);
+//        String taxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/032_pca/001_input/001_matrix.txt";
+//        HashMap<String,String> hm = new AoFile().getHashMapStringKey(dbfileS,0,3);
+//        AoFile.addColumbyString(taxaFileS,0,hm,"GenomeType");
+
+        String dbfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/taxa_InfoDB.txt";
+        AoFile.readheader(dbfileS);
+        String taxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/032_pca/001_input/002_matrix_Asub.txt";
+        HashMap<String,String> hm = new AoFile().getHashMapStringKey(dbfileS,0,3);
+        AoFile.addColumbyString(taxaFileS,0,hm,"GenomeType");
 
     }
 
@@ -55,11 +71,23 @@ public class GermplasmInfo {
 //        HashMap<String,String> hm = new AoFile().getHashMapStringKey(dbfileS,0,12);
 //        AoFile.addColumbyString(taxaFileS,0,hm,"MeanDepth_onVmap2.1");
 
-        String dbfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/026_depth/001_file/depth_PopDepth_VCF.txt";
+//        String dbfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/026_depth/001_file/depth_PopDepth_VCF.txt";
+//        AoFile.readheader(dbfileS);
+//        String taxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/temp/taxa_InfoDB.txt";
+//        HashMap<String,String> hm = new AoFile().getHashMapStringKey(dbfileS,0,1);
+//        AoFile.addColumbyString(taxaFileS,0,hm,"MeanDepth_fromPopdepth");
+
+//        String dbfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/005_dxy/dxy.txt";
+//        AoFile.readheader(dbfileS);
+//        String taxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/taxa_InfoDB.txt";
+//        HashMap<String,String> hm = new AoFile().getHashMapStringKey(dbfileS,0,2);
+//        AoFile.addColumbyString(taxaFileS,0,hm,"Dxy_geneticDivergency");
+
+        String dbfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/taxaList_addCS2017.txt";
         AoFile.readheader(dbfileS);
-        String taxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/temp/taxa_InfoDB.txt";
-        HashMap<String,String> hm = new AoFile().getHashMapStringKey(dbfileS,0,1);
-        AoFile.addColumbyString(taxaFileS,0,hm,"MeanDepth_fromPopdepth");
+        String taxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/taxa_InfoDB.txt";
+        HashMap<String,String> hm = new AoFile().getHashMapStringKey(dbfileS,0,11);
+        AoFile.addColumbyString(taxaFileS,0,hm,"TreeValidatedGroupbySubspecies");
 
     }
 
