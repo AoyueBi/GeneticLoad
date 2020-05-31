@@ -5,7 +5,7 @@
  */
 package WheatGeneticLoad;
 
-import pgl.infra.genomeAnnotation.GeneFeature;
+import pgl.infra.anno.gene.GeneFeature;
 import pgl.infra.utils.IOUtils;
 import pgl.infra.utils.PStringUtils;
 

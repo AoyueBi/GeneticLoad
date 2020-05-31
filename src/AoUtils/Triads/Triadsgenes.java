@@ -1,13 +1,14 @@
 package AoUtils.Triads;
 
 import AoUtils.AoFile;
-import pgl.infra.genomeAnnotation.GeneFeature;
+
 import pgl.infra.utils.PStringUtils;
 import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import pgl.infra.anno.gene.GeneFeature;
 
 /**
  * Utilities to process triadsList gene of wheat reference genome v1.0 (IWGSC v1.0)

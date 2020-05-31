@@ -11,7 +11,7 @@ import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.set.hash.TIntHashSet;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
-import pgl.infra.position.ChrPos;
+
 import pgl.infra.utils.PArrayUtils;
 import pgl.infra.utils.IOFileFormat;
 import pgl.infra.utils.IOUtils;
@@ -23,6 +23,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import pgl.infra.pos.ChrPos;
 
 /**
  *

@@ -7,7 +7,7 @@ package WheatGeneticLoad;
 
 import AoUtils.AoFile;
 import AoUtils.CountSites;
-import pgl.infra.genomeAnnotation.GeneFeature;
+import pgl.infra.anno.gene.GeneFeature;
 import pgl.infra.range.Range;
 import gnu.trove.list.array.TByteArrayList;
 import gnu.trove.list.array.TDoubleArrayList;

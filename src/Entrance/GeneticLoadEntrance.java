@@ -36,10 +36,10 @@ public class GeneticLoadEntrance {
 
     public void rebuildVCF(){
 //        new RebuildVCF();
-//        new ScriptHapscanner2();
+        new ScriptHapscanner2();
 //        new AoHeterozygosity();
 //        new  FilterVCF2();
-        new GermplasmInfo();
+//        new GermplasmInfo();
 
     }
 

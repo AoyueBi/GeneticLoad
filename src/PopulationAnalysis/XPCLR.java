@@ -8,7 +8,7 @@ import analysis.wheat.VMap2.VMapDBUtils;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TFloatArrayList;
 import gnu.trove.list.array.TIntArrayList;
-import pgl.graphcis.tablesaw.TablesawUtils;
+
 import pgl.infra.table.ColumnTable;
 import pgl.infra.table.RowTable;
 import pgl.infra.utils.Dyad;
@@ -22,6 +22,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.util.*;
+import pgl.graph.tSaw.TablesawUtils;
 
 public class XPCLR {
     public XPCLR(){

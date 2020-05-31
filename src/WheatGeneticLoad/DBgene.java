@@ -9,6 +9,7 @@ import daxing.common.RowTableTool;
 
 import pgl.infra.table.RowTable;
 import pgl.infra.utils.PStringUtils;
+import pgl.infra.anno.gene.GeneFeature;
 
 import gnu.trove.list.array.TByteArrayList;
 import gnu.trove.list.array.TIntArrayList;
@@ -22,7 +23,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Predicate;
-import pgl.infra.genomeAnnotation.GeneFeature;
+
 import pgl.infra.range.Range;
 
 public class DBgene {

@@ -4,7 +4,7 @@ import AoUtils.*;
 import AoUtils.Triads.Triadsgenes;
 import gnu.trove.list.array.TDoubleArrayList;
 import org.apache.commons.lang.ArrayUtils;
-import pgl.infra.genomeAnnotation.GeneFeature;
+import pgl.infra.anno.gene.GeneFeature;
 import pgl.infra.utils.PStringUtils;
 import pgl.infra.utils.wheat.RefV1Utils;
 import xiaohan.wheatRNAseq.test;

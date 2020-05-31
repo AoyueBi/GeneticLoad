@@ -6,7 +6,7 @@
 package AoUtils;
 
 import gnu.trove.list.array.TIntArrayList;
-import pgl.infra.position.ChrPos;
+
 import pgl.infra.utils.IOUtils;
 import pgl.infra.utils.PStringUtils;
 
@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import pgl.infra.pos.ChrPos;
 
 /**
  *

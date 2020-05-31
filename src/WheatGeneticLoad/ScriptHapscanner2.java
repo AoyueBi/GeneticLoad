@@ -12,10 +12,10 @@ import java.util.*;
 
 import AoUtils.*;
 import gnu.trove.list.array.TDoubleArrayList;
-import pgl.graphcis.r.Histogram;
-import pgl.infra.dna.genotype.GenoIOFormat;
-import pgl.infra.dna.genotype.GenotypeGrid;
-import pgl.infra.dna.genotype.GenotypeOperation;
+import pgl.graph.r.Histogram;
+import pgl.infra.dna.genot.GenoIOFormat;
+import pgl.infra.dna.genot.GenotypeGrid;
+import pgl.infra.dna.genot.GenotypeOperation;
 import pgl.infra.table.RowTable;
 import pgl.infra.utils.IOUtils;
 import pgl.infra.utils.PStringUtils;
@@ -52,7 +52,7 @@ public class ScriptHapscanner2 {
 //        this.getHapPos();
 
 //        this.mkParameter();
-//        this.mkJavaCmd();
+        this.mkJavaCmd();
 //        this.bgzip();
 //        this.bcftools_merge2();
 
@@ -351,14 +351,14 @@ public class ScriptHapscanner2 {
 //        String[] chrArr ={"001","002","003","004","007","008","009","010","013","014","015","016","019","020","021","022","025","026","027","028","031","032","033","034","037","038","039","040"};
 
         //AABBDD
-//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/006_CMD/sh_hapScanner_ABDgenome_chr1_42_20200516.sh";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/006_CMD/sh_hapScanner_ABDgenome_onlyDsub_20200518.sh";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/006_CMD/sh_hapScanner_ABDgenome_chr1_42_20200531.sh";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/006_CMD/sh_hapScanner_ABDgenome_onlyDsub_20200518.sh";
 
-//        String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
+        String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
 
         //DD
 //        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/006_CMD/sh_hapScanner_Dgenome_chr1_42_20200515.sh";
-        String[] chrArr ={"005","006","011","012","017","018","023","024","029","030","035","036","041","042"};
+//        String[] chrArr ={"005","006","011","012","017","018","023","024","029","030","035","036","041","042"};
 
         String ploidy = AoString.getPloidy(chrArr);
         ploidy = "abd";
