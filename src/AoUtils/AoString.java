@@ -1,8 +1,16 @@
 package AoUtils;
 
+/**
+ *
+ */
+
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * @author AoyueBi
+ *
+ */
 public class AoString {
     public AoString(){
 

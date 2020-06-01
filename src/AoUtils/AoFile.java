@@ -19,8 +19,8 @@ import pgl.infra.utils.PStringUtils;
 import pgl.infra.utils.wheat.RefV1Utils;
 
 /**
+ * @author AoyueBi
  *
- * @author Aoyue
  */
 public class AoFile {
     public AoFile(){

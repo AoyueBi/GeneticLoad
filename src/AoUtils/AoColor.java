@@ -5,6 +5,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * @author AoyueBi
+ * 
+ */
 public class AoColor {
 
     public AoColor(){

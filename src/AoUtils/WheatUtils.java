@@ -6,6 +6,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * @author AoyueBi
+ *
+ */
 public class WheatUtils {
 
     private static String positionFileS =

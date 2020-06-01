@@ -7,6 +7,10 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.util.*;
 
+/**
+ * @author AoyueBi
+ *
+ */
 public class GOanalysis {
 
     public GOanalysis(){

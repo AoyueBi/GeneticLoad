@@ -31,14 +31,13 @@ public class GeneticLoadEntrance {
 //        this.geneExpression();
         this.rebuildVCF();
 
-
     }
 
     public void rebuildVCF(){
 //        new RebuildVCF();
-        new ScriptHapscanner2();
+//        new ScriptHapscanner2();
 //        new AoHeterozygosity();
-//        new  FilterVCF2();
+        new  FilterVCF2();
 //        new GermplasmInfo();
 
     }
@@ -129,6 +128,7 @@ public class GeneticLoadEntrance {
         new GeneticLoadEntrance();
 //        new GeneticLoadEntrance(args);
 //        new CountSites().filterAllele(args[0], args[1]);
+//        new FilterVCF2().filter_singleThread(args[0], args[1]);
 
 
 
