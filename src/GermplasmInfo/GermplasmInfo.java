@@ -30,7 +30,17 @@ public class GermplasmInfo {
 //        this.mergeTxt();
 
 //        this.addColumntoTaxaDB();
-        this.addGroup();
+//        this.addGroup();
+        this.summaryGroupbyContinent();
+
+    }
+
+    /**
+     *
+     */
+    public void summaryGroupbyContinent(){
+        String infileS = "";
+
 
     }
 

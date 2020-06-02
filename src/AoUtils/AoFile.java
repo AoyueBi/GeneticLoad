@@ -27,7 +27,18 @@ public class AoFile {
         
     }
 
+    public static void mkOutfile(){
 
+    }
+
+
+    /**
+     * 提取文件的某几列，并且
+     * @param infileS
+     * @param skipString
+     * @param columns
+     * @param outfileS
+     */
     public static void extractFileColumn(String infileS, String skipString, int[] columns,String outfileS){
 
         Arrays.sort(columns);

@@ -57,7 +57,7 @@ public class FilterVCF2 {
          *  VCF quality control
          */
 
-        this.mergeVCF();
+//        this.mergeVCF();
 //        this.QC();
 //        this.mergeCheckFile();
 //        this.getBinTable();
@@ -66,9 +66,11 @@ public class FilterVCF2 {
 //        this.getCol();
 
 //        this.mkDepthOfVMapII();
-//        this.mkDepthSummary();
+        this.mkDepthSummary();
 //        this.mergeTaxaDepth();
         //        this.calSite();
+
+//        this.getMergedSubsetVCF_Hexaploid();
 
         /**
          * 提取六四二倍体的VCF
@@ -82,9 +84,39 @@ public class FilterVCF2 {
 //        new CountSites().mergeChr1Aand2A_bysubgenome();
 //        this.getScaledPos();
 
+
     }
 
 
+    /**
+     * 从抽样的VCF中，提取六倍体的42条染色体的VCF文件，并合并成一个文件
+     */
+    public void getMergedSubsetVCF_Hexaploid(){ //一次性将所有的jar都运行上
+
+        // java -jar PlantGenetics.jar /data4/home/aoyue/vmap2/genotype/mergedVCF/102_VMap2.0 /data4/home/aoyue/vmap2/genotype/mergedVCF/103_VMap2.1 > log_filterAlleletoBi_20200525.txt 2>&1 &
+
+        //#/****************************** hexaploid ******************************/#
+        String infileDirS = "/data4/home/aoyue/vmap2/analysis/025_subsetVCF/001_fromVMap2.0_singleChr0.001";
+        String outfileDirS ="/data4/home/aoyue/vmap2/analysis/025_subsetVCF/003_hexaploid_singleChr";
+        String logDirS = "/data4/home/aoyue/vmap2/analysis/025_subsetVCF/log";
+        String taxaListS = "/data4/home/aoyue/vmap2/analysis/000_taxaList/101_taxaListbyPloidy/BreadWheat_S420.txt";
+
+        String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
+        for (int i = 0; i < chrArr.length; i++) {
+            String infileS = new File(infileDirS,"chr" + chrArr[i] + "_vmap2.1.vcf").getAbsolutePath();
+            String outfileS = new File(outfileDirS,"chr" + chrArr[i] + "_vmap2.1_hexaploid.vcf").getAbsolutePath();
+            String logfileS = new File(logDirS,"log_" + new File(outfileS).getName().split(".gz")[0]).getAbsolutePath(); //不管是不是gz结尾，我们只取gz前的部分，妙！
+            System.out.println("java -jar 049_extractVCF_GL.jar " + infileS + " " + outfileS + " " + taxaListS + " > " + logfileS + " 2>&1 &");
+        }
+
+        new CountSites().mergesubsetVCF(outfileDirS,"/data4/home/aoyue/vmap2/analysis/025_subsetVCF/002_mergeVCFtoSub/ABDsubgenome_hexa.vcf.gz");
+    }
+
+
+
+    /**
+     * 获取重组率在标准化的坐标上的分布
+     */
     public void getScaledPos(){
         String infileS = "/Users/Aoyue/Documents/Data/wheat/article/iwgsc_refseqv1.0_recombination_rate_analysis/iwgsc_refseqv1.0_recombination_rate.txt";
         String outfileS = "/Users/Aoyue/Documents/Data/wheat/article/iwgsc_refseqv1.0_recombination_rate_analysis/iwgsc_refseqv1.0_recombination_rate_addScalePos.txt";
@@ -125,6 +157,9 @@ public class FilterVCF2 {
 
     }
 
+    /**
+     * 输出ABD和AB共有的SNP位置
+     */
     public void getsharedSNP(){
         String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/104_VCFbyPop/001_byPloidy/003_hexaploid";
         String abfileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/104_VCFbyPop/001_byPloidy/002_tetraploid";
@@ -207,20 +242,10 @@ public class FilterVCF2 {
     //java -Xms50g -Xmx200g -jar 028_extractVCF.jar /data4/home/aoyue/vmap2/genotype/mergedVCF/011_VMapII/chr001_vmap2.1.vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/012_VCFbyPop/001_byPloid/hexaploid/chr001_vmap2.1_hexaploid.vcf /data4/home/aoyue/vmap2/analysis/000_taxaList/BreadWheat_S419.txt > log_028/log_extractVCF_chr001_hexaploid20191107.txt 2>&1 &
 
     public void runJarParallele(){ //一次性将所有的jar都运行上
-//        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/102_VMap2.0";
-//        String outfileDirS ="/data4/home/aoyue/vmap2/genotype/mergedVCF/103_VMap2.1";
-//        String logDirS = "/data4/home/aoyue/vmap2/aaPlantGenetics/log_20200526";
-//
-//        String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
-//        for (int i = 0; i < chrArr.length; i++) {
-//            String infileS = new File(infileDirS,"chr" + chrArr[i] + "_vmap2.0.vcf.gz").getAbsolutePath();
-//            String outfileS = new File(outfileDirS,"chr" + chrArr[i] + "_vmap2.1.vcf").getAbsolutePath();
-//            String logfileS = new File(logDirS,"log_" + new File(outfileS).getName().split(".gz")[0]).getAbsolutePath(); //不管是不是gz结尾，我们只取gz前的部分，妙！
-//            System.out.println("java -jar PlantGenetics.jar " + infileS + " " + outfileS + " > " + logfileS);
-//        }
 
         // java -jar PlantGenetics.jar /data4/home/aoyue/vmap2/genotype/mergedVCF/102_VMap2.0 /data4/home/aoyue/vmap2/genotype/mergedVCF/103_VMap2.1 > log_filterAlleletoBi_20200525.txt 2>&1 &
 
+        //#/****************************** hexaploid ******************************/#
 //        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/103_VMap2.1";
 //        String outfileDirS ="/data4/home/aoyue/vmap2/genotype/mergedVCF/104_VCFbyPop/001_byPloidy";
 //        String logDirS = "/data4/home/aoyue/vmap2/aaPlantGenetics/log_20200526";
@@ -234,6 +259,7 @@ public class FilterVCF2 {
 //            System.out.println("java -jar 028_extractVCF.jar " + infileS + " " + outfileS + " " + taxaListS + " > " + logfileS + " 2>&1 &");
 //        }
 
+        //#/****************************** tetraploid ******************************/#
 //        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/103_VMap2.1";
 //        String outfileDirS ="/data4/home/aoyue/vmap2/genotype/mergedVCF/104_VCFbyPop/001_byPloidy/002_tetraploid";
 //        String logDirS = "/data4/home/aoyue/vmap2/aaPlantGenetics/log_20200526";
@@ -246,8 +272,8 @@ public class FilterVCF2 {
 //            String logfileS = new File(logDirS,"log_" + new File(outfileS).getName().split(".gz")[0]).getAbsolutePath(); //不管是不是gz结尾，我们只取gz前的部分，妙！
 //            System.out.println("java -jar 028_extractVCF.jar " + infileS + " " + outfileS + " " + taxaListS + " > " + logfileS + " 2>&1 &");
 //        }
-//
 
+        //#/****************************** diploid ******************************/#
         String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/103_VMap2.1";
         String outfileDirS ="/data4/home/aoyue/vmap2/genotype/mergedVCF/104_VCFbyPop/001_byPloidy/001_diploid/";
         String logDirS = "/data4/home/aoyue/vmap2/aaPlantGenetics/log_20200526";
@@ -260,8 +286,6 @@ public class FilterVCF2 {
             String logfileS = new File(logDirS,"log_" + new File(outfileS).getName().split(".gz")[0]).getAbsolutePath(); //不管是不是gz结尾，我们只取gz前的部分，妙！
             System.out.println("java -jar 028_extractVCF.jar " + infileS + " " + outfileS + " " + taxaListS + " > " + logfileS + " 2>&1 &");
         }
-
-
 
     }
 
@@ -378,8 +402,11 @@ public class FilterVCF2 {
 //        String taxaDepthDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/004_taxaDepth/ab";
 //        String taxaSummaryFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/004_taxaDepth/taxaDepth_ab.summary.txt";
 
-        String taxaDepthDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/004_taxaDepth/d";
-        String taxaSummaryFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/004_taxaDepth/taxaDepth_d.summary.txt";
+//        String taxaDepthDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/004_taxaDepth/d";
+//        String taxaSummaryFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/004_taxaDepth/taxaDepth_d.summary.txt";
+
+        String taxaDepthDirS = "/Users/Aoyue/Downloads/d";
+        String taxaSummaryFileS = "/Users/Aoyue/Downloads/d/taxaDepth_d.summary.txt";
 
         File[] fs = AoFile.getFileArrayInDir(taxaDepthDirS);
         Arrays.sort(fs);
@@ -414,8 +441,11 @@ public class FilterVCF2 {
 //        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/001_subsetVCF/ABsubgenome_tetra.vcf.gz";
 //        String taxaDepthDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/004_taxaDepth/ab";
 
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/001_subsetVCF/Dsubgenome_diploid.vcf.gz";
-        String taxaDepthDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/004_taxaDepth/d";
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/001_subsetVCF/Dsubgenome_diploid.vcf.gz";
+//        String taxaDepthDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/004_taxaDepth/d";
+
+        String infileS = "/Users/Aoyue/Downloads/chr005_subset.vcf.gz";
+        String taxaDepthDirS = "/Users/Aoyue/Downloads/d";
 
 
         try {

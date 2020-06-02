@@ -35,8 +35,38 @@ public class AoColor {
 //        String[] in = {"Africa",  "America" ,"Asia"   , "Europe"};
         String[] in = {"America" ,"Asia" ,   "Europe" };
 
-        AoColor.continent(in);
+        AoColor.continent_5(in);
 
+    }
+
+    /**
+     *
+     * @param input
+     * @return
+     */
+
+    public static String continent_ (String[] input){
+        String out=null;
+
+        HashMap<String,String> hm = new HashMap<>();
+        String[] value = {"#7dbde8", "#7B241C", "#dbb3ff","#FF9900", "#82C782"};
+        String[] key = {"Oceania","Africa","America","Europe","Asia"};
+        for (int i = 0; i < value.length; i++) {
+            hm.put(key[i],value[i]);
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("c(");
+        for (int i = 0; i < input.length; i++) {
+            String col = hm.get(input[i]);
+            sb.append("'").append(col).append("',");
+        }
+        sb.deleteCharAt(sb.length()-1);
+        sb.append(")");
+        out = sb.toString();
+        System.out.println(out);
+
+        return out;
     }
 
 
@@ -50,7 +80,7 @@ public class AoColor {
      * @return
      */
 
-    public static String continent (String[] input){
+    public static String continent_5 (String[] input){
         String out=null;
 
         HashMap<String,String> hm = new HashMap<>();
