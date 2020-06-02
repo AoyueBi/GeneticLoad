@@ -764,12 +764,124 @@ public class CountSites {
 
     /**
      *
+     *  将抽样的42条染色体按照ABsub合并,忽略 5 6 11 12 等D基因组的文件，
+     *  必须是42条染色体都存在!!!
+     * @param infileDirS
+     * @param outfileDirS
+     */
+    public static void mergeVCFtoABsubgenome(String infileDirS, String outfileDirS) {
+
+        //建立1-42 一一对应的亚基因组的关系，根据chr001找到chr.Asub
+        int[] arrab = {1, 2, 7, 8, 13, 14, 19, 20, 25, 26, 31, 32, 37, 38,3, 4, 9, 10, 15, 16, 21, 22, 27, 28, 33, 34, 39, 40};
+        int[] arrd = {5, 6, 11, 12, 17, 18, 23, 24, 29, 30, 35, 36, 41, 42};
+        HashMap<Integer, Integer> hml = new HashMap<>();
+        Arrays.sort(arrab);
+        Arrays.sort(arrd);
+        for (int i = 0; i < arrab.length; i++) {
+            hml.put(arrab[i],0);
+        }
+//        for (int i = 0; i < arrd.length; i++) {
+//            hml.put(arrd[i], 1);
+
+//        }
+
+        //列出文件,并加入对应的文件列表 ## 解释：3个数组，一个数组是一个文件列表，里面含有每个亚基因组对应的文件列表
+        List<File>[] fs = new List[1];
+        for (int i = 0; i < fs.length; i++) { // 一定记得初始化
+            fs[i] = new ArrayList<>();
+        }
+        File[] fall = AoFile.getFileArrayInDir(infileDirS);
+        Arrays.sort(fall);
+        for (int i = 0; i < fall.length; i++) {
+            String name = fall[i].getName().substring(3,6);
+            int chr = Integer.parseInt(name);
+            /**
+             * 去掉D基因组14个文件的合并
+             */
+            int indexd = Arrays.binarySearch(arrd,chr);
+            if (indexd > -1)continue;
+            int index = hml.get(chr);
+            fs[index].add(fall[i]);
+        }
+
+        //设定输出文件的路径及名字
+        String[] outfileS = new String[1];
+        outfileS[0] = new File(outfileDirS, "ABsubgenome.vcf").getAbsolutePath();
+//        outfileS[1] = new File(outfileDirS, "Dsubgenome.vcf").getAbsolutePath();
+
+        //开始进行写文件
+        BufferedWriter[] bws = new BufferedWriter[1];
+        for (int i = 0; i < bws.length; i++) {
+            bws[i] = AoFile.writeFile(outfileS[i]);
+        }
+
+        //根据亚基因组文件列表，确定输出文件的index
+        HashMap<List<File>,BufferedWriter> hmFilesubOutS = new HashMap<>();
+        hmFilesubOutS.put(fs[0],bws[0]);
+//        hmFilesubOutS.put(fs[1],bws[1]);
+
+
+        List<List<File>> fsSubList = Arrays.asList(fs); //表明数组是list类型，list又是file类型
+        fsSubList.stream().forEach(p ->{ // p是一个list
+
+            try{
+                //先写表头
+                String infileS = p.get(0).getAbsolutePath();
+                BufferedWriter bw = hmFilesubOutS.get(p);
+                BufferedReader br = AoFile.readFile(infileS);
+                String temp;
+                while ((temp = br.readLine()) != null) {
+                    if (temp.startsWith("#")) {
+                        bw.write(temp);
+                        bw.newLine();
+                    }
+                }
+                br.close();
+
+                int total = 0;
+                for (int i = 0; i < p.size(); i++) {
+                    br = AoFile.readFile(p.get(i).getAbsolutePath());
+                    int cnt =0;
+                    while ((temp = br.readLine()) != null) {
+                        if (temp.startsWith("#")) {
+
+                        } else {
+                            cnt++;
+                            StringBuilder sb = new StringBuilder();
+                            sb.append(temp);
+                            bw.write(sb.toString());
+                            bw.newLine();
+
+                        }
+                    }
+                    total = total + cnt;
+                    System.out.println(cnt + "\tsnps in " + p.get(i).getName());
+
+                }
+                System.out.println(total + "\tsnps totally, mergevcf pipeline is completed\t");
+                System.out.println("************************************************************");
+                br.close();
+                bw.flush();
+                bw.close();
+
+            }catch (Exception e) {
+                e.printStackTrace();
+                System.exit(1);
+
+            }
+
+        });
+    }
+
+
+    /**
+     *
      *  将抽样的42条染色体按照ABsub Dsub 合并
      *  必须是42条染色体都存在
      * @param infileDirS
      * @param outfileDirS
      */
-    public void mergeVCFtoAB_Dsubgenome(String infileDirS, String outfileDirS) {
+    public static void mergeVCFtoAB_Dsubgenome(String infileDirS, String outfileDirS) {
 
         //建立1-42 一一对应的亚基因组的关系，根据chr001找到chr.Asub
         int[] arrab = {1, 2, 7, 8, 13, 14, 19, 20, 25, 26, 31, 32, 37, 38,3, 4, 9, 10, 15, 16, 21, 22, 27, 28, 33, 34, 39, 40};
@@ -875,7 +987,7 @@ public class CountSites {
      * @param infileDirS
      * @param outfileDirS
      */
-    public void mergeVCFbysubgenome(String infileDirS, String outfileDirS) {
+    public static void mergeVCFbysubgenome(String infileDirS, String outfileDirS) {
 
         //建立1-42 一一对应的亚基因组的关系，根据chr001找到chr.Asub
         int[] arra = {1, 2, 7, 8, 13, 14, 19, 20, 25, 26, 31, 32, 37, 38};
@@ -3377,7 +3489,7 @@ public class CountSites {
      * @param infileS
      * @param outfileS
      */
-    public void  mergeChr1and2txt_int(String infileS, String outfileS) {
+    public static void  mergeChr1and2txt_int(String infileS, String outfileS) {
         String[] chr = {"1A", "1B", "1D", "2A", "2B", "2D", "3A", "3B", "3D", "4A", "4B", "4D", "5A", "5B", "5D", "6A", "6B", "6D", "7A", "7B", "7D"};
         int[] cnts = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21};
         HashMap<Integer, String> hmcntchr = new HashMap<>();

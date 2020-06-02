@@ -29,7 +29,7 @@ public class GeneticLoadEntrance {
 
         //ternary plot analysis
 //        this.geneExpression();
-        this.rebuildVCF();
+//        this.rebuildVCF();
 
     }
 
@@ -129,7 +129,9 @@ public class GeneticLoadEntrance {
 //        new GeneticLoadEntrance(args);
 //        new CountSites().filterAllele(args[0], args[1]);
 //        new FilterVCF2().filter_singleThread(args[0], args[1]);
-
+//        CountSites.mergeVCFbysubgenome(args[0], args[1]);
+//        CountSites.mergeVCFtoABsubgenome(args[0], args[1]);
+//        CountSites.mergeVCFtoAB_Dsubgenome(args[0], args[1]);
 
 
         System.out.println(new SimpleDateFormat().format(new Date()) + "\tend.");

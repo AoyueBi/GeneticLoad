@@ -49,6 +49,7 @@ public class FilterVCF2 {
          */
 //        this.modifyVMap2(); //修改名字
 //        new CountSites().mergeChr1and2txt_int("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/029_countSiteSummary/002_vmap2.0/log_043_countSitesinFastCallformat_fixVMap2.0_20200522.txt","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/029_countSiteSummary/002_vmap2.0/CountVariants_fixVMap2.0_20200522.txt");
+//        CountSites.mergeChr1and2txt_int("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/029_countSiteSummary/002_vmap2.0/log_043_countSitesinFastCallformat_fixVMap2.0_20200601.txt","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/029_countSiteSummary/002_vmap2.0/CountVariants_fixVMap2.0_202006.txt");
 //        this.bgzip();
 //        this.sortTaxaName();
 
@@ -56,7 +57,7 @@ public class FilterVCF2 {
          *  VCF quality control
          */
 
-//        this.mergeVCF();
+        this.mergeVCF();
 //        this.QC();
 //        this.mergeCheckFile();
 //        this.getBinTable();
@@ -200,13 +201,7 @@ public class FilterVCF2 {
 
 
 
-    /**
-     * VCF quality control
-     * 先对合并的VCF进行群体的变异数目统计，再进行拆分群体 vcf
-     * step 1: sample data all genome 0.001 即241K的数据 and then merge all
-     * step 2:
-     * step 2: abd ab d   Site: MAF miss heter depth  Taxa: Miss Heter
-     */
+
 
 
     //java -Xms50g -Xmx200g -jar 028_extractVCF.jar /data4/home/aoyue/vmap2/genotype/mergedVCF/011_VMapII/chr001_vmap2.1.vcf /data4/home/aoyue/vmap2/genotype/mergedVCF/012_VCFbyPop/001_byPloid/hexaploid/chr001_vmap2.1_hexaploid.vcf /data4/home/aoyue/vmap2/analysis/000_taxaList/BreadWheat_S419.txt > log_028/log_extractVCF_chr001_hexaploid20191107.txt 2>&1 &
@@ -633,6 +628,14 @@ public class FilterVCF2 {
 
     }
 
+    /**
+     * VCF quality control
+     * 先对合并的VCF进行群体的变异数目统计，再进行拆分群体 vcf
+     * step 1: sample data all genome 0.001 即241K的数据 and then merge all
+     * step 2:
+     * step 2: abd ab d   Site: MAF miss heter depth  Taxa: Miss Heter
+     */
+
 
     /**
      * 将生成的以site和taxa为单位的质控的结果进行合并，使六倍体，四倍体，二倍体在一个文件中
@@ -729,9 +732,10 @@ public class FilterVCF2 {
 
     public void mergeVCF(){
 
-//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/022_subsetVCF/001_singleChr0.001";
-//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/015_subesetVCF/singleChr";
-//        String infileDirS = "/Users/Aoyue/Documents/001_singleChr0.001";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/022_subsetVCF/001_singleChr0.001"; //这是做的测试！
+//        String outfileDirS = "/Users/Aoyue/Documents/test";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/015_subesetVCF/singleChr";  //这是做的测试！
+//        String infileDirS = "/Users/Aoyue/Documents/001_singleChr0.001"; //这是做的测试！
 //        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/001_subsetVCF";
 
 //        String infileDirS = "/data4/home/aoyue/vmap2/analysis/025_subsetVCF/001_fromVMap2.0_singleChr0.001";
@@ -741,9 +745,11 @@ public class FilterVCF2 {
 //        new CountSites().mergeVCFtoAB_Dsubgenome(infileDirS,outfileDirS);
 //        new CountSites().mergeVCFtoAandBsubgenome(infileDirS,outfileDirS);
 
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/001_subsetVCF";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/temp/ABDsubgenome_hexa.vcf";
-        new CountSites().mergesubsetVCF(infileDirS,outfileS);
+//        CountSites.mergeVCFtoABsubgenome(infileDirS,outfileDirS);
+
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/001_subsetVCF";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/temp/ABDsubgenome_hexa.vcf";
+//        new CountSites().mergesubsetVCF(infileDirS,outfileS);
     }
 
 
