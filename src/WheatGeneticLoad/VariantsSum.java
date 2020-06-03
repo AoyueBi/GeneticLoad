@@ -27,7 +27,18 @@ import java.util.*;
  */
 public class VariantsSum {
 
+    /**
+     * 2020年又重新做了一批VMap2,即根据老师写的PopDepth程序计算的每个位点的深度，然后进行70%的密度过滤，取六四二倍体的交集点作为Pos库，
+     */
+
+    public void variantsSumFromRebuildVCF(){
+
+    }
+
     public VariantsSum() {
+
+        this.variantsSumFromRebuildVCF();
+
 //        this.mkSNPsummary("/data4/home/aoyue/vmap2/genotype/mergedVCF/002_biMAF0.005VCF/", "/data4/home/aoyue/vmap2/analysis/015_annoDB/001_step1/");
         //this.addAncestralAllele("/Users/Aoyue/Documents/out", "/Users/Aoyue/Documents/out1", "/Users/Aoyue/Documents/out2");
         //this.scriptAddAncAllele();
@@ -121,7 +132,7 @@ public class VariantsSum {
          */
 
 //        new CountSites().mergeTxt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/014_merge","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/014_merge014/chrAll_anno_original.txt.gz");
-        this.countDeleteriousSNPs_basedSubgenome();
+//        this.countDeleteriousSNPs_basedSubgenome();
 
         /**
          * 检查原文件中有没有 同义突变是值小于0.05的   有！！！
@@ -141,10 +152,14 @@ public class VariantsSum {
          */
 
 //        this.calIndivDeleteriousProportion();
+
+
         
 
 
     }
+
+
 
 
     public void calIndivDeleteriousProportion(){

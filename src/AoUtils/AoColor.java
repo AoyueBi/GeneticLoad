@@ -29,13 +29,17 @@ public class AoColor {
 //        String[] in = {"Ae.tauschii","Cultivar","Landrace","OtherHexaploid"};
 //        String[] in = {"Domesticated_emmer","Free_threshing_tetraploid","OtherTetraploid","Wild_emmer"};
 
-//        AoColor.subspecies(in);
+        String[] in = {"Ae.tauschii", "Wild_emmer", "Domesticated_emmer","Free_threshing_tetraploid", "OtherTetraploid","Landrace","Cultivar","OtherHexaploid" };
+        AoColor.subspecies(in);
+
 
 //        String[] in = {"Africa" , "America" ,"Asia" ,   "Europe" , "Oceania"};
-//        String[] in = {"Africa",  "America" ,"Asia"   , "Europe"};
-        String[] in = {"America" ,"Asia" ,   "Europe" };
-
-        AoColor.continent_5(in);
+//        String[] in = {"Africa", "America", "Central and South Asia", "East Asia", "Europe", "Oceania", "Western Asia"};
+//        String[] in = {"Africa", "America", "Central and South Asia", "East Asia", "Europe", "Western Asia"};
+//        String[] in = {"America" ,"Europe" , "Western Asia"};
+//        AoColor.continent_5(in);
+//        AoColor.continent_7_shape(in);
+//        AoColor.continent_7(in);
 
     }
 
@@ -45,12 +49,42 @@ public class AoColor {
      * @return
      */
 
-    public static String continent_ (String[] input){
+    public static String continent_7_shape (String[] input){
+        String out=null;
+
+        HashMap<String,Integer> hm = new HashMap<>();
+        Integer[] value = {7,16,8,15,6,18,17};
+        String[] key = {"Oceania","Africa","America","Europe","East Asia","Central and South Asia","Western Asia"};
+        for (int i = 0; i < value.length; i++) {
+            hm.put(key[i],value[i]);
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("c(");
+        for (int i = 0; i < input.length; i++) {
+            int shape = hm.get(input[i]);
+            sb.append("").append(shape).append(",");
+        }
+        sb.deleteCharAt(sb.length()-1);
+        sb.append(")");
+        out = sb.toString();
+        System.out.println(out);
+
+        return out;
+    }
+
+    /**
+     *
+     * @param input
+     * @return
+     */
+
+    public static String continent_7 (String[] input){
         String out=null;
 
         HashMap<String,String> hm = new HashMap<>();
-        String[] value = {"#7dbde8", "#7B241C", "#dbb3ff","#FF9900", "#82C782"};
-        String[] key = {"Oceania","Africa","America","Europe","Asia"};
+        String[] value = {"#7dbde8", "#7B241C", "#dbb3ff","#FF9900","#fc6e6e","#A9A9A9", "#82C782"};
+        String[] key = {"Oceania","Africa","America","Europe","East Asia","Central and South Asia","Western Asia"};
         for (int i = 0; i < value.length; i++) {
             hm.put(key[i],value[i]);
         }
@@ -231,7 +265,6 @@ public class AoColor {
 
     public static void main(String[] args) {
         new AoColor();
-
     }
 
 }

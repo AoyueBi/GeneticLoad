@@ -38,7 +38,8 @@ public class GeneticLoadEntrance {
 //        new ScriptHapscanner2();
 //        new AoHeterozygosity();
 //        new  FilterVCF2();
-        new GermplasmInfo();
+//        new GermplasmInfo();
+        new VariantsSum();
 
     }
 

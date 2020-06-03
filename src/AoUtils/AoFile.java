@@ -27,8 +27,20 @@ public class AoFile {
         
     }
 
-    public static void mkOutfile(){
+    /**
+     * 根据输入文件，自动创建一个文件，该文件目录与输入文件的父目录相同，目录名字为A_out,文件名字和输入文件名字相同。
+     * @param infileS
+     * @return
+     */
+    public static String mkOutfileS(String infileS){
+        String outfileS = null;
+        String outfileDirS = new File(infileS).getParent(); //获取输入文件的目录
+        outfileDirS = new File(outfileDirS).getParent(); //根据输入文件的目录获取上一级父目录；
+        outfileDirS = outfileDirS + "/A_out"; //根据父目录路径 创建输出文件目录
+        new File(outfileDirS).mkdirs(); //创建输出文件目录
+        outfileS = new File(outfileDirS,new File(infileS).getName()).getAbsolutePath();
 
+        return outfileS;
     }
 
 

@@ -30,8 +30,8 @@ public class GermplasmInfo {
 //        this.mergeTxt();
 
 //        this.addColumntoTaxaDB();
-//        this.addGroup();
-        this.summaryGroupbyContinent();
+        this.addGroup();
+//        this.summaryGroupbyContinent();
 
     }
 
@@ -39,8 +39,78 @@ public class GermplasmInfo {
      *
      */
     public void summaryGroupbyContinent(){
-        String infileS = "";
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/taxa_InfoDB.txt";
+        HashMap<String,String> hmPartConti2newConti = new HashMap<>();
+        String value = null;
+        AoFile.readheader(infileS);
+        String[] partContinentArray = AoFile.getStringArraybySet(infileS,8);
+        for (int i = 0; i < partContinentArray.length; i++) {
+            System.out.println(partContinentArray[i]);
+            String key = partContinentArray[i];
+            if (key.equals("Africa")){
+                value = "Africa";
+                hmPartConti2newConti.put(key,value);
+            }
+            if (key.equals("Central Asia")){
+                value = "Central and South Asia";
+                hmPartConti2newConti.put(key,value);
+            }
+            if (key.equals("Central Europe")){
+                value = "Europe";
+                hmPartConti2newConti.put(key,value);
+            }
+            if (key.equals("East Asia")){
+                value = "East Asia";
+                hmPartConti2newConti.put(key,value);
+            }
+            if (key.equals("Eastern Europe")){
+                value = "Europe";
+                hmPartConti2newConti.put(key,value);
+            }
+            if (key.equals("NA")){
+                value = "NA";
+                hmPartConti2newConti.put(key,value);
+            }
+            if (key.equals("North America")){
+                value = "America";
+                hmPartConti2newConti.put(key,value);
+            }
+            if (key.equals("Northern Europe")){
+                value = "Europe";
+                hmPartConti2newConti.put(key,value);
+            }
+            if (key.equals("Oceania")){
+                value = "Oceania";
+                hmPartConti2newConti.put(key,value);
+            }
+            if (key.equals("South America")){
+                value = "America";
+                hmPartConti2newConti.put(key,value);
+            }
+            if (key.equals("South Asia")){
+                value = "Central and South Asia";
+                hmPartConti2newConti.put(key,value);
+            }
+            if (key.equals("Southeast Europe")){
+                value = "Europe";
+                hmPartConti2newConti.put(key,value);
+            }
+            if (key.equals("Southern Europe")){
+                value = "Europe";
+                hmPartConti2newConti.put(key,value);
+            }
+            if (key.equals("Western Asia")){
+                value = "Western Asia";
+                hmPartConti2newConti.put(key,value);
+            }
+            if (key.equals("Western Europe")){
+                value = "Europe";
+                hmPartConti2newConti.put(key,value);
+            }
+        }
+        System.out.println(partContinentArray.length);
 
+        AoFile.addColumbyString(infileS,8,hmPartConti2newConti,"Continent_by7");
 
     }
 
@@ -53,13 +123,15 @@ public class GermplasmInfo {
 
         String dbfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/taxa_InfoDB.txt";
         AoFile.readheader(dbfileS);
+//        String taxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/032_pca/001_input/002_matrix_Asub.txt";
+//        String taxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/032_pca/001_input/002_matrix_Bsub.txt";
 //        String taxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/032_pca/001_input/002_matrix_Dsub.txt";
 //        String taxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/032_pca/001_input/003_matrix_hexa.txt";
 //        String taxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/032_pca/001_input/004_matrix_tetra.txt";
         String taxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/032_pca/001_input/005_matrix_DD.txt";
-        int[] columnIndexes = {3,8,10,15};
+        int[] columnIndexes = {3,8,10,12,15,16};
         HashMap<String,String>[] hm = new AoFile().getHashMapsStringKey(dbfileS,0,columnIndexes);
-        AoFile.addColumsbyString(taxaFileS,0,hm,"\tGenomeType\tPart_Continent\tContinent_forTree\tSubspecies");
+        AoFile.addColumsbyString(taxaFileS,0,hm,"\tGenomeType\tPart_Continent\tContinent_forTree\tIndexforMutationBurden\tSubspecies\tContinent_by7");
 
     }
 
