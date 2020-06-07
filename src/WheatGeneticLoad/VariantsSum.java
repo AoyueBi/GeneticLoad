@@ -38,7 +38,7 @@ public class VariantsSum {
      */
 
     public void variantsSumFromRebuildVCF(){
-        this.extractInfoFromVMap2();
+//        this.extractInfoFromVMap2();
 //        this.mkExonVCF();
 //        this.mkExonAnnotation(); //弃用
         this.mkExonAnnotation2();
@@ -164,6 +164,8 @@ public class VariantsSum {
                 e.printStackTrace();
             }
         });
+
+        // java -Xms50g -Xmx200g -jar PlantGenetics.jar > log_mkExonAnnotation2_20200607.txt 2>&1 &
 
     }
 
