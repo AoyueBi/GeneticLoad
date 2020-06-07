@@ -6,7 +6,11 @@
 package WheatGeneticLoad;
 
 import AoUtils.AoFile;
+import AoUtils.CalVCF;
 import AoUtils.CountSites;
+import gnu.trove.list.TIntList;
+import gnu.trove.set.hash.TIntHashSet;
+import pgl.graph.tSaw.TablesawUtils;
 import pgl.infra.anno.gene.GeneFeature;
 import pgl.infra.range.Range;
 import gnu.trove.list.array.TByteArrayList;
@@ -15,6 +19,8 @@ import gnu.trove.list.array.TIntArrayList;
 import pgl.infra.table.RowTable;
 import pgl.infra.utils.IOUtils;
 import pgl.infra.utils.PStringUtils;
+import tech.tablesaw.api.IntColumn;
+import tech.tablesaw.api.Table;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -32,12 +38,371 @@ public class VariantsSum {
      */
 
     public void variantsSumFromRebuildVCF(){
+        this.extractInfoFromVMap2();
+//        this.mkExonVCF();
+//        this.mkExonAnnotation(); //弃用
+        this.mkExonAnnotation2();
 
+
+    }
+
+
+    /**
+     * 如何根据Pos直接找出对应的基因？
+     * 第一步：将pgf文件的基因按照染色体的位置进行排序；
+     * 第二步：根据chr pos，使用getGeneIndex方法得到基因的index
+     * 第三步：使用getGeneName方法，得到基因的名字；
+     * 第四步：使用getLongestTranscriptIndex方法，得到该基因最长转录本的index;
+     * 第五步：使用getTranscriptName方法，根据基因的index和最长转录本的index得到转录本的名字；
+     */
+    public void mkExonAnnotation2(){
+        int subLength = 200; //取VCF文件的前200个字符串
+        String vmapDirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/002_exonSNPVCF";
+        String outDirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/003_exonSNPAnnotation";
+        File[] fs = AoFile.getFileArrayInDir(vmapDirS);
+        List<File> vmapList = Arrays.asList(fs);
+        Collections.sort(vmapList);
+        //将高置信度的基因文件读进表格
+        String geneHCFileS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/001_geneHC/geneHC.txt";
+        RowTable<String> t = new RowTable<>(geneHCFileS);
+        //将pgf文件新建对象，并通过基因名字排列
+        String geneFeatureFileS = "/data1/publicData/wheat/annotation/gene/v1.1/wheat_v1.1_Lulab.pgf"; //modify
+        GeneFeature gf = new GeneFeature(geneFeatureFileS);
+        gf.sortGeneByName();
+
+        vmapList.parallelStream().forEach(f -> {
+            int chrID = Integer.parseInt(f.getName().substring(3, 6));
+            List<String> geneList = new ArrayList<>();
+            List<String> tranList = new ArrayList<>();
+            TIntArrayList startLists = new TIntArrayList();
+            TIntArrayList endLists = new TIntArrayList();
+
+
+            for (int i = 0; i < t.getRowNumber() ; i++) {
+                int currentChr = Integer.parseInt(t.getCell(i, 2));
+                if (currentChr < chrID) continue; //因为文件是按照chrpos排列的，所以表格中chr小于当前文件的chr,就继续循环
+                else if (currentChr > chrID) break; //表格中chr大于当前的chr，就终止循环，说明已经建立好基因列表
+                geneList.add(t.getCell(i, 0));
+                tranList.add(t.getCell(i, 1));
+                startLists.add(Integer.parseInt(t.getCell(i,3)));
+                endLists.add(Integer.parseInt(t.getCell(i,4)));
+            }
+
+//            //这里开始发挥pgf文件的作用，对建立的基因列表进行整条外显子集合的捕获
+//            int geneIndex = -1;
+//            List<Range> allexonList = new ArrayList<>();
+//            for (int i = 0; i < geneList.size(); i++) {
+//                geneIndex = gf.getGeneIndex(geneList.get(i)); //必须是pgf文件按照基因名字排序，才能根据基因名字查找基因索引
+//                for (int j = 0; j < gf.getTranscriptNumber(geneIndex); j++) { //该基因的所有转录本的循环
+//                    if (!tranList.get(i).equals(gf.getTranscriptName(geneIndex, j))) continue; //验证对应的trans是否和pgf文件中的最长转录本一致，不一致，程序退出
+//                    List<Range> exonList = gf.getExonList(geneIndex, j); //根据基因的index和最长转录本的Index j，找到基因的外显子集合，每个元素是一个range
+//                    allexonList.addAll(exonList);
+//                }
+//            }
+//            //根据外显子range的集合，找到每个range的起始的集合和结束的集合
+//            Collections.sort(allexonList);
+//
+            int[] starts = startLists.toArray(new int[startLists.size()]);
+            int[] ends = endLists.toArray(new int[endLists.size()]);
+
+            String outfileS = new File(outDirS, f.getName().replaceFirst("_exon_vmap2.1.vcf.gz", "_SNP_anno.txt")).getAbsolutePath();
+            int[] dc = {5, 6, 11, 12, 17, 18, 23, 24, 29, 30, 35, 36, 41, 42};
+            Arrays.sort(dc);
+            StringBuilder sb = new StringBuilder();
+            if (Arrays.binarySearch(dc, chrID) < 0) {
+                sb.append("ID\tChr\tPos\tRef\tAlt\tMajor\tMinor\tMaf\tAAF_ABD\tAAF_AB\tTranscript");
+            } else {
+                sb.append("ID\tChr\tPos\tRef\tAlt\tMajor\tMinor\tMaf\tAAF_ABD\tAAF_D\tTranscript");
+            }
+            try {
+                BufferedReader br = AoFile.readFile(f.getAbsolutePath());
+                BufferedWriter bw = AoFile.writeFile(outfileS);
+                bw.write(sb.toString());
+                bw.newLine();
+                String temp = null;
+                List<String> l = null;
+                List<String> ll = null;
+                List<String> lll = null;
+                String info = null;
+                int currentPos = -1;
+                int posIndex = -1;
+                while ((temp = br.readLine()) != null) {
+                    if (temp.startsWith("#")) continue;
+                    sb.setLength(0);
+                    int currentSub = subLength;
+                    if (temp.length() < subLength) {
+                        currentSub = temp.length();
+                    }
+                    l = PStringUtils.fastSplit(temp.substring(0, currentSub));
+                    currentPos = Integer.parseInt(l.get(1));
+                    posIndex = Arrays.binarySearch(starts,currentPos);
+                    if (posIndex < 0) {
+                        posIndex = -posIndex - 2;
+                    }
+                    if (posIndex < 0) continue;
+                    if (currentPos > ends[posIndex]) continue;
+                    String trans = tranList.get(posIndex);
+                    sb.append(l.get(2)).append("\t").append(l.get(0)).append("\t").append(l.get(1)).append("\t").append(l.get(3));
+                    sb.append("\t").append(l.get(4)).append("\t");
+                    ll = PStringUtils.fastSplit(l.get(7), ";");
+                    lll = PStringUtils.fastSplit(ll.get(2).replaceFirst("AD=", ""), ",");
+                    if (Integer.parseInt(lll.get(0)) > Integer.parseInt(lll.get(1))) {
+                        sb.append(l.get(3)).append("\t").append(l.get(4)).append("\t");
+                    } else {
+                        sb.append(l.get(4)).append("\t").append(l.get(3)).append("\t");
+                    }
+                    sb.append(ll.get(6).split("=")[1]).append("\t").append(ll.get(7).split("=")[1]).append("\t").append(ll.get(8).split("=")[1]);
+                    sb.append("\t").append(trans);
+                    bw.write(sb.toString());
+                    bw.newLine();
+                }
+                bw.flush();
+                bw.close();
+                br.close();
+                System.out.println(f.getAbsolutePath() + " is completed.");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+    }
+
+    /**
+     *
+     */
+    public void getPosTransFile(){
+
+    }
+    public void mkExonAnnotation() {
+        String inDirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/001_genicSNPByChr";
+        String outDirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/003_exonSNPAnnotation";
+        String exonVCFDirS = "/data4/home/aoyue/vmap2/feilu/002_genicSNP/002_exonSNPVCF";
+        List<File> fList = AoFile.getFileListInDir(inDirS);
+        fList.parallelStream().forEach(f -> { //chr001_vmap2.1_genicSNP.txt.gz
+            String name = f.getName().substring(3,6);
+            int chr = Integer.parseInt(name);
+            String outfileS = f.getName().split("_")[0]+"_SNP_anno.txt.gz";
+            outfileS = new File (outDirS, outfileS).getAbsolutePath();
+            String exonVCFfileS = new File(exonVCFDirS,"chr" + name + "_exon_vmap2.1.vcf.gz").getAbsolutePath();
+            TIntArrayList posList = CalVCF.extractVCFPos(exonVCFfileS);
+            posList.sort();
+            try {
+                BufferedReader br = AoFile.readFile(f.getAbsolutePath());
+                BufferedWriter bw = AoFile.writeFile(outfileS);
+                String header = br.readLine();
+                bw.write(header);bw.newLine();
+                String temp = null;
+                List<String> l = new ArrayList<>();
+                int cnt = 0;
+                while ((temp = br.readLine()) != null) {
+                    l = PStringUtils.fastSplit(temp);
+                    int pos = Integer.parseInt(l.get(2));
+                    int index = posList.binarySearch(pos);
+                    if (index < 0)continue;
+                    cnt++;
+                    bw.write(temp);
+                    bw.newLine();
+                }
+                bw.flush();
+                bw.close();
+                br.close();
+                System.out.println(f.getName() + " is completed at " + outfileS + " with\t" + cnt + "SNPs");
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+            //java -Xms50g -Xmx200g -jar PlantGenetics.jar > log_mkExonAnnotation_20200606.txt 2>&1 &
+            //cat /data4/home/aoyue/vmap2/aaPlantGenetics/log_mkExonAnnotation_20200606.txt
+
+        });
+
+    }
+
+    /**
+     * 提取高置信度的基因的外显子VCF文件
+     */
+    public void mkExonVCF () {
+        String vmapDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/103_VMap2.1"; //modify
+        String geneFeatureFileS = "/data1/publicData/wheat/annotation/gene/v1.1/wheat_v1.1_Lulab.pgf"; //modify
+        String hcGeneFileS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/001_geneHC/geneHC.txt"; //modify
+        String outputDirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/002_exonSNPVCF"; //modify
+        GeneFeature gf = new GeneFeature(geneFeatureFileS);
+
+        gf.sortGeneByName();
+        RowTable<String> t = new RowTable<>(hcGeneFileS);
+        TIntHashSet chrSet = new TIntHashSet(t.getColumnAsIntArray(2)); //get chr的set集合
+        List<Integer> chrList = new ArrayList<>();
+        for (int i = 0; i < chrSet.size(); i++) {
+            chrList.add(i+1);
+        }
+        chrList.parallelStream().forEach(chrID -> {
+            String inputVCF = new File (vmapDirS, "chr"+PStringUtils.getNDigitNumber(3, chrID)+"_vmap2.1.vcf").getAbsolutePath();
+            String outputVCF = new File (outputDirS, "chr"+PStringUtils.getNDigitNumber(3, chrID)+"_exon_vmap2.1.vcf").getAbsolutePath();
+            List<String> geneList = new ArrayList<>();
+            List<String> tranList = new ArrayList<>();
+            //获取当前 chr 包含的所有 gene 和 trans
+            for (int i = 0; i < t.getRowNumber(); i++) {
+                int currentChr = Integer.parseInt(t.getCell(i, 2));
+                if (currentChr < chrID) continue;
+                else if (currentChr > chrID) break;
+                geneList.add(t.getCell(i, 0));
+                tranList.add(t.getCell(i, 1));
+            }
+
+            //获取该染色体的每个基因对应的最长转录本的exonlist,然后加入大库的 all exon list。
+            int geneIndex = -1;
+            List<Range> allexonList = new ArrayList<>();
+            for (int i = 0; i < geneList.size(); i++) {
+                geneIndex = gf.getGeneIndex(geneList.get(i));
+                for (int j = 0; j < gf.getTranscriptNumber(geneIndex); j++) { //该基因的所有转录本的循环
+                    if (!tranList.get(i).equals(gf.getTranscriptName(geneIndex, j))) continue; //验证对应的trans是否和pgf文件中的最长转录本一致，不一致，程序退出
+                    List<Range> exonList = gf.getExonList(geneIndex, j);
+                    allexonList.addAll(exonList);
+                }
+            }
+            Collections.sort(allexonList);
+            int[] starts = new int[allexonList.size()];
+            int[] ends = new int[allexonList.size()];
+            for (int i = 0; i < starts.length; i++) {
+                starts[i] = allexonList.get(i).getRangeStart();
+                ends[i] = allexonList.get(i).getRangeEnd();
+            }
+            try {
+                BufferedReader br = AoFile.readFile(inputVCF);
+                BufferedWriter bw = AoFile.writeFile(outputVCF);
+                String temp = null;
+                while ((temp = br.readLine()).startsWith("##")) {
+                    bw.write(temp); bw.newLine();
+                }
+                bw.write(temp); bw.newLine(); //#CHROM 这一行
+                List<String> l = new ArrayList<>();
+                int index = -1;
+                int pos = -1;
+                while ((temp = br.readLine()) != null) {
+                    l = PStringUtils.fastSplit(temp.substring(0, 100));
+                    pos = Integer.parseInt(l.get(1));
+                    index = Arrays.binarySearch(starts, pos);
+                    if (index < 0) index = -index - 2; //zai
+                    if (index < 0) continue;
+                    if (pos < ends[index]) {
+                        bw.write(temp);bw.newLine();
+                    }
+                }
+                bw.flush();
+                bw.close();
+                br.close();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+            System.out.println(chrID+"  mkExonVCF");
+        });
+        //java -Xms50g -Xmx200g -jar PlantGenetics.jar > log_mkExonVCF_20200606.txt 2>&1 &
+    }
+
+    /**
+     * 提取VMap2的基因区间的基本信息
+     */
+    public void extractInfoFromVMap2 () {
+        int subLength = 200;
+        String outDirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/001_genicSNPByChr";
+        String vmapDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/103_VMap2.1";
+        File[] fs  = AoFile.getFileArrayInDir(vmapDirS);
+        List<File> vmapList = Arrays.asList(fs);
+        Collections.sort(vmapList);
+        String geneHCFileS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/001_geneHC/geneHC.txt";
+        AoFile.readheader(geneHCFileS);
+
+        Table t = TablesawUtils.readTsv(geneHCFileS);
+        System.out.println(t.structure());
+        t.sortAscendingOn("Chr", "TranStart");
+        IntColumn chrColumn = t.intColumn("chr");
+        int chrNum = chrColumn.countUnique(); //chr的个数
+        TIntList[] startLists = new TIntList[chrNum]; //list类型的数组，每个数组存放一堆list值
+        TIntList[] endLists = new TIntList[chrNum];
+        List<String>[] tranLists = new ArrayList[chrNum];
+        for (int i = 0; i < chrNum; i++) {
+            startLists[i] = new TIntArrayList();
+            endLists[i] = new TIntArrayList();
+            tranLists[i] = new ArrayList();
+        }
+
+        for (int i = 0; i < t.rowCount(); i++) {
+            startLists[Integer.parseInt(t.getString(i, 2))-1].add(Integer.parseInt(t.getString(i, 3)));
+            endLists[Integer.parseInt(t.getString(i, 2))-1].add(Integer.parseInt(t.getString(i, 4)));
+            tranLists[Integer.parseInt(t.getString(i, 2))-1].add(t.getString(i, 1));
+        }
+        vmapList.parallelStream().forEach(f -> {
+            int chrIndex = Integer.parseInt(f.getName().substring(3, 6))-1;
+            String outfileS = new File (outDirS, f.getName().replaceFirst("_vmap2.1.vcf", "_genicSNP.txt")).getAbsolutePath();
+            int[] dc = {5, 6, 11, 12, 17, 18, 23, 24, 29, 30, 35, 36, 41, 42};
+            Arrays.sort(dc);
+            StringBuilder sb = new StringBuilder();
+            if (Arrays.binarySearch(dc, chrIndex+1) < 0) {
+                sb.append("ID\tChr\tPos\tRef\tAlt\tMajor\tMinor\tMaf\tAAF_ABD\tAAF_AB\tTranscript");
+            }
+            else {
+                sb.append("ID\tChr\tPos\tRef\tAlt\tMajor\tMinor\tMaf\tAAF_ABD\tAAF_D\tTranscript");
+            }
+            try {
+                BufferedReader br = AoFile.readFile(f.getAbsolutePath());
+                BufferedWriter bw = AoFile.writeFile(outfileS);
+                bw.write(sb.toString());
+                bw.newLine();
+                String temp = null;
+                List<String> l = null;
+                List<String> ll = null;
+                List<String> lll = null;
+                String info = null;
+                int currentPos = -1;
+                int posIndex = -1;
+                while ((temp = br.readLine()) != null) {
+                    if (temp.startsWith("#"))continue;
+                    sb.setLength(0);
+                    int currentSub = subLength;
+                    if (temp.length() < subLength) {
+                        currentSub = temp.length();
+                    }
+                    l = PStringUtils.fastSplit(temp.substring(0, currentSub));
+                    currentPos = Integer.parseInt(l.get(1));
+                    posIndex = startLists[chrIndex].binarySearch(currentPos);
+                    if (posIndex < 0) {
+                        posIndex = -posIndex-2;
+                    }
+                    if (posIndex < 0) continue;
+                    if (currentPos >= endLists[chrIndex].get(posIndex)) continue;
+                    sb.append(l.get(2)).append("\t").append(l.get(0)).append("\t").append(l.get(1)).append("\t").append(l.get(3));
+                    sb.append("\t").append(l.get(4)).append("\t");
+                    ll = PStringUtils.fastSplit(l.get(7), ";");
+                    lll = PStringUtils.fastSplit(ll.get(2).replaceFirst("AD=", ""),",");
+                    if (Integer.parseInt(lll.get(0)) > Integer.parseInt(lll.get(1))) {
+                        sb.append(l.get(3)).append("\t").append(l.get(4)).append("\t");
+                    }
+                    else {
+                        sb.append(l.get(4)).append("\t").append(l.get(3)).append("\t");
+                    }
+                    sb.append(ll.get(6).split("=")[1]).append("\t").append(ll.get(7).split("=")[1]).append("\t").append(ll.get(8).split("=")[1]);
+                    sb.append("\t").append(tranLists[chrIndex].get(posIndex));
+                    bw.write(sb.toString());
+                    bw.newLine();
+                }
+                bw.flush();
+                bw.close();
+                br.close();
+                System.out.println(f.getAbsolutePath() + " is completed.");
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+        //在HPC上运行： java -Xms50g -Xmx200g -jar PlantGenetics.jar > log_extractInfoFromVMap2_20200606.txt 2>&1 &
     }
 
     public VariantsSum() {
 
         this.variantsSumFromRebuildVCF();
+//        new CountSites().mergeChr1Aand2A_bysubgenome();
 
 //        this.mkSNPsummary("/data4/home/aoyue/vmap2/genotype/mergedVCF/002_biMAF0.005VCF/", "/data4/home/aoyue/vmap2/analysis/015_annoDB/001_step1/");
         //this.addAncestralAllele("/Users/Aoyue/Documents/out", "/Users/Aoyue/Documents/out1", "/Users/Aoyue/Documents/out2");

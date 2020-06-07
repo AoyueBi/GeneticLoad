@@ -29,7 +29,7 @@ import pgl.infra.table.RowTable;
 public class ABvcfProcessor {
 
     public ABvcfProcessor() {
-//        new CountSites().filterAllele("/data4/home/aoyue/vmap2/analysis/001_rawvcf/ab/", "/data4/home/aoyue/vmap2/analysis/002_bivcf/ab/");
+//        new CountSites().filterSNPtoBi("/data4/home/aoyue/vmap2/analysis/001_rawvcf/ab/", "/data4/home/aoyue/vmap2/analysis/002_bivcf/ab/");
 //        this.subsetVCFRandomParallel();
 //        this.mergesubsetVCF();
 //        new Treetest().labels();

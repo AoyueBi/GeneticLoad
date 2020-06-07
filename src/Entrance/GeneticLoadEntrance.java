@@ -5,11 +5,9 @@
  */
 package Entrance;
 
-import AoUtils.CalVCF;
 import AoUtils.CountSites;
 import GermplasmInfo.GermplasmInfo;
 import Plot.PCA;
-import PopulationAnalysis.AoHeterozygosity;
 import WheatGeneticLoad.*;
 
 import java.text.SimpleDateFormat;
@@ -128,7 +126,7 @@ public class GeneticLoadEntrance {
 
         new GeneticLoadEntrance();
 //        new GeneticLoadEntrance(args);
-//        new CountSites().filterAllele(args[0], args[1]);
+//        new CountSites().filterSNPtoBi_parallel(args[0], args[1]);
 //        new FilterVCF2().filter_singleThread(args[0], args[1]);
 //        CountSites.mergeVCFbysubgenome(args[0], args[1]);
 //        CountSites.mergeVCFtoABsubgenome(args[0], args[1]);
@@ -153,7 +151,7 @@ public class GeneticLoadEntrance {
         //new CountSites().calSNPHetMissMaf(args[0], args[1]);
 //        new CountSites().countSitesinFastCallformat(args[0]);
 //        new CountSites().filterAlleleMaf(args[0], args[1]);
-//        new CountSites().filterAllele(args[0], args[1]);
+//        new CountSites().filterSNPtoBi(args[0], args[1]);
 //        new CountSites().subsetVCF(args[0], args[1],args[2]);
         //new FilterVCF().statVcfDepth_SD_PValue(args[0], args[1]);
         //new FilterVCF().statVcfDepth_SD_PValue_singlethread(args[0], args[1]);
@@ -203,7 +201,7 @@ public class GeneticLoadEntrance {
 //        CountSites.countSitesinFastCallformat(args[0]);
 
 //        new FilterVCF2().filter2(args[0]);
-//        new FilterVCF2().generateBiSNP(args[0], args[1]);
+
 
 
     }

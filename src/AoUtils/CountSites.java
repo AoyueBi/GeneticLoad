@@ -277,251 +277,6 @@ public class CountSites {
         return String.valueOf(a) + ";" + alt;
     }
 
-    /**
-     * 根据提供的taxa列表，从总的VCF文件中提取所需的VCF文件，并对没有分离的位点进行去除,没有分离位点包括全部都是./.的位点
-     *
-     * @param infileS
-     * @param outfileS
-     * @param taxalist 没有header，一行一个taxa名字
-     */
-    public void extractVCF(String infileS, String outfileS, String taxalist) {
-        List<String> lhexa = new ArrayList<>(); //六倍体的taxa名集合
-        List<Integer> indexHexa = new ArrayList<>();
-        try {
-            BufferedReader br = IOUtils.getTextReader(taxalist);
-            String temp = null;
-            while ((temp = br.readLine()) != null) {
-                lhexa.add(temp);
-            }
-            br.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-
-        String[] hexaArray = lhexa.toArray(new String[lhexa.size()]);
-        Arrays.sort(hexaArray);
-        System.out.println("Chr\tNum_MergedFileVariants\tNum_KeptVariants\tNum_RemovedSites\tNum_NosegregationSites\tNum_NogenotypeSites");
-        try {
-            BufferedReader br = null;
-            BufferedWriter bw = null;
-            if (infileS.endsWith(".vcf")) {
-                br = IOUtils.getTextReader(infileS);
-            } else if (infileS.endsWith(".vcf.gz")) {
-                br = IOUtils.getTextGzipReader(infileS);
-            }
-            if (outfileS.endsWith(".vcf")) {
-                bw = IOUtils.getTextWriter(outfileS);
-            } else if (outfileS.endsWith(".vcf.gz")) {
-                bw = IOUtils.getTextGzipWriter(outfileS);
-            }
-            String temp = null;
-            List<String> l = new ArrayList<>();
-
-            int cntRaw = 0; //1.总共的SNP数量
-            int cntKept = 0; //2.提取后保留的SNP数量
-            int cntRemoved = 0;  //3.去除的SNP数量
-            int cntNosegregation = 0; //4.没有分离位点的sites
-            int cntSiteNogeno = 0; //5.没有基因型的sites
-
-            while ((temp = br.readLine()) != null) {
-                int cntNogenotype = 0;
-                //***********************************************************//
-                if (temp.startsWith("##")) {//将注释信息写入表格中
-                    bw.write(temp);
-                    bw.newLine();
-                }
-                //***********************************************************//
-                //开始处理taxa的问题，先把所有taxa放入array中，记住在temp中的index
-                if (temp.startsWith("#CHROM")) {
-                    l = PStringUtils.fastSplit(temp);
-                    bw.write(l.get(0));
-                    for (int i = 1; i < 9; i++) { //先写前8列的信息
-                        bw.write("\t" + l.get(i));
-                    }
-
-                    for (int i = 9; i < l.size(); i++) {
-                        String taxon = l.get(i);
-                        int index1 = Arrays.binarySearch(hexaArray, taxon);
-
-                        if (index1 > -1) { //当找到列表中的taxa时，写列表中的taxa信息
-                            indexHexa.add(i);
-                            bw.write("\t" + l.get(i));
-                        }
-                    }
-                    bw.newLine(); //写完之后记得换行
-                    Collections.sort(indexHexa);
-
-                }
-                if (!temp.startsWith("#")) {
-                    cntRaw++;
-                    l = PStringUtils.fastSplit(temp);
-                    List<String> lHexaGeno = new ArrayList<>();
-                    String altList = l.get(4);
-                    for (int i = 0; i < indexHexa.size(); i++) { //无论有无基因型，都加进去了
-                        lHexaGeno.add(l.get(indexHexa.get(i)));
-                    }
-
-                    for (int i = 0; i < lHexaGeno.size(); i++) { //判断没有基因型的taxa数目
-                        if (lHexaGeno.get(i).startsWith(".")) {
-                            cntNogenotype++;
-                        }
-                    }
-
-                    if (cntNogenotype == lHexaGeno.size()) { //过滤 所有taxa都没有基因型的位点
-                        cntSiteNogeno++;
-                        continue;
-                    } //若不过滤，则全是./.的位点在下面的分离测试中会统计到
-                    String[] hexaGenoArray = lHexaGeno.toArray(new String[lHexaGeno.size()]);
-                    boolean segregation = this.ifSegregationIncl2alt(hexaGenoArray, altList);
-                    if (segregation == false) { //过滤没有分离的位点
-                        cntNosegregation++;
-                        continue;
-                    }
-                    cntKept++;
-                    String info = this.getInfo(hexaGenoArray, altList);
-                    StringBuilder sb = new StringBuilder();
-                    for (int i = 0; i < 7; i++) {
-                        sb.append(l.get(i)).append("\t");
-                    }
-                    sb.append(info).append("\tGT:AD:PL");
-                    for (int i = 0; i < lHexaGeno.size(); i++) {
-                        sb.append("\t").append(lHexaGeno.get(i));
-                    }
-                    bw.write(sb.toString());
-                    bw.newLine();
-                } //
-            }
-            cntRemoved = cntSiteNogeno + cntNosegregation;
-            br.close();
-            bw.flush();
-            bw.close();
-            System.out.println(new File(infileS).getName().substring(3, 6) + "\t" + cntRaw + "\t" + cntKept + "\t" + cntRemoved + "\t" + cntNosegregation + "\t" + cntSiteNogeno);
-            System.out.println(infileS + " is completed at " + outfileS + "\tActual taxa size: " + indexHexa.size() + "\tGoal taxa size : " + lhexa.size());
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-    }
-
-    public String getInfo(String[] genoArray, String altList) {
-        int dp = 0; //总深度
-        int nz = 0; //有基因型的个体数
-        int nAlt = PStringUtils.fastSplit(altList, ",").size();
-        int[] adCnt = new int[1 + nAlt]; //所有包括ref和alt的深度统计
-        int[] acCnt = new int[1 + nAlt]; //所有包括ref和alt的基因型统计
-        int[][] gnCnt = new int[1 + nAlt][1 + nAlt]; //GN到底代表什么？
-        int ht = 0;
-        List<String> tempList = null;
-        List<String> temList = null;
-        for (int i = 0; i < genoArray.length; i++) {
-            if (genoArray[i].startsWith(".")) {
-                nz++;
-                continue;
-            }
-            tempList = PStringUtils.fastSplit(genoArray[i], ":"); //tempList是包含基因型AD还有PL的集合
-
-            //先计算深度
-            temList = PStringUtils.fastSplit(tempList.get(1), ","); //temList是AD所有的深度集合
-            for (int j = 0; j < temList.size(); j++) {
-                int c = Integer.parseInt(temList.get(j)); //c是第j个allele的深度值。注意AD的第一个是ref，第二个是次等位位点的深度，第三个是最小等位位点的深度
-                dp += c; //dp是总深度
-                adCnt[j] += c; //adCnt[j] 是第j个allele的深度值的总和，AD按照 ref alt1 alt2排序
-            }
-
-            //再计算基因型
-            temList = PStringUtils.fastSplit(tempList.get(0), "/"); //temList是包含基因型拆分后的集合
-            for (int j = 0; j < temList.size(); j++) { //0/0:13,0:0,4,25
-                int c = Integer.parseInt(temList.get(j)); // c是基因型0 1 2 其中的一个
-                acCnt[c]++; //acCnt[c] 是所有taxa基因型某一数值如0 1 2的总和
-            }
-            int index1 = Integer.parseInt(temList.get(0)); //0/0基因型的
-            int index2 = Integer.parseInt(temList.get(1));
-            gnCnt[index1][index2]++; //gnCnt[][]是二维数组，代表alt的个数的矩阵，比如有1个alt，则gnCnt[][]有gnCnt[0][0]  gnCnt[0][1] gnCnt[1][0] gnCnt[1][1]
-            if (index1 != index2) {
-                ht++;
-            }
-        }
-        nz = genoArray.length - nz;
-        int sum = 0; //所有allele的总数
-        for (int i = 0; i < acCnt.length; i++) {
-            sum += acCnt[i];
-        }
-        float maf = (float) ((double) acCnt[0] / sum);
-        if (maf >= 0.5) {
-            maf = (float) ((double) acCnt[1] / sum);
-        }
-
-        StringBuilder sb = new StringBuilder();
-
-        sb.append("DP=").append(dp).append(";NZ=").append(nz).append(";AD=");
-        for (int i = 0; i < adCnt.length; i++) {
-            sb.append(adCnt[i]).append(",");
-        }
-        sb.deleteCharAt(sb.length() - 1); //删除最后一个字符","号
-        sb.append(";AC=");
-        for (int i = 1; i < acCnt.length; i++) {
-            sb.append(acCnt[i]).append(",");
-        }
-        sb.deleteCharAt(sb.length() - 1);
-        sb.append(";GN=");
-        for (int i = 0; i < gnCnt.length; i++) { //二维数组的长度是第一维的长度，这里是2（只有1个alt） 或者3 (有2个alt)
-            for (int j = i + 1; j < gnCnt.length; j++) {
-                sb.append(gnCnt[i][j]).append(",");
-            }
-        }
-        sb.deleteCharAt(sb.length() - 1);
-        sb.append(";HT=").append(ht).append(";MAF=").append(String.format("%.4f", maf));
-        return sb.toString();
-    }
-
-    /**
-     * 判断该群体在一个位点是否有分离，若有分离则返回true,若无分离则返回false,若全是./.，则返回false,针对有1个或者2个alt的情况，包含D
-     * I
-     *
-     * @param genoArray
-     * @param altList
-     * @return
-     */
-    public boolean ifSegregationIncl2alt(String[] genoArray, String altList) {
-        int nAlt = PStringUtils.fastSplit(altList, ",").size();
-        int[] acCnt = new int[1 + nAlt]; //所有包括ref和alt的个数
-        int cntNogenotype = 0;
-        List<String> tempList = null;
-        List<String> temList = null;
-        for (int i = 0; i < genoArray.length; i++) {
-            if (genoArray[i].startsWith(".")) {
-                cntNogenotype++;
-                continue; //表示不再进行下面的计算，跳出该taxa基因型的统计
-            }
-            tempList = PStringUtils.fastSplit(genoArray[i], ":"); //tempList是包含基因型AD还有PL的集合
-            temList = PStringUtils.fastSplit(tempList.get(1), ","); //temList是AD所有的深度集合
-            temList = PStringUtils.fastSplit(tempList.get(0), "/"); //temList是包含基因型拆分后的集合
-            for (int j = 0; j < temList.size(); j++) {
-                int c = Integer.parseInt(temList.get(j)); // c是基因型第j个数值
-                acCnt[c]++; //acCnt[c] 是所有taxa基因型某一数值如0 1 2的总和
-            }
-        }
-        int cntgeno = genoArray.length - cntNogenotype;
-        int cntallele = 2 * cntgeno; //若全部为./.,则cntallele为0,下文也判断为没有分离！！
-        //判断该群体在一个位点是否有分离，若有分离则返回true,若无分离则返回false
-        boolean a = false;
-        if (altList.length() == 1) { //分 alt 是1个的情况
-            if ((acCnt[0] == cntallele) || (acCnt[1] == cntallele)) {
-                a = false;
-            } else {
-                a = true;
-            }
-
-        } else if (altList.length() > 1) { //alt是2个的情况
-            if (acCnt[0] == cntallele || acCnt[1] == cntallele || acCnt[2] == cntallele) {
-                a = false;
-            } else {
-                a = true;
-            }
-        }
-        return a;
-    }
 
     public void getSharedSNP() {
 //        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/013_mergeTaxaVCF/chr005.ABDgenome.10000lines.vcf";
@@ -2912,24 +2667,76 @@ public class CountSites {
      * chr005.Dgenome.vcf.gz --> chr005.Dgenome.bi.vcf.gz Keep only the binary
      * allele 过滤VCF文件，只保留双等位位点，即含有1个alt
      *
+     * @param infileS
+     * @param outfileS
+     */
+    public void filterSNPtoBi_singleThread(String infileS, String outfileS) {
+        File f = new File(infileS);
+        try {
+            String chr = f.getName().substring(3, 6); //提取染色体号 001
+            int chrint = Integer.parseInt(chr); //将染色体号转化为数字
+            BufferedReader br = AoFile.readFile(f.getAbsolutePath());
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = null;
+            int biallelicNum = 0;
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                if (temp.startsWith("#")) {
+                    bw.write(temp);
+                    bw.newLine();
+                } else {
+                    cnt++;
+                    temp = temp.substring(0,50);
+                    String alt = PStringUtils.fastSplit(temp).get(4);
+                    if (alt.contains(",")) continue;
+                    if (alt.equals("D")) continue;
+                    if (alt.equals("I")) continue;
+                    biallelicNum++;
+                    bw.write(temp);
+                    bw.newLine();
+                }
+
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println(chrint + "\t" + biallelicNum + "\tBi-SNP\t" + cnt + "\tTotalVariants\t" + f.getName() + " is completed at " + outfileS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    /**
+     * chr005.Dgenome.vcf.gz --> chr005.Dgenome.bi.vcf.gz Keep only the binary
+     * allele 过滤VCF文件，只保留双等位位点，即含有1个alt
+     *
      * @param infileDirS
      */
-    public void filterAllele(String infileDirS, String outfileDirS) {
+    public void filterSNPtoBi_parallel(String infileDirS, String outfileDirS) {
         new File(outfileDirS).mkdirs();
+
         File[] fs = new File(infileDirS).listFiles();
-        fs = IOUtils.listFilesEndsWith(fs, ".vcf.gz");
-        List<File> fsList = Arrays.asList(fs);
+        File[] fs1 = IOUtils.listFilesEndsWith(fs,"vcf.gz");
+        File[] fs2 = IOUtils.listFilesEndsWith(fs,"vcf");
+        List<File> fsList = new ArrayList<>();
+        for (int i = 0; i < fs1.length; i++) {
+            fsList.add(fs1[i]);
+        }
+        for (int i = 0; i < fs2.length; i++) {
+            fsList.add(fs2[i]);
+        }
+
         Collections.sort(fsList);
-//        System.out.println("Chr\tSNPNum\tBiallelicNum\tIndelNum\tInsertionNum\tDelectionNum\t");
+        //        System.out.println("Chr\tSNPNum\tBiallelicNum\tIndelNum\tInsertionNum\tDelectionNum\t");
         fsList.parallelStream().forEach(f -> {
             try {
                 String chr = f.getName().substring(3, 6); //提取染色体号 001
                 int chrint = Integer.parseInt(chr); //将染色体号转化为数字
-                String outfileS = new File(outfileDirS, f.getName().replaceFirst("_vmap2.0.vcf.gz", "_vmap2.1.vcf")).getAbsolutePath();
+                String outfileS = new File(outfileDirS, "chr" + chr + "_Bi.vcf").getAbsolutePath();
                 BufferedReader br = AoFile.readFile(f.getAbsolutePath());
                 BufferedWriter bw = AoFile.writeFile(outfileS);
                 String temp = null;
-                int cnt = 0;
 //                int snpNum = 0;
                 int biallelicNum = 0;
 //                int indelNum = 0;
@@ -2958,11 +2765,9 @@ public class CountSites {
                         if (alt.contains(",")) continue;
                         if (alt.equals("D")) continue;
                         if (alt.equals("I")) continue;
-                        cnt++;
                         biallelicNum++;
                         bw.write(temp);
                         bw.newLine();
-
                     }
 
                 }
@@ -2972,8 +2777,7 @@ public class CountSites {
                 bw.flush();
                 bw.close();
 //                System.out.println(String.valueOf(chrint) + "\t" + String.valueOf(snpNum) + "\t" + String.valueOf(biallelicNum) + "\t" + String.valueOf(indelNum) + "\t" + String.valueOf(insertionNum) + "\t" + String.valueOf(delectionNum));
-                System.out.println(chr + "\t" + biallelicNum);
-                System.out.println(f.getName() + " is completed at " + outfileS);
+                System.out.println(chrint + "\t" + biallelicNum + "\t" + f.getName() + " is completed at " + outfileS);
             } catch (Exception e) {
                 e.printStackTrace();
                 System.exit(1);
