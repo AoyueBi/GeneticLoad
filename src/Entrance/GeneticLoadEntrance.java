@@ -38,6 +38,7 @@ public class GeneticLoadEntrance {
 //        new  FilterVCF2();
 //        new GermplasmInfo();
         new VariantsSum();
+//        new SIFT();
 
     }
 

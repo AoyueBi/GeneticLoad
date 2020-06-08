@@ -5,6 +5,8 @@
  */
 package WheatGeneticLoad;
 
+import AoUtils.AoFile;
+import AoUtils.SplitScript;
 import pgl.infra.anno.gene.GeneFeature;
 import pgl.infra.utils.IOUtils;
 import pgl.infra.utils.PStringUtils;
@@ -54,20 +56,62 @@ public class SIFT {
 //this.move();
 
         /**
-         * for new test when rever the ref and alt
+         * ******** for new test when rever the ref and alt **************
+         *
          */
 //        this.reverseRefAltallelebyExonVCF();
 //        this.annotatorVCF2("/data4/home/aoyue/vmap2/analysis/008_sift/001_result/002_annotatorResult/001_reversedRefAltVCF","/data4/home/aoyue/vmap2/analysis/008_sift/001_result/002_annotatorResult");
 //        new SplitScript().splitScript("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/010_exonVCF_reverseRefAlt/002_script/sh_vcfAnnotator20200103.sh","vcfAnnotator",7,6);
 //        this.mkdis();
-        this.move();
+//        this.move();
 
 //        this.annotatorVCF2("/data4/home/aoyue/vmap2/analysis/008_sift/002_result_exonVCF/001_annotatorResult/001_exonVCF","/data4/home/aoyue/vmap2/analysis/008_sift/002_result_exonVCF/001_annotatorResult");
 //        new SplitScript().splitScript("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/010_exonVCF_reverseRefAlt/002_script/sh_vcfAnnotator20200105.sh","vcfAnnotator",7,6);
 
 //        this.annotatorVCF2("/data4/home/aoyue/vmap2/analysis/008_sift/002_result_exonVCF/002_annotatorResult/001_reversedRefAltVCF","/data4/home/aoyue/vmap2/analysis/008_sift/002_result_exonVCF/002_annotatorResult");
 //        new SplitScript().splitScript("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/010_exonVCF_reverseRefAlt/002_script/sh_vcfAnnotator20200105_2.sh","vcfAnnotator",7,6);
+
+        //******** 2020 版本 VMapII 的计算 **************//
+//        this.mkdis();
+//        this.annotatorVCF3();
+//        SplitScript.splitScript2("/Users/Aoyue/Documents/sh.sh",6,7);
+        this.move();
+
     }
+
+//     find -name "*.vcf" | cut -c3- ; 本地获取运行脚本，输出在netbeans的output界面。
+//     -c	To run on command line
+//     -i	Path to your input variants file in VCF format
+//     -d	Path to SIFT database directory
+//     -r       Path to your output results folder
+//     -t	To extract annotations for multiple transcripts (Optional)
+//    输出的文件产生的日志也保存下来，便于计算时间。 注意输入文件必须是解压后的vcf
+
+    public void annotatorVCF3(){ //一次性将所有的jar都运行上
+        String infileDirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/002_exonSNPVCF";
+        String outfileDirS ="/data4/home/aoyue/vmap2/analysis/008_sift/003_result_Vmap2.1-2020_exonVCF";
+        String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
+        for (int i = 0; i < chrArr.length; i++) {
+            String chr = chrArr[i];
+            String infileS = new File(infileDirS,"chr" + chr + "_exon_vmap2.1.vcf").getAbsolutePath();
+            String outfileDirS2 = new File(outfileDirS,"output" + chr).getAbsolutePath();
+            File f = new File(infileS);
+            String name = f.getName().split(".vcf")[0];
+            String logFileS = new File(outfileDirS,"log_" + name + "_annotator.txt").getAbsolutePath();
+
+            System.out.println("java -jar /data1/home/aoyue/biosoftware/SIFT4g_Annotator/SIFT4G_Annotator_v2.4.jar -c -i "
+                    + infileS
+                    + " -d /data4/home/aoyue/vmap2/analysis/008_sift/abd_iwgscV1_SIFT4G_db/siftDatabase -r "
+                    + outfileDirS2
+                    + " -t > "
+                    + logFileS
+                    + "");
+            //java -jar /data1/home/aoyue/biosoftware/SIFT4g_Annotator/SIFT4G_Annotator_v2.4.jar -c -i /data4/home/aoyue/vmap2/analysis/008_sift/abd_iwgscV1_SIFT4G_db/input001/dbSNP/chr036.Dgenome.bi.vcf.gz -d /data4/home/aoyue/vmap2/analysis/008_sift/abd_iwgscV1_SIFT4G_db/input001/abd_iwgscV1 -r /data4/home/aoyue/vmap2/analysis/008_sift/abd_iwgscV1_SIFT4G_db/output/output036 -t &
+
+        }
+    }
+
+
 
 
 
@@ -144,6 +188,7 @@ public class SIFT {
             String chr = PStringUtils.getNDigitNumber(3, i);
 //            System.out.println("mv output" + chr + "/chr" + chr + ".subgenome.maf0.01byPop.SNP_SIFTannotations.xls output/");
 //            System.out.println("mv output" + chr + "/chr" + chr + "_exon_vmap2.1_reverseRefAlt_SIFTannotations.xls output/");
+//            System.out.println("mv output" + chr + "/chr" + chr + "_exon_vmap2.1_SIFTannotations.xls output/");
             System.out.println("mv output" + chr + "/chr" + chr + "_exon_vmap2.1_SIFTannotations.xls output/");
 
         }
@@ -220,6 +265,7 @@ public class SIFT {
      * 建立42个空的文件夹，上传至集群
      */
     public void mkdis() {
+        System.out.println("mkdir output");
         for (int i = 1; i < 43; i++) {
             String chr = PStringUtils.getNDigitNumber(3, i);
             System.out.println("mkdir output" + chr);

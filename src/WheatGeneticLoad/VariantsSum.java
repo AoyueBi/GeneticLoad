@@ -41,10 +41,117 @@ public class VariantsSum {
 //        this.extractInfoFromVMap2();
 //        this.mkExonVCF();
 //        this.mkExonAnnotation(); //弃用
-        this.mkExonAnnotation2();
+//        this.mkExonAnnotation2();
+        this.addSift();
 
 
     }
+
+    public void addSift() {
+        String siftAltDirS = "/data4/home/aoyue/vmap2/analysis/008_sift/003_result_Vmap2.1-2020_exonVCF/output";
+//        String siftRefDirS = "/Users/feilu/Documents/analysisH/vmap2/003_annotation/001_sift/output_ref";
+        String dirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/003_exonSNPAnnotation";
+        List<File> fList = AoFile.getFileListInDir(siftAltDirS);
+        fList.parallelStream().forEach(f -> {
+            String dbFileS = f.getName().split("_")[0]+"_SNP_anno.txt.gz";
+            dbFileS = new File (dirS, dbFileS).getAbsolutePath();
+//            String refFileS = new File (siftRefDirS, f.getName().split("_")[0]+"_exon_vmap2.1_reverseRefAlt_SIFTannotations.xls.gz").getAbsolutePath();
+            RowTable<String> tAlt = new RowTable (f.getAbsolutePath());
+//            RowTable<String> tRef = new RowTable (refFileS);
+            SIFTRecord[] records = new SIFTRecord[tAlt.getRowNumber()];
+            for (int i = 0; i < records.length; i++) {
+                SIFTRecord s = new SIFTRecord(Integer.parseInt(tAlt.getCell(i, 1)), tAlt.getCell(i, 3), tAlt.getCell(i, 4), tAlt.getCell(i,
+                        7), tAlt.getCell(i, 8), tAlt.getCell(i, 12));
+                records[i] = s;
+            }
+            Arrays.sort(records);
+            try {
+                List<String> dbList = new ArrayList(); //是原来文件的每一行的结果
+                String temp = null;
+                BufferedReader br = AoFile.readFile(dbFileS);
+                String header = br.readLine(); //
+                while ((temp = br.readLine()) != null) {
+                    dbList.add(temp);
+                }
+                br.close();
+                BufferedWriter bw = AoFile.writeFile(dbFileS);
+                StringBuilder sb = new StringBuilder(header);
+                sb.append("\tRegion\tVariant_type\tAlt_SIFT");
+                bw.write(sb.toString());
+                bw.newLine();
+                List<String> l = null;
+                for (int i = 0; i < dbList.size(); i++) {
+                    l = PStringUtils.fastSplit(dbList.get(i));
+                    SIFTRecord query = new SIFTRecord(Integer.parseInt(l.get(2)), l.get(4), l.get(10));
+                    int index = Arrays.binarySearch(records, query);
+                    if (index < 0) continue;
+                    sb.setLength(0);
+                    sb.append(dbList.get(i)).append("\t");
+                    sb.append(records[index].region).append("\t");
+                    sb.append(records[index].type).append("\t");
+                    sb.append(records[index].altSift);
+                    bw.write(sb.toString());
+                    bw.newLine();
+                }
+                bw.flush();
+                bw.close();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        // java -Xms50g -Xmx200g -jar PlantGenetics.jar > log_addSift_20200608.txt 2>&1 &
+
+
+    }
+
+    class SIFTRecord implements Comparable<SIFTRecord> {
+
+        public int pos;
+        public String alt;
+        public String transcript;
+        public String region;
+        public String type;
+        public String altSift;
+
+
+
+        public SIFTRecord(int pos, String alt, String transcript) {
+            this.pos = pos;
+            this.alt = alt;
+            this.transcript = transcript;
+        }
+
+        public SIFTRecord(int pos, String alt, String transcript, String region, String type, String altSift) {
+            this.pos = pos;
+            this.alt = alt;
+            this.transcript = transcript;
+            this.region = region;
+            this.type = type;
+            this.altSift = altSift;
+
+        }
+
+        @Override
+        public int compareTo(SIFTRecord o) { //
+            if (this.pos < o.pos) {
+                return -1;
+            } else if (this.pos == o.pos) {
+                int index = this.alt.compareTo(o.alt);
+                if (index < 0) {
+                    return -1;
+                }
+                else if (index > 0) {
+                    return 1;
+                }
+                else return transcript.compareTo(o.transcript);
+            } else {
+                return 1;
+            }
+        }
+    }
+
+
 
 
     /**
@@ -58,7 +165,7 @@ public class VariantsSum {
     public void mkExonAnnotation2(){
         int subLength = 200; //取VCF文件的前200个字符串
         String vmapDirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/002_exonSNPVCF";
-        String outDirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/003_exonSNPAnnotation";
+        String outDirS = " ";
         File[] fs = AoFile.getFileArrayInDir(vmapDirS);
         List<File> vmapList = Arrays.asList(fs);
         Collections.sort(vmapList);
@@ -88,20 +195,6 @@ public class VariantsSum {
                 endLists.add(Integer.parseInt(t.getCell(i,4)));
             }
 
-//            //这里开始发挥pgf文件的作用，对建立的基因列表进行整条外显子集合的捕获
-//            int geneIndex = -1;
-//            List<Range> allexonList = new ArrayList<>();
-//            for (int i = 0; i < geneList.size(); i++) {
-//                geneIndex = gf.getGeneIndex(geneList.get(i)); //必须是pgf文件按照基因名字排序，才能根据基因名字查找基因索引
-//                for (int j = 0; j < gf.getTranscriptNumber(geneIndex); j++) { //该基因的所有转录本的循环
-//                    if (!tranList.get(i).equals(gf.getTranscriptName(geneIndex, j))) continue; //验证对应的trans是否和pgf文件中的最长转录本一致，不一致，程序退出
-//                    List<Range> exonList = gf.getExonList(geneIndex, j); //根据基因的index和最长转录本的Index j，找到基因的外显子集合，每个元素是一个range
-//                    allexonList.addAll(exonList);
-//                }
-//            }
-//            //根据外显子range的集合，找到每个range的起始的集合和结束的集合
-//            Collections.sort(allexonList);
-//
             int[] starts = startLists.toArray(new int[startLists.size()]);
             int[] ends = endLists.toArray(new int[endLists.size()]);
 
