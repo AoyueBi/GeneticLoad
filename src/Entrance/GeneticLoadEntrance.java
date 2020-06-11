@@ -8,6 +8,7 @@ package Entrance;
 import AoUtils.CountSites;
 import GermplasmInfo.GermplasmInfo;
 import Plot.PCA;
+import PopulationAnalysis.DeleteriousCountbyPop;
 import WheatGeneticLoad.*;
 
 import java.text.SimpleDateFormat;
@@ -37,8 +38,10 @@ public class GeneticLoadEntrance {
 //        new AoHeterozygosity();
 //        new  FilterVCF2();
 //        new GermplasmInfo();
-        new VariantsSum();
+//        new VariantsSum();
 //        new SIFT();
+        new DeleteriousCountbyIndi();
+
 
     }
 
@@ -50,9 +53,9 @@ public class GeneticLoadEntrance {
 
 
     public void DBdeleterious(){
-//        new DeleteriousBiologyAoyue();
-//        new EstSFS();
-//        new DeleteriousCountbyPop();
+        new DeleteriousBiologyAoyue();
+        new EstSFS();
+        new DeleteriousCountbyPop();
         new HomoeologGenesAnalysis();
 
 

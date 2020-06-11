@@ -42,9 +42,285 @@ public class VariantsSum {
 //        this.mkExonVCF();
 //        this.mkExonAnnotation(); //弃用
 //        this.mkExonAnnotation2();
-        this.addSift();
+//        this.addSift();
+//        this.addAncestral();
+//        this.addDAF_parallel();
+//        this.addGerp();
+        this.mergeExonSNPAnnotation();
 
 
+    }
+
+    public void mergeExonSNPAnnotation(){
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/014_exonSNPAnnotation";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/015_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
+//        AoFile.mergeTxt(infileDirS,outfileS);
+
+        String infileDirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/003_exonSNPAnnotation";
+        String outfileS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/004_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
+        AoFile.mergeTxt(infileDirS,outfileS);
+
+        //java -Xms50g -Xmx200g -jar PlantGenetics.jar > log_mergeExonSNPAnnotation_20200609.txt 2>&1 &
+    }
+
+    public void addGerp () {
+        String gerpDirS = "/data4/home/aoyue/vmap2/feilu/003_annotation/003_gerp/byChr_29way";
+        String dirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/003_exonSNPAnnotation";
+        List<File> fList = AoFile.getFileListInDir(dirS);
+        fList.parallelStream().forEach(f -> {
+            String gerpFileS = f.getName().split("_")[0]+"_gerp.txt.gz";
+            gerpFileS = new File (gerpDirS, gerpFileS).getAbsolutePath();
+            String header = null;
+            List<String> recordList = new ArrayList();
+            try {
+                BufferedReader br = AoFile.readFile(f.getAbsolutePath());
+                header = br.readLine();
+                StringBuilder sb = new StringBuilder(header);
+                sb.append("\tGerp");
+                header = sb.toString();
+                String temp = null;
+                TIntArrayList posList = new TIntArrayList();
+                List<String> l = new ArrayList();
+                while ((temp = br.readLine()) != null) {
+                    recordList.add(temp);
+                    l = PStringUtils.fastSplit(temp);
+                    posList.add(Integer.parseInt(l.get(2)));
+                }
+                br.close();
+                br = AoFile.readFile(gerpFileS);
+                br.readLine(); //header
+                int pos = -1;
+                int index = -1;
+                String[] gerp = new String[posList.size()];
+                for (int i = 0; i < gerp.length; i++) gerp[i] = "NA";
+                while ((temp = br.readLine()) != null) {
+                    l = PStringUtils.fastSplit(temp);
+                    pos = Integer.parseInt(l.get(1));
+                    index = posList.binarySearch(pos);
+                    if (index < 0) continue;
+                    gerp[index] = l.get(2);
+                }
+                br.close();
+                BufferedWriter bw = AoFile.writeFile(f.getAbsolutePath());
+                bw.write(header);
+                bw.newLine();
+                for (int i = 0; i < posList.size(); i++) {
+                    sb.setLength(0);
+                    sb.append(recordList.get(i)).append("\t").append(gerp[i]);
+                    bw.write(sb.toString());
+                    bw.newLine();
+                }
+                bw.flush();
+                bw.close();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+            System.out.println(f.getAbsolutePath());
+        });
+        // java -Xms50g -Xmx200g -jar PlantGenetics.jar > log_addGerp_20200608.txt 2>&1 &
+
+    }
+
+
+    public void addDAF_parallel(){ //本地运行常用
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/003_exonSNPAnnotation";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/004_exonSNPAnnotation";
+        List<File> fsList = IOUtils.getVisibleFileListInDir(infileDirS);
+        fsList.stream().forEach(f -> {
+            String infileS = f.getAbsolutePath();
+            String outfileS = new File(outfileDirS,f.getName()).getAbsolutePath();
+            this.calDAF(f.getAbsolutePath(),outfileS);
+            System.out.println(f.getName() + "\tis completed at " + outfileS);
+        });
+    }
+
+    /**
+     * Goal:根据 ancestral allele，计算Daf,Daf_ABD Daf_AB Daf_D
+     */
+    public void calDAF(String dbfileS, String outfileS) { //String dbfileS, String ancS, String outfileS
+//        String dbfileS = "";
+//        String outfileS = "";
+        boolean ifd = false;
+        double daf = Double.NaN;
+        double daf_ABD = Double.NaN;
+        double daf_AB = Double.NaN;
+        int cntAncNum = 0;
+        File f = new File(dbfileS); //根据ancestral allele 文件，得到染色体号
+        int chr = Integer.parseInt(f.getName().substring(3, 6));
+        //根据染色体号进行AB还是D的判断
+        int[] db = {5, 6, 11, 12, 17, 18, 23, 24, 29, 30, 35, 36, 41, 42};
+        Arrays.sort(db);
+        if (Arrays.binarySearch(db, chr) > -1) { //说明是属于D的
+            ifd = true;
+        }
+        try {
+            String chrS = PStringUtils.getNDigitNumber(3, chr);
+            BufferedReader br = AoFile.readFile(dbfileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = br.readLine(); //read header
+            if (ifd == false) {
+                bw.write(temp + "\tDaf_barley_secaleParsimony\tDaf_ABD_barley_secaleParsimony\tDaf_AB_barley_secaleParsimony");
+                bw.newLine();
+            } else if (ifd == true) {
+                bw.write(temp + "\tDaf_barley_secaleParsimony\tDaf_ABD_barley_secaleParsimony\tDaf_AB_barley_secaleParsimony");
+                bw.newLine();
+            }
+
+            int cntAnc = 0;
+            int cntAncNotMajororMinor = 0;
+            while ((temp = br.readLine()) != null) {
+                List<String> l = PStringUtils.fastSplit(temp);
+                int pos = Integer.parseInt(l.get(2));
+                String major = l.get(5);
+                String minor = l.get(6);
+                double maf = Double.parseDouble(l.get(7));
+                double AAF_ABD = Double.parseDouble(l.get(8));
+                double AAF_AB = Double.parseDouble(l.get(9));
+
+                //################### 需要修改 //###################//###################//###################//###################
+//               String ancAllele = l.get(22); //不同的数据库，这一列的信息不一样，千万要注意!!!!!!!!!!!!!!!!! 祖先基因的数据库
+//                String ancAllele = l.get(15); //不同的数据库，这一列的信息不一样，千万要注意!!!!!!!!!!!!!!!!! 祖先基因的数据库
+                String ancAllele = l.get(14);
+                //################### 需要修改 //###################//###################//###################//###################
+
+                StringBuilder sb = new StringBuilder();
+                if (!ancAllele.equals("NA")) { //表明含有anc
+                    //如果ancestral allele存在,且等于major，则derived allele等于minor, daf 就等于maf
+                    //如果ancestral allele存在,且等于minor，则derived allele等于major, daf 就等于 1-daf1
+                    if (ancAllele.equals(minor)) {
+                        cntAnc++;
+                        daf = 1 - maf;
+                        if (AAF_ABD > 0.5) { //说明AAF_ABD是major， 祖先状态是minor的，所有DAF是major
+                            daf_ABD = AAF_ABD;
+                        } else if (AAF_ABD < 0.5) { //说明AAF_ABD是minor， 祖先状态是minor的，所有DAF是major
+                            daf_ABD = 1 - AAF_ABD;
+                        }
+                        if (AAF_AB > 0.5) {
+                            daf_AB = AAF_AB;
+                        } else if (AAF_AB < 0.5) {
+                            daf_AB = 1 - AAF_AB;
+                        }
+                        //多加一道判断，如果群体内部没有分离，直接将DAF设置为NA
+                        String DAF_ABD = String.format("%.4f", daf_ABD);
+                        String DAF_AB = String.format("%.4f", daf_AB);
+                        if (DAF_ABD.equals("0.0000") || DAF_ABD.equals("1.0000")) {
+                            DAF_ABD = "NA";
+                        }
+                        if (DAF_AB.equals("0.0000") || DAF_AB.equals("1.0000")) {
+                            DAF_AB = "NA";
+                        }
+                        sb.append(temp).append("\t").append(String.format("%.4f", daf)).append("\t").append(DAF_ABD).append("\t").append(DAF_AB);
+                        bw.write(sb.toString());
+                        bw.newLine();
+                    }
+                    if (ancAllele.equals(major)) {
+                        cntAnc++;
+                        daf = maf;
+                        if (AAF_ABD > 0.5) { //说明AAF_ABD是major， 祖先状态是major的，所有DAF是minor
+                            daf_ABD = 1 - AAF_ABD;
+                        } else if (AAF_ABD < 0.5) {
+                            daf_ABD = AAF_ABD;
+                        }
+                        if (AAF_AB > 0.5) {
+                            daf_AB = 1 - AAF_AB;
+                        } else if (AAF_AB < 0.5) {
+                            daf_AB = AAF_AB;
+                        }
+                        //多加一道判断，如果群体内部没有分离，直接将DAF设置为NA
+                        String DAF_ABD = String.format("%.4f", daf_ABD);
+                        String DAF_AB = String.format("%.4f", daf_AB);
+                        if (DAF_ABD.equals("0.0000") || DAF_ABD.equals("1.0000")) {
+                            DAF_ABD = "NA";
+                        }
+                        if (DAF_AB.equals("0.0000") || DAF_AB.equals("1.0000")) {
+                            DAF_AB = "NA";
+                        }
+                        sb.append(temp).append("\t").append(String.format("%.4f", daf)).append("\t").append(DAF_ABD).append("\t").append(DAF_AB);
+                        bw.write(sb.toString());
+                        bw.newLine();
+                    }
+                    if (!ancAllele.equals(minor) && (!ancAllele.equals(major))) {
+                        sb.append(temp).append("\t").append("NA").append("\t").append("NA").append("\t").append("NA");
+                        bw.write(sb.toString());
+                        bw.newLine();
+                        //System.out.println("CHR" + PStringUtils.getNDigitNumber(3, CHR) + "\t" + pos + " are neither major nor minor.");
+                        cntAncNotMajororMinor++;
+                    }
+
+                } else { //表明不含anc
+                    sb.append(temp).append("\t").append("NA").append("\t").append("NA").append("\t").append("NA");
+                    bw.write(sb.toString());
+                    bw.newLine();
+                }
+            }
+            double ratio = (double) cntAncNotMajororMinor / (cntAncNotMajororMinor + cntAnc);
+            bw.flush();
+            bw.close();
+            br.close();
+            System.out.println(f.getName() + "\tis completed at " + outfileS + "\t" + cntAnc + "\tancestral allele are with daf value by state major or minor");
+            System.out.println(new File(dbfileS).getName() + "\thave " + cntAncNotMajororMinor + " sites which are neither major nor minor. The ratio is " + String.format("%.4f", ratio));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void addAncestral () {
+        String inDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/002_byChrID";
+        String dirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/003_exonSNPAnnotation";
+        List<File> fList = AoFile.getFileListInDir(inDirS);
+        fList.parallelStream().forEach(f -> {
+            String annoFileS = f.getName().split("_")[0]+"_SNP_anno.txt.gz";
+            annoFileS = new File(dirS, annoFileS).getAbsolutePath();
+            String header = null;
+            List<String> recordList = new ArrayList();
+            TIntArrayList posList = new TIntArrayList();
+            String[] ancestral = null;
+            try {
+                BufferedReader br = AoFile.readFile(annoFileS);
+                header = br.readLine();
+                String temp = null;
+                List<String> l = null;
+                while ((temp = br.readLine()) != null) {
+                    recordList.add(temp);
+                    l = PStringUtils.fastSplit(temp);
+                    posList.add(Integer.parseInt(l.get(2)));
+                }
+                ancestral = new String[posList.size()]; //注释库的Pos的信息库
+                for (int i = 0; i < ancestral.length; i++) ancestral[i] = "NA";
+                br.close();
+
+
+                br = AoFile.readFile(f.getAbsolutePath()); //read ancestral file
+                temp = br.readLine(); //read header
+                while ((temp = br.readLine()) != null) {
+                    l = PStringUtils.fastSplit(temp);
+                    int pos = Integer.parseInt(l.get(1));
+                    int index = posList.binarySearch(pos);
+                    if (index<0) continue;
+                    ancestral[index] = l.get(2);
+                }
+                br.close();
+
+
+                BufferedWriter bw = AoFile.writeFile(annoFileS);
+                StringBuilder sb = new StringBuilder(header);
+                sb.append("\tAncestral");
+                bw.write(sb.toString());
+                bw.newLine();
+                for (int i = 0; i < recordList.size(); i++) {
+                    sb.setLength(0);
+                    sb.append(recordList.get(i)).append("\t").append(ancestral[i]);
+                    bw.write(sb.toString());
+                    bw.newLine();
+                }
+                bw.flush();
+                bw.close();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     public void addSift() {

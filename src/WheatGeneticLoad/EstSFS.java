@@ -24,7 +24,7 @@ public class EstSFS {
 //        this.sampleOutdata();
 //        this.addAnc();
 
-//        this.mergeDelgenicSNPAnnotation();
+        this.mergeDelgenicSNPAnnotation();
 //        this.countDeleteriousVMapII_byChr();
 //        this.countDeleteriousVMapIIHighDepth();
 //        this.mergeFinalfilebySub();
@@ -40,20 +40,20 @@ public class EstSFS {
          */
 //        this.splitChrfromAncestralLipeng();
 //        this.addAnc();
-//        this.mergeExonSNPAnnotation();
+        this.mergeExonSNPAnnotation();
 
         /**
          * 计算DAF值，并且生成表格用来画图
          */
 //        this.calDAF(); //单线程计算
-//        this.runParallele_listFile(); //多线程运行
+//        this.addDAF_parallel(); //多线程运行
 //        this.mergeExonSNPAnnotation(); //计算后结果合并
 //        this.mkDAFtable(); //开始分bin
 
         /**
          * 处理达兴的简约法ancestral allele Pasimony
          */
-//        this.extractAncestralAllele();
+        this.extractAncestralAllele();
 //        this.test();
 //        this.deleteriousCount();
 
@@ -69,7 +69,7 @@ public class EstSFS {
 //        this.maf();
 //        CountSites.countSites_singleStream("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/002_exonSNPVCF");
 
-        CountSites.countSites_singleStream("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/010_exonSNPVCF_filterHeter0.05");
+//        CountSites.countSites_singleStream("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/010_exonSNPVCF_filterHeter0.05");
 
     }
 

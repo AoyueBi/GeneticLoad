@@ -1,4 +1,4 @@
-package PopulationAnalysis;
+package WheatGeneticLoad;
 
 import AoUtils.AoFile;
 import gnu.trove.list.array.TCharArrayList;
@@ -8,16 +8,20 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import pgl.infra.table.RowTable;
 import pgl.infra.utils.IOUtils;
 import pgl.infra.utils.PStringUtils;
-import pgl.infra.utils.PArrayUtils;
+import pgl.infra.utils.wheat.RefV1Utils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.util.*;
-import pgl.infra.utils.wheat.RefV1Utils;
 
-public class DeleteriousCountbyPop {
-    public DeleteriousCountbyPop(){
+/**
+ * @author AoyueBi
+ * @data 2020-06-11 22:38
+ */
+public class DeleteriousCountbyIndi {
+
+    public DeleteriousCountbyIndi(){
 
         this.countDeleteriousVMapII_byChr();
 //        this.DeltoSynonymousRatio();
