@@ -1,5 +1,6 @@
 package WheatGeneticLoad;
 
+import AoUtils.AoColor;
 import AoUtils.AoFile;
 import gnu.trove.list.array.TCharArrayList;
 import gnu.trove.list.array.TDoubleArrayList;
@@ -525,7 +526,8 @@ public class DeleteriousCountbyIndi {
 
 
         //不变的
-        String taxaSummaryFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/taxaList.txt";
+//        String taxaSummaryFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/taxaList.txt";
+        String taxaSummaryFileS = "";
         AoFile.readheader(taxaSummaryFileS);
         HashMap<String, String> taxaGroupMap = new HashMap();
         HashMap<String, String> taxaSubMap = new HashMap();
@@ -664,46 +666,11 @@ public class DeleteriousCountbyIndi {
         String exonVCFDirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/002_exonSNPVCF";
         String SNPAnnoFileS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/004_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz"; //有害变异信息库
 
-        new AoFile().readheader(SNPAnnoFileS);
-        //########### 大麦和黑麦
-        //        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/001_additiveDeleterious_synonymous_ANCbarleyVSsecale_vmap2_bychr.txt";
-//        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/001_recessiveDeleterious_synonymous_ANCbarleyVSsecale_vmap2_bychr.txt";
-
-//        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/002_additiveDeleterious_ANCbarleyVSsecale_vmap2_bychr.txt";
-//        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/002_recessiveDeleterious_ANCbarleyVSsecale_vmap2_bychr.txt";
-
-//        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/002_additiveDeleterious_nonsynonymous_ANCbarleyVSsecale_vmap2_bychr.txt";
-//        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/002_recessiveDeleterious_nonsynonymous_ANCbarleyVSsecale_vmap2_bychr.txt";
-
-
-
-        //########### 大麦和乌拉尔图
-
-//        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/003_additiveDeleterious_synonymous_ANCbarleyVSurartu_vmap2_bychr.txt";
-//        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/003_recessiveDeleterious_synonymous_ANCbarleyVSurartu_vmap2_bychr.txt";
-
-//        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/004_additiveDeleterious_ANCbarleyVSurartu_vmap2_bychr.txt";
-//        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/003_VMap2.1DelCount/004_recessiveDeleterious_ANCbarleyVSurartu_vmap2_bychr.txt";
-
-        //########### 大麦和黑麦简约法 达兴
-//        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/003_VMap2.1DelCount/001_additiveDeleterious_synonymous_ANCbarleyVSsecalePasimony_vmap2_bychr.txt";
-//        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/003_VMap2.1DelCount/001_recessiveDeleterious_synonymous_ANCbarleyVSsecalePasimony_vmap2_bychr.txt";
-
-//        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/003_VMap2.1DelCount/001_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr.txt";
-//        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/003_VMap2.1DelCount/001_recessiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr.txt";
-
-//        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/003_VMap2.1DelCount/002_additiveDeleterious_nonsynonymous_ANCbarleyVSsecalePasimony_vmap2_bychr.txt";
-//        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/003_VMap2.1DelCount/002_recessiveDeleterious_nonsynonymous_ANCbarleyVSsecalePasimony_vmap2_bychr.txt";
-
-        //########### 大麦和黑麦简约法 过滤杂合子
-//        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/005_VMap2.1DelCount_filterHeter0.05/001_additiveDeleterious_synonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr.txt";
-//        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/005_VMap2.1DelCount_filterHeter0.05/001_recessiveDeleterious_synonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr.txt";
-
-//        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/005_VMap2.1DelCount_filterHeter0.05/002_additiveDeleterious_nonsynonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr.txt";
-//        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/005_VMap2.1DelCount_filterHeter0.05/002_recessiveDeleterious_nonsynonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr.txt";
-
-
-
+//        new AoFile().readheader(SNPAnnoFileS);
+        AoFile.readheader("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/taxa_InfoDB.txt");
+        System.out.println("************************************************************");
+        AoFile.readheader("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/taxaList.txt");
+        int a =3;
         //########### 大麦和黑麦简约法 ******* VMap2.0-2020 *********** new data test
 
         //###### synonymous
@@ -811,9 +778,8 @@ public class DeleteriousCountbyIndi {
 //                }
 
                 //################### 需要修改 //###################//###################//###################//###################
-//                String ancestralAllele = l.get(22); //不同的数据库，这一列的信息不一样，千万要注意!!!!!!!!!!!!!!!!! 祖先基因的数据库
-//                String ancestralAllele = l.get(15); //不同的数据库，这一列的信息不一样，千万要注意!!!!!!!!!!!!!!!!! 祖先基因的数据库
-                String ancestralAllele = l.get(31);
+                ////不同的数据库，这一列的信息不一样，千万要注意!!!!!!!!!!!!!!!!! 祖先基因的数据库
+                String ancestralAllele = l.get(14);
                 //################### 需要修改 //###################//###################//###################//###################
 
                 String majorAllele = l.get(5);
@@ -852,7 +818,7 @@ public class DeleteriousCountbyIndi {
         /**
          *  ################################### step3: taxa 集合 642个taxa
          */
-        String vmap2TaxaList = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/taxaList.txt";
+        String vmap2TaxaList = "/data4/home/aoyue/vmap2/analysis/000_taxaList/102_taxaInfoDB/taxa_InfoDB.txt";
         String[] taxa = AoFile.getStringArraybyList(vmap2TaxaList,0);
 
         double[][] addCount = new double[chrNum][taxa.length];
@@ -860,8 +826,8 @@ public class DeleteriousCountbyIndi {
         int[][] siteWithMinDepthCount = new int[chrNum][taxa.length]; //每个taxa在每条染色体中的有害突变位点
 
         chrList.parallelStream().forEach(chr -> {
-//            String delVmapFileS = "chr" + PStringUtils.getNDigitNumber(3, chr) + "_exon_vmap2.1.vcf.gz";
-            String delVmapFileS = "chr" + PStringUtils.getNDigitNumber(3, chr) + "_exon_vmap2.1_filterbyHeter0.05.vcf.gz";
+            String delVmapFileS = "chr" + PStringUtils.getNDigitNumber(3, chr) + "_exon_vmap2.1.vcf.gz";
+//            String delVmapFileS = "chr" + PStringUtils.getNDigitNumber(3, chr) + "_exon_vmap2.1_filterbyHeter0.05.vcf.gz";
             //开始读写VCF文件
             delVmapFileS = new File(exonVCFDirS, delVmapFileS).getAbsolutePath();
             BufferedReader br = AoFile.readFile(delVmapFileS);
@@ -1011,19 +977,20 @@ public class DeleteriousCountbyIndi {
          *  ################################### step5: 将输出的文件添加分组信息：每个taxa的倍性，亚群分布，mutation burden Index
          */
         try{
-            String taxaSummaryFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/taxaList.txt";
+            String taxaSummaryFileS = vmap2TaxaList;
+//            String taxaSummaryFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/taxaList.txt";
             AoFile.readheader(taxaSummaryFileS);
-            double depthCut = 3; //只保留深度大于3的taxa样本
-            HashMap<String, String> taxaGroupMap = new HashMap();
-            HashMap<String, String> taxaSubMap = new HashMap();
-            HashMap<String, String> taxaGroupIDMap = new HashMap();
+            double depthCut = 1; //只保留深度大于3的taxa样本
+            HashMap<String, String> taxaGroupMap = new HashMap(); //TreeValidatedGroupbyPloidy
+            HashMap<String, String> taxaSubMap = new HashMap(); //TreeValidatedGroupbySubspecies
+            HashMap<String, String> taxaGroupIDMap = new HashMap(); //IndexforMutationBurden
             RowTable t = new RowTable (taxaSummaryFileS);
             ArrayList<String> taxaList = new ArrayList();
             for (int i = 0; i < t.getRowNumber(); i++) {
-                taxaGroupMap.put(t.getCellAsString(i, 0), t.getCellAsString(i, 10));
-                taxaSubMap.put(t.getCellAsString(i, 0), t.getCellAsString(i, 11));
-                taxaGroupIDMap.put(t.getCellAsString(i, 0), t.getCellAsString(i, 7));
-                if (t.getCellAsDouble(i, 12) < depthCut) continue;
+                taxaGroupMap.put(t.getCellAsString(i, 0), t.getCellAsString(i, 14));
+                taxaSubMap.put(t.getCellAsString(i, 0), t.getCellAsString(i, 15));
+                taxaGroupIDMap.put(t.getCellAsString(i, 0), t.getCellAsString(i, 12));
+                if (t.getCellAsDouble(i, 2) < depthCut) continue;
                 taxaList.add(t.getCellAsString(i, 0));
             }
             String[] taxaWithHighDepth = taxaList.toArray(new String[taxaList.size()]); //taxa是具有高深度的taxa列表
