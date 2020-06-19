@@ -19,6 +19,7 @@ import gnu.trove.list.array.TIntArrayList;
 import pgl.infra.table.RowTable;
 import pgl.infra.utils.IOUtils;
 import pgl.infra.utils.PStringUtils;
+import pgl.infra.utils.wheat.RefV1Utils;
 import tech.tablesaw.api.IntColumn;
 import tech.tablesaw.api.Table;
 
@@ -46,9 +47,308 @@ public class VariantsSum {
 //        this.addAncestral();
 //        this.addDAF_parallel();
 //        this.addGerp();
-        this.mergeExonSNPAnnotation();
+//        this.mergeExonSNPAnnotation();
+        this.getDAFtable();
+
+    }
 
 
+    /**
+     * 根据计算的DAF值，进行分bin,得到表格进行画图操作
+     * 根据数据库动态创建分组，将该分组内的所有数字建立list，进行bin的统计，并返回每个bin的比例
+     *
+     */
+    public void getDAFtable() {
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/014_merge";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/018_getDAFtablefrom014";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/018_getDAFtablefrom014/002_basedGerpPhyloP";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/018_getDAFtablefrom014/003_basedSIFT_ratio";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/018_getDAFtablefrom014/005_basedonlyGERP";
+
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/004_exonSNPAnnotation_merge";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/012_exonSNPAnnotation_merge_filterHeter0.05";
+
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/004_DAFtable"; //总共的ABD
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/006_ancestralfromLipeng/005_DATtable_barley_urartu";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/004_DAFtable_barley_secale_parsimony";
+
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/006_DAFtable_barley_secale_parsimony_filterHeter0.05";
+
+//        String infileDirS = ""; 输入文件是合并的EXON Annotation数据库
+//        String outfileDirS = "";
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/015_exonSNPAnnotation_merge/"; //001_exonSNP_anno.txt.gz
+        String outfileDirS = "";
+
+        new File(outfileDirS).mkdirs();
+
+        List<File> fsList = AoFile.getFileListInDir(infileDirS);
+        fsList.stream().forEach(f -> {
+            try {
+                //************************************ 第一阶段，定义输出输出文件，读写文件 ************************//
+                String infileS = f.getAbsolutePath();
+//                String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "binTable_onlyABD.txt").getAbsolutePath(); //只能画总体的ABD六倍体
+//                String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "binTable_onlyAB.txt").getAbsolutePath(); //只能画总体的AB四倍体
+//                String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "binTable_onlyD.txt").getAbsolutePath(); //只能画总体的D二倍体
+//
+//                String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "binTable_Asubgenome.txt").getAbsolutePath(); //只有A亚基因组的结果
+//                String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "binTable_Bsubgenome.txt").getAbsolutePath(); //只有A亚基因组的结果
+                String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "binTable_Dsubgenome.txt").getAbsolutePath(); //只有A亚基因组的结果
+
+                BufferedReader br = AoFile.readFile(infileS);
+                BufferedWriter bw = AoFile.writeFile(outfileS);
+                //************************************ 第二阶段，创建相关变量，并读入文件判断 ************************//
+                String[] group = {"Deleterious SNPs", "Nonsynonymous-tolerant SNPs", "Synonymous SNPs"};
+                TDoubleArrayList[] dafABD = new TDoubleArrayList[group.length];
+                for (int i = 0; i < dafABD.length; i++) { //初始化List
+                    dafABD[i] = new TDoubleArrayList();
+                }
+
+                TDoubleArrayList[] dafAB = new TDoubleArrayList[group.length];
+                for (int i = 0; i < dafAB.length; i++) { //初始化List
+                    dafAB[i] = new TDoubleArrayList();
+                }
+
+                TDoubleArrayList[] daf = new TDoubleArrayList[group.length];
+                for (int i = 0; i < daf.length; i++) { //初始化List
+                    daf[i] = new TDoubleArrayList();
+                }
+
+                double sift = Double.NaN;
+                double gerp = Double.NaN;
+                double phylop = Double.NaN;
+                String temp = null;
+                String header = br.readLine();
+                List<String> l = new ArrayList();
+                while ((temp = br.readLine()) != null) { //我想得到 DAF_ABD的pos集合， DAF_AB的pos集合，以及合并数据的DAF集合。每个集合又分为3类，一类是同义突变，一类是非同义突变，sift值小于0.05，一类是非同义突变，sfft大于0.05
+                    l = PStringUtils.fastSplit(temp);
+                    int chrID = Integer.parseInt(l.get(1));
+                    int posID = Integer.parseInt(l.get(2));
+                    String chr = RefV1Utils.getChromosome(chrID,posID);
+//                    if(chr.contains("D"))continue; //只能用于AABB总体画图
+//                    if(chr.contains("A") || chr.contains("B"))continue; //只能用于DD总体画图
+//
+//                    if(chr.contains("B") || chr.contains("D"))continue; //只能用于A亚基因组
+//                    if(chr.contains("A") || chr.contains("D"))continue; //只能用于B亚基因组
+                    if(chr.contains("A") || chr.contains("B"))continue; //只能用于D亚基因组
+                    System.out.println(temp);
+                    String type = l.get(12);
+                    String siftscore = l.get(13);
+                    String gerpscore = l.get(20);
+//                    String phylopscore = l.get(18);
+
+//                    String DAF_ABD = l.get(26); //大麦黑麦为ancestral allele计算的DAF值
+//                    String DAF_AB = l.get(27); //大麦黑麦为ancestral allele计算的DAF值
+//                    String DAF = l.get(25); //大麦黑麦为ancestral allele计算的DAF值
+
+//                    String DAF_ABD = l.get(29); //大麦乌拉尔图为ancestral allele计算的DAF值
+//                    String DAF_AB = l.get(30); //大麦乌拉尔图为ancestral allele计算的DAF值
+//                    String DAF = l.get(28); //大麦乌拉尔图为ancestral allele计算的DAF值
+
+                    String DAF_ABD = l.get(33); //大麦黑麦Pasimony法为ancestral allele计算的DAF值
+                    String DAF_AB = l.get(34); //大麦黑麦Pasimony法为ancestral allele计算的DAF值
+                    String DAF = l.get(32); //大麦黑麦Pasimony法为ancestral allele计算的DAF值
+
+                    //如果变异类型是同义突变，那么就不用做任何判断；直接加上分组 Synonymous 并写入
+                    //如果变异类型是非同义突变，且SIFT值存在，且SIFT值小于0.5，gerp和phylop存在，且gerp大于1，且phylop大于0.5；那么加上分组 Deleterious 并写入； gerp 值和 phylop值不满足条件的，那么就不进行分组
+                    //如果变异类型是非同义突变，且SIFT值存在，且SIFT值大于0.5，那么加上分组 Nonsynonymous_tolerent 并写入
+                    //如果变异类型是非同义突变，SIFT值不存在，那么不分组 不写入
+                    if (type.equals("SYNONYMOUS")) {
+                        if (!DAF.startsWith("N")) { //说明是有值的
+                            double value = Double.parseDouble(DAF);
+                            daf[2].add(value);
+                        }
+                        if (!DAF_ABD.startsWith("N")) { //说明是有值的
+                            double value = Double.parseDouble(DAF_ABD);
+                            dafABD[2].add(value);
+                        }
+                        if (!DAF_AB.startsWith("N")) { //说明是有值的
+                            double value = Double.parseDouble(DAF_AB);
+                            dafAB[2].add(value);
+                        }
+
+                    }
+                    if (type.equals("NONSYNONYMOUS")) {
+                        if (!siftscore.startsWith("N")) {
+                            sift = Double.parseDouble(siftscore);
+                            if (sift < 0.05) {
+                                //添加gerp phyloP分组信息
+//                                if (!gerpscore.startsWith("N") && (!phylopscore.startsWith("N"))) { //均有值存在
+//                                    gerp = Double.parseDouble(gerpscore);
+//                                    phylop = Double.parseDouble(phylopscore);
+//                                    if (gerp > 1 && (phylop > 0.5)) {
+//                                        if (!DAF.startsWith("N")) { //说明是有值的
+//                                            double value = Double.parseDouble(DAF);
+//                                            daf[0].add(value);
+//                                        }
+//                                        if (!DAF_ABD.startsWith("N")) { //说明是有值的
+//                                            double value = Double.parseDouble(DAF_ABD);
+//                                            dafABD[0].add(value);
+//                                        }
+//                                        if (!DAF_AB.startsWith("N")) { //说明是有值的
+//                                            double value = Double.parseDouble(DAF_AB);
+//                                            dafAB[0].add(value);
+//                                        }
+//                                    }
+//                                }
+
+
+                                //不添加gerp phyloP分组信息
+//**************************** 可供选择 *********************************************** //
+//                                if (!DAF.startsWith("N")) { //说明是有值的
+//                                    double value = Double.parseDouble(DAF);
+//                                    daf[0].add(value);
+//                                }
+//                                if (!DAF_ABD.startsWith("N")) { //说明是有值的
+//                                    double value = Double.parseDouble(DAF_ABD);
+//                                    dafABD[0].add(value);
+//                                }
+//                                if (!DAF_AB.startsWith("N")) { //说明是有值的
+//                                    double value = Double.parseDouble(DAF_AB);
+//                                    dafAB[0].add(value);
+
+//**************************** 可供选择 *********************************************** //
+
+                                if (!gerpscore.startsWith("N")) { //均有值存在
+                                    gerp = Double.parseDouble(gerpscore);
+                                    if (gerp > 1) {
+                                        if (!DAF.startsWith("N")) { //说明是有值的
+                                            double value = Double.parseDouble(DAF);
+                                            daf[0].add(value);
+                                        }
+                                        if (!DAF_ABD.startsWith("N")) { //说明是有值的
+                                            double value = Double.parseDouble(DAF_ABD);
+                                            dafABD[0].add(value);
+                                        }
+                                        if (!DAF_AB.startsWith("N")) { //说明是有值的
+                                            double value = Double.parseDouble(DAF_AB);
+                                            dafAB[0].add(value);
+                                        }
+                                    }
+                                }
+
+                            } else { //sift值大于等于0.05
+
+                                if (!DAF.startsWith("N")) { //说明是有值的
+                                    double value = Double.parseDouble(DAF);
+                                    daf[1].add(value);
+                                }
+                                if (!DAF_ABD.startsWith("N")) { //说明是有值的
+                                    double value = Double.parseDouble(DAF_ABD);
+                                    dafABD[1].add(value);
+                                }
+                                if (!DAF_AB.startsWith("N")) { //说明是有值的
+                                    double value = Double.parseDouble(DAF_AB);
+                                    dafAB[1].add(value);
+                                }
+                            }
+                        }
+                    }
+                }
+                br.close(); //文件阅读完毕！！
+
+                //************************************ 第三阶段，开始返回bin的比例 ************************//
+
+                List[] l1 = this.mkBarplotofDAF(dafABD[0], 20);
+                List[] l2 = this.mkBarplotofDAF(dafABD[1], 20);
+                List[] l3 = this.mkBarplotofDAF(dafABD[2], 20);
+                List[] l4 = this.mkBarplotofDAF(dafAB[0], 20);
+                List[] l5 = this.mkBarplotofDAF(dafAB[1], 20);
+                List[] l6 = this.mkBarplotofDAF(dafAB[2], 20);
+                List[] l7 = this.mkBarplotofDAF(daf[0], 20);
+                List[] l8 = this.mkBarplotofDAF(daf[1], 20);
+                List[] l9 = this.mkBarplotofDAF(daf[2], 20);
+                //************************************ 第四阶段，开始写出文件 ************************//
+                bw.write("Xaxes\tDAF_ABD\tDAF_AB\tDAF\tGroup");
+                bw.newLine();
+                for (int i = 0; i < l1[0].size(); i++) {
+                    bw.write(String.valueOf(l1[0].get(i)) + "\t" + String.valueOf(l1[1].get(i)) + "\t" + String.valueOf(l4[1].get(i))+ "\t" + String.valueOf(l7[1].get(i)) + "\t" + group[0]);
+                    bw.newLine();
+                }
+                for (int i = 0; i < l1[0].size(); i++) {
+                    bw.write(String.valueOf(l1[0].get(i))+ "\t" + String.valueOf(l2[1].get(i)) + "\t" + String.valueOf(l5[1].get(i))+ "\t" + String.valueOf(l8[1].get(i))+ "\t" + group[1]);
+                    bw.newLine();
+                }
+                for (int i = 0; i < l1[0].size(); i++) {
+                    bw.write(String.valueOf(l1[0].get(i)) + "\t"+ String.valueOf(l3[1].get(i)) + "\t" + String.valueOf(l6[1].get(i))+ "\t" + String.valueOf(l9[1].get(i))+ "\t" + group[2]);
+                    bw.newLine();
+                }
+
+
+//                bw.write("Xaxes\tDeleterious_SNPs\tNonsynonymous_tolerant_SNPs\tSynonymous_SNPs\tGroup");
+//                bw.newLine();
+//                for (int i = 0; i < l1[0].size(); i++) {
+//                    bw.write(String.valueOf(l1[0].get(i)) + "\t" + String.valueOf(l1[1].get(i)) + "\t" + String.valueOf(l2[1].get(i))+ "\t" + String.valueOf(l3[1].get(i)) + "\t" + "Hexaploid");
+//                    bw.newLine();
+//                }
+//                for (int i = 0; i < l1[0].size(); i++) {
+//                    bw.write(String.valueOf(l1[0].get(i))+ "\t" + String.valueOf(l4[1].get(i)) + "\t" + String.valueOf(l5[1].get(i))+ "\t" + String.valueOf(l6[1].get(i))+ "\t" + "Tetraploid");
+//                    bw.newLine();
+//                }
+//                for (int i = 0; i < l1[0].size(); i++) {
+//                    bw.write(String.valueOf(l1[0].get(i)) + "\t"+ String.valueOf(l7[1].get(i)) + "\t" + String.valueOf(l8[1].get(i))+ "\t" + String.valueOf(l9[1].get(i))+ "\t" + "Diploid");
+//                    bw.newLine();
+//                }
+
+                bw.flush();
+                bw.close();
+
+                //
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
+        });
+
+    }
+
+    public List[] mkBarplotofDAF(TDoubleArrayList dafList, int bins) {
+        List[] l = new List[2];
+        for (int i = 0; i < l.length; i++) {
+            l[i] = new ArrayList();
+        }
+//        int bins = Integer.parseInt(binNum);
+        double length = Double.parseDouble("1");
+
+        //先建立bound数组,假如 bin=20,那么每个bin的大小是0.05 bound[0] =0; bound[1]=0.05, bound[19]=0.95 即只取了区间的左边开始位置
+        double[] bound = new double[bins];
+        for (int i = 1; i < bound.length; i++) {
+            bound[i] = (double) length / bins * i;
+        }
+
+        double[] daf = new double[bins]; //确定落入每个区间的个数，进行计算，20个bin，20个count数字
+        for (int i = 0; i < dafList.size(); i++) { //对每个daf值进行区间的判断
+            double value = dafList.get(i);
+            int index = Arrays.binarySearch(bound, value);
+            if (index < 0) {
+                index = -index - 2;
+            }
+            //例如 0.112021856在bound搜索结果为-13，则此时index为11，及0.1-0.2范围内。好神奇！！又如0.112394，index也是11.
+            //又如0.21652在bound搜索结果中为-23,这样index=21， 这样就将maf的值按照1-100分布开来。
+            daf[index]++; //值落入第i种变异的第index个区间的个数
+        }
+        //开始计算每个区间落入点的比例
+        for (int i = 0; i < daf.length; i++) {
+            daf[i] = daf[i] / dafList.size();
+        }
+        System.out.println("This list is " + dafList.size() + "  size");
+        //开始写出文件
+        try {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < bound.length; i++) {
+                String coordinate = String.format("%.3f", (double) bound[i] + (double) (length / bins) / (double) 2);
+                String proportion = String.format("%.4f", daf[i]);
+                l[0].add(coordinate);
+                l[1].add(proportion);
+                System.out.println(coordinate + "   " + proportion);
+            }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+        return l;
     }
 
     public void mergeExonSNPAnnotation(){

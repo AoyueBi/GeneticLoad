@@ -24,7 +24,7 @@ public class EstSFS {
 //        this.sampleOutdata();
 //        this.addAnc();
 
-        this.mergeDelgenicSNPAnnotation();
+//        this.mergeDelgenicSNPAnnotation();
 //        this.countDeleteriousVMapII_byChr();
 //        this.countDeleteriousVMapIIHighDepth();
 //        this.mergeFinalfilebySub();
@@ -40,7 +40,7 @@ public class EstSFS {
          */
 //        this.splitChrfromAncestralLipeng();
 //        this.addAnc();
-        this.mergeExonSNPAnnotation();
+//        this.mergeExonSNPAnnotation();
 
         /**
          * 计算DAF值，并且生成表格用来画图
@@ -48,7 +48,7 @@ public class EstSFS {
 //        this.calDAF(); //单线程计算
 //        this.addDAF_parallel(); //多线程运行
 //        this.mergeExonSNPAnnotation(); //计算后结果合并
-//        this.mkDAFtable(); //开始分bin
+        this.mkDAFtable(); //开始分bin
 
         /**
          * 处理达兴的简约法ancestral allele Pasimony

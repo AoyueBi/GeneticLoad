@@ -38,9 +38,10 @@ public class GeneticLoadEntrance {
 //        new AoHeterozygosity();
 //        new  FilterVCF2();
 //        new GermplasmInfo();
-//        new VariantsSum();
+        new VariantsSum();
 //        new SIFT();
-        new DeleteriousCountbyIndi();
+//        new DeleteriousCountbyIndi();
+
 
 
     }
@@ -57,9 +58,6 @@ public class GeneticLoadEntrance {
         new EstSFS();
         new DeleteriousCountbyPop();
         new HomoeologGenesAnalysis();
-
-
-
     }
 
     public void infoDB(){

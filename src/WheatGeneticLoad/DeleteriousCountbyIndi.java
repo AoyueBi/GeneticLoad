@@ -26,8 +26,10 @@ public class DeleteriousCountbyIndi {
 
 //        this.countDeleteriousVMapII_byChr();
 //        this.DeltoSynonymousRatio();
+        this.filterLandrace();
 
-        this.getPopmutationBurden();
+        //************* deprecated *****************//
+//        this.getPopmutationBurden();
 //        this.getFiltedExonSNPAnnotation();
 //        this.mergeExonSNPAnnotation();
 //        this.getLargeDelAnnotation();
@@ -320,6 +322,79 @@ public class DeleteriousCountbyIndi {
             e.printStackTrace();
             System.exit(1);
         }
+    }
+
+    /**
+     * 将按照sub和taxa产生的有害突变的结果，进行过滤，使六倍体栽培品种都为欧洲的栽培品种，六倍体的农家种都为欧洲的农家种
+     * 然后进行个体Load的判断
+     */
+    public void filterLandrace(){
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/003_VMap2.1DelCount";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/004_VMap2.1DelCount_filterLR_CL";
+
+        String taxaSummaryFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/taxa_InfoDB.txt";
+        AoFile.readheader(taxaSummaryFileS);
+        HashMap<String, String> taxaGenomeTypeMap = new HashMap();
+        HashMap<String, String> taxaContinentMap = new HashMap();
+        HashMap<String, String> taxaSubspeciesMap = new HashMap();
+        RowTable<String> t = new RowTable (taxaSummaryFileS);
+        for (int i = 0; i < t.getRowNumber(); i++) {
+            taxaGenomeTypeMap.put(t.getCellAsString(i, 0), t.getCellAsString(i, 3));
+            taxaContinentMap.put(t.getCellAsString(i, 0), t.getCellAsString(i, 9));
+            taxaSubspeciesMap.put(t.getCellAsString(i, 0), t.getCellAsString(i, 15));
+        }
+
+        File[] fs = AoFile.getFileArrayInDir(infileDirS);
+        for (int i = 0; i < fs.length; i++) {
+            File f = fs[i];
+            String infileS = f.getAbsolutePath();
+            String outfileS = new File(outfileDirS, f.getName()).getAbsolutePath();
+            try {
+                BufferedReader br = AoFile.readFile(infileS);
+                BufferedWriter bw = AoFile.writeFile(outfileS);
+                String header = br.readLine();
+                bw.write(header);bw.newLine();
+                String temp = null;
+                List<String> l = new ArrayList<>();
+                int cnt = 0;
+                while ((temp = br.readLine()) != null) {
+                    l = PStringUtils.fastSplit(temp);
+                    cnt++;
+                    String taxa = l.get(0);
+                    //过滤条件，如果是六倍体，如果是landrace，如果是欧洲的，就写出来；如果是cultivar,如果是欧洲的，也写出来； 如果不是六倍体，全都写出来。
+                    //故，我需要知道倍性，大洲，树上的亚群信息
+                    String genomeType = taxaGenomeTypeMap.get(taxa);
+                    String continent = taxaContinentMap.get(taxa);
+                    String subspecies = taxaSubspeciesMap.get(taxa);
+                    if (genomeType.equals("AABBDD")){
+                        if (subspecies.equals("Landrace")){
+                            if (continent.equals("Europe")){
+                                bw.write(temp);
+                                bw.newLine();
+                            }
+                        }
+                        if (subspecies.equals("Cultivar")){
+                            bw.write(temp);
+                            bw.newLine();
+                        }
+                    }
+                    else {
+                        bw.write(temp);
+                        bw.newLine();
+                    }
+
+                }
+                br.close();
+                bw.flush();
+                bw.close();
+                System.out.println();
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
+
+        }
+
     }
 
     /**

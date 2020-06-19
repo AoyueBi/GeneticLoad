@@ -7,16 +7,15 @@ package AoUtils;
 
 import gnu.trove.list.array.TIntArrayList;
 
+import pgl.infra.table.RowTable;
 import pgl.infra.utils.IOUtils;
 import pgl.infra.utils.PStringUtils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+
 import pgl.infra.pos.ChrPos;
 
 /**
@@ -39,6 +38,23 @@ public class Mode {
 
 
 
+    }
+
+    /**
+     * 批量获取taxa某些属性
+     */
+    public void getTaxaHashMap(){
+        String taxaSummaryFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/taxaList.txt";
+        AoFile.readheader(taxaSummaryFileS);
+        HashMap<String, String> taxaGroupMap = new HashMap();
+        HashMap<String, String> taxaSubMap = new HashMap();
+        HashMap<String, String> taxaGroupIDMap = new HashMap();
+        RowTable<String> t = new RowTable (taxaSummaryFileS);
+        for (int i = 0; i < t.getRowNumber(); i++) {
+            taxaGroupMap.put(t.getCellAsString(i, 0), t.getCellAsString(i, 10));
+            taxaSubMap.put(t.getCellAsString(i, 0), t.getCellAsString(i, 11));
+            taxaGroupIDMap.put(t.getCellAsString(i, 0), t.getCellAsString(i, 7));
+        }
     }
 
     /**
