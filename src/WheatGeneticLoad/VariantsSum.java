@@ -74,26 +74,31 @@ public class VariantsSum {
 
 //        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/006_DAFtable_barley_secale_parsimony_filterHeter0.05";
 
+        //********************  需要手动设置 START ****************************//
 //        String infileDirS = ""; 输入文件是合并的EXON Annotation数据库
-//        String outfileDirS = "";
+//        String outfileDirS = ""; //输出文件的目录，即会有6个文件 A sub B sub  D sub  only ABD only AB only D
+        //********************  需要手动设置 START ****************************//
 
         String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/015_exonSNPAnnotation_merge/"; //001_exonSNP_anno.txt.gz
-        String outfileDirS = "";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/005_DAFtable_barley_secale_parsimony";
 
         new File(outfileDirS).mkdirs();
-
+        AoFile.readheader("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/015_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz");
+        int a =3;
         List<File> fsList = AoFile.getFileListInDir(infileDirS);
         fsList.stream().forEach(f -> {
             try {
                 //************************************ 第一阶段，定义输出输出文件，读写文件 ************************//
                 String infileS = f.getAbsolutePath();
+                //********************  需要手动设置 START ****************************//
 //                String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "binTable_onlyABD.txt").getAbsolutePath(); //只能画总体的ABD六倍体
 //                String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "binTable_onlyAB.txt").getAbsolutePath(); //只能画总体的AB四倍体
 //                String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "binTable_onlyD.txt").getAbsolutePath(); //只能画总体的D二倍体
 //
 //                String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "binTable_Asubgenome.txt").getAbsolutePath(); //只有A亚基因组的结果
-//                String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "binTable_Bsubgenome.txt").getAbsolutePath(); //只有A亚基因组的结果
-                String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "binTable_Dsubgenome.txt").getAbsolutePath(); //只有A亚基因组的结果
+//                String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "binTable_Bsubgenome.txt").getAbsolutePath(); //只有B亚基因组的结果
+                String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "binTable_Dsubgenome.txt").getAbsolutePath(); //只有D亚基因组的结果
+                //********************  需要手动设置 END ****************************//
 
                 BufferedReader br = AoFile.readFile(infileS);
                 BufferedWriter bw = AoFile.writeFile(outfileS);
@@ -116,7 +121,6 @@ public class VariantsSum {
 
                 double sift = Double.NaN;
                 double gerp = Double.NaN;
-                double phylop = Double.NaN;
                 String temp = null;
                 String header = br.readLine();
                 List<String> l = new ArrayList();
@@ -124,30 +128,24 @@ public class VariantsSum {
                     l = PStringUtils.fastSplit(temp);
                     int chrID = Integer.parseInt(l.get(1));
                     int posID = Integer.parseInt(l.get(2));
-                    String chr = RefV1Utils.getChromosome(chrID,posID);
+                    String chr = RefV1Utils.getChromosome(chrID,posID); //根据 chr pos 获取该位点坐在的亚基因组
+
+                    //********************  需要手动设置 START ****************************//
 //                    if(chr.contains("D"))continue; //只能用于AABB总体画图
 //                    if(chr.contains("A") || chr.contains("B"))continue; //只能用于DD总体画图
 //
 //                    if(chr.contains("B") || chr.contains("D"))continue; //只能用于A亚基因组
 //                    if(chr.contains("A") || chr.contains("D"))continue; //只能用于B亚基因组
                     if(chr.contains("A") || chr.contains("B"))continue; //只能用于D亚基因组
+                    //********************  需要手动设置 END ****************************//
                     System.out.println(temp);
                     String type = l.get(12);
                     String siftscore = l.get(13);
-                    String gerpscore = l.get(20);
-//                    String phylopscore = l.get(18);
+                    String gerpscore = l.get(18);
 
-//                    String DAF_ABD = l.get(26); //大麦黑麦为ancestral allele计算的DAF值
-//                    String DAF_AB = l.get(27); //大麦黑麦为ancestral allele计算的DAF值
-//                    String DAF = l.get(25); //大麦黑麦为ancestral allele计算的DAF值
-
-//                    String DAF_ABD = l.get(29); //大麦乌拉尔图为ancestral allele计算的DAF值
-//                    String DAF_AB = l.get(30); //大麦乌拉尔图为ancestral allele计算的DAF值
-//                    String DAF = l.get(28); //大麦乌拉尔图为ancestral allele计算的DAF值
-
-                    String DAF_ABD = l.get(33); //大麦黑麦Pasimony法为ancestral allele计算的DAF值
-                    String DAF_AB = l.get(34); //大麦黑麦Pasimony法为ancestral allele计算的DAF值
-                    String DAF = l.get(32); //大麦黑麦Pasimony法为ancestral allele计算的DAF值
+                    String DAF_ABD = l.get(16); //大麦黑麦Parsimony法为ancestral allele计算的DAF值
+                    String DAF_AB = l.get(17); //大麦黑麦Parsimony法为ancestral allele计算的DAF值
+                    String DAF = l.get(15); //大麦黑麦Parsimony法为ancestral allele计算的DAF值
 
                     //如果变异类型是同义突变，那么就不用做任何判断；直接加上分组 Synonymous 并写入
                     //如果变异类型是非同义突变，且SIFT值存在，且SIFT值小于0.5，gerp和phylop存在，且gerp大于1，且phylop大于0.5；那么加上分组 Deleterious 并写入； gerp 值和 phylop值不满足条件的，那么就不进行分组
@@ -169,14 +167,83 @@ public class VariantsSum {
 
                     }
                     if (type.equals("NONSYNONYMOUS")) {
-                        if (!siftscore.startsWith("N")) {
-                            sift = Double.parseDouble(siftscore);
-                            if (sift < 0.05) {
-                                //添加gerp phyloP分组信息
-//                                if (!gerpscore.startsWith("N") && (!phylopscore.startsWith("N"))) { //均有值存在
+
+                        if (!gerpscore.startsWith("N")) { //均有值存在
+                            gerp = Double.parseDouble(gerpscore);
+                            if (gerp > 1) {
+                                if (!DAF.startsWith("N")) { //说明是有值的
+                                    double value = Double.parseDouble(DAF);
+                                    daf[0].add(value);
+                                }
+                                if (!DAF_ABD.startsWith("N")) { //说明是有值的
+                                    double value = Double.parseDouble(DAF_ABD);
+                                    dafABD[0].add(value);
+                                }
+                                if (!DAF_AB.startsWith("N")) { //说明是有值的
+                                    double value = Double.parseDouble(DAF_AB);
+                                    dafAB[0].add(value);
+                                }
+                            }else if (gerp <= 1){ //说明是 非同义突变并且gerp小于1
+                                if (!DAF.startsWith("N")) { //说明是有值的
+                                    double value = Double.parseDouble(DAF);
+                                    daf[1].add(value);
+                                }
+                                if (!DAF_ABD.startsWith("N")) { //说明是有值的
+                                    double value = Double.parseDouble(DAF_ABD);
+                                    dafABD[1].add(value);
+                                }
+                                if (!DAF_AB.startsWith("N")) { //说明是有值的
+                                    double value = Double.parseDouble(DAF_AB);
+                                    dafAB[1].add(value);
+                                }
+
+                            }
+                        }
+
+//                        if (!siftscore.startsWith("N")) {
+//                            sift = Double.parseDouble(siftscore);
+//                            if (sift < 0.05) {
+//                                //添加gerp phyloP分组信息 情况一：
+////                                if (!gerpscore.startsWith("N") && (!phylopscore.startsWith("N"))) { //均有值存在
+////                                    gerp = Double.parseDouble(gerpscore);
+////                                    phylop = Double.parseDouble(phylopscore);
+////                                    if (gerp > 1 && (phylop > 0.5)) {
+////                                        if (!DAF.startsWith("N")) { //说明是有值的
+////                                            double value = Double.parseDouble(DAF);
+////                                            daf[0].add(value);
+////                                        }
+////                                        if (!DAF_ABD.startsWith("N")) { //说明是有值的
+////                                            double value = Double.parseDouble(DAF_ABD);
+////                                            dafABD[0].add(value);
+////                                        }
+////                                        if (!DAF_AB.startsWith("N")) { //说明是有值的
+////                                            double value = Double.parseDouble(DAF_AB);
+////                                            dafAB[0].add(value);
+////                                        }
+////                                    }
+////                                }
+//
+//
+//                                //不添加gerp phyloP分组信息 情况二：
+////**************************** 可供选择 *********************************************** //
+////                                if (!DAF.startsWith("N")) { //说明是有值的
+////                                    double value = Double.parseDouble(DAF);
+////                                    daf[0].add(value);
+////                                }
+////                                if (!DAF_ABD.startsWith("N")) { //说明是有值的
+////                                    double value = Double.parseDouble(DAF_ABD);
+////                                    dafABD[0].add(value);
+////                                }
+////                                if (!DAF_AB.startsWith("N")) { //说明是有值的
+////                                    double value = Double.parseDouble(DAF_AB);
+////                                    dafAB[0].add(value);
+//
+////**************************** 可供选择 *********************************************** //
+//
+//                                //添加gerp 分组信息 情况三：
+//                                if (!gerpscore.startsWith("N")) { //均有值存在
 //                                    gerp = Double.parseDouble(gerpscore);
-//                                    phylop = Double.parseDouble(phylopscore);
-//                                    if (gerp > 1 && (phylop > 0.5)) {
+//                                    if (gerp > 1) {
 //                                        if (!DAF.startsWith("N")) { //说明是有值的
 //                                            double value = Double.parseDouble(DAF);
 //                                            daf[0].add(value);
@@ -191,59 +258,24 @@ public class VariantsSum {
 //                                        }
 //                                    }
 //                                }
-
-
-                                //不添加gerp phyloP分组信息
-//**************************** 可供选择 *********************************************** //
+//
+//                            } else { //sift值大于等于0.05
+//
 //                                if (!DAF.startsWith("N")) { //说明是有值的
 //                                    double value = Double.parseDouble(DAF);
-//                                    daf[0].add(value);
+//                                    daf[1].add(value);
 //                                }
 //                                if (!DAF_ABD.startsWith("N")) { //说明是有值的
 //                                    double value = Double.parseDouble(DAF_ABD);
-//                                    dafABD[0].add(value);
+//                                    dafABD[1].add(value);
 //                                }
 //                                if (!DAF_AB.startsWith("N")) { //说明是有值的
 //                                    double value = Double.parseDouble(DAF_AB);
-//                                    dafAB[0].add(value);
-
-//**************************** 可供选择 *********************************************** //
-
-                                if (!gerpscore.startsWith("N")) { //均有值存在
-                                    gerp = Double.parseDouble(gerpscore);
-                                    if (gerp > 1) {
-                                        if (!DAF.startsWith("N")) { //说明是有值的
-                                            double value = Double.parseDouble(DAF);
-                                            daf[0].add(value);
-                                        }
-                                        if (!DAF_ABD.startsWith("N")) { //说明是有值的
-                                            double value = Double.parseDouble(DAF_ABD);
-                                            dafABD[0].add(value);
-                                        }
-                                        if (!DAF_AB.startsWith("N")) { //说明是有值的
-                                            double value = Double.parseDouble(DAF_AB);
-                                            dafAB[0].add(value);
-                                        }
-                                    }
-                                }
-
-                            } else { //sift值大于等于0.05
-
-                                if (!DAF.startsWith("N")) { //说明是有值的
-                                    double value = Double.parseDouble(DAF);
-                                    daf[1].add(value);
-                                }
-                                if (!DAF_ABD.startsWith("N")) { //说明是有值的
-                                    double value = Double.parseDouble(DAF_ABD);
-                                    dafABD[1].add(value);
-                                }
-                                if (!DAF_AB.startsWith("N")) { //说明是有值的
-                                    double value = Double.parseDouble(DAF_AB);
-                                    dafAB[1].add(value);
-                                }
-                            }
-                        }
-                    }
+//                                    dafAB[1].add(value);
+//                                }
+//                            } //if (sift < 0.05) {
+//                        } //if (!siftscore.startsWith("N")) {
+                    } //if (type.equals("NONSYNONYMOUS")) {
                 }
                 br.close(); //文件阅读完毕！！
 
