@@ -164,7 +164,7 @@ public class AoFile {
     }
 
     /**
-     * 获取表格的行数，不包括表头
+     * 获取表格的列数，不包括表头
      * @param infileS
      * @return
      */

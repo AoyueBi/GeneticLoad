@@ -7,6 +7,7 @@ package Entrance;
 
 import AoUtils.CountSites;
 import GermplasmInfo.GermplasmInfo;
+import GermplasmInfo.TaxaDB;
 import Plot.PCA;
 import PopulationAnalysis.DeleteriousCountbyPop;
 import WheatGeneticLoad.*;
@@ -36,11 +37,12 @@ public class GeneticLoadEntrance {
 //        new RebuildVCF();
 //        new ScriptHapscanner2();
 //        new AoHeterozygosity();
-        new  FilterVCF2();
+//        new  FilterVCF2();
 //        new GermplasmInfo();
-//        new VariantsSum();
+        new VariantsSum();
 //        new SIFT();
 //        new DeleteriousCountbyIndi();
+//        new TaxaDB();
 
 
 

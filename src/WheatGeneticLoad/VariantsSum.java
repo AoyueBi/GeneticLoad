@@ -8,6 +8,7 @@ package WheatGeneticLoad;
 import AoUtils.AoFile;
 import AoUtils.CalVCF;
 import AoUtils.CountSites;
+import GermplasmInfo.TaxaDB;
 import gnu.trove.list.TIntList;
 import gnu.trove.set.hash.TIntHashSet;
 import pgl.graph.tSaw.TablesawUtils;
@@ -39,18 +40,20 @@ public class VariantsSum {
      */
 
     public void variantsSumFromRebuildVCF(){
-//        this.extractInfoFromVMap2();
+        this.extractInfoFromVMap2();
 //        this.mkExonVCF();
 //        this.mkExonAnnotation(); //弃用
-//        this.mkExonAnnotation2();
-//        this.addSift();
+        this.mkExonAnnotation2();
+        this.addSift();
 //        this.addAncestral();
 //        this.addDAF_parallel();
 //        this.addGerp();
 //        this.mergeExonSNPAnnotation();
-        this.getDAFtable();
+//        this.getDAFtable();
 
     }
+
+
 
 
     /**
