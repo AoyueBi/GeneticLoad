@@ -78,21 +78,17 @@ public class FilterVCF2 {
          * make vmap2.1
          */
 
-        this.scriptFilterSNPtoBi();
+//        this.scriptFilterSNPtoBi();
 
         /**
          * 提取六四二倍体的VCF
          */
 
-        this.runJarParallele();
+//        this.runJarParallele();
 //        SplitScript.splitScript2("/Users/Aoyue/Documents/sh_vmap2.0tovmap2.1_20200526.sh",21,2);
-//        this.getsharedSNP();
+//        this.getsharedSNP(); //获取六倍体四倍体二倍体共有的SNP
 //        this.mergeSharedSNP();
-
-//        new CountSites().mergeChr1Aand2A_bysubgenome();
-//        this.getScaledPos();
-//        SplitScript.splitScript2("/Users/Aoyue/Documents/bgzip.sh",7,6);
-
+        CountSites.mergeChr1Aand2A_bysubgenome("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/029_countSiteSummary/003_pop/001_getsharedSNP_merged.txt","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/029_countSiteSummary/003_pop/001_getsharedSNP_merged_bysub.txt");
 
 
     }
@@ -124,44 +120,11 @@ public class FilterVCF2 {
 
 
 
-    /**
-     * 获取重组率在标准化的坐标上的分布
-     */
-    public void getScaledPos(){
-        String infileS = "/Users/Aoyue/Documents/Data/wheat/article/iwgsc_refseqv1.0_recombination_rate_analysis/iwgsc_refseqv1.0_recombination_rate.txt";
-        String outfileS = "/Users/Aoyue/Documents/Data/wheat/article/iwgsc_refseqv1.0_recombination_rate_analysis/iwgsc_refseqv1.0_recombination_rate_addScalePos.txt";
-        try {
-            BufferedReader br = AoFile.readFile(infileS);
-            BufferedWriter bw = AoFile.writeFile(outfileS);
-            String temp = null;
-            String header = br.readLine();
-            bw.write(header + "\tPosScale");
-            bw.newLine();
-            List<String> l = new ArrayList<>();
-            int cnt = 0;
-            while ((temp = br.readLine()) != null) {
-                l = PStringUtils.fastSplit(temp);
-                cnt++;
 
-                String chromosome = l.get(0).substring(3);
-                int posOnchromosome = Integer.parseInt(l.get(1));
-                String posScaled = WheatUtils.getScaledPos(chromosome,posOnchromosome);
-                bw.write(temp + "\t" + posScaled);
-                bw.newLine();
-            }
-            br.close();
-            bw.flush();
-            bw.close();
-            System.out.println();
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-    }
 
 
     public void mergeSharedSNP(){
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/029_countSiteSummary/003_pop/log_getsharedSNP_20200526.txt";
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/029_countSiteSummary/003_pop/log_getsharedSNP_20200621.txt";
         String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/029_countSiteSummary/003_pop/001_getsharedSNP_merged.txt";
         new CountSites().mergeChr1and2txt_int(infileS,outfileS);
 
@@ -189,11 +152,11 @@ public class FilterVCF2 {
             String outfileS = new File(outfileDirS,f.getName().substring(0,6) + "_sharedSNP_pos.txt").getAbsolutePath();
             if (subgenome.equals("D")) {
                 infileDirS2 = dfileDirS;
-                infileS2 = new File(infileDirS2,"chr" + chr + "_vmap2.1_diploid.vcf").getAbsolutePath();
+                infileS2 = new File(infileDirS2,"chr" + chr + "_vmap2.1_diploid.vcf.gz").getAbsolutePath();
 
             }else{
                 infileDirS2 = abfileDirS;
-                infileS2 = new File(infileDirS2,"chr" + chr + "_vmap2.1_tetraploid.vcf").getAbsolutePath();
+                infileS2 = new File(infileDirS2,"chr" + chr + "_vmap2.1_tetraploid.vcf.gz").getAbsolutePath();
             }
 
             int cntHexaSNP = 0;
@@ -239,7 +202,7 @@ public class FilterVCF2 {
                 e.printStackTrace();
                 System.exit(1);
             }
-            // java -Xmx200g -jar PlantGenetics.jar > log_getsharedSNP_20200526.txt 2>&1 &
+            // java -Xmx200g -jar PlantGenetics.jar > log_getsharedSNP_20200621.txt 2>&1 &
         });
     }
 

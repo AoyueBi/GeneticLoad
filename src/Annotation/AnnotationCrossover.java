@@ -1,13 +1,17 @@
 package Annotation;
 
 
+import AoUtils.AoFile;
+import AoUtils.WheatUtils;
 import analysis.wheat.VMap2.VMapDBUtils;
 import gnu.trove.list.array.TFloatArrayList;
 import gnu.trove.list.array.TIntArrayList;
 
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import pgl.infra.table.ColumnTable;
 import pgl.infra.table.RowTable;
@@ -26,6 +30,41 @@ public class AnnotationCrossover {
 //        this.convertCoordinate();
         this.addRecombination();
 
+    }
+
+    /**
+     * 获取重组率在标准化的坐标上的分布
+     */
+    public void getScaledPos(){
+        String infileS = "/Users/Aoyue/Documents/Data/wheat/article/iwgsc_refseqv1.0_recombination_rate_analysis/iwgsc_refseqv1.0_recombination_rate.txt";
+        String outfileS = "/Users/Aoyue/Documents/Data/wheat/article/iwgsc_refseqv1.0_recombination_rate_analysis/iwgsc_refseqv1.0_recombination_rate_addScalePos.txt";
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = null;
+            String header = br.readLine();
+            bw.write(header + "\tPosScale");
+            bw.newLine();
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+
+                String chromosome = l.get(0).substring(3);
+                int posOnchromosome = Integer.parseInt(l.get(1));
+                String posScaled = WheatUtils.getScaledPos(chromosome,posOnchromosome);
+                bw.write(temp + "\t" + posScaled);
+                bw.newLine();
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
     /**

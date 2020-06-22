@@ -3024,13 +3024,8 @@ public class CountSites {
      * 根据1 -42 条染色体的统计，转换成 1A- 7A 形式的统计，再装换成 A sub  B sub 的统计；
      * 本方法只解决 1A 2A 3A 到 A sub  的统计
      */
-    public void mergeChr1Aand2A_bysubgenome(){
-        String infileS = "/Users/Aoyue/Documents/test.txt";
-        String outfileS = "/Users/Aoyue/Documents/out.txt";
-
+    public static void mergeChr1Aand2A_bysubgenome(String infileS, String outfileS){
         int cntcolumn = AoFile.countFileColumnNumber(infileS)-1;
-
-
         File parent = new File(outfileS).getParentFile();
         String outfileS1 = new File(parent,"Asub_aoyue.txt").getAbsolutePath();
         String outfileS2 = new File(parent,"Bsub_aoyue.txt").getAbsolutePath();
