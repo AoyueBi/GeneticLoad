@@ -79,7 +79,7 @@ public class WheatUtils {
             "chr7D\t336300000\t341700000";
 
 
-    private static HashMap<String,Integer> hmChromosomeLength = null;
+    private static HashMap<String,Integer> hmChromosomeLength = null; //根据染色体号找到该染色体的长度
 
     private static boolean build = buildMaps ();
 
@@ -89,7 +89,7 @@ public class WheatUtils {
         String[] temp = null;
         for (int i = 0; i < temps.length; i++) {
             temp = temps[i].split("\t");
-            if (i%2 == 0) continue; // i=1,第2行，i除以2有余数
+            if (i%2 == 0) continue; // i=0,第1行，i除以2没有余数，过滤
             hmChromosomeLength.put(temp[3].replaceFirst("chr", ""), Integer.parseInt(temp[5]));
         }
         return true;
