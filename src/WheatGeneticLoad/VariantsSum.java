@@ -6,6 +6,7 @@
 package WheatGeneticLoad;
 
 import AoUtils.AoFile;
+import AoUtils.AoMath;
 import AoUtils.CalVCF;
 import AoUtils.CountSites;
 import GermplasmInfo.TaxaDB;
@@ -40,20 +41,56 @@ public class VariantsSum {
      */
 
     public void variantsSumFromRebuildVCF(){
-        this.extractInfoFromVMap2();
+//        this.extractInfoFromVMap2();
 //        this.mkExonVCF();
 //        this.mkExonAnnotation(); //弃用
-        this.mkExonAnnotation2();
-        this.addSift();
+//        this.mkExonAnnotation2();
+//        this.addSift();
 //        this.addAncestral();
 //        this.addDAF_parallel();
 //        this.addGerp();
 //        this.mergeExonSNPAnnotation();
 //        this.getDAFtable();
+//        this.statisticCodingSNP();
+        this.statisticNonsynSNP();
+
+
 
     }
 
+    public void getDeleteriouscount(){
 
+    }
+
+    /**
+     * 统计编码区的SNP个数，因外显子包含5'UTR CDS 3'UTR，我们只统计CDS区域的SNP个数
+     */
+    public void statisticNonsynSNP(){
+        //从总的合并的注释文件中获取信息
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/015_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
+        AoFile.readheader(infileS);
+        AoMath.countCaseInGroup(infileS,12);
+        //NA	3
+        //STOP-LOSS	1138
+        //START-LOST	710
+        //SYNONYMOUS	381280
+        //NONCODING	408589
+        //NONSYNONYMOUS	421555
+        //STOP-GAIN	9194
+    }
+
+    /**
+     * 统计编码区的SNP个数，因外显子包含5'UTR CDS 3'UTR，我们只统计CDS区域的SNP个数
+     */
+    public void statisticCodingSNP(){
+        //从总的合并的注释文件中获取信息
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/015_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
+        AoFile.readheader(infileS);
+        AoMath.countCaseInGroup(infileS,11);
+        //CDS	813880
+        //UTR_3	329116
+        //UTR_5	79473
+    }
 
 
     /**
@@ -776,7 +813,7 @@ public class VariantsSum {
     public void mkExonAnnotation2(){
         int subLength = 200; //取VCF文件的前200个字符串
         String vmapDirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/002_exonSNPVCF";
-        String outDirS = " ";
+        String outDirS = "";
         File[] fs = AoFile.getFileArrayInDir(vmapDirS);
         List<File> vmapList = Arrays.asList(fs);
         Collections.sort(vmapList);
@@ -873,12 +910,6 @@ public class VariantsSum {
 
     }
 
-    /**
-     *
-     */
-    public void getPosTransFile(){
-
-    }
     public void mkExonAnnotation() {
         String inDirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/001_genicSNPByChr";
         String outDirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/003_exonSNPAnnotation";
@@ -1108,6 +1139,7 @@ public class VariantsSum {
     public VariantsSum() {
 
         this.variantsSumFromRebuildVCF();
+
 //        new CountSites().mergeChr1Aand2A_bysubgenome();
 
 //        this.mkSNPsummary("/data4/home/aoyue/vmap2/genotype/mergedVCF/002_biMAF0.005VCF/", "/data4/home/aoyue/vmap2/analysis/015_annoDB/001_step1/");
@@ -1209,7 +1241,6 @@ public class VariantsSum {
          * 检查原文件中有没有 同义突变是值小于0.05的   有！！！
          */
 //        new AoMath().countValue("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/009_output/000_xls");
-//        this.getTranscriptSum();
 //        this.addSIFTGroup_basedGERP();
 
         /**
