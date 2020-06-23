@@ -52,9 +52,66 @@ public class VariantsSum {
 //        this.statisticNonsynSNP();
 //        this.getDeleteriouscount();
 //        this.getDeleteriousAnnotation();
-        this.countDeleteriousSNP_bySub();
+//        this.countDeleteriousSNP_bySub();
+        this.getGERPdistrbutionFile();
 
 
+
+    }
+
+    /**
+     * 为画出GERP的分布，将文件添加分组并提取特定列数
+     * 根据SIFT值，在文件最后再添加一列分组信息 Synonymous
+     * Nonsynonymous_tolerent Deleterious
+     *
+     */
+    public void getGERPdistrbutionFile() {
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/015_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/008_gerpDistribution/001_exon_gerpValue_addGroup.txt";
+        AoFile.readheader(infileS);
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String header = br.readLine();
+            bw.write("###The group is based on sift value");bw.newLine();
+            bw.write("Chr\tPos\tGerp\tGroup\tSub");bw.newLine();
+            String temp = null;
+            List<String> l = new ArrayList();
+            double siftd = Double.NaN;
+            double gerpd = Double.NaN;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                int chr = Integer.parseInt(l.get(1)); //染色体
+                String sub = RefV1Utils.getSubgenomeFromChrID(chr);
+                int pos = Integer.parseInt(l.get(2)); //################ 需要修改 需要修改 需要修改 ################
+                String variantType = l.get(12); //################ 需要修改 需要修改 需要修改 ################
+                String sift = l.get(13); //################ 需要修改 需要修改 需要修改 ################
+                String gerp = l.get(18); //################ 需要修改 需要修改 需要修改 ################
+
+
+                if (variantType.equals("SYNONYMOUS")){
+                    bw.write(chr + "\t" + pos + "\t" + gerp + "\t" + "Synonymous" + "\t" + sub );
+                    bw.newLine();
+                }
+                if (!sift.startsWith("N")){
+                    siftd = Double.parseDouble(sift);
+                    if (siftd >=0.05 && variantType.equals("NONSYNONYMOUS")) {
+                        bw.write(chr + "\t" + pos + "\t" + gerp + "\t" + "Nonsynonymous-tolerant"+ "\t" + sub  );
+                        bw.newLine();
+                    }
+                    if (siftd < 0.05 && variantType.equals("NONSYNONYMOUS")) {
+                        bw.write(chr + "\t" + pos + "\t" + gerp + "\t" + "Deleterious"+ "\t" + sub  );
+                        bw.newLine();
+                    }
+                }
+            }
+            bw.flush();
+            bw.close();
+            br.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
 
     }
 
@@ -79,6 +136,9 @@ public class VariantsSum {
             String header = br.readLine();
             List<String> l = new ArrayList<>();
             int cnt = 0;
+            double siftd = Double.NaN;
+            double gerpd = Double.NaN;
+
             while ((temp = br.readLine()) != null) {
                 l = PStringUtils.fastSplit(temp);
                 int chr = Integer.parseInt(l.get(1)); //染色体
@@ -90,8 +150,6 @@ public class VariantsSum {
                 String gerp = l.get(18); //################ 需要修改 需要修改 需要修改 ################
 
                 //分情况：sift有值，并且小于0.5
-                double siftd = Double.NaN;
-                double gerpd = Double.NaN;
                 if (variantType.equals("SYNONYMOUS")){
                     count[4][index]++;
                     total[4]++;
