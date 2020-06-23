@@ -5,10 +5,7 @@
  */
 package WheatGeneticLoad;
 
-import AoUtils.AoFile;
-import AoUtils.AoMath;
-import AoUtils.CalVCF;
-import AoUtils.CountSites;
+import AoUtils.*;
 import GermplasmInfo.TaxaDB;
 import gnu.trove.list.TIntList;
 import gnu.trove.set.hash.TIntHashSet;
@@ -52,14 +49,111 @@ public class VariantsSum {
 //        this.mergeExonSNPAnnotation();
 //        this.getDAFtable();
 //        this.statisticCodingSNP();
-        this.statisticNonsynSNP();
+//        this.statisticNonsynSNP();
+//        this.getDeleteriouscount();
+        this.getDeleteriousAnnotation();
 
 
 
     }
 
-    public void getDeleteriouscount(){
+    /**
+     *  获取满足sift < 0.05, gerp >1 且是 nonsynonymous 的位点的注释信息,并添加一列标注亚基因组的信息
+     */
+    public void getDeleteriousAnnotation(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/015_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/006_exonAnnnotation_sift0.05Gerp1/001_exonSNP_sift0.05_GERP1_anno.txt.gz";
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = null;
+            String header = br.readLine();
+            bw.write(header+ "\tSub"); bw.newLine();
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                int chr = Integer.parseInt(l.get(1)); //染色体
+                String sub = RefV1Utils.getSubgenomeFromChrID(chr);
+                int pos = Integer.parseInt(l.get(2)); //################ 需要修改 需要修改 需要修改 ################
+                String variantType = l.get(12); //################ 需要修改 需要修改 需要修改 ################
+                String sift = l.get(13); //################ 需要修改 需要修改 需要修改 ################
+                String gerp = l.get(18); //################ 需要修改 需要修改 需要修改 ################
 
+                //分情况：sift有值，并且小于0.5
+                double siftd = Double.NaN;
+                double gerpd = Double.NaN;
+                if (!sift.startsWith("N")){
+                    siftd = Double.parseDouble(sift);
+                    if (!gerp.startsWith("N")){
+                        gerpd = Double.parseDouble(gerp);
+                        if (gerpd > 1 && siftd < 0.05 && variantType.equals("NONSYNONYMOUS")) {
+                            bw.write(temp + "\t" + sub);
+                            bw.newLine();
+                        }
+                    }
+                }
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    /**
+     * 计数
+     * ①non-syn 且 sift < 0.05;
+     * ②non-syn 且 gerp >1;
+     * ③non-syn && sift < 0.05 && gerp >1
+     */
+    public void getDeleteriouscount(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/015_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
+        String[] variantGroup = {"Nonsyn-sift","Nonsyn-gerp","Nonsyn-SiftGerp"};
+        int[] count = new int[variantGroup.length];
+
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            String temp = null;
+            String header = br.readLine();
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                int index = Integer.parseInt(l.get(1)) - 1; //染色体号的索引 ################ 需要修改 需要修改 需要修改 ################
+                int pos = Integer.parseInt(l.get(2)); //################ 需要修改 需要修改 需要修改 ################
+                String variantType = l.get(12); //################ 需要修改 需要修改 需要修改 ################
+                String sift = l.get(13); //################ 需要修改 需要修改 需要修改 ################
+                String gerp = l.get(18); //################ 需要修改 需要修改 需要修改 ################
+
+                //分情况：sift有值，并且小于0.5
+                double siftd = Double.NaN;
+                double gerpd = Double.NaN;
+                if (!sift.startsWith("N")){
+                    siftd = Double.parseDouble(sift);
+                    if (siftd < 0.05 && variantType.equals("NONSYNONYMOUS")) count[0]++;
+                    if (!gerp.startsWith("N")){
+                        gerpd = Double.parseDouble(gerp);
+                        if (gerpd > 1 && siftd < 0.05 && variantType.equals("NONSYNONYMOUS")) count[2]++;
+                    }
+                }
+                if (!gerp.startsWith("N")){
+                    gerpd = Double.parseDouble(gerp);
+                    if (gerpd > 1 && variantType.equals("NONSYNONYMOUS")) count[1]++;
+
+                }
+            }
+            br.close();
+            for (int i = 0; i < variantGroup.length; i++) {
+                System.out.println(variantGroup[i] + "\t" + count[i]);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
     /**
