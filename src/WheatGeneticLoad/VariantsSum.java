@@ -51,10 +51,107 @@ public class VariantsSum {
 //        this.statisticCodingSNP();
 //        this.statisticNonsynSNP();
 //        this.getDeleteriouscount();
-        this.getDeleteriousAnnotation();
+//        this.getDeleteriousAnnotation();
+        this.countDeleteriousSNP_bySub();
 
 
 
+    }
+
+    /**
+     * 基于sift < 0.05 和 gerp > 1且是非同义突变，以亚基因组为单位，进行分组计数，后续画柱形图。
+     * 再输出一个总体的统计
+     */
+    public void countDeleteriousSNP_bySub(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/015_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/007_countVariantType/001_variantGroup_Count_bySub.txt";
+        String outfileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/007_countVariantType/001_variantGroup_Count.txt";
+
+        String[] variantGroup = {"Deleterious","GERP-deleterious","Nonsynonymous-tolerant","SIFT-deleterious","Synonymous"};
+        String[] subArray = {"A","B","D"};
+        int[][] count = new int[variantGroup.length][subArray.length];
+        Arrays.sort(subArray);
+        int[] total = new int[variantGroup.length];
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = null;
+            String header = br.readLine();
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                int chr = Integer.parseInt(l.get(1)); //染色体
+                String sub = RefV1Utils.getSubgenomeFromChrID(chr);
+                int index = Arrays.binarySearch(subArray,sub);
+                int pos = Integer.parseInt(l.get(2)); //################ 需要修改 需要修改 需要修改 ################
+                String variantType = l.get(12); //################ 需要修改 需要修改 需要修改 ################
+                String sift = l.get(13); //################ 需要修改 需要修改 需要修改 ################
+                String gerp = l.get(18); //################ 需要修改 需要修改 需要修改 ################
+
+                //分情况：sift有值，并且小于0.5
+                double siftd = Double.NaN;
+                double gerpd = Double.NaN;
+                if (variantType.equals("SYNONYMOUS")){
+                    count[4][index]++;
+                    total[4]++;
+                }
+                if (!sift.startsWith("N")){
+                    siftd = Double.parseDouble(sift);
+                    if (siftd >=0.05 && variantType.equals("NONSYNONYMOUS")) {
+                        count[2][index]++;
+                        total[2]++;
+                    }
+                    if (siftd < 0.05 && variantType.equals("NONSYNONYMOUS")) {
+                        count[3][index]++;
+                        total[3]++;
+                    }
+                    if (!gerp.startsWith("N")){
+                        gerpd = Double.parseDouble(gerp);
+                        if (gerpd > 1 && siftd < 0.05 && variantType.equals("NONSYNONYMOUS")) {
+                            count[0][index]++;
+                            total[0]++;
+                        }
+                    }
+                }
+                if (!gerp.startsWith("N")){
+                    gerpd = Double.parseDouble(gerp);
+                    if (gerpd > 1 && variantType.equals("NONSYNONYMOUS")) {
+                        count[1][index]++;
+                        total[1]++;
+                    }
+                }
+            }
+            br.close();
+
+            bw.write("VariantGroup\tSub\tCount");
+            bw.newLine();
+            for (int i = 0; i < variantGroup.length; i++) {
+                String group1 = variantGroup[i];
+                for (int j = 0; j < subArray.length; j++) {
+                    String sub = subArray[j];
+                    int num = count[i][j];
+                    bw.write(group1 + "\t" + sub + "\t" + num);
+                    bw.newLine();
+                    System.out.println(group1 + "\t" + sub + "\t" + num);
+                }
+            }
+            bw.flush();bw.close();
+
+            bw = AoFile.writeFile(outfileS2);
+            bw.write("VariantGroup\tCount");bw.newLine();
+            for (int i = 0; i < variantGroup.length; i++) {
+                String group = variantGroup[i];
+                int num = total[i];
+                bw.write(group + "\t" + num);
+                bw.newLine();
+                System.out.println(group + "\t" + num);
+            }
+            bw.flush();bw.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
     /**
@@ -149,6 +246,9 @@ public class VariantsSum {
             for (int i = 0; i < variantGroup.length; i++) {
                 System.out.println(variantGroup[i] + "\t" + count[i]);
             }
+            //Nonsyn-sift	129135
+            //Nonsyn-gerp	131456
+            //Nonsyn-SiftGerp	61151
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -1635,29 +1735,13 @@ public class VariantsSum {
         }
         List<String> subgenomeSet = new ArrayList<String>(new HashSet<String>(hm.values()));
         Collections.sort(subgenomeSet);
-        File[] fs = new File(infileDirS).listFiles();
-        for (int i = 0; i < fs.length; i++) {
-            if (fs[i].isHidden()) {
-                System.out.println(fs[i].getName() + " is hidden");
-                fs[i].delete();
-            }
-        }
-        fs = new File(infileDirS).listFiles();
-        List<File> fsList = Arrays.asList(fs);
+        List<File> fsList = AoFile.getFileListInDir(infileDirS);
         fsList.stream().forEach(f -> {
             try {
                 String infileS = f.getAbsolutePath();
-                String outfileS = null;
-                BufferedReader br = null;
-                if (infileS.endsWith(".txt")) {
-                    br = IOUtils.getTextReader(infileS);
-                    outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "_countCase_bySub_basedonlyGERP.txt").getAbsolutePath();
-                } else if (infileS.endsWith(".txt.gz")) {
-                    br = IOUtils.getTextGzipReader(infileS);
-                    outfileS = new File(outfileDirS, f.getName().split(".txt.gz")[0] + "_countCase_bySub_basedonlyGERP.txt").getAbsolutePath();
-                }
-                BufferedWriter bw = IOUtils.getTextWriter(outfileS);
-
+                String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "_countCase_bySub_basedonlyGERP.txt").getAbsolutePath();
+                BufferedReader br = AoFile.readFile(infileS);
+                BufferedWriter bw = AoFile.writeFile(outfileS);
                 RowTable<String> t = new RowTable<>(infileS);
                 List<String> chr = t.getColumn(0);
                 List<String> group = t.getColumn(19);
