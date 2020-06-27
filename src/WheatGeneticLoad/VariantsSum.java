@@ -47,13 +47,14 @@ public class VariantsSum {
 //        this.addDAF_parallel();
 //        this.addGerp();
 //        this.mergeExonSNPAnnotation();
-//        this.getDAFtable();
+        //********************** for calculation ****************//
+        this.getDAFtable();
 //        this.statisticCodingSNP();
 //        this.statisticNonsynSNP();
 //        this.getDeleteriouscount();
 //        this.getDeleteriousAnnotation();
 //        this.countDeleteriousSNP_bySub();
-        this.getGERPdistrbutionFile();
+//        this.getGERPdistrbutionFile();
 
 
 
@@ -242,9 +243,10 @@ public class VariantsSum {
                     siftd = Double.parseDouble(sift);
                     if (!gerp.startsWith("N")){
                         gerpd = Double.parseDouble(gerp);
-                        if (gerpd > 1 && siftd < 0.05 && variantType.equals("NONSYNONYMOUS")) {
+                        if (gerpd > 3 && siftd < 0.05 && variantType.equals("NONSYNONYMOUS")) {
                             bw.write(temp + "\t" + sub);
                             bw.newLine();
+                            cnt++;
                         }
                     }
                 }
@@ -252,6 +254,7 @@ public class VariantsSum {
             br.close();
             bw.flush();
             bw.close();
+            System.out.println(cnt + "\tdel SNPs ");
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
@@ -372,11 +375,10 @@ public class VariantsSum {
         //********************  需要手动设置 START ****************************//
 
         String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/015_exonSNPAnnotation_merge/"; //001_exonSNP_anno.txt.gz
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/005_DAFtable_barley_secale_parsimony";
-
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/005_DAFtable_barley_secale_parsimony";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/005_DAFtable_barley_secale_parsimony/001_DAFtable_siftGERP";
         new File(outfileDirS).mkdirs();
         AoFile.readheader("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/015_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz");
-        int a =3;
         List<File> fsList = AoFile.getFileListInDir(infileDirS);
         fsList.stream().forEach(f -> {
             try {
@@ -425,7 +427,7 @@ public class VariantsSum {
                     //********************  需要手动设置 START ****************************//
 //                    if(chr.contains("D"))continue; //只能用于AABB总体画图
 //                    if(chr.contains("A") || chr.contains("B"))continue; //只能用于DD总体画图
-//
+
 //                    if(chr.contains("B") || chr.contains("D"))continue; //只能用于A亚基因组
 //                    if(chr.contains("A") || chr.contains("D"))continue; //只能用于B亚基因组
                     if(chr.contains("A") || chr.contains("B"))continue; //只能用于D亚基因组
@@ -460,82 +462,46 @@ public class VariantsSum {
                     }
                     if (type.equals("NONSYNONYMOUS")) {
 
-                        if (!gerpscore.startsWith("N")) { //均有值存在
-                            gerp = Double.parseDouble(gerpscore);
-                            if (gerp > 1) {
-                                if (!DAF.startsWith("N")) { //说明是有值的
-                                    double value = Double.parseDouble(DAF);
-                                    daf[0].add(value);
-                                }
-                                if (!DAF_ABD.startsWith("N")) { //说明是有值的
-                                    double value = Double.parseDouble(DAF_ABD);
-                                    dafABD[0].add(value);
-                                }
-                                if (!DAF_AB.startsWith("N")) { //说明是有值的
-                                    double value = Double.parseDouble(DAF_AB);
-                                    dafAB[0].add(value);
-                                }
-                            }else if (gerp <= 1){ //说明是 非同义突变并且gerp小于1
-                                if (!DAF.startsWith("N")) { //说明是有值的
-                                    double value = Double.parseDouble(DAF);
-                                    daf[1].add(value);
-                                }
-                                if (!DAF_ABD.startsWith("N")) { //说明是有值的
-                                    double value = Double.parseDouble(DAF_ABD);
-                                    dafABD[1].add(value);
-                                }
-                                if (!DAF_AB.startsWith("N")) { //说明是有值的
-                                    double value = Double.parseDouble(DAF_AB);
-                                    dafAB[1].add(value);
-                                }
+//                        if (!gerpscore.startsWith("N")) { //均有值存在
+//                            gerp = Double.parseDouble(gerpscore);
+//                            if (gerp > 1) {
+//                                if (!DAF.startsWith("N")) { //说明是有值的
+//                                    double value = Double.parseDouble(DAF);
+//                                    daf[0].add(value);
+//                                }
+//                                if (!DAF_ABD.startsWith("N")) { //说明是有值的
+//                                    double value = Double.parseDouble(DAF_ABD);
+//                                    dafABD[0].add(value);
+//                                }
+//                                if (!DAF_AB.startsWith("N")) { //说明是有值的
+//                                    double value = Double.parseDouble(DAF_AB);
+//                                    dafAB[0].add(value);
+//                                }
+//                            }else if (gerp <= 1){ //说明是 非同义突变并且gerp小于1
+//                                if (!DAF.startsWith("N")) { //说明是有值的
+//                                    double value = Double.parseDouble(DAF);
+//                                    daf[1].add(value);
+//                                }
+//                                if (!DAF_ABD.startsWith("N")) { //说明是有值的
+//                                    double value = Double.parseDouble(DAF_ABD);
+//                                    dafABD[1].add(value);
+//                                }
+//                                if (!DAF_AB.startsWith("N")) { //说明是有值的
+//                                    double value = Double.parseDouble(DAF_AB);
+//                                    dafAB[1].add(value);
+//                                }
+//
+//                            }
+//                        }
 
-                            }
-                        }
-
-//                        if (!siftscore.startsWith("N")) {
-//                            sift = Double.parseDouble(siftscore);
-//                            if (sift < 0.05) {
-//                                //添加gerp phyloP分组信息 情况一：
-////                                if (!gerpscore.startsWith("N") && (!phylopscore.startsWith("N"))) { //均有值存在
-////                                    gerp = Double.parseDouble(gerpscore);
-////                                    phylop = Double.parseDouble(phylopscore);
-////                                    if (gerp > 1 && (phylop > 0.5)) {
-////                                        if (!DAF.startsWith("N")) { //说明是有值的
-////                                            double value = Double.parseDouble(DAF);
-////                                            daf[0].add(value);
-////                                        }
-////                                        if (!DAF_ABD.startsWith("N")) { //说明是有值的
-////                                            double value = Double.parseDouble(DAF_ABD);
-////                                            dafABD[0].add(value);
-////                                        }
-////                                        if (!DAF_AB.startsWith("N")) { //说明是有值的
-////                                            double value = Double.parseDouble(DAF_AB);
-////                                            dafAB[0].add(value);
-////                                        }
-////                                    }
-////                                }
-//
-//
-//                                //不添加gerp phyloP分组信息 情况二：
-////**************************** 可供选择 *********************************************** //
-////                                if (!DAF.startsWith("N")) { //说明是有值的
-////                                    double value = Double.parseDouble(DAF);
-////                                    daf[0].add(value);
-////                                }
-////                                if (!DAF_ABD.startsWith("N")) { //说明是有值的
-////                                    double value = Double.parseDouble(DAF_ABD);
-////                                    dafABD[0].add(value);
-////                                }
-////                                if (!DAF_AB.startsWith("N")) { //说明是有值的
-////                                    double value = Double.parseDouble(DAF_AB);
-////                                    dafAB[0].add(value);
-//
-////**************************** 可供选择 *********************************************** //
-//
-//                                //添加gerp 分组信息 情况三：
-//                                if (!gerpscore.startsWith("N")) { //均有值存在
+                        if (!siftscore.startsWith("N")) {
+                            sift = Double.parseDouble(siftscore);
+                            if (sift < 0.05) {
+                                //添加gerp phyloP分组信息 情况一：
+//                                if (!gerpscore.startsWith("N") && (!phylopscore.startsWith("N"))) { //均有值存在
 //                                    gerp = Double.parseDouble(gerpscore);
-//                                    if (gerp > 1) {
+//                                    phylop = Double.parseDouble(phylopscore);
+//                                    if (gerp > 1 && (phylop > 0.5)) {
 //                                        if (!DAF.startsWith("N")) { //说明是有值的
 //                                            double value = Double.parseDouble(DAF);
 //                                            daf[0].add(value);
@@ -550,23 +516,59 @@ public class VariantsSum {
 //                                        }
 //                                    }
 //                                }
-//
-//                            } else { //sift值大于等于0.05
-//
+
+
+                                //不添加gerp phyloP分组信息 情况二：
+//**************************** 可供选择 *********************************************** //
 //                                if (!DAF.startsWith("N")) { //说明是有值的
 //                                    double value = Double.parseDouble(DAF);
-//                                    daf[1].add(value);
+//                                    daf[0].add(value);
 //                                }
 //                                if (!DAF_ABD.startsWith("N")) { //说明是有值的
 //                                    double value = Double.parseDouble(DAF_ABD);
-//                                    dafABD[1].add(value);
+//                                    dafABD[0].add(value);
 //                                }
 //                                if (!DAF_AB.startsWith("N")) { //说明是有值的
 //                                    double value = Double.parseDouble(DAF_AB);
-//                                    dafAB[1].add(value);
-//                                }
-//                            } //if (sift < 0.05) {
-//                        } //if (!siftscore.startsWith("N")) {
+//                                    dafAB[0].add(value);
+
+//**************************** 可供选择 *********************************************** //
+
+                                //添加gerp 分组信息 情况三：
+                                if (!gerpscore.startsWith("N")) { //均有值存在
+                                    gerp = Double.parseDouble(gerpscore);
+                                    if (gerp > 1) {
+                                        if (!DAF.startsWith("N")) { //说明是有值的
+                                            double value = Double.parseDouble(DAF);
+                                            daf[0].add(value);
+                                        }
+                                        if (!DAF_ABD.startsWith("N")) { //说明是有值的
+                                            double value = Double.parseDouble(DAF_ABD);
+                                            dafABD[0].add(value);
+                                        }
+                                        if (!DAF_AB.startsWith("N")) { //说明是有值的
+                                            double value = Double.parseDouble(DAF_AB);
+                                            dafAB[0].add(value);
+                                        }
+                                    }
+                                }
+
+                            } else { //sift值大于等于0.05
+
+                                if (!DAF.startsWith("N")) { //说明是有值的
+                                    double value = Double.parseDouble(DAF);
+                                    daf[1].add(value);
+                                }
+                                if (!DAF_ABD.startsWith("N")) { //说明是有值的
+                                    double value = Double.parseDouble(DAF_ABD);
+                                    dafABD[1].add(value);
+                                }
+                                if (!DAF_AB.startsWith("N")) { //说明是有值的
+                                    double value = Double.parseDouble(DAF_AB);
+                                    dafAB[1].add(value);
+                                }
+                            } //if (sift < 0.05) {
+                        } //if (!siftscore.startsWith("N")) {
                     } //if (type.equals("NONSYNONYMOUS")) {
                 }
                 br.close(); //文件阅读完毕！！
