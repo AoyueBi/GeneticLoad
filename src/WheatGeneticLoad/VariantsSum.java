@@ -48,15 +48,20 @@ public class VariantsSum {
 //        this.addGerp();
 //        this.mergeExonSNPAnnotation();
         //********************** for calculation ****************//
-        this.getDAFtable();
+//        this.getDAFtable();
 //        this.statisticCodingSNP();
 //        this.statisticNonsynSNP();
 //        this.getDeleteriouscount();
 //        this.getDeleteriousAnnotation();
 //        this.countDeleteriousSNP_bySub();
 //        this.getGERPdistrbutionFile();
+        this.addRecombination();
 
 
+
+    }
+
+    public void addRecombination(){
 
     }
 
