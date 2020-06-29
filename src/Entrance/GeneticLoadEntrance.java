@@ -24,12 +24,12 @@ public class GeneticLoadEntrance {
     public GeneticLoadEntrance() {
 //        this.firstProcess();
 //        this.plot();
-//        this.infoDB();
+        this.infoDB();
 //        this.DBdeleterious();
 
         //ternary plot analysis
 //        this.geneExpression();
-        this.rebuildVCF();
+//        this.rebuildVCF();
 
     }
 
@@ -39,7 +39,7 @@ public class GeneticLoadEntrance {
 //        new AoHeterozygosity();
 //        new  FilterVCF2();
 //        new GermplasmInfo();
-        new VariantsSum();
+//        new VariantsSum();
 //        new SIFT();
 //        new DeleteriousCountbyIndi();
 //        new TaxaDB();

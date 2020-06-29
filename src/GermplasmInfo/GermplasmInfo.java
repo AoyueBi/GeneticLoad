@@ -29,15 +29,14 @@ public class GermplasmInfo {
 
 //        this.mergeTxt();
 
-//        this.addColumntoTaxaDB();
+        //************* 向新建立的taxaDB中添加列信息 ***************//
+        this.addColumntoTaxaDB();
 //        this.addGroup();
 //        this.summaryGroupbyContinent();
 
     }
 
-    /**
-     *
-     */
+
     public void summaryGroupbyContinent(){
         String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/taxa_InfoDB.txt";
         HashMap<String,String> hmPartConti2newConti = new HashMap<>();
@@ -169,11 +168,23 @@ public class GermplasmInfo {
 //        HashMap<String,String> hm = new AoFile().getHashMapStringKey(dbfileS,0,2);
 //        AoFile.addColumbyString(taxaFileS,0,hm,"Dxy_geneticDivergency");
 
-        String dbfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/taxaList_addCS2017.txt";
-        AoFile.readheader(dbfileS);
+//        String dbfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/taxaList_addCS2017.txt";
+//        AoFile.readheader(dbfileS);
+//        String taxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/taxa_InfoDB.txt";
+//        HashMap<String,String> hm = new AoFile().getHashMapStringKey(dbfileS,0,11);
+//        AoFile.addColumbyString(taxaFileS,0,hm,"TreeValidatedGroupbySubspecies");
+
+        String dbfileS = "/Users/Aoyue/project/wheatVMapII/001_germplasm/GermplasmDB/001_toFeiLu/wheatVMapII_germplasmInfo_20200420.txt";
+        AoFile.readheader(dbfileS); //
         String taxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/taxa_InfoDB.txt";
-        HashMap<String,String> hm = new AoFile().getHashMapStringKey(dbfileS,0,11);
-        AoFile.addColumbyString(taxaFileS,0,hm,"TreeValidatedGroupbySubspecies");
+        int[] columnIndexes = {3,8,10,12,15,16};
+        HashMap<String,String>[] hm = new AoFile().getHashMapsStringKey(dbfileS,0,columnIndexes);
+        AoFile.addColumsbyString(taxaFileS,0,hm,"\tGenomeType\tPart_Continent\tContinent_forTree\tIndexforMutationBurden\tSubspecies\tContinent_by7");
+
+
+
+
+
 
     }
 
