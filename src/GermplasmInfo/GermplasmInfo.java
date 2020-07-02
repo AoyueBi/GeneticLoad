@@ -175,17 +175,14 @@ public class GermplasmInfo {
 //        AoFile.addColumbyString(taxaFileS,0,hm,"TreeValidatedGroupbySubspecies");
 
         String dbfileS = "/Users/Aoyue/project/wheatVMapII/001_germplasm/GermplasmDB/001_toFeiLu/wheatVMapII_germplasmInfo_20200420.txt";
-        AoFile.readheader(dbfileS); //
+        AoFile.readheader(dbfileS); //先读列名，再根据需要的列数进行添加
         String taxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/taxa_InfoDB.txt";
-        int[] columnIndexes = {3,8,10,12,15,16};
-        HashMap<String,String>[] hm = new AoFile().getHashMapsStringKey(dbfileS,0,columnIndexes);
-        AoFile.addColumsbyString(taxaFileS,0,hm,"\tGenomeType\tPart_Continent\tContinent_forTree\tIndexforMutationBurden\tSubspecies\tContinent_by7");
+        int[] columnIndexes = {17,18,19};
+        HashMap<String,String>[] hm = new AoFile().getHashMapsStringKey(dbfileS,4,columnIndexes);
+        AoFile.addColumsbyString(taxaFileS,0,hm,"\tLatitude\tLongitude\tElevation(m)");
 
 
-
-
-
-
+        
     }
 
     public void mergeTxt(){

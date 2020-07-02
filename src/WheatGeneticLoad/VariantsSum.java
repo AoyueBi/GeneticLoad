@@ -55,7 +55,8 @@ public class VariantsSum {
 //        this.getDeleteriousAnnotation();
 //        this.countDeleteriousSNP_bySub();
 //        this.getGERPdistrbutionFile();
-        this.addRecombination();
+//        this.addRecombination();
+        this.addGroupToExonAnnotation();
 
 
 
@@ -64,6 +65,140 @@ public class VariantsSum {
     public void addRecombination(){
 
     }
+
+    /**
+     * 为画DAF的分布，对数据库进行添加分组 "Deleterious","GERP-deleterious","Nonsynonymous-tolerant","SIFT-deleterious","Synonymous"
+     * 并提取重要的信息
+     * 基于sift < 0.05 和 gerp > 1且是非同义突变
+     */
+    public void addGroupToExonAnnotation(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/015_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/009_addGrouptoExonAnnotation/001_exonSNP_anno_addGroup.txt";
+
+        AoFile.readheader(infileS);
+        String[] variantGroup = {"Deleterious","GERP-deleterious","Nonsynonymous-tolerant","SIFT-deleterious","Synonymous"};
+        String[] subArray = {"A","B","D"};
+        int[][] count = new int[variantGroup.length][subArray.length];
+        Arrays.sort(subArray);
+        int[] total = new int[variantGroup.length];
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+//            bw.write("Chr\tPos\tDAF\tGenomeType\tGroup\tSub");
+            bw.write("DAF\tGenomeType\tGroup\tSub");
+
+            bw.newLine();
+            String temp = null;
+            String header = br.readLine();
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            double siftd = Double.NaN;
+            double gerpd = Double.NaN;
+            String genomeType = null;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                int chr = Integer.parseInt(l.get(1)); //染色体
+                String sub = RefV1Utils.getSubgenomeFromChrID(chr);
+                if (sub.equals("D")){
+                    genomeType = "DD";
+                }
+                if (!sub.equals("D")){
+                    genomeType="AABB";
+                }
+                int index = Arrays.binarySearch(subArray,sub);
+                int pos = Integer.parseInt(l.get(2)); //################ 需要修改 需要修改 需要修改 ################
+                String variantType = l.get(12); //################ 需要修改 需要修改 需要修改 ################
+                String sift = l.get(13); //################ 需要修改 需要修改 需要修改 ################
+                String dafABD = l.get(16);
+                String dafABorD = l.get(17); //################ 需要修改 需要修改 需要修改 ################
+                String gerp = l.get(18);
+
+
+                //分情况：sift有值，并且小于0.5
+                if (variantType.equals("SYNONYMOUS")){
+                    count[4][index]++;
+                    total[4]++;
+//                    bw.write(chr + "\t" + pos + "\t" + dafABD + "\t" + "AABBDD" + "\t" + "Synonymous" + "\t" + sub );
+//                    bw.newLine();
+//                    bw.write(chr + "\t" + pos + "\t" + dafABorD + "\t" + genomeType + "\t" + "Synonymous" + "\t" + sub );
+//                    bw.newLine();
+
+                    bw.write(dafABD + "\t" + "AABBDD" + "\t" + "Synonymous" + "\t" + sub );
+                    bw.newLine();
+                    bw.write(dafABorD + "\t" + genomeType + "\t" + "Synonymous" + "\t" + sub );
+                    bw.newLine();
+
+                }
+
+                if (!sift.startsWith("N")){
+                    siftd = Double.parseDouble(sift);
+                    if (siftd >=0.05 && variantType.equals("NONSYNONYMOUS")) {
+                        count[2][index]++;
+                        total[2]++;
+//                        bw.write(chr + "\t" + pos + "\t" + dafABD + "\t" + "AABBDD" + "\t" + "Nonsynonymous-tolerant" + "\t" + sub );
+//                        bw.newLine();
+//                        bw.write(chr + "\t" + pos + "\t" + dafABorD + "\t" + genomeType + "\t" + "Nonsynonymous-tolerant" + "\t" + sub );
+//                        bw.newLine();
+                        bw.write(dafABD + "\t" + "AABBDD" + "\t" + "Nonsynonymous-tolerant" + "\t" + sub );
+                        bw.newLine();
+                        bw.write(dafABorD + "\t" + genomeType + "\t" + "Nonsynonymous-tolerant" + "\t" + sub );
+                        bw.newLine();
+                    }
+                    if (siftd < 0.05 && variantType.equals("NONSYNONYMOUS")) {
+                        count[3][index]++;
+                        total[3]++;
+//                        bw.write(chr + "\t" + pos + "\t" + dafABD + "\t" + "AABBDD" + "\t" + "SIFT-deleterious" + "\t" + sub );
+//                        bw.newLine();
+//                        bw.write(chr + "\t" + pos + "\t" + dafABorD + "\t" + genomeType + "\t" + "SIFT-deleterious" + "\t" + sub );
+//                        bw.newLine();
+
+                        bw.write(dafABD + "\t" + "AABBDD" + "\t" + "SIFT-deleterious" + "\t" + sub );
+                        bw.newLine();
+                        bw.write(dafABorD + "\t" + genomeType + "\t" + "SIFT-deleterious" + "\t" + sub );
+                        bw.newLine();
+                    }
+                    if (!gerp.startsWith("N")){
+                        gerpd = Double.parseDouble(gerp);
+                        if (gerpd > 1 && siftd < 0.05 && variantType.equals("NONSYNONYMOUS")) {
+                            count[0][index]++;
+                            total[0]++;
+//                            bw.write(chr + "\t" + pos + "\t" + dafABD + "\t" + "AABBDD" + "\t" + "Deleterious" + "\t" + sub );
+//                            bw.newLine();
+//                            bw.write(chr + "\t" + pos + "\t" + dafABorD + "\t" + genomeType + "\t" + "Deleterious" + "\t" + sub );
+//                            bw.newLine();
+                            bw.write( dafABD + "\t" + "AABBDD" + "\t" + "Deleterious" + "\t" + sub );
+                            bw.newLine();
+                            bw.write( dafABorD + "\t" + genomeType + "\t" + "Deleterious" + "\t" + sub );
+                            bw.newLine();
+                        }
+                    }
+                }
+                if (!gerp.startsWith("N")){
+                    gerpd = Double.parseDouble(gerp);
+                    if (gerpd > 1 && variantType.equals("NONSYNONYMOUS")) {
+                        count[1][index]++;
+                        total[1]++;
+//                        bw.write(chr + "\t" + pos + "\t" + dafABD + "\t" + "AABBDD" + "\t" + "GERP-deleterious" + "\t" + sub );
+//                        bw.newLine();
+//                        bw.write(chr + "\t" + pos + "\t" + dafABorD + "\t" + genomeType + "\t" + "GERP-deleterious" + "\t" + sub );
+//                        bw.newLine();
+                        bw.write(dafABD + "\t" + "AABBDD" + "\t" + "GERP-deleterious" + "\t" + sub );
+                        bw.newLine();
+                        bw.write( dafABorD + "\t" + genomeType + "\t" + "GERP-deleterious" + "\t" + sub );
+                        bw.newLine();
+
+                    }
+                }
+            }
+            br.close();
+            bw.flush();bw.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
 
     /**
      * 为画出GERP的分布，将文件添加分组并提取特定列数
@@ -133,8 +268,9 @@ public class VariantsSum {
         String[] variantGroup = {"Deleterious","GERP-deleterious","Nonsynonymous-tolerant","SIFT-deleterious","Synonymous"};
         String[] subArray = {"A","B","D"};
         int[][] count = new int[variantGroup.length][subArray.length];
-        Arrays.sort(subArray);
         int[] total = new int[variantGroup.length];
+
+        Arrays.sort(subArray);
         try {
             BufferedReader br = AoFile.readFile(infileS);
             BufferedWriter bw = AoFile.writeFile(outfileS);
