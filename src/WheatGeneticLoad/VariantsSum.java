@@ -56,7 +56,8 @@ public class VariantsSum {
 //        this.countDeleteriousSNP_bySub();
 //        this.getGERPdistrbutionFile();
 //        this.addRecombination();
-        this.addGroupToExonAnnotation();
+//        this.addGroupToExonAnnotation();
+        this.countVariantsinGene();
 
 
 
@@ -67,13 +68,28 @@ public class VariantsSum {
     }
 
     /**
+     * 对非常有害的exon数据库进行每个基因的变异数目计数，分成2个分组，第一个分组是同义非同义，第二个分组是DAF值大于5% 和小于等于 5%
+     */
+    public void countVariantsinGene(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/006_exonAnnnotation_sift0.05Gerp1/001_exonSNP_sift0.05_GERP1_anno.txt.gz";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/010_countGenevariants/001_gene_variantsCount.txt";
+        AoFile.readheader(infileS);
+        //### 查看有多少个基因
+        String[] genes = AoFile.getStringArraybySet(infileS,10);
+        System.out.println("Total " + genes.length + " have deleterious mutations");
+        String[] groupVariantType = {"Nonsynonymous","Synonymous"};
+        String[] groupMaf = {"Common","Rare"};
+        //建立一个List类型的数组 外围是基因 内围是每个基因每种类型的
+    }
+
+    /**
      * 为画DAF的分布，对数据库进行添加分组 "Deleterious","GERP-deleterious","Nonsynonymous-tolerant","SIFT-deleterious","Synonymous"
      * 并提取重要的信息
      * 基于sift < 0.05 和 gerp > 1且是非同义突变
      */
     public void addGroupToExonAnnotation(){
         String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/015_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/009_addGrouptoExonAnnotation/001_exonSNP_anno_addGroup.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/009_addGrouptoExonAnnotation/001_exonSNP_anno_addGroup.txt.gz";
 
         AoFile.readheader(infileS);
         String[] variantGroup = {"Deleterious","GERP-deleterious","Nonsynonymous-tolerant","SIFT-deleterious","Synonymous"};
@@ -359,7 +375,9 @@ public class VariantsSum {
      */
     public void getDeleteriousAnnotation(){
         String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/015_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/006_exonAnnnotation_sift0.05Gerp1/001_exonSNP_sift0.05_GERP3_anno.txt.gz";
         String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/006_exonAnnnotation_sift0.05Gerp1/001_exonSNP_sift0.05_GERP1_anno.txt.gz";
+
         try {
             BufferedReader br = AoFile.readFile(infileS);
             BufferedWriter bw = AoFile.writeFile(outfileS);
@@ -384,7 +402,12 @@ public class VariantsSum {
                     siftd = Double.parseDouble(sift);
                     if (!gerp.startsWith("N")){
                         gerpd = Double.parseDouble(gerp);
-                        if (gerpd > 3 && siftd < 0.05 && variantType.equals("NONSYNONYMOUS")) {
+//                        if (gerpd > 3 && siftd < 0.05 && variantType.equals("NONSYNONYMOUS")) {
+//                            bw.write(temp + "\t" + sub);
+//                            bw.newLine();
+//                            cnt++;
+//                        }
+                        if (gerpd > 1 && siftd < 0.05 && variantType.equals("NONSYNONYMOUS")) {
                             bw.write(temp + "\t" + sub);
                             bw.newLine();
                             cnt++;

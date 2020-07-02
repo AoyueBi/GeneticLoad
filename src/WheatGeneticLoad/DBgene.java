@@ -30,7 +30,7 @@ public class DBgene {
 
     public DBgene(){
 //        this.getHexaploidAnnotation();
-//        this.getTranscriptSum();
+        this.getTranscriptSum();
 //        this.getTranscriptSum_bychr();
 //        this.script_getTranscriptSum();
 //        this.mergeTxt();
