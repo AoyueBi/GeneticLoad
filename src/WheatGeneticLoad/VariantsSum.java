@@ -57,37 +57,107 @@ public class VariantsSum {
 //        this.getGERPdistrbutionFile();
 //        this.addRecombination();
 //        this.addGroupToExonAnnotation();
-//        this.countVariantsinGene();
-        this.addRecombination();
+        this.countVariantsinGene();
+//        this.addRecombination();
 
 
 
     }
 
     public void addRecombination(){
-        for (int i = 1; i < 90; i++) {
-            System.out.println( i);
-            System.out.println( i);
 
-        }
 
     }
 
 
-
     /**
      * 对非常有害的exon数据库进行每个基因的变异数目计数，分成2个分组，第一个分组是同义非同义，第二个分组是DAF值大于5% 和小于等于 5%
+     * Gene\tCommonVariants\tRareVariants\tVariantsType\tSub
+     * Gene\tCommonVariants\tRareVariants\tNonsynonymous\tSub
      */
     public void countVariantsinGene(){
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/006_exonAnnnotation_sift0.05Gerp1/001_exonSNP_sift0.05_GERP1_anno.txt.gz";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/010_countGenevariants/001_gene_variantsCount.txt";
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/015_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/010_countGenevariants/001_gene_variantsCount_byMAF_variantsType.txt";
+        String outfileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/010_countGenevariants/001_gene_variantsCount_total.txt";
+
         AoFile.readheader(infileS);
-        //### 查看有多少个基因
-        String[] genes = AoFile.getStringArraybySet(infileS,10);
-        System.out.println("Total " + genes.length + " have deleterious mutations");
-        String[] groupVariantType = {"Nonsynonymous","Synonymous"};
+        double mafThreshold = 0.05;
+        int dafColumnIndex= 8;
+        //******** 数组大小统计 ********//
+        String[] genesArray = AoFile.getStringArraybySet(infileS,10);
+        System.out.println("Total " + genesArray.length + " have deleterious mutations");
         String[] groupMaf = {"Common","Rare"};
-        //建立一个List类型的数组 外围是基因 内围是每个基因每种类型的
+        String[] variantGroup = {"Deleterious","Nonsynonymous","Synonymous"};
+
+        String[] group = {"Common-Deleterious","Common-Nonsynonymous","Common-Synonymous","Rare-Deleterious","Rare-Nonsynonymous","Rare-Synonymous"};
+        int[][] count = new int[group.length][genesArray.length]; //最终统计画图
+        int[][] countbyMaf = new int[groupMaf.length][genesArray.length]; //统计
+        int[][] countbyVariantsType = new int[variantGroup.length][genesArray.length]; //统计
+
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = null;
+            String header = br.readLine();
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            double siftd = Double.NaN;
+            double gerpd = Double.NaN;
+
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                String trans = l.get(10);
+                int index = Arrays.binarySearch(genesArray,trans);
+                String variantType = l.get(12); //################ 需要修改 需要修改 需要修改 ################
+                String sift = l.get(13); //################ 需要修改 需要修改 需要修改 ################
+                String gerp = l.get(18); //################ 需要修改 需要修改 需要修改 ################
+
+                //分情况：sift有值，并且小于0.5
+                if (variantType.equals("SYNONYMOUS")){
+                    count[4][index]++;
+                }
+                if (!sift.startsWith("N")){
+                    siftd = Double.parseDouble(sift);
+                    if (siftd >=0.05 && variantType.equals("NONSYNONYMOUS")) {
+                        count[2][index]++;
+                    }
+                    if (siftd < 0.05 && variantType.equals("NONSYNONYMOUS")) {
+                        count[3][index]++;
+                    }
+                    if (!gerp.startsWith("N")){
+                        gerpd = Double.parseDouble(gerp);
+                        if (gerpd > 1 && siftd < 0.05 && variantType.equals("NONSYNONYMOUS")) {
+                            count[0][index]++;
+                        }
+                    }
+                }
+                if (!gerp.startsWith("N")){
+                    gerpd = Double.parseDouble(gerp);
+                    if (gerpd > 1 && variantType.equals("NONSYNONYMOUS")) {
+                        count[1][index]++;
+                    }
+                }
+            }
+            br.close();
+
+            bw.write("VariantGroup\tSub\tCount");
+            bw.newLine();
+            for (int i = 0; i < variantGroup.length; i++) {
+                String group1 = variantGroup[i];
+                for (int j = 0; j < genesArray.length; j++) {
+                    String sub = genesArray[j];
+                    int num = count[i][j];
+                    bw.write(group1 + "\t" + sub + "\t" + num);
+                    bw.newLine();
+                    System.out.println(group1 + "\t" + sub + "\t" + num);
+                }
+            }
+            bw.flush();bw.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
     /**

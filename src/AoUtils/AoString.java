@@ -44,6 +44,13 @@ public class AoString {
     }
 
     /**
+     * 根据转录本的名字获取亚基因组信息 //TraesCS1A02G001800.1
+     * @param gene
+     * @return
+     */
+    public static String getSubFromTranscript(String gene){ return gene.substring(8,9);}
+
+    /**
      * 主要用于脚本书写，在hapScanner 脚本中用到
      * @param chrArr
      * @return
