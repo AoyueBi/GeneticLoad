@@ -57,15 +57,23 @@ public class VariantsSum {
 //        this.getGERPdistrbutionFile();
 //        this.addRecombination();
 //        this.addGroupToExonAnnotation();
-        this.countVariantsinGene();
+//        this.countVariantsinGene();
+        this.addRecombination();
 
 
 
     }
 
     public void addRecombination(){
+        for (int i = 1; i < 90; i++) {
+            System.out.println( i);
+            System.out.println( i);
+
+        }
 
     }
+
+
 
     /**
      * 对非常有害的exon数据库进行每个基因的变异数目计数，分成2个分组，第一个分组是同义非同义，第二个分组是DAF值大于5% 和小于等于 5%
