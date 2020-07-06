@@ -85,14 +85,15 @@ public class VariantsSum {
         int dafColumnIndex= 8;
         //******** 数组大小统计 ********//
         String[] genesArray = AoFile.getStringArraybySet(infileS,10);
-        System.out.println("Total " + genesArray.length + " have deleterious mutations");
+        Arrays.sort(genesArray);
+        System.out.println("Total " + genesArray.length + " genes have SNPs");
         String[] groupMaf = {"Common","Rare"};
-        String[] variantGroup = {"Deleterious","Nonsynonymous","Synonymous"};
+        String[] groupVariantType = {"Deleterious","Nonsynonymous","Synonymous"};
 
         String[] group = {"Common-Deleterious","Common-Nonsynonymous","Common-Synonymous","Rare-Deleterious","Rare-Nonsynonymous","Rare-Synonymous"};
         int[][] count = new int[group.length][genesArray.length]; //最终统计画图
         int[][] countbyMaf = new int[groupMaf.length][genesArray.length]; //统计
-        int[][] countbyVariantsType = new int[variantGroup.length][genesArray.length]; //统计
+        int[][] countbyVariantsType = new int[groupVariantType.length][genesArray.length]; //统计
 
         try {
             BufferedReader br = AoFile.readFile(infileS);
@@ -103,6 +104,8 @@ public class VariantsSum {
             int cnt = 0;
             double siftd = Double.NaN;
             double gerpd = Double.NaN;
+            double dafd = Double.NaN;
+            double maf = Double.NaN;
 
             while ((temp = br.readLine()) != null) {
                 l = PStringUtils.fastSplit(temp);
@@ -111,49 +114,93 @@ public class VariantsSum {
                 String variantType = l.get(12); //################ 需要修改 需要修改 需要修改 ################
                 String sift = l.get(13); //################ 需要修改 需要修改 需要修改 ################
                 String gerp = l.get(18); //################ 需要修改 需要修改 需要修改 ################
-
-                //分情况：sift有值，并且小于0.5
-                if (variantType.equals("SYNONYMOUS")){
-                    count[4][index]++;
+                String daf = l.get(dafColumnIndex);
+                if (daf.equals("NA"))continue; //计数的前提是有DAF值，没有的位点都不考虑
+                dafd = Double.parseDouble(daf);
+                //如何判断是 common snp 还是 rare snp?  就看 maf 是大于0.005 还是小于等于0.005
+                if(dafd > 0.5) {
+                    maf = 1 - dafd;
+                }else if (dafd <= 0.5){
+                    maf = dafd;
                 }
-                if (!sift.startsWith("N")){
-                    siftd = Double.parseDouble(sift);
-                    if (siftd >=0.05 && variantType.equals("NONSYNONYMOUS")) {
+
+                if (maf > mafThreshold ){ //说明是 common 的
+
+                    if (variantType.equals("SYNONYMOUS")){
                         count[2][index]++;
+                        countbyVariantsType[2][index]++;
+                        countbyMaf[0][index]++;
                     }
-                    if (siftd < 0.05 && variantType.equals("NONSYNONYMOUS")) {
-                        count[3][index]++;
+                    if (variantType.equals("NONSYNONYMOUS")){
+                        count[1][index]++;
+                        countbyVariantsType[1][index]++;
+                        countbyMaf[0][index]++;
                     }
-                    if (!gerp.startsWith("N")){
-                        gerpd = Double.parseDouble(gerp);
-                        if (gerpd > 1 && siftd < 0.05 && variantType.equals("NONSYNONYMOUS")) {
-                            count[0][index]++;
+                    if (!sift.startsWith("N")){
+                        siftd = Double.parseDouble(sift);
+                        if (!gerp.startsWith("N")){
+                            gerpd = Double.parseDouble(gerp);
+                            if (gerpd > 1 && siftd < 0.05 && variantType.equals("NONSYNONYMOUS")) {
+                                count[0][index]++;
+                                countbyVariantsType[0][index]++;
+                            }
                         }
                     }
-                }
-                if (!gerp.startsWith("N")){
-                    gerpd = Double.parseDouble(gerp);
-                    if (gerpd > 1 && variantType.equals("NONSYNONYMOUS")) {
-                        count[1][index]++;
+
+                } //maf > mafThreshold
+
+                else if (maf <= mafThreshold ){ //说明是 rare 的
+                    if (variantType.equals("SYNONYMOUS")){
+                        count[5][index]++;
+                        countbyVariantsType[2][index]++;
+                        countbyMaf[1][index]++;
                     }
-                }
+                    if (variantType.equals("NONSYNONYMOUS")){
+                        count[4][index]++;
+                        countbyVariantsType[1][index]++;
+                        countbyMaf[1][index]++;
+                    }
+
+                    if (!sift.startsWith("N")){
+                        siftd = Double.parseDouble(sift);
+                        if (!gerp.startsWith("N")){
+                            gerpd = Double.parseDouble(gerp);
+                            if (gerpd > 1 && siftd < 0.05 && variantType.equals("NONSYNONYMOUS")) {
+                                count[3][index]++;
+                                countbyVariantsType[0][index]++;
+                            }
+                        }
+                    }
+
+
+                } //maf > mafThreshold
             }
             br.close();
 
-            bw.write("VariantGroup\tSub\tCount");
+            bw.write("Gene\tSub\tCommonVariants\tRareVariants\tVariantsType");
             bw.newLine();
-            for (int i = 0; i < variantGroup.length; i++) {
-                String group1 = variantGroup[i];
-                for (int j = 0; j < genesArray.length; j++) {
-                    String sub = genesArray[j];
-                    int num = count[i][j];
-                    bw.write(group1 + "\t" + sub + "\t" + num);
-                    bw.newLine();
-                    System.out.println(group1 + "\t" + sub + "\t" + num);
-                }
+            //        String[] group = {"Common-Deleterious","Common-Nonsynonymous","Common-Synonymous","Rare-Deleterious","Rare-Nonsynonymous","Rare-Synonymous"};
+            for (int i = 0; i < genesArray.length; i++) {
+                String gene = genesArray[i];
+                String sub = gene.substring(8,9);
+                bw.write(gene + "\t" + sub + "\t" + count[0][i] + "\t" + count[3][i] + "\tDeleterious\n");
+                bw.write(gene + "\t" + sub + "\t" + count[1][i] + "\t" + count[4][i] + "\tNonsynonymous\n");
+                bw.write(gene + "\t" + sub + "\t"  + count[2][i] + "\t" + count[5][i] + "\tSynonymous\n");
             }
             bw.flush();bw.close();
 
+            bw = AoFile.writeFile(outfileS2);
+            //        int[][] countbyMaf = new int[groupMaf.length][genesArray.length]; //统计
+            //        int[][] countbyVariantsType = new int[groupVariantType.length][genesArray.length]; //统计
+            bw.write("Gene\tSub\tCommonVariants\tRareVariants\tDeleterious\tNonsynonymous\tSynonymous\n");
+            for (int i = 0; i < genesArray.length; i++) {
+                String gene = genesArray[i];
+                String sub = gene.substring(8,9);
+                bw.write(gene + "\t" + sub + "\t" + countbyMaf[0][i] + "\t" + countbyMaf[1][i] + "\t" +
+                        countbyVariantsType[0][i]  + "\t" + countbyVariantsType[1][i]  + "\t" + countbyVariantsType[2][i]);
+                bw.newLine();
+            }
+            bw.flush();bw.close();
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
