@@ -49,6 +49,36 @@ public class AoColor {
      * @return
      */
 
+    public static String delVariantsColor(String[] input){
+        String out=null;
+
+        HashMap<String,String> hm = new HashMap<>();
+        String[] value = {"#d5311c","#e69f00","#004680"};
+        String[] key = {"Deleterious","Nonsynonymous","Synonymous"};
+        for (int i = 0; i < value.length; i++) {
+            hm.put(key[i],value[i]);
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("c(");
+        for (int i = 0; i < input.length; i++) {
+            String col = hm.get(input[i]);
+            sb.append("'").append(col).append("',");
+        }
+        sb.deleteCharAt(sb.length()-1);
+        sb.append(")");
+        out = sb.toString();
+        System.out.println(out);
+
+        return out;
+    }
+
+    /**
+     *
+     * @param input
+     * @return
+     */
+
     public static String continent_7_shape (String[] input){
         String out=null;
 

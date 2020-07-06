@@ -6,7 +6,7 @@
 package WheatGeneticLoad;
 
 import AoUtils.*;
-import GermplasmInfo.TaxaDB;
+import daxing.common.RowTableTool;
 import gnu.trove.list.TIntList;
 import gnu.trove.set.hash.TIntHashSet;
 import pgl.graph.tSaw.TablesawUtils;
@@ -16,6 +16,7 @@ import gnu.trove.list.array.TByteArrayList;
 import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TIntArrayList;
 import pgl.infra.table.RowTable;
+import pgl.infra.utils.IOFileFormat;
 import pgl.infra.utils.IOUtils;
 import pgl.infra.utils.PStringUtils;
 import pgl.infra.utils.wheat.RefV1Utils;
@@ -57,7 +58,8 @@ public class VariantsSum {
 //        this.getGERPdistrbutionFile();
 //        this.addRecombination();
 //        this.addGroupToExonAnnotation();
-        this.countVariantsinGene();
+//        this.countVariantsinGene();
+        this.sortAndFilter();
 //        this.addRecombination();
 
 
@@ -70,6 +72,68 @@ public class VariantsSum {
     }
 
 
+
+    /**
+     * ①将统计的额结果进行排序，按照稀有突变（rare variants）中从小到大的顺序进行排序，
+     * ②若稀有变异的个数为0或者普通变异的个数为0，则略去
+     */
+    public void sortAndFilter(){
+//        this.sort_step1();
+        this.remove_step2();
+    }
+
+    /**
+     * 找到 rare 是0的基因，略去，不进行画图
+     */
+    public void remove_step2(){
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/010_countGenevariants/003_sort";
+        String infileDirS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/010_countGenevariants/001_byMafVariantsType";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/010_countGenevariants/004_001filterby003";
+        List<File> fsList = AoFile.getFileListInDir(infileDirS);
+        fsList.parallelStream().forEach(f ->{
+            String infileS = f.getAbsolutePath();
+            String name = "001_gene_variantsCount_byMAF_variantsType_" + f.getName().split("_total_")[1];
+            String infileS2 = new File(infileDirS2,name).getAbsolutePath();
+            String outfileS = new File(outfileDirS,name).getAbsolutePath();
+            List<String> geneList = new ArrayList<>();
+            RowTable<String> t = new RowTable<>(infileS);
+            for (int i = 0; i < t.getRowNumber(); i++) {
+                String gene = t.getCell(i,0);
+                int cntRareVariants = t.getCellAsInteger(i,3);
+                if (cntRareVariants==0)continue;
+                geneList.add(gene);
+            }
+            Collections.sort(geneList);
+
+            t=new RowTable<>(infileS2);
+            boolean[] ifout = new boolean[t.getRowNumber()];
+            for (int i = 0; i < t.getRowNumber(); i++) {
+                String gene = t.getCell(i,0);
+                int index = Collections.binarySearch(geneList,gene);
+                if (index < 0)continue;
+                ifout[i] = true;
+            }
+            t.writeTextTable(outfileS,IOFileFormat.TextGzip,ifout);
+        });
+
+
+    }
+
+    public  void sort_step1(){
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/010_countGenevariants/002_total";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/010_countGenevariants/003_sort";
+        List<File> fs = AoFile.getFileListInDir(infileDirS);
+        fs.parallelStream().forEach(f ->{
+            String infileS = f.getAbsolutePath();
+            String outfileS = new File(outfileDirS,f.getName()).getAbsolutePath();
+            RowTableTool<String> rowTable=new RowTableTool<>(infileS);
+            Comparator<List<String>> comparator=Comparator.comparing(l->Integer.parseInt(l.get(3)));
+            rowTable.sortBy(comparator);
+            rowTable.write(outfileS);
+        });
+    }
+
+
     /**
      * 对非常有害的exon数据库进行每个基因的变异数目计数，分成2个分组，第一个分组是同义非同义，第二个分组是DAF值大于5% 和小于等于 5%
      * Gene\tCommonVariants\tRareVariants\tVariantsType\tSub
@@ -77,12 +141,36 @@ public class VariantsSum {
      */
     public void countVariantsinGene(){
         String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/015_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/010_countGenevariants/001_gene_variantsCount_byMAF_variantsType.txt";
-        String outfileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/010_countGenevariants/001_gene_variantsCount_total.txt";
+        String outfileS = null;
+        String outfileS2 = null;
 
         AoFile.readheader(infileS);
-        double mafThreshold = 0.05;
-        int dafColumnIndex= 8;
+
+        //************** 需要修改 *******************//
+        double mafThreshold = 0.05; //定义common和rare突变的界限
+//        String ploidy = "AABBDD";
+        String ploidy = "AABB";
+//        String ploidy = "DD";
+
+        //************** 需要修改 *******************//
+
+        int dafColumnIndex= Integer.MIN_VALUE; //六倍体的daf所在的列
+        if (ploidy.equals("AABBDD")){
+            dafColumnIndex= 8; //六倍体的daf所在的列
+            outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/010_countGenevariants/001_byMafVariantsType/001_gene_variantsCount_byMAF_variantsType_AABBDD.txt.gz";
+            outfileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/010_countGenevariants/002_total/001_gene_variantsCount_total_AABBDD.txt.gz";
+
+        }else if(ploidy.equals("AABB")){
+            dafColumnIndex= 9; //六倍体的daf所在的列
+            outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/010_countGenevariants/001_byMafVariantsType/001_gene_variantsCount_byMAF_variantsType_AABB.txt.gz";
+            outfileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/010_countGenevariants/002_total/001_gene_variantsCount_total_AABB.txt.gz";
+
+        }else if(ploidy.equals("DD")){
+            dafColumnIndex= 9; //六倍体的daf所在的列
+            outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/010_countGenevariants/001_byMafVariantsType/001_gene_variantsCount_byMAF_variantsType_DD.txt.gz";
+            outfileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/010_countGenevariants/002_total/001_gene_variantsCount_total_DD.txt.gz";
+        }
+
         //******** 数组大小统计 ********//
         String[] genesArray = AoFile.getStringArraybySet(infileS,10);
         Arrays.sort(genesArray);
@@ -109,13 +197,16 @@ public class VariantsSum {
 
             while ((temp = br.readLine()) != null) {
                 l = PStringUtils.fastSplit(temp);
+                int chr = Integer.parseInt(l.get(1));
+                String sub = RefV1Utils.getSubgenomeFromChrID(chr);
+                if (!ploidy.contains(sub))continue;//说明必须含有该亚基因组
                 String trans = l.get(10);
                 int index = Arrays.binarySearch(genesArray,trans);
                 String variantType = l.get(12); //################ 需要修改 需要修改 需要修改 ################
                 String sift = l.get(13); //################ 需要修改 需要修改 需要修改 ################
                 String gerp = l.get(18); //################ 需要修改 需要修改 需要修改 ################
                 String daf = l.get(dafColumnIndex);
-                if (daf.equals("NA"))continue; //计数的前提是有DAF值，没有的位点都不考虑
+                if (daf.equals("NA"))continue; //计数的前提是有DAF值，没有的位点都不考虑,
                 dafd = Double.parseDouble(daf);
                 //如何判断是 common snp 还是 rare snp?  就看 maf 是大于0.005 还是小于等于0.005
                 if(dafd > 0.5) {
@@ -183,6 +274,7 @@ public class VariantsSum {
             for (int i = 0; i < genesArray.length; i++) {
                 String gene = genesArray[i];
                 String sub = gene.substring(8,9);
+                if (!ploidy.contains(sub))continue;//说明必须含有该亚基因组
                 bw.write(gene + "\t" + sub + "\t" + count[0][i] + "\t" + count[3][i] + "\tDeleterious\n");
                 bw.write(gene + "\t" + sub + "\t" + count[1][i] + "\t" + count[4][i] + "\tNonsynonymous\n");
                 bw.write(gene + "\t" + sub + "\t"  + count[2][i] + "\t" + count[5][i] + "\tSynonymous\n");
@@ -196,6 +288,7 @@ public class VariantsSum {
             for (int i = 0; i < genesArray.length; i++) {
                 String gene = genesArray[i];
                 String sub = gene.substring(8,9);
+                if (!ploidy.contains(sub))continue;//说明必须含有该亚基因组
                 bw.write(gene + "\t" + sub + "\t" + countbyMaf[0][i] + "\t" + countbyMaf[1][i] + "\t" +
                         countbyVariantsType[0][i]  + "\t" + countbyVariantsType[1][i]  + "\t" + countbyVariantsType[2][i]);
                 bw.newLine();
