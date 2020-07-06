@@ -56,21 +56,16 @@ public class VariantsSum {
 //        this.getDeleteriousAnnotation();
 //        this.countDeleteriousSNP_bySub();
 //        this.getGERPdistrbutionFile();
-//        this.addRecombination();
 //        this.addGroupToExonAnnotation();
+        //*********** count variants in genes *****************//
 //        this.countVariantsinGene();
-        this.sortAndFilter();
-//        this.addRecombination();
+//        this.sortAndFilter();
+        //*********** gene summary ********************//
 
 
-
-    }
-
-    public void addRecombination(){
 
 
     }
-
 
 
     /**
@@ -78,9 +73,45 @@ public class VariantsSum {
      * ②若稀有变异的个数为0或者普通变异的个数为0，则略去
      */
     public void sortAndFilter(){
-//        this.sort_step1();
+        this.sort_step1();
         this.remove_step2();
     }
+
+    /**
+     * 获取前1%的基因进行画图，未完成。
+     */
+    public void getTop10(){
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/010_countGenevariants/003_sort";
+//        String infileDirS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/010_countGenevariants/001_byMafVariantsType";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/010_countGenevariants/005_top10";
+//        List<File> fsList = AoFile.getFileListInDir(infileDirS);
+//        fsList.parallelStream().forEach(f ->{
+//            String infileS = f.getAbsolutePath();
+//            String name = "001_gene_variantsCount_byMAF_variantsType_" + f.getName().split("_total_")[1];
+//            String infileS2 = new File(infileDirS2,name).getAbsolutePath();
+//            String outfileS = new File(outfileDirS,name).getAbsolutePath();
+//            List<String> geneList = new ArrayList<>();
+//            RowTable<String> t = new RowTable<>(infileS);
+//            for (int i = 0; i < t.getRowNumber(); i++) {
+//                String gene = t.getCell(i,0);
+//                int cntRareVariants = t.getCellAsInteger(i,3);
+//                if (cntRareVariants==0)continue;
+//                geneList.add(gene);
+//            }
+//            Collections.sort(geneList);
+//
+//            t=new RowTable<>(infileS2);
+//            boolean[] ifout = new boolean[t.getRowNumber()];
+//            for (int i = 0; i < t.getRowNumber(); i++) {
+//                String gene = t.getCell(i,0);
+//                int index = Collections.binarySearch(geneList,gene);
+//                if (index < 0)continue;
+//                ifout[i] = true;
+//            }
+//            t.writeTextTable(outfileS,IOFileFormat.TextGzip,ifout);
+//        });
+    }
+
 
     /**
      * 找到 rare 是0的基因，略去，不进行画图
@@ -115,8 +146,6 @@ public class VariantsSum {
             }
             t.writeTextTable(outfileS,IOFileFormat.TextGzip,ifout);
         });
-
-
     }
 
     public  void sort_step1(){
@@ -129,7 +158,7 @@ public class VariantsSum {
             RowTableTool<String> rowTable=new RowTableTool<>(infileS);
             Comparator<List<String>> comparator=Comparator.comparing(l->Integer.parseInt(l.get(3)));
             rowTable.sortBy(comparator);
-            rowTable.write(outfileS);
+            rowTable.write(outfileS,IOFileFormat.TextGzip);
         });
     }
 
@@ -148,8 +177,8 @@ public class VariantsSum {
 
         //************** 需要修改 *******************//
         double mafThreshold = 0.05; //定义common和rare突变的界限
-//        String ploidy = "AABBDD";
-        String ploidy = "AABB";
+        String ploidy = "AABBDD";
+//        String ploidy = "AABB";
 //        String ploidy = "DD";
 
         //************** 需要修改 *******************//
@@ -275,9 +304,9 @@ public class VariantsSum {
                 String gene = genesArray[i];
                 String sub = gene.substring(8,9);
                 if (!ploidy.contains(sub))continue;//说明必须含有该亚基因组
-                bw.write(gene + "\t" + sub + "\t" + count[0][i] + "\t" + count[3][i] + "\tDeleterious\n");
-                bw.write(gene + "\t" + sub + "\t" + count[1][i] + "\t" + count[4][i] + "\tNonsynonymous\n");
                 bw.write(gene + "\t" + sub + "\t"  + count[2][i] + "\t" + count[5][i] + "\tSynonymous\n");
+                bw.write(gene + "\t" + sub + "\t" + count[1][i] + "\t" + count[4][i] + "\tNonsynonymous\n");
+                bw.write(gene + "\t" + sub + "\t" + count[0][i] + "\t" + count[3][i] + "\tDeleterious\n");
             }
             bw.flush();bw.close();
 
