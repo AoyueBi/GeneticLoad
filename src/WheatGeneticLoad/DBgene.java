@@ -30,7 +30,7 @@ public class DBgene {
 
     public DBgene(){
 //        this.getHexaploidAnnotation();
-        this.getTranscriptSum();
+        this.getTranscriptSum(); //多线程运行造成内存不足，故使用单个染色体进行运行
 //        this.getTranscriptSum_bychr();
 //        this.script_getTranscriptSum();
 //        this.mergeTxt();
@@ -53,18 +53,6 @@ public class DBgene {
 //                this.mkSpreadFormat_tetraploid_diploid();
 //                this.mergeSpreadTable_HexaploidTetraploidDiploid();
 //        this.mergeSpreadTable();
-
-        Triadsgenes tg = new Triadsgenes();
-        tg.checkGenesNotInPGF();
-
-         /**
-          *
-          */
-
-
-
-
-
 
 
 

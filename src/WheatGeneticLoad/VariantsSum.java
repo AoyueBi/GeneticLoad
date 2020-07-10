@@ -54,7 +54,7 @@ public class VariantsSum {
 //        this.statisticNonsynSNP();
 //        this.getDeleteriouscount();
 //        this.getDeleteriousAnnotation();
-//        this.countDeleteriousSNP_bySub();
+        this.countDeleteriousSNP_bySub();
 //        this.getGERPdistrbutionFile();
 //        this.addGroupToExonAnnotation();
         //*********** count variants in genes *****************//
@@ -65,7 +65,9 @@ public class VariantsSum {
 
 
 
+
     }
+
 
 
     /**
@@ -77,40 +79,6 @@ public class VariantsSum {
         this.remove_step2();
     }
 
-    /**
-     * 获取前1%的基因进行画图，未完成。
-     */
-    public void getTop10(){
-//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/010_countGenevariants/003_sort";
-//        String infileDirS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/010_countGenevariants/001_byMafVariantsType";
-//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/010_countGenevariants/005_top10";
-//        List<File> fsList = AoFile.getFileListInDir(infileDirS);
-//        fsList.parallelStream().forEach(f ->{
-//            String infileS = f.getAbsolutePath();
-//            String name = "001_gene_variantsCount_byMAF_variantsType_" + f.getName().split("_total_")[1];
-//            String infileS2 = new File(infileDirS2,name).getAbsolutePath();
-//            String outfileS = new File(outfileDirS,name).getAbsolutePath();
-//            List<String> geneList = new ArrayList<>();
-//            RowTable<String> t = new RowTable<>(infileS);
-//            for (int i = 0; i < t.getRowNumber(); i++) {
-//                String gene = t.getCell(i,0);
-//                int cntRareVariants = t.getCellAsInteger(i,3);
-//                if (cntRareVariants==0)continue;
-//                geneList.add(gene);
-//            }
-//            Collections.sort(geneList);
-//
-//            t=new RowTable<>(infileS2);
-//            boolean[] ifout = new boolean[t.getRowNumber()];
-//            for (int i = 0; i < t.getRowNumber(); i++) {
-//                String gene = t.getCell(i,0);
-//                int index = Collections.binarySearch(geneList,gene);
-//                if (index < 0)continue;
-//                ifout[i] = true;
-//            }
-//            t.writeTextTable(outfileS,IOFileFormat.TextGzip,ifout);
-//        });
-    }
 
 
     /**
@@ -517,6 +485,104 @@ public class VariantsSum {
             System.exit(1);
         }
 
+    }
+
+    /**
+     * 基于sift < 0.05 和 gerp > 1且是非同义突变，以亚基因组为单位，进行分组计数，后续画柱形图。
+     * 再输出一个总体的统计
+     */
+    public void countDeleteriousSNP_bySub_byMAF(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/015_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/007_countVariantType/001_variantGroup_Count_bySub.txt";
+        String outfileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/007_countVariantType/001_variantGroup_Count.txt";
+
+        String[] variantGroup = {"Deleterious","GERP-deleterious","Nonsynonymous-tolerant","SIFT-deleterious","Synonymous"};
+        String[] subArray = {"A","B","D"};
+        int[][] count = new int[variantGroup.length][subArray.length];
+        int[] total = new int[variantGroup.length];
+
+        Arrays.sort(subArray);
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = null;
+            String header = br.readLine();
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            double siftd = Double.NaN;
+            double gerpd = Double.NaN;
+
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                int chr = Integer.parseInt(l.get(1)); //染色体
+                String sub = RefV1Utils.getSubgenomeFromChrID(chr);
+                int index = Arrays.binarySearch(subArray,sub);
+                int pos = Integer.parseInt(l.get(2)); //################ 需要修改 需要修改 需要修改 ################
+                String variantType = l.get(12); //################ 需要修改 需要修改 需要修改 ################
+                String sift = l.get(13); //################ 需要修改 需要修改 需要修改 ################
+                String gerp = l.get(18); //################ 需要修改 需要修改 需要修改 ################
+
+                //分情况：sift有值，并且小于0.5
+                if (variantType.equals("SYNONYMOUS")){
+                    count[4][index]++;
+                    total[4]++;
+                }
+                if (!sift.startsWith("N")){
+                    siftd = Double.parseDouble(sift);
+                    if (siftd >=0.05 && variantType.equals("NONSYNONYMOUS")) {
+                        count[2][index]++;
+                        total[2]++;
+                    }
+                    if (siftd < 0.05 && variantType.equals("NONSYNONYMOUS")) {
+                        count[3][index]++;
+                        total[3]++;
+                    }
+                    if (!gerp.startsWith("N")){
+                        gerpd = Double.parseDouble(gerp);
+                        if (gerpd > 1 && siftd < 0.05 && variantType.equals("NONSYNONYMOUS")) {
+                            count[0][index]++;
+                            total[0]++;
+                        }
+                    }
+                }
+                if (!gerp.startsWith("N")){
+                    gerpd = Double.parseDouble(gerp);
+                    if (gerpd > 1 && variantType.equals("NONSYNONYMOUS")) {
+                        count[1][index]++;
+                        total[1]++;
+                    }
+                }
+            }
+            br.close();
+
+            bw.write("VariantGroup\tSub\tCount");
+            bw.newLine();
+            for (int i = 0; i < variantGroup.length; i++) {
+                String group1 = variantGroup[i];
+                for (int j = 0; j < subArray.length; j++) {
+                    String sub = subArray[j];
+                    int num = count[i][j];
+                    bw.write(group1 + "\t" + sub + "\t" + num);
+                    bw.newLine();
+                    System.out.println(group1 + "\t" + sub + "\t" + num);
+                }
+            }
+            bw.flush();bw.close();
+
+            bw = AoFile.writeFile(outfileS2);
+            bw.write("VariantGroup\tCount");bw.newLine();
+            for (int i = 0; i < variantGroup.length; i++) {
+                String group = variantGroup[i];
+                int num = total[i];
+                bw.write(group + "\t" + num);
+                bw.newLine();
+                System.out.println(group + "\t" + num);
+            }
+            bw.flush();bw.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
     /**

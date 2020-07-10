@@ -36,7 +36,11 @@ public class Fst {
         this.addSubandGroup();
 
         this.mergeFSTwindow();
+
+        //********************************* VMap2.0 after -- new Version ********************//
     }
+
+
 
     /**
      * 将fst window scan 计算的FST,多个文件合并起来成为一个文件，并添加一列分组Group信息
