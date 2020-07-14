@@ -41,7 +41,6 @@ public class Fst {
         this.mkFstCommandbasedwinndow2();
     }
 
-
     public void mkFstCommandbasedwinndow2() {
 
         //local file： one: group
