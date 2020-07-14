@@ -39,6 +39,7 @@ public class Fst {
 
         //********************************* VMap2.0 after -- new Version ********************//
         this.mkFstCommandbasedwinndow2();
+        //today I read the article "The mutational constraint spectrum quantified from variation in 141,456 humans"
     }
 
     public void mkFstCommandbasedwinndow2() {
