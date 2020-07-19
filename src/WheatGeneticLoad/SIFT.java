@@ -74,9 +74,9 @@ public class SIFT {
         //******** 2020 版本 VMapII 的计算 **************//
 //        this.mkdis();
 //        this.annotatorVCF3();
-//        SplitScript.splitScript2("/Users/Aoyue/Documents/sh.sh",6,7);
-//        this.move();
-        this.reverseRefAltallelebyExonVCF();
+//        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/034_sift/002_script/Annotator_20200719.sh",6,7);
+        this.move();
+//        this.reverseRefAltallelebyExonVCF();
 
     }
 
@@ -89,12 +89,18 @@ public class SIFT {
 //    输出的文件产生的日志也保存下来，便于计算时间。 注意输入文件必须是解压后的vcf
 
     public void annotatorVCF3(){ //一次性将所有的jar都运行上
-        String infileDirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/002_exonSNPVCF";
-        String outfileDirS ="/data4/home/aoyue/vmap2/analysis/008_sift/003_result_Vmap2.1-2020_exonVCF";
+//        String infileDirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/002_exonSNPVCF";
+//        String outfileDirS ="/data4/home/aoyue/vmap2/analysis/008_sift/003_result_Vmap2.1-2020_exonVCF";
+
+        String infileDirS = "/data4/home/aoyue/vmap2/analysis/028_sift/001_exon_refref/001_exonVCF_refref";
+        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/028_sift/001_exon_refref";
+
         String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
         for (int i = 0; i < chrArr.length; i++) {
             String chr = chrArr[i];
-            String infileS = new File(infileDirS,"chr" + chr + "_exon_vmap2.1.vcf").getAbsolutePath();
+//            String infileS = new File(infileDirS,"chr" + chr + "_exon_vmap2.1.vcf").getAbsolutePath();
+            String infileS = new File(infileDirS,"chr" + chr + "_exon_vmap2.1_RefRef.vcf").getAbsolutePath();
+
             String outfileDirS2 = new File(outfileDirS,"output" + chr).getAbsolutePath();
             File f = new File(infileS);
             String name = f.getName().split(".vcf")[0];
@@ -117,18 +123,25 @@ public class SIFT {
 
 
     /**
-     * 为了检查ref allele 和 alt allele 互换顺序后，进行SIFT计算，有无其他结果。
+     * 为了检查ref allele 和 alt allele 互换顺序后，进行SIFT计算，有无其他结果。实践证明，无结果。
+     * 正确的思路是，Ref保持不变，将Alt替换成ref，只对ref进行sift的打分。
+     *
      */
     public void reverseRefAltallelebyExonVCF(){
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/003_exonSNPVCF";
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/010_exonVCF_reverseRefAlt/001_reverseRefAltallelebyExonVCF";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/003_exonSNPVCF";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/010_exonVCF_reverseRefAlt/001_reverseRefAltallelebyExonVCF";
 //        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/010_exonVCF_reverseRefAlt/003_convertAltAlleletoRefAllelebyExonVCF";
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/016_exonVCF";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/034_sift/001_exonVCF_RefRef";
+
+
         List<File> fsList = AoFile.getFileListInDir(infileDirS);
         Collections.sort(fsList);
         fsList.parallelStream().forEach(f -> {
             try {
                 String infileS = f.getAbsolutePath();
-                String outfileS = new File(outfileDirS, f.getName().split(".vcf")[0] + "_reverseRefAlt.vcf").getAbsolutePath();
+                String outfileS = new File(outfileDirS, f.getName().split(".vcf")[0] + "_RefRef.vcf").getAbsolutePath();
                 BufferedReader br = AoFile.readFile(infileS);
                 BufferedWriter bw = AoFile.writeFile(outfileS);
                 String temp = null;
@@ -148,7 +161,7 @@ public class SIFT {
                         String ref = l.get(3);
                         String alt = l.get(4);
 
-//                        bw.write(l.get(0)+ "\t"+l.get(1)+ "\t"+l.get(2)+ "\t"+l.get(4)+ "\t"+l.get(3));  //alt 和 ref 进行互换，然后用sift进行注释
+//                        bw.write(l.get(0)+ "\t"+l.get(1)+ "\t"+l.get(2)+ "\t"+l.get(4)+ "\t"+l.get(3));  //alt 和 ref 进行互换，然后用sift进行注释,此法不成立，被抛弃！！！
                         bw.write(l.get(0)+ "\t"+l.get(1)+ "\t"+l.get(2)+ "\t"+l.get(3)+ "\t"+l.get(3)); //只将alt进行替换，提成ref的碱基，然后用sift进行注释，从而判断ref是否是有害的。
                         for (int i = 5; i < l.size(); i++) {
                             bw.write("\t" + l.get(i));
@@ -176,7 +189,9 @@ public class SIFT {
 //            System.out.println("mv output" + chr + "/chr" + chr + ".subgenome.maf0.01byPop.SNP_SIFTannotations.xls output/");
 //            System.out.println("mv output" + chr + "/chr" + chr + "_exon_vmap2.1_reverseRefAlt_SIFTannotations.xls output/");
 //            System.out.println("mv output" + chr + "/chr" + chr + "_exon_vmap2.1_SIFTannotations.xls output/");
-            System.out.println("mv output" + chr + "/chr" + chr + "_exon_vmap2.1_SIFTannotations.xls output/");
+//            System.out.println("mv output" + chr + "/chr" + chr + "_exon_vmap2.1_SIFTannotations.xls output/");
+            System.out.println("mv output" + chr + "/chr" + chr + "_exon_vmap2.1_RefRef_SIFTannotations.xls output/");
+
 
         }
 
