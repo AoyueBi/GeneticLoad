@@ -518,6 +518,9 @@ public class AoFile {
         else if (infileS.endsWith(".csv")) {
             br = IOUtils.getTextReader(infileS);
         }
+        else if (infileS.endsWith(".tsv")) {
+            br = IOUtils.getTextReader(infileS);
+        }
         else if (infileS.endsWith(".sh")) {
             br = IOUtils.getTextReader(infileS);
         }

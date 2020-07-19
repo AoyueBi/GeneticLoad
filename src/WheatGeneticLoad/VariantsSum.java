@@ -22,6 +22,7 @@ import pgl.infra.utils.PStringUtils;
 import pgl.infra.utils.wheat.RefV1Utils;
 import tech.tablesaw.api.IntColumn;
 import tech.tablesaw.api.Table;
+import xiaohan.wheatRNAseq.test;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -54,18 +55,28 @@ public class VariantsSum {
 //        this.statisticNonsynSNP();
 //        this.getDeleteriouscount();
 //        this.getDeleteriousAnnotation();
-        this.countDeleteriousSNP_bySub();
+//        this.countDeleteriousSNP_bySub();
 //        this.getGERPdistrbutionFile();
 //        this.addGroupToExonAnnotation();
         //*********** count variants in genes *****************//
 //        this.countVariantsinGene();
 //        this.sortAndFilter();
         //*********** gene summary ********************//
+        this.test();
 
 
 
 
 
+    }
+
+    public void test(){
+        System.out.println("LOOK here");
+        String infileS = "/Users/Aoyue/Downloads/ref/JC/gnomAD/supplement/supplementary_dataset_11_full_constraint_metrics.tsv";
+        AoFile.readheader(infileS);
+        TDoubleArrayList value = AoFile.getTDoubleList(infileS,30);
+        System.out.println("min = " + value.min());
+        System.out.println("max = " + value.max());
     }
 
 

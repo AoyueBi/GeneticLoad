@@ -75,7 +75,8 @@ public class SIFT {
 //        this.mkdis();
 //        this.annotatorVCF3();
 //        SplitScript.splitScript2("/Users/Aoyue/Documents/sh.sh",6,7);
-        this.move();
+//        this.move();
+        this.reverseRefAltallelebyExonVCF();
 
     }
 
@@ -118,32 +119,18 @@ public class SIFT {
     /**
      * 为了检查ref allele 和 alt allele 互换顺序后，进行SIFT计算，有无其他结果。
      */
-    public void reverseRefAltallelebyExonVCF(String infileDirS,String outfileDirS){
-//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/003_exonSNPVCF";
-//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/010_exonVCF_reverseRefAlt/001_reverseRefAltallelebyExonVCF";
+    public void reverseRefAltallelebyExonVCF(){
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/003_exonSNPVCF";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/010_exonVCF_reverseRefAlt/001_reverseRefAltallelebyExonVCF";
 //        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/010_exonVCF_reverseRefAlt/003_convertAltAlleletoRefAllelebyExonVCF";
-        File[] fs = new File(infileDirS).listFiles();
-        for (int i = 0; i < fs.length; i++) {
-            if (fs[i].isHidden()) {
-                fs[i].delete();
-            }
-        }
-        fs = new File(infileDirS).listFiles();
-        List<File> fsList = Arrays.asList(fs);
+        List<File> fsList = AoFile.getFileListInDir(infileDirS);
         Collections.sort(fsList);
         fsList.parallelStream().forEach(f -> {
             try {
                 String infileS = f.getAbsolutePath();
-                String outfileS = null;
-                BufferedReader br = null;
-                if (infileS.endsWith(".vcf")) {
-                    br = IOUtils.getTextReader(infileS);
-                    outfileS = new File(outfileDirS, f.getName().split(".vcf")[0] + "_reverseRefAlt.vcf").getAbsolutePath();
-                } else if (infileS.endsWith(".vcf.gz")) {
-                    br = IOUtils.getTextGzipReader(infileS);
-                    outfileS = new File(outfileDirS, f.getName().split(".vcf.gz")[0] + "_reverseRefAlt.vcf").getAbsolutePath();
-                }
-                BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+                String outfileS = new File(outfileDirS, f.getName().split(".vcf")[0] + "_reverseRefAlt.vcf").getAbsolutePath();
+                BufferedReader br = AoFile.readFile(infileS);
+                BufferedWriter bw = AoFile.writeFile(outfileS);
                 String temp = null;
                 int cnttotal = 0;
                 int cntsubset = 0;
@@ -161,8 +148,8 @@ public class SIFT {
                         String ref = l.get(3);
                         String alt = l.get(4);
 
-//                        bw.write(l.get(0)+ "\t"+l.get(1)+ "\t"+l.get(2)+ "\t"+l.get(4)+ "\t"+l.get(3));
-                        bw.write(l.get(0)+ "\t"+l.get(1)+ "\t"+l.get(2)+ "\t"+l.get(3)+ "\t"+l.get(3));
+//                        bw.write(l.get(0)+ "\t"+l.get(1)+ "\t"+l.get(2)+ "\t"+l.get(4)+ "\t"+l.get(3));  //alt 和 ref 进行互换，然后用sift进行注释
+                        bw.write(l.get(0)+ "\t"+l.get(1)+ "\t"+l.get(2)+ "\t"+l.get(3)+ "\t"+l.get(3)); //只将alt进行替换，提成ref的碱基，然后用sift进行注释，从而判断ref是否是有害的。
                         for (int i = 5; i < l.size(); i++) {
                             bw.write("\t" + l.get(i));
                         }
