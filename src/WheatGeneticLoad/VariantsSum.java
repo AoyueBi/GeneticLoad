@@ -6,6 +6,7 @@
 package WheatGeneticLoad;
 
 import AoUtils.*;
+import analysis.wheat.VMap2.DBDeleterious;
 import daxing.common.RowTableTool;
 import gnu.trove.list.TIntList;
 import gnu.trove.set.hash.TIntHashSet;
@@ -43,12 +44,13 @@ public class VariantsSum {
 //        this.extractInfoFromVMap2();
 //        this.mkExonVCF();
 //        this.mkExonAnnotation(); //弃用
-        this.mkExonAnnotation2();
-        this.addSift();
+//        this.mkExonAnnotation2();
+//        this.addSift(); //分为2种策略，其中一种已经注释掉。 只添加 alt, 以及同时添加 alt 和 ref 的结果
 //        this.addAncestral();
 //        this.addDAF_parallel();
 //        this.addGerp();
 //        this.mergeExonSNPAnnotation();
+
         //********************** for calculation ****************//
 //        this.getDAFtable();
 //        this.statisticCodingSNP();
@@ -58,17 +60,26 @@ public class VariantsSum {
 //        this.countDeleteriousSNP_bySub();
 //        this.getGERPdistrbutionFile();
 //        this.addGroupToExonAnnotation();
+
         //*********** count variants in genes *****************//
 //        this.countVariantsinGene();
 //        this.sortAndFilter();
         //*********** gene summary ********************//
-        this.test();
+//        this.test();
 
+//*********** 根据 ref sift score 和 alt score 再重新建一遍库 ********************//
+//        this.mkExonAnnotation2();
+//        this.addSift(); //分为2种策略，其中一种已经注释掉。 只添加 alt, 以及同时添加 alt 和 ref 的结果
+//        this.addAncestral();
+//        this.addDerived_SIFT();
+        this.addDAF_parallel();
 
 
 
 
     }
+
+
 
     public void test(){
         System.out.println("LOOK here");
@@ -1238,8 +1249,12 @@ public class VariantsSum {
 
 
     public void addDAF_parallel(){ //本地运行常用
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/003_exonSNPAnnotation";
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/004_exonSNPAnnotation";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/003_exonSNPAnnotation";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/004_exonSNPAnnotation";
+
+        String infileDirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/003_exonSNPAnnotation";
+        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/004";
+
         List<File> fsList = IOUtils.getVisibleFileListInDir(infileDirS);
         fsList.stream().forEach(f -> {
             String infileS = f.getAbsolutePath();
@@ -1247,6 +1262,8 @@ public class VariantsSum {
             this.calDAF(f.getAbsolutePath(),outfileS);
             System.out.println(f.getName() + "\tis completed at " + outfileS);
         });
+
+        // java -Xms50g -Xmx200g -jar PlantGenetics.jar > log_addFDA_20200720.txt 2>&1 &
     }
 
     /**
@@ -1277,7 +1294,7 @@ public class VariantsSum {
                 bw.write(temp + "\tDaf_barley_secaleParsimony\tDaf_ABD_barley_secaleParsimony\tDaf_AB_barley_secaleParsimony");
                 bw.newLine();
             } else if (ifd == true) {
-                bw.write(temp + "\tDaf_barley_secaleParsimony\tDaf_ABD_barley_secaleParsimony\tDaf_AB_barley_secaleParsimony");
+                bw.write(temp + "\tDaf_barley_secaleParsimony\tDaf_ABD_barley_secaleParsimony\tDaf_D_barley_secaleParsimony");
                 bw.newLine();
             }
 
@@ -1294,8 +1311,8 @@ public class VariantsSum {
 
                 //################### 需要修改 //###################//###################//###################//###################
 //               String ancAllele = l.get(22); //不同的数据库，这一列的信息不一样，千万要注意!!!!!!!!!!!!!!!!! 祖先基因的数据库
-//                String ancAllele = l.get(15); //不同的数据库，这一列的信息不一样，千万要注意!!!!!!!!!!!!!!!!! 祖先基因的数据库
-                String ancAllele = l.get(14);
+                String ancAllele = l.get(15); //不同的数据库，这一列的信息不一样，千万要注意!!!!!!!!!!!!!!!!! 祖先基因的数据库
+//                String ancAllele = l.get(14);
                 //################### 需要修改 //###################//###################//###################//###################
 
                 StringBuilder sb = new StringBuilder();
@@ -1379,12 +1396,70 @@ public class VariantsSum {
         }
     }
 
+    /**
+     * 根据alt sift score 和 ref sift score 和 ancestral allele 的状态， 判断 derived allele 的得分， 可能是 alt 也可能是 ref
+     */
+    public void addDerived_SIFT(){
+        String infileDirS = "/Users/Aoyue/Downloads/003_exonSNPAnnotation";
+        String outfileDirS = "/Users/Aoyue/Downloads/003";
+        List<File> fsList = AoFile.getFileListInDir(infileDirS);
+        fsList.forEach(f ->{
+            String infileS = f.getAbsolutePath();
+            String outfileS = new File(outfileDirS,f.getName()).getAbsolutePath();
+            String header = null;
+            try {
+                BufferedReader br = AoFile.readFile(infileS);
+                BufferedWriter bw = AoFile.writeFile(outfileS);
+                header = br.readLine();
+                bw.write(header + "\tDerived_SIFT");bw.newLine();
+                String temp = null;
+                List<String> l = new ArrayList<>();
+                while ((temp = br.readLine()) != null) {
+                    l = PStringUtils.fastSplit(temp);
+                    String ref = l.get(3);
+                    String alt = l.get(4);
+                    String ancestral = l.get(15);
+                    String refSIFT = l.get(14);
+                    String altSIFT = l.get(13);
+                    if (ancestral.equals("NA")){
+                        bw.write(temp + "\tNA");
+                        bw.newLine();
+                    }else if (!ancestral.equals("NA")){
+                        if (ancestral.equals(ref)){ //说明 derived allele 是 alt
+                            bw.write(temp + "\t" + altSIFT);
+                            bw.newLine();
+                        }
+                        if(ancestral.equals(alt)){ //说明 derived allele 是 ref
+                            bw.write(temp + "\t" + refSIFT);
+                            bw.newLine();
+                        }
+                        if(!ancestral.equals(ref) && (!ancestral.equals(alt))){ //ancestral 即不等于ref 又不等于 alt
+                            bw.write(temp + "\tNA");
+                            bw.newLine();
+                        }
+                    }
+                }
+                br.close();
+                bw.flush();
+                bw.close();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        //java -Xms50g -Xmx200g -jar PlantGenetics.jar > log_addDerivedSIFT_20200720.txt 2>&1 &
+    }
+
     public void addAncestral () {
-        String inDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/002_byChrID";
-        String dirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/003_exonSNPAnnotation";
+//        String inDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/002_byChrID";
+//        String dirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/003_exonSNPAnnotation";
+
+        String inDirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/003_annotation/001_ancestral";
+        String dirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/003_exonSNPAnnotation";
+
         List<File> fList = AoFile.getFileListInDir(inDirS);
         fList.parallelStream().forEach(f -> {
-            String annoFileS = f.getName().split("_")[0]+"_SNP_anno.txt.gz";
+            String annoFileS = f.getName().split("_")[0]+"_SNP_anno.txt";
             annoFileS = new File(dirS, annoFileS).getAbsolutePath();
             String header = null;
             List<String> recordList = new ArrayList();
@@ -1435,38 +1510,57 @@ public class VariantsSum {
                 e.printStackTrace();
             }
         });
+
+        // java -Xms50g -Xmx200g -jar PlantGenetics.jar > log_addAncestral_20200720.txt 2>&1 &   cat /data4/home/aoyue/vmap2/aaPlantGenetics/log_addAncestral_20200720.txt
     }
 
+    /**
+     * 此方法是同时添加 ref 和 sift 的方法，注意 在ref 的结果中只提取sift score 这一项内容；
+     * refsift 和  altsift 的结果，行数和pos的位置都一一对应。
+     * 另外注意：单独添加sift alt的方法在下文可以找到，需要用到的时候，请打开注释号。
+     * CHROM	POS	REF_ALLELE	ALT_ALLELE	TRANSCRIPT_ID	GENE_ID	GENE_NAME	REGION	VARIANT_TYPE	REF_AMINO	ALT_AMINO	AMINO_POS	SIFT_SCORE	SIFT_MEDIAN	NUM_SEQS	dbSNSIFT_PREDICTION
+     * 1	1145382	C	A	TraesCS1A02G001800.1	TraesCS1A02G001800	TraesCS1A02G001800	CDS	NONSYNONYMOUS	F	L	68	0.68	2.70	227	novel	TOLERATED
+     * 1	1145386	G	T	TraesCS1A02G001800.1	TraesCS1A02G001800	TraesCS1A02G001800	CDS	STOP-GAIN	E	*	70	NA	NA	NA	novel	NA
+     * 1	1145397	G	A	TraesCS1A02G001800.1	TraesCS1A02G001800	TraesCS1A02G001800	CDS	SYNONYMOUS	T	T	73	0.13	2.70	227	novel	TOLERATED
+     * 1	1145405	C	T	TraesCS1A02G001800.1	TraesCS1A02G001800	TraesCS1A02G001800	CDS	NONSYNONYMOUS	A	V	76	0.03	2.70	227	novel	DELETERIOUS
+     * 1	1145406	C	T	TraesCS1A02G001800.1	TraesCS1A02G001800	TraesCS1A02G001800	CDS	SYNONYMOUS	A	A	76	1.00	2.70	227	novel	TOLERATED
+     * 1	1145418	C	T	TraesCS1A02G001800.1	TraesCS1A02G001800	TraesCS1A02G001800	CDS	SYNONYMOUS	S	S	80	1.00	2.70	227	novel	TOLERATED
+     * 1	1145442	G	A	TraesCS1A02G001800.1	TraesCS1A02G001800	TraesCS1A02G001800	CDS	SYNONYMOUS	K	K	88	1.00	2.71	228	novel	TOLERATED
+     * 1	1145448	A	G	TraesCS1A02G001800.1	TraesCS1A02G001800	TraesCS1A02G001800	CDS	SYNONYMOUS	Q	Q	90	1.00	2.73	228	novel	TOLERATED
+     * 1	1145454	G	C	TraesCS1A02G001800.1	TraesCS1A02G001800	TraesCS1A02G001800	CDS	SYNONYMOUS	V	V	92	1.00	2.73	227	novel	TOLERATED
+     */
     public void addSift() {
-        String siftAltDirS = "/data4/home/aoyue/vmap2/analysis/008_sift/003_result_Vmap2.1-2020_exonVCF/output";
-//        String siftRefDirS = "/Users/feilu/Documents/analysisH/vmap2/003_annotation/001_sift/output_ref";
-        String dirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/003_exonSNPAnnotation";
-        List<File> fList = AoFile.getFileListInDir(siftAltDirS);
+        String siftAltDirS = "/data4/home/aoyue/vmap2/analysis/008_sift/003_result_Vmap2.1-2020_exonVCF/output"; //chr001_exon_vmap2.1_SIFTannotations.xls.gz
+        String siftRefDirS = "/data4/home/aoyue/vmap2/analysis/028_sift/001_exon_refref/output";
+        String dirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/003_exonSNPAnnotation"; //库文件
+        File[] fs = new File(siftAltDirS).listFiles();
+        fs = IOUtils.listFilesEndsWith(fs, ".xls.gz");
+        List<File> fList = Arrays.asList(fs);
         fList.parallelStream().forEach(f -> {
-            String dbFileS = f.getName().split("_")[0]+"_SNP_anno.txt.gz";
+            String dbFileS = f.getName().split("_")[0]+"_SNP_anno.txt";
             dbFileS = new File (dirS, dbFileS).getAbsolutePath();
-//            String refFileS = new File (siftRefDirS, f.getName().split("_")[0]+"_exon_vmap2.1_reverseRefAlt_SIFTannotations.xls.gz").getAbsolutePath();
+            String refFileS = new File (siftRefDirS, f.getName().split("_")[0]+"_exon_vmap2.1_RefRef_SIFTannotations.xls.gz").getAbsolutePath();
             RowTable<String> tAlt = new RowTable (f.getAbsolutePath());
-//            RowTable<String> tRef = new RowTable (refFileS);
+            RowTable<String> tRef = new RowTable (refFileS);
             SIFTRecord[] records = new SIFTRecord[tAlt.getRowNumber()];
             for (int i = 0; i < records.length; i++) {
                 SIFTRecord s = new SIFTRecord(Integer.parseInt(tAlt.getCell(i, 1)), tAlt.getCell(i, 3), tAlt.getCell(i, 4), tAlt.getCell(i,
-                        7), tAlt.getCell(i, 8), tAlt.getCell(i, 12));
+                        7), tAlt.getCell(i, 8), tAlt.getCell(i, 12), tRef.getCell(i, 12));
                 records[i] = s;
             }
             Arrays.sort(records);
             try {
-                List<String> dbList = new ArrayList(); //是原来文件的每一行的结果
+                List<String> dbList = new ArrayList();
                 String temp = null;
                 BufferedReader br = AoFile.readFile(dbFileS);
-                String header = br.readLine(); //
+                String header = br.readLine();
                 while ((temp = br.readLine()) != null) {
                     dbList.add(temp);
                 }
                 br.close();
                 BufferedWriter bw = AoFile.writeFile(dbFileS);
                 StringBuilder sb = new StringBuilder(header);
-                sb.append("\tRegion\tVariant_type\tAlt_SIFT");
+                sb.append("\tRegion\tVariant_type\tAlt_SIFT\tRef_SIFT");
                 bw.write(sb.toString());
                 bw.newLine();
                 List<String> l = null;
@@ -1479,7 +1573,7 @@ public class VariantsSum {
                     sb.append(dbList.get(i)).append("\t");
                     sb.append(records[index].region).append("\t");
                     sb.append(records[index].type).append("\t");
-                    sb.append(records[index].altSift);
+                    sb.append(records[index].altSift).append("\t").append(records[index].refSift);
                     bw.write(sb.toString());
                     bw.newLine();
                 }
@@ -1490,9 +1584,8 @@ public class VariantsSum {
                 e.printStackTrace();
             }
         });
-        // java -Xms50g -Xmx200g -jar PlantGenetics.jar > log_addSift_20200608.txt 2>&1 &
 
-
+        // java -Xms50g -Xmx200g -jar PlantGenetics.jar > log_addSift_20200720.txt 2>&1 &   cat /data4/home/aoyue/vmap2/aaPlantGenetics/log_addSift_20200720.txt
     }
 
     class SIFTRecord implements Comparable<SIFTRecord> {
@@ -1503,7 +1596,7 @@ public class VariantsSum {
         public String region;
         public String type;
         public String altSift;
-
+        public String refSift;
 
 
         public SIFTRecord(int pos, String alt, String transcript) {
@@ -1512,14 +1605,14 @@ public class VariantsSum {
             this.transcript = transcript;
         }
 
-        public SIFTRecord(int pos, String alt, String transcript, String region, String type, String altSift) {
+        public SIFTRecord(int pos, String alt, String transcript, String region, String type, String altSift, String refSift) {
             this.pos = pos;
             this.alt = alt;
             this.transcript = transcript;
             this.region = region;
             this.type = type;
             this.altSift = altSift;
-
+            this.refSift = refSift;
         }
 
         @Override
@@ -1544,6 +1637,113 @@ public class VariantsSum {
 
 
 
+//    public void addSift() {
+//        String siftAltDirS = "/data4/home/aoyue/vmap2/analysis/008_sift/003_result_Vmap2.1-2020_exonVCF/output";
+////        String siftRefDirS = "/Users/feilu/Documents/analysisH/vmap2/003_annotation/001_sift/output_ref";
+//        String dirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/003_exonSNPAnnotation";
+//        List<File> fList = AoFile.getFileListInDir(siftAltDirS);
+//        fList.parallelStream().forEach(f -> {
+//            String dbFileS = f.getName().split("_")[0]+"_SNP_anno.txt.gz";
+//            dbFileS = new File (dirS, dbFileS).getAbsolutePath();
+////            String refFileS = new File (siftRefDirS, f.getName().split("_")[0]+"_exon_vmap2.1_reverseRefAlt_SIFTannotations.xls.gz").getAbsolutePath();
+//            RowTable<String> tAlt = new RowTable (f.getAbsolutePath());
+////            RowTable<String> tRef = new RowTable (refFileS);
+//            SIFTRecord[] records = new SIFTRecord[tAlt.getRowNumber()];
+//            for (int i = 0; i < records.length; i++) {
+//                SIFTRecord s = new SIFTRecord(Integer.parseInt(tAlt.getCell(i, 1)), tAlt.getCell(i, 3), tAlt.getCell(i, 4), tAlt.getCell(i,
+//                        7), tAlt.getCell(i, 8), tAlt.getCell(i, 12));
+//                records[i] = s;
+//            }
+//            Arrays.sort(records);
+//            try {
+//                List<String> dbList = new ArrayList(); //是原来文件的每一行的结果
+//                String temp = null;
+//                BufferedReader br = AoFile.readFile(dbFileS);
+//                String header = br.readLine(); //
+//                while ((temp = br.readLine()) != null) {
+//                    dbList.add(temp);
+//                }
+//                br.close();
+//                BufferedWriter bw = AoFile.writeFile(dbFileS);
+//                StringBuilder sb = new StringBuilder(header);
+//                sb.append("\tRegion\tVariant_type\tAlt_SIFT");
+//                bw.write(sb.toString());
+//                bw.newLine();
+//                List<String> l = null;
+//                for (int i = 0; i < dbList.size(); i++) {
+//                    l = PStringUtils.fastSplit(dbList.get(i));
+//                    SIFTRecord query = new SIFTRecord(Integer.parseInt(l.get(2)), l.get(4), l.get(10));
+//                    int index = Arrays.binarySearch(records, query);
+//                    if (index < 0) continue;
+//                    sb.setLength(0);
+//                    sb.append(dbList.get(i)).append("\t");
+//                    sb.append(records[index].region).append("\t");
+//                    sb.append(records[index].type).append("\t");
+//                    sb.append(records[index].altSift);
+//                    bw.write(sb.toString());
+//                    bw.newLine();
+//                }
+//                bw.flush();
+//                bw.close();
+//            }
+//            catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        });
+//        // java -Xms50g -Xmx200g -jar PlantGenetics.jar > log_addSift_20200608.txt 2>&1 &
+//
+//
+//    }
+
+//    class SIFTRecord implements Comparable<SIFTRecord> {
+//
+//        public int pos;
+//        public String alt;
+//        public String transcript;
+//        public String region;
+//        public String type;
+//        public String altSift;
+//
+//
+//
+//        public SIFTRecord(int pos, String alt, String transcript) {
+//            this.pos = pos;
+//            this.alt = alt;
+//            this.transcript = transcript;
+//        }
+//
+//        public SIFTRecord(int pos, String alt, String transcript, String region, String type, String altSift) {
+//            this.pos = pos;
+//            this.alt = alt;
+//            this.transcript = transcript;
+//            this.region = region;
+//            this.type = type;
+//            this.altSift = altSift;
+//
+//        }
+//
+//        @Override
+//        public int compareTo(SIFTRecord o) { //
+//            if (this.pos < o.pos) {
+//                return -1;
+//            } else if (this.pos == o.pos) {
+//                int index = this.alt.compareTo(o.alt);
+//                if (index < 0) {
+//                    return -1;
+//                }
+//                else if (index > 0) {
+//                    return 1;
+//                }
+//                else return transcript.compareTo(o.transcript);
+//            } else {
+//                return 1;
+//            }
+//        }
+//    }
+
+
+
+
     /**
      * 如何根据Pos直接找出对应的基因？
      * 第一步：将pgf文件的基因按照染色体的位置进行排序； 基因排序
@@ -1555,7 +1755,7 @@ public class VariantsSum {
     public void mkExonAnnotation2(){
         int subLength = 200; //取VCF文件的前200个字符串
         String vmapDirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/002_exonSNPVCF";
-        String outDirS = "";
+        String outDirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/003_exonSNPAnnotation";
         File[] fs = AoFile.getFileArrayInDir(vmapDirS);
         List<File> vmapList = Arrays.asList(fs);
         Collections.sort(vmapList);
@@ -1581,7 +1781,7 @@ public class VariantsSum {
                 else if (currentChr > chrID) break; //表格中chr大于当前的chr，就终止循环，说明已经建立好基因列表
                 geneList.add(t.getCell(i, 0));
                 tranList.add(t.getCell(i, 1));
-                startLists.add(Integer.parseInt(t.getCell(i,3)));
+                startLists.add(Integer.parseInt(t.getCell(i,3))); //本条染色体内的所有基因的起始位置组合
                 endLists.add(Integer.parseInt(t.getCell(i,4)));
             }
 
@@ -1609,6 +1809,7 @@ public class VariantsSum {
                 String info = null;
                 int currentPos = -1;
                 int posIndex = -1;
+                int cntkept = 0;
                 while ((temp = br.readLine()) != null) {
                     if (temp.startsWith("#")) continue;
                     sb.setLength(0);
@@ -1624,7 +1825,9 @@ public class VariantsSum {
                     }
                     if (posIndex < 0) continue;
                     if (currentPos > ends[posIndex]) continue;
-                    String trans = tranList.get(posIndex);
+
+                    cntkept++;
+                    String trans = tranList.get(posIndex); //在第几个基因中搜到，就是第几个转录本。 注意：只是本条染色体内部的基因集合
                     sb.append(l.get(2)).append("\t").append(l.get(0)).append("\t").append(l.get(1)).append("\t").append(l.get(3));
                     sb.append("\t").append(l.get(4)).append("\t");
                     ll = PStringUtils.fastSplit(l.get(7), ";");
@@ -1642,13 +1845,15 @@ public class VariantsSum {
                 bw.flush();
                 bw.close();
                 br.close();
-                System.out.println(f.getAbsolutePath() + " is completed.");
+                System.out.println(f.getAbsolutePath() + " is completed at " + outfileS + " with\t" + cntkept + " SNPs");
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
 
         // java -Xms50g -Xmx200g -jar PlantGenetics.jar > log_mkExonAnnotation2_20200607.txt 2>&1 &
+        //java -Xms50g -Xmx200g -jar PlantGenetics.jar > log_mkExonAnnotation2_20200720.txt 2>&1 &
+        //cat /data4/home/aoyue/vmap2/aaPlantGenetics/log_mkExonAnnotation2_20200720.txt
 
     }
 
