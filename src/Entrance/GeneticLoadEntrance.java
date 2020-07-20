@@ -39,8 +39,8 @@ public class GeneticLoadEntrance {
 //        new AoHeterozygosity();
 //        new  FilterVCF2();
 //        new GermplasmInfo();
-//        new VariantsSum();
-        new SIFT();
+        new VariantsSum();
+//        new SIFT();
 //        new DeleteriousCountbyIndi();
 //        new TaxaDB();
 

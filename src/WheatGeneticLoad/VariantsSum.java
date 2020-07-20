@@ -43,8 +43,8 @@ public class VariantsSum {
 //        this.extractInfoFromVMap2();
 //        this.mkExonVCF();
 //        this.mkExonAnnotation(); //弃用
-//        this.mkExonAnnotation2();
-//        this.addSift();
+        this.mkExonAnnotation2();
+        this.addSift();
 //        this.addAncestral();
 //        this.addDAF_parallel();
 //        this.addGerp();
@@ -1546,11 +1546,11 @@ public class VariantsSum {
 
     /**
      * 如何根据Pos直接找出对应的基因？
-     * 第一步：将pgf文件的基因按照染色体的位置进行排序；
-     * 第二步：根据chr pos，使用getGeneIndex方法得到基因的index
-     * 第三步：使用getGeneName方法，得到基因的名字；
-     * 第四步：使用getLongestTranscriptIndex方法，得到该基因最长转录本的index;
-     * 第五步：使用getTranscriptName方法，根据基因的index和最长转录本的index得到转录本的名字；
+     * 第一步：将pgf文件的基因按照染色体的位置进行排序； 基因排序
+     * 第二步：根据chr pos，使用getGeneIndex方法得到基因的index  找基因索引
+     * 第三步：使用getGeneName方法，得到基因的名字； 找基因名字
+     * 第四步：使用getLongestTranscriptIndex方法，得到该基因最长转录本的index;  找转录本索引
+     * 第五步：使用getTranscriptName方法，根据基因的index和最长转录本的index得到转录本的名字；  找转录本名字
      */
     public void mkExonAnnotation2(){
         int subLength = 200; //取VCF文件的前200个字符串
@@ -1652,6 +1652,9 @@ public class VariantsSum {
 
     }
 
+    /**
+     * @deprecated
+     */
     public void mkExonAnnotation() {
         String inDirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/001_genicSNPByChr";
         String outDirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/003_exonSNPAnnotation";
