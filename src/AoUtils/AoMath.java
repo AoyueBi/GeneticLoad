@@ -25,6 +25,32 @@ public class AoMath {
 
     }
 
+    /**
+     * 将注释库中DAF是0或者1的位点一环为NA,NA的位点依旧是NA
+     */
+    public static String replace10toNA(String value){
+        String out = null;
+        double daf = Double.NaN;
+        if (value.startsWith("N")){
+            out = "NA";
+        }
+        if(!value.startsWith("N")){
+            daf = Double.parseDouble(value);
+            if (daf == 1 || daf== 0){
+                out = "NA";
+            }
+            else{
+                out = value;
+            }
+        }
+        return out;
+    }
+
+    /**
+     * 求所有集合的总和
+     * @param l
+     * @return
+     */
     public static int listSum_byint(List<Integer> l){
         int out = 0;
         for (int i = 0; i < l.size() ; i++) {
@@ -202,68 +228,6 @@ public class AoMath {
         return out;
     }
 
-    /**
-     * 计算每个文件中某一列数值小于某个值的个数
-     *
-     */
-    public int countValue(String infileDirS) {
-        new AoFile().readheader("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/009_output/000_xls/chr001.subgenome.maf0.01byPop.SNP_SIFTannotations.xls");
-        File[] fs = new File(infileDirS).listFiles();
-        for (int i = 0; i < fs.length; i++) {
-            if (fs[i].isHidden()) {
-                System.out.println(fs[i].getName() + " is hidden");
-                fs[i].delete();
-            }
-        }
-        fs = new File(infileDirS).listFiles();
-        List<File> fsList = Arrays.asList(fs);
-        int cnttotal = 0;
-        for (int i = 0; i < fs.length; i++) {
-            try {
-                String infileS = fs[i].getAbsolutePath();
-                BufferedReader br = null;
-                if (infileS.endsWith(".txt")) {
-                    br = IOUtils.getTextReader(infileS);
-                } else if (infileS.endsWith(".txt.gz")) {
-                    br = IOUtils.getTextGzipReader(infileS);
-                }
-                else if (infileS.endsWith(".xls")) {
-                    br = IOUtils.getTextReader(infileS);
-                }
-                String temp = null;
-                String header = br.readLine(); //读表头
-                int cnt = 0;
-                List<String> l = new ArrayList();
-                String goalValue = null;
-                while ((temp = br.readLine()) != null) {
-                    l = PStringUtils.fastSplit(temp);
-                    goalValue = l.get(12); //此处需要修改，目标值
-                    String type = l.get(8);
-
-                    if (goalValue.startsWith("N")) {
-                        continue;
-                    }
-                    double value = Double.parseDouble(goalValue);
-                    if (value < 0.05) {
-                        if(!type.equals("NONSYNONYMOUS")) {
-                            System.out.println(type);
-                            System.out.println(value);
-                        }
-                        cnt++;
-                    }
-                }
-                cnttotal = cnttotal + cnt;
-                br.close();
-                System.out.println(fs[i].getAbsolutePath() + " is completed " + cnt);
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.exit(1);
-            }
-        }
-        System.out.println("Total count is  " + cnttotal);
-
-        return cnttotal;
-    }
 
     /**
      * 过滤DAF_ABD等于0或者1的位点

@@ -7,8 +7,10 @@ package WheatGeneticLoad;
 
 import AoUtils.*;
 import analysis.wheat.VMap2.DBDeleterious;
+import analysis.wheat.VMap2.VMapDBUtils;
 import daxing.common.RowTableTool;
 import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TFloatArrayList;
 import gnu.trove.set.hash.TIntHashSet;
 import pgl.graph.tSaw.TablesawUtils;
 import pgl.infra.anno.gene.GeneFeature;
@@ -16,7 +18,9 @@ import pgl.infra.range.Range;
 import gnu.trove.list.array.TByteArrayList;
 import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TIntArrayList;
+import pgl.infra.table.ColumnTable;
 import pgl.infra.table.RowTable;
+import pgl.infra.utils.Dyad;
 import pgl.infra.utils.IOFileFormat;
 import pgl.infra.utils.IOUtils;
 import pgl.infra.utils.PStringUtils;
@@ -68,11 +72,36 @@ public class VariantsSum {
 //        this.test();
 
 //*********** 根据 ref sift score 和 alt score 再重新建一遍库 ********************//
+// *********** 根据 ref sift score 和 alt score 再重新建一遍库 ********************//
+// *********** 根据 ref sift score 和 alt score 再重新建一遍库 ********************//
+
 //        this.mkExonAnnotation2();
 //        this.addSift(); //分为2种策略，其中一种已经注释掉。 只添加 alt, 以及同时添加 alt 和 ref 的结果
 //        this.addAncestral();
 //        this.addDerived_SIFT();
-        this.addDAF_parallel();
+//        this.addDAF_parallel(); //********* 方法有误，不做分析。**********
+//        this.addDAF();
+//        this.remove01();
+//        this.addGerp();
+//        this.addRecombination();
+//        this.mergeExonSNPAnnotation();
+
+        //********************** for calculation ****************//
+        this.getDAFtable();
+//        this.statisticCodingSNP();
+//        this.statisticNonsynSNP();
+//        this.getDeleteriouscount();
+//        this.getDeleteriousAnnotation();
+//        this.countDeleteriousSNP_bySub();
+//        this.getGERPdistrbutionFile();
+//        this.addGroupToExonAnnotation();
+
+        //*********** count variants in genes *****************//
+//        this.countVariantsinGene();
+//        this.sortAndFilter();
+        //*********** gene summary ********************//
+//        this.test();
+
 
 
 
@@ -871,13 +900,24 @@ public class VariantsSum {
         //********************  需要手动设置 START ****************************//
 //        String infileDirS = ""; 输入文件是合并的EXON Annotation数据库
 //        String outfileDirS = ""; //输出文件的目录，即会有6个文件 A sub B sub  D sub  only ABD only AB only D
+//        new File(outfileDirS).mkdirs();
+//        AoFile.readheader("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/015_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz");
+
         //********************  需要手动设置 START ****************************//
 
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/015_exonSNPAnnotation_merge/"; //001_exonSNP_anno.txt.gz
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/015_exonSNPAnnotation_merge/"; //001_exonSNP_anno.txt.gz
 //        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/005_DAFtable_barley_secale_parsimony";
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/005_DAFtable_barley_secale_parsimony/001_DAFtable_siftGERP";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/005_DAFtable_barley_secale_parsimony/001_DAFtable_siftGERP";
+//        new File(outfileDirS).mkdirs();
+//        AoFile.readheader("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/015_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz");
+
+        ////*************** 用 derivedSIFT 重建数据库后的重计算
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/019_exonSNPAnnotation_merge"; //输入文件是合并的EXON Annotation数据库
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/005_DAFtable_barley_secale_parsimony/002_DAFtable_basedSiftGerp_newDBuseDerivedSIFT"; //输出文件的目录，即会有6个文件 A sub B sub  D sub  only ABD only AB only D
         new File(outfileDirS).mkdirs();
-        AoFile.readheader("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/015_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz");
+        AoFile.readheader("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/018_exonSNPAnnotation/chr001_SNP_anno.txt.gz");
+
+
         List<File> fsList = AoFile.getFileListInDir(infileDirS);
         fsList.stream().forEach(f -> {
             try {
@@ -1181,15 +1221,94 @@ public class VariantsSum {
 //        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/015_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
 //        AoFile.mergeTxt(infileDirS,outfileS);
 
-        String infileDirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/003_exonSNPAnnotation";
-        String outfileS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/004_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
+//        String infileDirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/003_exonSNPAnnotation";
+//        String outfileS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/004_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
+//        AoFile.mergeTxt(infileDirS,outfileS);
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/018_exonSNPAnnotation";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/019_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
         AoFile.mergeTxt(infileDirS,outfileS);
 
         //java -Xms50g -Xmx200g -jar PlantGenetics.jar > log_mergeExonSNPAnnotation_20200609.txt 2>&1 &
     }
 
+    /**
+     * 为单个位点添加重组率的结果
+     */
+    public void addRecombination () {
+        String dirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/012/001_exonSNPAnnotation";
+        String outDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/012/002";
+        String recombinationFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/007_recombination/001_recombination/iwgsc_refseqv1.0_recombination_rate_chrID.txt";
+        ColumnTable<String> t = new ColumnTable<>(recombinationFileS);
+        int chrNum = Integer.parseInt(t.getCell(t.getRowNumber()-1, 0)); //合计42条染色体
+        TIntArrayList[] startLists = new TIntArrayList[chrNum];
+        TIntArrayList[] endLists = new TIntArrayList[chrNum];
+        TFloatArrayList[] crossLists = new TFloatArrayList[chrNum];
+        for (int i = 0; i < startLists.length; i++) {
+            startLists[i] = new TIntArrayList();
+            endLists[i] = new TIntArrayList();
+            crossLists[i] = new TFloatArrayList();
+        }
+        int index = -1;
+        for (int i = 0; i < t.getRowNumber(); i++) {
+            index = Integer.parseInt(t.getCell(i, 0))-1;
+            startLists[index].add(Integer.parseInt(t.getCell(i, 1)));
+            endLists[index].add(Integer.parseInt(t.getCell(i, 2)));
+            crossLists[index].add(Float.parseFloat(t.getCell(i, 3)));
+        }
+        List<File> fList = IOUtils.getFileListInDirEndsWith(dirS, ".gz");
+        fList.parallelStream().forEach(f -> {
+            //String outfileS = new File (outDirS, f.getName()).getAbsolutePath();
+            Dyad<String, List<String>> two = VMapDBUtils.getDBInfo(f.getAbsolutePath());
+            String header = two.getFirstElement();
+            List<String> recordList = two.getSecondElement();
+            String[] tem = header.split("\t");
+            try {
+                BufferedWriter bw = IOUtils.getTextGzipWriter(f.getAbsolutePath());
+                StringBuilder sb = new StringBuilder(header);
+                sb.append("\t").append("RecombinationRate");
+                bw.write(sb.toString());
+                bw.newLine();
+                int chrIndex = -1;
+                int posIndex = -1;
+                int currentPos = -1;
+                List<String> l  = null;
+                for (int i = 0; i < recordList.size(); i++) {
+                    sb.setLength(0);
+                    l = PStringUtils.fastSplit(recordList.get(i));
+                    chrIndex = Integer.parseInt(l.get(1))-1;
+                    currentPos = Integer.parseInt(l.get(2));
+                    posIndex = startLists[chrIndex].binarySearch(currentPos);
+                    if (posIndex < 0) posIndex = -posIndex-2;
+                    if (posIndex < 0) {
+                        sb.append(recordList.get(i)).append("\t").append("NA");
+                        bw.write(sb.toString());
+                        bw.newLine();
+                        continue;
+                    }
+                    if (currentPos < endLists[chrIndex].get(posIndex)) {
+                        sb.append(recordList.get(i)).append("\t").append(crossLists[chrIndex].get(posIndex));
+                    }
+                    else {
+                        sb.append(recordList.get(i)).append("\t").append("NA");
+                    }
+                    bw.write(sb.toString());
+                    bw.newLine();
+                }
+                bw.flush();
+                bw.close();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
     public void addGerp () {
         String gerpDirS = "/data4/home/aoyue/vmap2/feilu/003_annotation/003_gerp/byChr_29way";
+
+//        String dirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/003_exonSNPAnnotation";
+
         String dirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/003_exonSNPAnnotation";
         List<File> fList = AoFile.getFileListInDir(dirS);
         fList.parallelStream().forEach(f -> {
@@ -1241,10 +1360,155 @@ public class VariantsSum {
             catch (Exception e) {
                 e.printStackTrace();
             }
-            System.out.println(f.getAbsolutePath());
+            System.out.println(f.getAbsolutePath() + " is completed.");
         });
         // java -Xms50g -Xmx200g -jar PlantGenetics.jar > log_addGerp_20200608.txt 2>&1 &
+        // java -Xms50g -Xmx200g -jar PlantGenetics.jar > log_addGerp_20200721.txt 2>&1 &
 
+    }
+
+    /**
+     * 在上文fei计算的DAF基础上，将DAF中等于1或者0的值都替换成NA，不做分析。
+     */
+    public void remove01(){
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/012/001_exonAnnotation";
+        String outfileDirS ="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/012/002_remove01";
+//        AoFile.readheader("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/012/001_exonAnnotation/chr001_SNP_anno.txt.gz");
+        List<File> fsList = AoFile.getFileListInDir(infileDirS);
+
+        fsList.parallelStream().forEach(f ->{
+            String infileS = f.getAbsolutePath();
+            String outfileS = new File(outfileDirS,f.getName()).getAbsolutePath();
+            try{
+                BufferedReader br = AoFile.readFile(infileS);
+                BufferedWriter bw = AoFile.writeFile(outfileS);
+                String header = br.readLine();
+                bw.write(header);bw.newLine();
+                String temp = null;
+                List<String> l = new ArrayList<>();
+                while((temp=br.readLine()) != null){
+                    l = PStringUtils.fastSplit(temp);
+                    String DAF = l.get(17);
+                    String DAF_ABD = l.get(18);
+                    String DAF_AB = l.get(19);
+                    String daf = AoMath.replace10toNA(DAF);
+                    String dafABD = AoMath.replace10toNA(DAF_ABD);
+                    String dafAB = AoMath.replace10toNA(DAF_AB);
+                    //####### 是NA的保持不变，是 1 或者 0 的统统替换成 NA 写个方法把~
+                    for (int i = 0; i < 17; i++) {
+                        bw.write(l.get(i) + "\t");
+                    }
+                    bw.write(daf + "\t" + dafABD + "\t" + dafAB);
+                    bw.newLine();
+                }
+                br.close();
+                bw.flush();
+                bw.close();
+            }
+            catch(Exception e){
+                e.printStackTrace();
+                System.exit(1);
+            }
+        });
+    }
+
+    /**
+     * 老师的方法
+     */
+    public void addDAF () {
+        String dirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/003_exonSNPAnnotation";
+        File[] fs = new File (dirS).listFiles();
+        fs = IOUtils.listFilesEndsWith(fs, ".txt.gz");
+        List<File> fList = Arrays.asList(fs);
+        fList.parallelStream().forEach(f -> {
+            String header = null;
+            List<String> recordList = new ArrayList();
+            String tem = null;
+            try {
+                BufferedReader br = AoFile.readFile(f.getAbsolutePath());
+                header = br.readLine();
+                List<String> l = PStringUtils.fastSplit(header);
+                StringBuilder sb = new StringBuilder(header);
+                sb.append("\tDAF\tDAF_ABD\t").append(l.get(9).replaceFirst("AAF", "DAF"));
+                header = sb.toString();
+                String temp = null;
+                while ((temp = br.readLine()) != null) {
+                    recordList.add(temp);
+                }
+                br.close();
+                BufferedWriter bw = AoFile.writeFile(f.getAbsolutePath());
+                bw.write(header);
+                bw.newLine();
+                float daf = -1;
+                float dafABD = -1;
+                float dafOther = -1;
+                String subMajor = null;
+                String subMinor = null;
+                String ancestral = null;
+                String derivedSIFT = null;
+                double subMaf = -1;
+                for (int i = 0; i < recordList.size(); i++) {
+                    sb.setLength(0);
+                    sb.append(recordList.get(i)).append("\t");
+                    l = PStringUtils.fastSplit(recordList.get(i));
+                    ancestral = l.get(15);
+
+                    if (l.get(5).equals(ancestral)) { //major
+                        sb.append((float)Double.parseDouble(l.get(7))).append("\t");
+                    }
+                    else if (l.get(6).equals(ancestral)) { //minor
+                        sb.append((float)(1- Double.parseDouble(l.get(7)))).append("\t");
+                    }
+                    else sb.append("NA\t");
+                    if (Double.parseDouble(l.get(8)) < 0.5) { //AAF_ABD 小于0.5， alt是minor  //******** 总结：要看在亚群体内，谁是major,谁是minor. 与大群体没有关系。
+                        subMajor = l.get(3);
+                        subMinor = l.get(4);
+                        subMaf = Double.parseDouble(l.get(8));
+                    }
+                    else { //AAF_ABD 小于0.5， alt是major
+                        subMajor = l.get(4);
+                        subMinor = l.get(3);
+                        subMaf = 1 - Double.parseDouble(l.get(8));
+                    }
+                    if (ancestral.equals(subMajor)) { //alt是minor，ref是major, derived 是 aaf;   alt 是major,ref 是minor, derived是 1-aaf
+                        sb.append((float)subMaf).append("\t");
+                    }
+                    else if (ancestral.equals(subMinor)) { //alt是minor,ref是major,derived是1-aaf; alt是major,ref是mionr,derived是aaf
+                        sb.append((float)(1-subMaf)).append("\t");
+                    }
+                    else sb.append("NA\t");
+
+                    tem = recordList.get(i);
+                    if (Double.parseDouble(l.get(9)) < 0.5) {
+                        subMajor = l.get(3);
+                        subMinor = l.get(4);
+                        subMaf = Double.parseDouble(l.get(9));
+                    }
+                    else {
+                        subMajor = l.get(4);
+                        subMinor = l.get(3);
+                        subMaf = 1 - Double.parseDouble(l.get(9));
+                    }
+                    if (ancestral.equals(subMajor)) {
+                        sb.append((float)subMaf);
+                    }
+                    else if (ancestral.equals(subMinor)) {
+                        sb.append((float)(1-subMaf));
+                    }
+                    else sb.append("NA");
+                    bw.write(sb.toString());
+                    bw.newLine();
+                }
+                bw.flush();
+                bw.close();
+                System.out.println(f.getName());
+            }
+            catch (Exception e) {
+                System.out.println(tem);
+                e.printStackTrace();
+            }
+        });
+        // java -Xms50g -Xmx200g -jar PlantGenetics.jar > log_addDAFbyFeisMethod_20200720.txt 2>&1 &
     }
 
 
@@ -1268,6 +1532,7 @@ public class VariantsSum {
 
     /**
      * Goal:根据 ancestral allele，计算Daf,Daf_ABD Daf_AB Daf_D
+     * ************ 注意注意注意：该方法存在理解性错误！！！！！！ 该方法错误错误错误错误！！！！！ 请勿使用！！！！ *********
      */
     public void calDAF(String dbfileS, String outfileS) { //String dbfileS, String ancS, String outfileS
 //        String dbfileS = "";
