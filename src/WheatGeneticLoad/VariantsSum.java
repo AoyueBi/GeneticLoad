@@ -87,8 +87,8 @@ public class VariantsSum {
 //        this.mergeExonSNPAnnotation();
 
         //********************** for calculation ****************//
-        this.getDAFtable();
-//        this.statisticCodingSNP();
+//        this.getDAFtable();
+        this.statisticCodingSNP();
 //        this.statisticNonsynSNP();
 //        this.getDeleteriouscount();
 //        this.getDeleteriousAnnotation();
@@ -971,15 +971,22 @@ public class VariantsSum {
 //                    if(chr.contains("A") || chr.contains("D"))continue; //只能用于B亚基因组
                     if(chr.contains("A") || chr.contains("B"))continue; //只能用于D亚基因组
                     //********************  需要手动设置 END ****************************//
+
+                    //********************  需要手动设置 START ****************************//
                     System.out.println(temp);
                     String type = l.get(12);
-                    String siftscore = l.get(13);
-                    String gerpscore = l.get(18);
+//                    String siftscore = l.get(13);
+//                    String gerpscore = l.get(18);
+//                    String DAF_ABD = l.get(16); //大麦黑麦Parsimony法为ancestral allele计算的DAF值
+//                    String DAF_AB = l.get(17); //大麦黑麦Parsimony法为ancestral allele计算的DAF值
+//                    String DAF = l.get(15); //大麦黑麦Parsimony法为ancestral allele计算的DAF值
 
-                    String DAF_ABD = l.get(16); //大麦黑麦Parsimony法为ancestral allele计算的DAF值
-                    String DAF_AB = l.get(17); //大麦黑麦Parsimony法为ancestral allele计算的DAF值
-                    String DAF = l.get(15); //大麦黑麦Parsimony法为ancestral allele计算的DAF值
-
+                    String siftscore = l.get(16);
+                    String gerpscore = l.get(20);
+                    String DAF_ABD = l.get(18); //大麦黑麦Parsimony法为ancestral allele计算的DAF值
+                    String DAF_AB = l.get(19); //大麦黑麦Parsimony法为ancestral allele计算的DAF值
+                    String DAF = l.get(17); //大麦黑麦Parsimony法为ancestral allele计算的DAF值
+//********************  需要手动设置 END ****************************//
                     //如果变异类型是同义突变，那么就不用做任何判断；直接加上分组 Synonymous 并写入
                     //如果变异类型是非同义突变，且SIFT值存在，且SIFT值小于0.5，gerp和phylop存在，且gerp大于1，且phylop大于0.5；那么加上分组 Deleterious 并写入； gerp 值和 phylop值不满足条件的，那么就不进行分组
                     //如果变异类型是非同义突变，且SIFT值存在，且SIFT值大于0.5，那么加上分组 Nonsynonymous_tolerent 并写入
@@ -1035,7 +1042,7 @@ public class VariantsSum {
 
                         if (!siftscore.startsWith("N")) {
                             sift = Double.parseDouble(siftscore);
-                            if (sift < 0.05) {
+                            if (sift <= 0.05) {
                                 //添加gerp phyloP分组信息 情况一：
 //                                if (!gerpscore.startsWith("N") && (!phylopscore.startsWith("N"))) { //均有值存在
 //                                    gerp = Double.parseDouble(gerpscore);
@@ -1092,7 +1099,7 @@ public class VariantsSum {
                                     }
                                 }
 
-                            } else { //sift值大于等于0.05
+                            } else { //sift值大于0.05
 
                                 if (!DAF.startsWith("N")) { //说明是有值的
                                     double value = Double.parseDouble(DAF);
@@ -1106,7 +1113,7 @@ public class VariantsSum {
                                     double value = Double.parseDouble(DAF_AB);
                                     dafAB[1].add(value);
                                 }
-                            } //if (sift < 0.05) {
+                            } //if (sift <= 0.05) {
                         } //if (!siftscore.startsWith("N")) {
                     } //if (type.equals("NONSYNONYMOUS")) {
                 }
@@ -1114,27 +1121,27 @@ public class VariantsSum {
 
                 //************************************ 第三阶段，开始返回bin的比例 ************************//
 
-                List[] l1 = this.mkBarplotofDAF(dafABD[0], 20);
-                List[] l2 = this.mkBarplotofDAF(dafABD[1], 20);
-                List[] l3 = this.mkBarplotofDAF(dafABD[2], 20);
-                List[] l4 = this.mkBarplotofDAF(dafAB[0], 20);
-                List[] l5 = this.mkBarplotofDAF(dafAB[1], 20);
-                List[] l6 = this.mkBarplotofDAF(dafAB[2], 20);
-                List[] l7 = this.mkBarplotofDAF(daf[0], 20);
-                List[] l8 = this.mkBarplotofDAF(daf[1], 20);
-                List[] l9 = this.mkBarplotofDAF(daf[2], 20);
+                List[] l1 = this.mkBarplotofDAF(dafABD[0], 20); //六倍体的有害突变
+                List[] l2 = this.mkBarplotofDAF(dafABD[1], 20); //六倍体的可忍受非同义突变
+                List[] l3 = this.mkBarplotofDAF(dafABD[2], 20); //六倍体的同义突变
+                List[] l4 = this.mkBarplotofDAF(dafAB[0], 20); //四倍体的有害突变
+                List[] l5 = this.mkBarplotofDAF(dafAB[1], 20); //四倍体的可忍受非同义突变
+                List[] l6 = this.mkBarplotofDAF(dafAB[2], 20); //四倍体的同义突变
+                List[] l7 = this.mkBarplotofDAF(daf[0], 20); //二倍体的有害突变
+                List[] l8 = this.mkBarplotofDAF(daf[1], 20); //二倍体的可忍受非同义突变
+                List[] l9 = this.mkBarplotofDAF(daf[2], 20); //二倍体的同义突变
                 //************************************ 第四阶段，开始写出文件 ************************//
                 bw.write("Xaxes\tDAF_ABD\tDAF_AB\tDAF\tGroup");
                 bw.newLine();
-                for (int i = 0; i < l1[0].size(); i++) {
+                for (int i = 0; i < l1[0].size(); i++) { //本行都是有害突变
                     bw.write(String.valueOf(l1[0].get(i)) + "\t" + String.valueOf(l1[1].get(i)) + "\t" + String.valueOf(l4[1].get(i))+ "\t" + String.valueOf(l7[1].get(i)) + "\t" + group[0]);
                     bw.newLine();
                 }
-                for (int i = 0; i < l1[0].size(); i++) {
+                for (int i = 0; i < l1[0].size(); i++) { //本行都是可忍受非同义突变
                     bw.write(String.valueOf(l1[0].get(i))+ "\t" + String.valueOf(l2[1].get(i)) + "\t" + String.valueOf(l5[1].get(i))+ "\t" + String.valueOf(l8[1].get(i))+ "\t" + group[1]);
                     bw.newLine();
                 }
-                for (int i = 0; i < l1[0].size(); i++) {
+                for (int i = 0; i < l1[0].size(); i++) { //本行都是同义突变
                     bw.write(String.valueOf(l1[0].get(i)) + "\t"+ String.valueOf(l3[1].get(i)) + "\t" + String.valueOf(l6[1].get(i))+ "\t" + String.valueOf(l9[1].get(i))+ "\t" + group[2]);
                     bw.newLine();
                 }
