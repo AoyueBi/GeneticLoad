@@ -41,7 +41,7 @@ public class GeneticLoadEntrance {
 //        new GermplasmInfo();
 //        new VariantsSum();
 //        new SIFT();
-        new DeleteriousCountbyIndi();
+        new DeleteriousCountbyIndi(); //根据数据库进行个体Load计算
 //        new TaxaDB();
 
 

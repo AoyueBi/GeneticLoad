@@ -2,6 +2,7 @@ package WheatGeneticLoad;
 
 import AoUtils.AoColor;
 import AoUtils.AoFile;
+import AoUtils.CountSites;
 import gnu.trove.list.array.TCharArrayList;
 import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TIntArrayList;
@@ -24,18 +25,35 @@ public class DeleteriousCountbyIndi {
 
     public DeleteriousCountbyIndi(){
 
-        this.countDeleteriousVMapII_byChr();
+//        this.countDeleteriousVMapII_byChr();
 //        this.DeltoSynonymousRatio();
 //        this.filterLandrace();
 
-        //************* deprecated *****************//
-//        this.getPopmutationBurden();
-//        this.getFiltedExonSNPAnnotation();
-//        this.mergeExonSNPAnnotation();
-//        this.getLargeDelAnnotation();
+        //************* residual analysis ************//
+//        this.addIBSdistancetoCS2017();
+//        this.filterLandrace();
+        //**Obstacle:由于我把642VCF全部合并求一个Dxy值，分析时出现偏差，故需要分开计算
+        this.mergeExonVCFbySub();
+
+
+
+
+
+
 
 
     }
+
+    /**
+     * 计算exonVCF中不同亚基因组下的遗传距离，看看差别有多少
+     */
+    public void mergeExonVCFbySub(){
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/016_exonVCF";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/008_exonVCF/001_exonVCF/000_exonVCF_bySub";
+        CountSites.mergeVCFbysubgenome(infileDirS,outfileDirS);
+    }
+
+
 
     public void getLargeDelAnnotation(){
         int cntNONSY = 0;
@@ -242,8 +260,8 @@ public class DeleteriousCountbyIndi {
 //        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/003_VMap2.1DelCount/003_additiveDeleterious_nonsynGERP_ANCbarleyVSsecalePasimony_vmap2_bychr_bysub_mergeByTaxa.txt"; //有害突变文件
 //        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/003_VMap2.1DelCount/001_additiveDeleterious_synonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr_bysub_mergeByTaxa.txt"; //同义突变文件
 
-        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/003_VMap2.1DelCount/004_additiveDeleterious_nonsynGERPandSIFT_ANCbarleyVSsecalePasimony_vmap2_bychr_bysub_mergeByTaxa.txt"; //有害突变文件
-        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/003_VMap2.1DelCount/001_additiveDeleterious_synonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr_bysub_mergeByTaxa.txt"; //同义突变文件
+//        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/003_VMap2.1DelCount/004_additiveDeleterious_nonsynGERPandSIFT_ANCbarleyVSsecalePasimony_vmap2_bychr_bysub_mergeByTaxa.txt"; //有害突变文件
+//        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/003_VMap2.1DelCount/001_additiveDeleterious_synonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr_bysub_mergeByTaxa.txt"; //同义突变文件
 
 
         //by Sub
@@ -256,22 +274,39 @@ public class DeleteriousCountbyIndi {
 //        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/003_VMap2.1DelCount/004_additiveDeleterious_nonsynGERPandSIFT_ANCbarleyVSsecalePasimony_vmap2_bychr_bysub.txt"; //有害突变文件
 //        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/003_VMap2.1DelCount/001_additiveDeleterious_synonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr_bysub.txt"; //同义突变文件
 
+        //########### 大麦和黑麦简约法 VMap2.0-2020 2020-07-21 增加 derived sift 结果
+        //****** by taxa ******
+        //nonsyn/syn
+//        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/002_additiveDeleterious_nonsynonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr_bysub_mergeByTaxa.txt"; //有害突变文件
+//        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/001_additiveDeleterious_synonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr_bysub_mergeByTaxa.txt"; //同义突变文件
+        //nonsyn del/ syn
+//        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/004_additiveDeleterious_nonsynGERPandDerivedSIFT_ANCbarleyVSsecalePasimony_vmap2_bychr_bysub_mergeByTaxa.txt"; //有害突变文件
+//        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/001_additiveDeleterious_synonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr_bysub_mergeByTaxa.txt"; //同义突变文件
+
+        //****** by sub ******
+        //nonsyn/syn
+//        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/002_additiveDeleterious_nonsynonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr_bysub.txt"; //有害突变文件
+//        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/001_additiveDeleterious_synonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr_bysub.txt"; //同义突变文件
+        //nonsyn del/ syn
+        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/004_additiveDeleterious_nonsynGERPandDerivedSIFT_ANCbarleyVSsecalePasimony_vmap2_bychr_bysub.txt"; //有害突变文件
+        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/001_additiveDeleterious_synonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr_bysub.txt"; //同义突变文件
+
 
 
         String outfileS = new File(infileS1).getAbsolutePath().replaceFirst(".txt","_delVSsynonymous.txt");
         AoFile.readheader(infileS1);
 
-//        TDoubleArrayList del = AoFile.getTDoubleList(infileS1,7); //bySub的情况
-//        TDoubleArrayList syn = AoFile.getTDoubleList(infileS2,7); //bySub的情况
-//        TDoubleArrayList delcount = AoFile.getTDoubleList(infileS1,2); //bySub的情况
-//        TDoubleArrayList syncount = AoFile.getTDoubleList(infileS2,2); //bySub的情况
+        TDoubleArrayList del = AoFile.getTDoubleList(infileS1,7); //bySub的情况
+        TDoubleArrayList syn = AoFile.getTDoubleList(infileS2,7); //bySub的情况
+        TDoubleArrayList delcount = AoFile.getTDoubleList(infileS1,2); //bySub的情况
+        TDoubleArrayList syncount = AoFile.getTDoubleList(infileS2,2); //bySub的情况
 
 
 
-        TDoubleArrayList del = AoFile.getTDoubleList(infileS1,6); //byTaxa的情况
-        TDoubleArrayList syn = AoFile.getTDoubleList(infileS2,6); //byTaxa的情况
-        TDoubleArrayList delcount = AoFile.getTDoubleList(infileS1,1); //byTaxa的情况
-        TDoubleArrayList syncount = AoFile.getTDoubleList(infileS2,1); //byTaxa的情况
+//        TDoubleArrayList del = AoFile.getTDoubleList(infileS1,6); //byTaxa的情况
+//        TDoubleArrayList syn = AoFile.getTDoubleList(infileS2,6); //byTaxa的情况
+//        TDoubleArrayList delcount = AoFile.getTDoubleList(infileS1,1); //byTaxa的情况
+//        TDoubleArrayList syncount = AoFile.getTDoubleList(infileS2,1); //byTaxa的情况
 
         TDoubleArrayList ratioList = new TDoubleArrayList(del.size());
         for (int i = 0; i < del.size(); i++) {
@@ -308,13 +343,46 @@ public class DeleteriousCountbyIndi {
         }
     }
 
+
+    /**
+     * Goal: 从 IBS distance matrix 中获取所有taxa 到 CS-2017 的距离值,然后添加到load表单中，进行残差分析
+     * ##IBS_Distance_Matrix.AverageTotalSites=191737.66392009504
+     * ##IBS_Distance_Matrix.NumAlleles=3
+     * ##IBS_Distance_Matrix.TrueIBS=false
+     * ##Matrix_Type=IBS_Distance_Matrix
+     * 644
+     */
+    public void addIBSdistancetoCS2017(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/015_IBSdistanceAdjust/001_IBSdistance/001_IBSdistance2CS2017.txt";
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT";
+//        List<File> fsList = IOUtils.getFileListInDirEndsWith(infileDirS,"mergeByTaxa_delVSsynonymous.txt");
+        List<File> fsList = IOUtils.getFileListInDirEndsWith(infileDirS,"bysub_delVSsynonymous.txt");
+
+        Collections.sort(fsList);
+        HashMap<String,String> hm = AoFile.getHashMapStringKey(infileS,0,1);
+        for (int i = 0; i < fsList.size(); i++) {
+            String outfileS = fsList.get(i).getAbsolutePath();
+            AoFile.addColumbyString(outfileS,0,hm,"IBSdistancetoCS2017");
+        }
+    }
+
     /**
      * 将按照sub和taxa产生的有害突变的结果，进行过滤，使六倍体栽培品种都为欧洲的栽培品种，六倍体的农家种都为欧洲的农家种
      * 然后进行个体Load的判断
      */
     public void filterLandrace(){
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/003_VMap2.1DelCount";
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/004_VMap2.1DelCount_filterLR_CL";
+//        String infileDirS = "";
+//        String outfileDirS = "";
+
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/003_VMap2.1DelCount";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/004_VMap2.1DelCount_filterLR_CL";
+
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/014_VMap2.1DelCount_derivedSIFT_filterLR_CL";
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/015_IBSdistanceAdjust/002_addIBS";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/015_IBSdistanceAdjust/003_filterLR";
+
 
         String taxaSummaryFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/taxa_InfoDB.txt";
         AoFile.readheader(taxaSummaryFileS);
@@ -366,7 +434,6 @@ public class DeleteriousCountbyIndi {
                         bw.write(temp);
                         bw.newLine();
                     }
-
                 }
                 br.close();
                 bw.flush();
@@ -375,9 +442,7 @@ public class DeleteriousCountbyIndi {
                 e.printStackTrace();
                 System.exit(1);
             }
-
         }
-
     }
 
     /**
@@ -712,6 +777,7 @@ public class DeleteriousCountbyIndi {
         //######## 需要修改 ########//
 //        String exonVCFDirS = ""; //外显子变异数据
 //        String SNPAnnoFileS = ""; //注释信息库合并后的总文件
+//        AoFile.readheader(SNPAnnoFileS);
 
         int cntNONSY = 0; //非同义突变的个数
 //**************** VMap2.0-2020 ************************* //
@@ -724,13 +790,17 @@ public class DeleteriousCountbyIndi {
 //**************** VMap2.0-2020 加上 derived SIFT 的数据库 ************************* //
         String exonVCFDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/016_exonVCF"; //外显子变异数据
         String SNPAnnoFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/019_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz"; //注释信息库合并后的总文件
-
+        AoFile.readheader(SNPAnnoFileS);
+        int test =3;
 
 //        new AoFile().readheader(SNPAnnoFileS);
 //        AoFile.readheader("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/taxa_InfoDB.txt");
 //        System.out.println("************************************************************");
 //        AoFile.readheader("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/taxaList.txt");
 //        int a =3;
+        //########### 大麦和黑麦简约法 ******* VMap2.0-2020 *********** new data test ################
+        //########### 大麦和黑麦简约法 ******* VMap2.0-2020 *********** new data test ################
+        //########### 大麦和黑麦简约法 ******* VMap2.0-2020 *********** new data test ################
         //########### 大麦和黑麦简约法 ******* VMap2.0-2020 *********** new data test ################
 
         //###### synonymous
@@ -750,18 +820,21 @@ public class DeleteriousCountbyIndi {
 //        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/003_VMap2.1DelCount/004_recessiveDeleterious_nonsynGERPandSIFT_ANCbarleyVSsecalePasimony_vmap2_bychr.txt"; //指的是非同义突变，并且GERP大于1,SIFT<0.05的条件
 
         //########### 大麦和黑麦简约法 ******* VMap2.0-2020 *********** 加上Derived SIFT的数据库 2020-07-21 ################
+        //########### 大麦和黑麦简约法 ******* VMap2.0-2020 *********** 加上Derived SIFT的数据库 2020-07-21 ################
+        //########### 大麦和黑麦简约法 ******* VMap2.0-2020 *********** 加上Derived SIFT的数据库 2020-07-21 ################
+        //########### 大麦和黑麦简约法 ******* VMap2.0-2020 *********** 加上Derived SIFT的数据库 2020-07-21 ################
 
         //###### synonymous
-        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/001_additiveDeleterious_synonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr.txt";
-        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/001_recessiveDeleterious_synonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr.txt";
+//        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/001_additiveDeleterious_synonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr.txt";
+//        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/001_recessiveDeleterious_synonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr.txt";
 
         //###### non-synonymous
-//        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/003_VMap2.1DelCount/002_additiveDeleterious_nonsynonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr.txt";
-//        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/003_VMap2.1DelCount/002_recessiveDeleterious_nonsynonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr.txt";
+//        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/002_additiveDeleterious_nonsynonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr.txt";
+//        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/002_recessiveDeleterious_nonsynonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr.txt";
 
         //###### deleterious by GERP and derived SIFT
-//        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/003_VMap2.1DelCount/004_additiveDeleterious_nonsynGERPandSIFT_ANCbarleyVSsecalePasimony_vmap2_bychr.txt"; //指的是非同义突变，并且GERP大于1,SIFT<0.05的条件
-//        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/003_VMap2.1DelCount/004_recessiveDeleterious_nonsynGERPandSIFT_ANCbarleyVSsecalePasimony_vmap2_bychr.txt"; //指的是非同义突变，并且GERP大于1,SIFT<0.05的条件
+        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/004_additiveDeleterious_nonsynGERPandDerivedSIFT_ANCbarleyVSsecalePasimony_vmap2_bychr.txt"; //指的是非同义突变，并且GERP大于1,SIFT<0.05的条件
+        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/004_recessiveDeleterious_nonsynGERPandDerivedSIFT_ANCbarleyVSsecalePasimony_vmap2_bychr.txt"; //指的是非同义突变，并且GERP大于1,SIFT<0.05的条件
 
 
 //************* 无需修改的路径 ****************** //
@@ -807,8 +880,12 @@ public class DeleteriousCountbyIndi {
                 int index = Integer.parseInt(l.get(1)) - 1; //染色体号的索引 ################ 需要修改 需要修改 需要修改 ################
                 int pos = Integer.parseInt(l.get(2)); //################ 需要修改 需要修改 需要修改 ################
                 String variantType = l.get(12); //################ 需要修改 需要修改 需要修改 ################
-                String sift = l.get(13); //################ 需要修改 需要修改 需要修改 ################
-                String gerp = l.get(18); //################ 需要修改 需要修改 需要修改 ################
+//                String sift = l.get(13); //################ 需要修改 需要修改 需要修改 ################
+//                String gerp = l.get(18); //################ 需要修改 需要修改 需要修改 ################
+
+                String sift = l.get(16); //################ 需要修改 需要修改 需要修改 ################
+                String gerp = l.get(20); //################ 需要修改 需要修改 需要修改 ################
+
                 /**
                  ******** 定义有害突变，不是有害突变，就忽略不计 ################ 需要修改 需要修改 需要修改 ################
                  */
@@ -819,14 +896,14 @@ public class DeleteriousCountbyIndi {
 //                double gerpd = Double.parseDouble(gerp);
 //                if (gerpd < 1) continue;
 
-                //*********** 有害突变情况二: 非同义突变，且 GERP > 1，  SIFT < 0.05 **************//
+                //*********** 有害突变情况二: 非同义突变，且 GERP >= 1，  SIFT <= 0.05 **************//
                 if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
                 if(gerp.startsWith("N")) continue; //说明必须满足GERP有值
                 if (sift.startsWith("N"))continue; //说明必须满足有sift值
                 double gerpd = Double.parseDouble(gerp);
                 double siftd = Double.parseDouble(sift);
                 if (gerpd < 1) continue; //说明必须满足gerp大于1
-                if (siftd > 0.05) continue; //说明必须满足sift小于0.05
+                if (siftd > 0.05) continue; //说明必须满足sift小于等于0.05
 
                 /**
                  ********* 定义 synonymous, 不是 synonymous,就忽略不计 ################ 需要修改 需要修改 需要修改 ################
@@ -841,7 +918,8 @@ public class DeleteriousCountbyIndi {
 
                 //################### 需要修改 //###################//###################//###################//###################
                 ////不同的数据库，这一列的信息不一样，千万要注意!!!!!!!!!!!!!!!!! 祖先基因的数据库
-                String ancestralAllele = l.get(14);
+//                String ancestralAllele = l.get(14);
+                String ancestralAllele = l.get(15);
                 //################### 需要修改 //###################//###################//###################//###################
 
                 String majorAllele = l.get(5);
@@ -928,7 +1006,7 @@ public class DeleteriousCountbyIndi {
                     if (!temp.startsWith("#")) {
                         cnt++;
                         if (cnt % 10000 == 0) {
-                            System.out.println(String.valueOf(cnt) + " lines on chr " + String.valueOf(chr));
+                            System.out.println(String.valueOf(cnt/1000) + " kb lines on chr " + String.valueOf(chr));
                         }
                         List<String> l = PStringUtils.fastSplit(temp.substring(0, 100), "\t");
                         int pos = Integer.valueOf(l.get(1)); //根据pos找到index
@@ -1005,7 +1083,7 @@ public class DeleteriousCountbyIndi {
          */
 
         try {
-            BufferedWriter bw = IOUtils.getTextWriter(addCountFileS);
+            BufferedWriter bw = AoFile.writeFile(addCountFileS);
             bw.write("Taxa\tChr\tDeleteriousCountPerHaplotype\tSiteCountWithMinDepth"); //每个taxa有多少个加性效应的derivedAllele 每个taxa在del库中含有基因型的个数
             bw.newLine();
             for (int i = 0; i < addCount.length; i++) { //第一层是染色体号
@@ -1071,8 +1149,8 @@ public class DeleteriousCountbyIndi {
             for (int i = 0; i < t.getRowNumber(); i++) { //这里的t是 addCountFileS
                 int index = Arrays.binarySearch(taxa, t.getCellAsString(i, 0));
                 if (index < 0) continue;
-                if(taxaGroupMap.get(taxa[index]).equals("ExclusionHexaploid") || taxaGroupMap.get(taxa[index]).equals("ExclusionTetraploid")) continue;
-                double genotypesite = Double.valueOf(t.getCellAsDouble(i, 2));
+//                if(taxaGroupMap.get(taxa[index]).equals("ExclusionHexaploid") || taxaGroupMap.get(taxa[index]).equals("ExclusionTetraploid")) continue; //这里不去除其他 四倍体 六倍体
+                double genotypesite = Double.valueOf(t.getCellAsDouble(i, 2)); //本列指的是在该条染色体中含有有害突变的计数，如果物种不含本条染色体，那么数值为0，过滤掉。
                 if(genotypesite == 0) continue; //如山羊草在A B亚基因组没有值，故这里删去
                 double ratio = Double.valueOf(t.getCellAsDouble(i, 2))/Double.valueOf(t.getCellAsDouble(i, 3));
                 for (int j = 0; j < t.getColumnNumber(); j++) { //按列书写

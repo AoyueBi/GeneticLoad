@@ -359,6 +359,7 @@ public class Mode {
     }
 
     public void TryCatch(){
+
         try {
             String infileS = "";
             String outfileS = "";
