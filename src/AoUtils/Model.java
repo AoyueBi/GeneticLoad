@@ -22,13 +22,13 @@ import pgl.infra.pos.ChrPos;
  *
  * @author Aoyue
  */
-public class Mode {
+public class Model {
 
     /*==================================== 测试用 =============================================*/
     //*********************************** START1 ***********************************//
     //***************************** step one : 确定其倍性，根据倍性计算 ****************************//
 
-    public Mode() {
+    public Model() {
         String infileS = "";
         String outfileS = "";
 

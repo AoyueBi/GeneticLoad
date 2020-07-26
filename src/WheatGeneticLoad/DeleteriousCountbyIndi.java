@@ -30,18 +30,57 @@ public class DeleteriousCountbyIndi {
 //        this.filterLandrace();
 
         //************* residual analysis ************//
-//        this.addIBSdistancetoCS2017();
+        this.addIBSdistancetoCS2017();
 //        this.filterLandrace();
         //**Obstacle:由于我把642VCF全部合并求一个Dxy值，分析时出现偏差，故需要分开计算
-        this.mergeExonVCFbySub();
+//        this.mergeExonVCFbySub();
+        this.extractIBSdistance();
 
 
+    }
+
+    /**
+     * 将结果根据亚基因组分开，再添加whole genome VCF文件的IBS结果，然后再进行分开残差校正
+     */
+    public void splitDelCountbySub(){
+        String infileS = "";
+        String outfileS = "";
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String header = br.readLine();
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+    }
 
 
+    public void extractIBSdistance(){
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/015_IBSdistanceAdjust/004_ExonVCF_IBSdistance/source";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/015_IBSdistanceAdjust/004_ExonVCF_IBSdistance/001_IBSdistance2CS2017";
 
-
-
-
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/015_IBSdistanceAdjust/005_subsetVCF_IBSdistance/source";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/015_IBSdistanceAdjust/005_subsetVCF_IBSdistance/001_IBSdistance2CS2017";
+        List<File> fsList = AoFile.getFileListInDir(infileDirS);
+        fsList.parallelStream().forEach(f ->{
+            String infileS = f.getAbsolutePath();
+            String outfileS = new File(outfileDirS,f.getName()).getAbsolutePath();
+            CountSites.extractIBSdistanceFromMatrix(infileS,outfileS,"CS-2017");
+        });
     }
 
     /**

@@ -47,6 +47,59 @@ public class CountSites {
 
     }
 
+    /**
+     * 从Tassel软件的distance matrix结果中提取某一行的结果，即所有taxa到指定ref taxa的遗传距离
+     * ##IBS_Distance_Matrix.AverageTotalSites=444322.6751757548
+     * ##IBS_Distance_Matrix.NumAlleles=3
+     * ##IBS_Distance_Matrix.TrueIBS=false
+     * ##Matrix_Type=IBS_Distance_Matrix
+     * 607
+     */
+    public static void extractIBSdistanceFromMatrix(String infileS, String outfileS,String Reftaxa){
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            //过滤前5行，并打印taxa数
+            String temp = null;
+            int cntTaxaNum = 0;
+            for (int i = 0; i < 5; i++) {
+                temp = br.readLine();
+                if (i==4) {
+                    cntTaxaNum = Integer.parseInt(temp);
+                    System.out.println("Total taxa num\t" + cntTaxaNum);
+                }
+            }
+            List<String> l = new ArrayList<>();
+            List<String> taxaList = new ArrayList<>();
+            List<String> valueList = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                String taxa = l.get(0);
+                taxaList.add(l.get(0));
+                if (taxa.equals(Reftaxa)){
+                    for (int i = 1; i < l.size(); i++) {
+                        valueList.add(l.get(i));
+                    }
+                }
+                cnt++;
+            }
+            System.out.println("Total taxaList num\t" + taxaList.size());
+            br.close();
+
+            bw.write("Taxa\tIBSdistance");bw.newLine();
+            for (int i = 0; i < taxaList.size(); i++) {
+                bw.write(taxaList.get(i) + "\t" + valueList.get(i));
+                bw.newLine();
+            }
+            bw.flush();
+            bw.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
 
 
     /**
