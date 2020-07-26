@@ -28,6 +28,54 @@ public class AoFile {
     }
 
     /**
+     * 将结果根据亚基因组(Group)分开,写出N个文件
+     */
+    public static void splitFilebyGroup(String infileS, int groupIndex, String outfileDirS ){
+        File f = new File(infileS);
+        String[] group = AoFile.getStringArraybySet(infileS,1);
+        Arrays.sort(group);
+        String[] outfilesS = new String[group.length];
+        for (int i = 0; i < group.length; i++) {
+            outfilesS[i] = new File(outfileDirS,f.getName().split(".txt")[0] + "_" + group[i] + ".txt").getAbsolutePath();
+        }
+
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter[] bw = new BufferedWriter[group.length];
+            for (int i = 0; i < bw.length; i++) {
+                bw[i] = AoFile.writeFile(outfilesS[i]);
+            }
+            String header = br.readLine();
+            for (int i = 0; i < bw.length; i++) {
+                bw[i].write(header);
+                bw[i].newLine();
+            }
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+                String query = l.get(groupIndex);
+                int index = Arrays.binarySearch(group,query);
+                bw[index].write(temp);
+                bw[index].newLine();
+            }
+            br.close();
+            for (int i = 0; i < bw.length; i++) {
+                bw[i].flush();
+                bw[i].close();
+            }
+
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+    }
+
+    /**
      * 根据输入文件，自动创建一个文件，该文件目录与输入文件的父目录相同，目录名字为A_out,文件名字和输入文件名字相同。
      * @param infileS
      * @return

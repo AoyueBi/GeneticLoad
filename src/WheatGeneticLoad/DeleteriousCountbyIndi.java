@@ -1,6 +1,5 @@
 package WheatGeneticLoad;
 
-import AoUtils.AoColor;
 import AoUtils.AoFile;
 import AoUtils.CountSites;
 import gnu.trove.list.array.TCharArrayList;
@@ -30,42 +29,53 @@ public class DeleteriousCountbyIndi {
 //        this.filterLandrace();
 
         //************* residual analysis ************//
-        this.addIBSdistancetoCS2017();
+//        this.addIBSdistancetoCS2017();
 //        this.filterLandrace();
         //**Obstacle:由于我把642VCF全部合并求一个Dxy值，分析时出现偏差，故需要分开计算
 //        this.mergeExonVCFbySub();
-        this.extractIBSdistance();
+//        this.extractIBSdistance();
+        this.addIBSdistancebySub();
 
 
     }
 
+    //，再添加whole genome VCF文件的IBS结果，然后再进行分开残差校正
+    public void addIBSdistancebySub(){
+//        this.step1();
+        this.step2();
+    }
+
     /**
-     * 将结果根据亚基因组分开，再添加whole genome VCF文件的IBS结果，然后再进行分开残差校正
+     * add IBS
      */
-    public void splitDelCountbySub(){
-        String infileS = "";
-        String outfileS = "";
-        try {
-            BufferedReader br = AoFile.readFile(infileS);
-            BufferedWriter bw = AoFile.writeFile(outfileS);
-            String header = br.readLine();
-            String temp = null;
-            List<String> l = new ArrayList<>();
-            int cnt = 0;
-            while ((temp = br.readLine()) != null) {
-                l = PStringUtils.fastSplit(temp);
-                cnt++;
+    public void step2(){
+//        String infileS = "";
+//        String ibsFileS = "";
 
-            }
-            br.close();
-            bw.flush();
-            bw.close();
-            System.out.println();
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/014_VMap2.1DelCount_derivedSIFT_filterLR_CL/splitbySub/004/004_additiveDeleterious_nonsynGERPandDerivedSIFT_ANCbarleyVSsecalePasimony_vmap2_bychr_bysub_delVSsynonymous_A.txt";
+//        String ibsFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/015_IBSdistanceAdjust/005_subsetVCF_IBSdistance/001_IBSdistance2CS2017/IBSdistance_byAsub.txt";
 
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/014_VMap2.1DelCount_derivedSIFT_filterLR_CL/splitbySub/004/004_additiveDeleterious_nonsynGERPandDerivedSIFT_ANCbarleyVSsecalePasimony_vmap2_bychr_bysub_delVSsynonymous_B.txt";
+//        String ibsFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/015_IBSdistanceAdjust/005_subsetVCF_IBSdistance/001_IBSdistance2CS2017/IBSdistance_byBsub.txt";
+
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/014_VMap2.1DelCount_derivedSIFT_filterLR_CL/splitbySub/004/004_additiveDeleterious_nonsynGERPandDerivedSIFT_ANCbarleyVSsecalePasimony_vmap2_bychr_bysub_delVSsynonymous_D.txt";
+        String ibsFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/015_IBSdistanceAdjust/005_subsetVCF_IBSdistance/001_IBSdistance2CS2017/IBSdistance_byDsub.txt";
+
+        HashMap<String,String> hm = AoFile.getHashMapStringKey(ibsFileS,0,1);
+        AoFile.addColumbyString(infileS,0,hm,"IBSdistancetoCS2017");
+    }
+
+    /**
+     * 拆分文件
+     */
+    public void step1(){
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/004_additiveDeleterious_nonsynGERPandDerivedSIFT_ANCbarleyVSsecalePasimony_vmap2_bychr_bysub_delVSsynonymous.txt";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/splitbySub/004";
+//        AoFile.splitFilebyGroup(infileS,1,outfileDirS);
+
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/014_VMap2.1DelCount_derivedSIFT_filterLR_CL/004_additiveDeleterious_nonsynGERPandDerivedSIFT_ANCbarleyVSsecalePasimony_vmap2_bychr_bysub_delVSsynonymous.txt";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/014_VMap2.1DelCount_derivedSIFT_filterLR_CL/splitbySub/004";
+        AoFile.splitFilebyGroup(infileS,1,outfileDirS);
     }
 
 
