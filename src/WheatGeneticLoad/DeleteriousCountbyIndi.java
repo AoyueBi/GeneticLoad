@@ -42,13 +42,20 @@ public class DeleteriousCountbyIndi {
     //，再添加whole genome VCF文件的IBS结果，然后再进行分开残差校正
     public void addIBSdistancebySub(){
 //        this.step1();
-        this.step2();
+//        this.step2();
+        this.step3();
+    }
+
+    private void step3(){
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/014_VMap2.1DelCount_derivedSIFT_filterLR_CL/splitbySub/004";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/014_VMap2.1DelCount_derivedSIFT_filterLR_CL/splitbySub/005/004_additiveDeleterious_nonsynGERPandDerivedSIFT_ANCbarleyVSsecalePasimony_vmap2_bychr_bysub_delVSsynonymous.txt";
+        AoFile.mergeTxt(infileDirS,outfileS);
     }
 
     /**
      * add IBS
      */
-    public void step2(){
+    private void step2(){
 //        String infileS = "";
 //        String ibsFileS = "";
 
