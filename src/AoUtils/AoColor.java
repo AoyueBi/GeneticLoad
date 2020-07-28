@@ -17,6 +17,8 @@ public class AoColor {
     }
 
 
+
+
     /**
      * e.g.
      */
@@ -29,9 +31,8 @@ public class AoColor {
 //        String[] in = {"Ae.tauschii","Cultivar","Landrace","OtherHexaploid"};
 //        String[] in = {"Domesticated_emmer","Free_threshing_tetraploid","OtherTetraploid","Wild_emmer"};
 
-        String[] in = {"Ae.tauschii", "Wild_emmer", "Domesticated_emmer","Free_threshing_tetraploid", "OtherTetraploid","Landrace","Cultivar","OtherHexaploid" };
-        AoColor.subspecies(in);
-
+//        String[] in = {"Ae.tauschii", "Wild_emmer", "Domesticated_emmer","Free_threshing_tetraploid", "OtherTetraploid","Landrace","Cultivar","OtherHexaploid" };
+//        AoColor.subspecies(in);
 
 //        String[] in = {"Africa" , "America" ,"Asia" ,   "Europe" , "Oceania"};
 //        String[] in = {"Africa", "America", "Central and South Asia", "East Asia", "Europe", "Oceania", "Western Asia"};
@@ -41,6 +42,45 @@ public class AoColor {
 //        AoColor.continent_7_shape(in);
 //        AoColor.continent_7(in);
 
+        String[] in = {"2","3","6","5","8","4","1","7","9","15","14","18","12","10","17","11","20","13","16","19"};
+        AoColor.getSubspecies(in);
+
+
+    }
+
+    public static String getSubspecies(String[] input){
+        String out=null;
+        HashMap<String,String> hm = new HashMap<>();
+//        String[] value = {"Strangulata","Persian wheat","Wild emmer","Domesticated emmer", "Durum",
+//                "Ispahanicum","Georgian wheat","Polish wheat","Khorasan wheat","Rivet wheat","Cultivar",
+//                "Landrace","OtherHexaploid","Indian dwarf wheat","Macha","Spelt","Tibetan semi-wild","Vavilovii",
+//                "Xinjiang wheat","Yunan wheat","Club wheat"};
+        String[] value = {"Strangulata (n=36)","Persian wheat (n=9)","Wild emmer (n=66)","Domesticated emmer (n=52)", "Durum (n=18)",
+                "Ispahanicum (n=7)","Georgian wheat (n=3)","Polish wheat (n=10)","Khorasan wheat (n=10)","Rivet wheat (n=12)","Cultivar (n=72)",
+                "Landrace (n=211)","OtherHexaploid (n=89)","Indian dwarf wheat (n=5)","Macha (n=5)","Spelt (n=14)","Tibetan semi-wild (n=5)","Vavilovii (n=5)",
+                "Xinjiang wheat (n=4)","Yunan wheat (n=5)","Club wheat (n=5)"};
+
+        String[] key = new String[21];
+        for (int i = 0; i < key.length; i++) {
+            key[i] = String.valueOf(i);
+            System.out.println(key[i]);
+        }
+        for (int i = 0; i < value.length; i++) {
+            hm.put(key[i],value[i]);
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("c(");
+        for (int i = 0; i < input.length; i++) {
+            String col = hm.get(input[i]);
+            sb.append("\"").append(col).append("\",");
+        }
+        sb.deleteCharAt(sb.length()-1);
+        sb.append(")");
+        out = sb.toString();
+        System.out.println(out);
+
+        return out;
     }
 
     /**

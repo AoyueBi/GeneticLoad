@@ -1,5 +1,6 @@
 package WheatGeneticLoad;
 
+import AoUtils.AoColor;
 import AoUtils.AoFile;
 import AoUtils.CountSites;
 import gnu.trove.list.array.TCharArrayList;
@@ -34,7 +35,21 @@ public class DeleteriousCountbyIndi {
         //**Obstacle:由于我把642VCF全部合并求一个Dxy值，分析时出现偏差，故需要分开计算
 //        this.mergeExonVCFbySub();
 //        this.extractIBSdistance();
-        this.addIBSdistancebySub();
+//        this.addIBSdistancebySub();
+        this.addGrouptoCorrelationFile();
+
+
+    }
+
+    /**
+     * 根据R语言得到的20个小群中 load 和 ibs 的相关性 value1 以及ibs值 value2，再添加具体倍性信息，可以在画图时进行分组
+     */
+    public void addGrouptoCorrelationFile(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/splitbySub/006/001_loadCorreandIBS.txt";
+        String taxainfoS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/taxa_InfoDB.txt";
+        AoFile.readheader(taxainfoS);
+        HashMap<String,String> hm = AoFile.getHashMapStringKey(taxainfoS,12,3);
+        AoFile.addColumbyString(infileS,1,hm,"GenomeType");
 
 
     }
@@ -43,7 +58,8 @@ public class DeleteriousCountbyIndi {
     public void addIBSdistancebySub(){
 //        this.step1();
 //        this.step2();
-        this.step3();
+//        this.step3();
+
     }
 
     private void step3(){
@@ -54,8 +70,6 @@ public class DeleteriousCountbyIndi {
         String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/splitbySub/004";
         String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/splitbySub/005/004_additiveDeleterious_nonsynGERPandDerivedSIFT_ANCbarleyVSsecalePasimony_vmap2_bychr_bysub_delVSsynonymous.txt";
         AoFile.mergeTxt(infileDirS,outfileS);
-
-
     }
 
     /**
