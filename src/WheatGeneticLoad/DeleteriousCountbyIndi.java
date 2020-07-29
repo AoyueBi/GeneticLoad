@@ -36,8 +36,22 @@ public class DeleteriousCountbyIndi {
 //        this.mergeExonVCFbySub();
 //        this.extractIBSdistance();
 //        this.addIBSdistancebySub();
-        this.addGrouptoCorrelationFile();
+//        this.addGrouptoCorrelationFile();
+        this.addNewGrouptoLoadFile();
 
+
+    }
+
+    /**
+     * 在load结果中添加landrace的分组7，和cultivar的分组7
+     */
+    public void addNewGrouptoLoadFile(){
+        String hmfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/taxa_InfoDB.txt";
+        AoFile.readheader(hmfileS);
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/splitbySub/005/004_additiveDeleterious_nonsynGERPandDerivedSIFT_ANCbarleyVSsecalePasimony_vmap2_bychr_bysub_delVSsynonymous.txt";
+        int[] columnIndexes = {20,21};
+        HashMap<String,String>[] hm = new AoFile().getHashMapsStringKey(hmfileS,0,columnIndexes);
+        AoFile.addColumsbyString(outfileS,0,hm,"Landrace7Cultivar1_byContinent\tLandrace7Cultivar7_byContinent");
 
     }
 

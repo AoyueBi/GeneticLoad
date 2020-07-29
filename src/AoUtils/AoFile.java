@@ -614,7 +614,7 @@ public class AoFile {
             BufferedWriter bw = AoFile.writeFile(outfileS);
 
             String temp = br.readLine(); //read header
-            bw.write(temp + headername);
+            bw.write(temp + "\t" + headername);
             bw.newLine();
             List<String> l = new ArrayList<>();
             while((temp=br.readLine()) != null){

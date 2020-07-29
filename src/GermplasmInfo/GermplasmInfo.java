@@ -30,12 +30,133 @@ public class GermplasmInfo {
 //        this.mergeTxt();
 
         //************* 向新建立的taxaDB中添加列信息 ***************//
-        this.addColumntoTaxaDB();
-//        this.addGroup();
+//        this.addColumntoTaxaDB();
+        this.addMultipleColumn();
 //        this.summaryGroupbyContinent();
+//        this.summaryGroupbyLandrace();
 
     }
 
+
+    /**
+     * 添加2列分组信息：Landrace7Cultivar1_byContinent Landrace7Cultivar7_byContinent
+     * 为了比较landrace在不同亚洲之间的区别，将LR分成7个部洲，Cultivar分成1个
+     *为了比较landrace在不同亚洲之间的区别，将LR分成7个部洲，Cultivar分成7个
+     *
+     */
+    public void summaryGroupbyLandrace(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/taxa_InfoDB.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/002_taxa_InfoDB.txt";
+        AoFile.readheader(infileS);
+        String[] continent_7 = AoFile.getStringArraybySet(infileS,16);
+        for (int i = 0; i < continent_7.length; i++) {
+            System.out.println(continent_7[i]);
+        }
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String header = br.readLine();
+            bw.write(header + "\tLandrace7Cultivar1_byContinent\tLandrace7Cultivar7_byContinent");bw.newLine();
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            int cnt10 = 0;
+            int cnt11 = 0;
+            int cntother = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+                int indexforMutationBurden = Integer.parseInt(l.get(12));
+                String TreeValidatedGroupbySubspecies = l.get(15);
+                String Continent_by7 = l.get(16);
+                if (indexforMutationBurden==10){ //cultivar
+//                    cnt10++;
+                    if(TreeValidatedGroupbySubspecies.equals("Cultivar")){
+                        cnt10++;
+                        bw.write(temp);
+                        bw.write("\tCultivar\t");
+                        if (Continent_by7.equals("Africa")){
+                            bw.write("CL_Africa");bw.newLine();
+                        }
+                        if (Continent_by7.equals("America")){
+                            bw.write("CL_America");bw.newLine();
+                        }
+                        if (Continent_by7.equals("Central and South Asia")){
+                            bw.write("CL_CSA");bw.newLine();
+                        }
+                        if (Continent_by7.equals("East Asia")){
+                            bw.write("CL_EA");bw.newLine();
+                        }
+                        if (Continent_by7.equals("Europe")){
+                            bw.write("CL_EU");bw.newLine();
+                        }
+                        if (Continent_by7.equals("NA")){
+                            bw.write("CL_NA");bw.newLine();
+                        }
+                        if (Continent_by7.equals("Oceania")){
+                            bw.write("CL_Oceania");bw.newLine();
+                        }
+                        if (Continent_by7.equals("Western Asia")){
+                            bw.write("CL_WA");bw.newLine();
+                        }
+                    } //TreeValidatedGroupbySubspecies.equals("Cultivar"
+                    else if (!TreeValidatedGroupbySubspecies.equals("Cultivar")){
+                        bw.write(temp+"\tNA\tNA");bw.newLine();
+                    }
+                }
+                if (indexforMutationBurden==11){ //landrace
+//                    cnt11++;
+                    if (TreeValidatedGroupbySubspecies.equals("Landrace")){
+                        bw.write(temp);
+                        cnt11++;
+                        if (Continent_by7.equals("Africa")){
+                            bw.write("\tLR_Africa\t");
+                            bw.write("LR_Africa");bw.newLine();
+                        }
+                        if (Continent_by7.equals("America")){
+                            bw.write("\tLR_America\t");
+                            bw.write("LR_America");bw.newLine();
+                        }
+                        if (Continent_by7.equals("Central and South Asia")){
+                            bw.write("\tLR_CSA\t");
+                            bw.write("LR_CSA");bw.newLine();
+                        }
+                        if (Continent_by7.equals("East Asia")){
+                            bw.write("\tLR_EA\t");
+                            bw.write("LR_EA");bw.newLine();
+                        }
+                        if (Continent_by7.equals("Europe")){
+                            bw.write("\tLR_EU\t");
+                            bw.write("LR_EU");bw.newLine();
+                        }
+                        if (Continent_by7.equals("NA")){
+                            bw.write("\tLR_NA\t");
+                            bw.write("LR_NA");bw.newLine();
+                        }
+                        if (Continent_by7.equals("Oceania")){
+                            bw.write("\tLR_Oceania\t");
+                            bw.write("LR_Oceania");bw.newLine();
+                        }
+                        if (Continent_by7.equals("Western Asia")){
+                            bw.write("\tLR_WA\t");
+                            bw.write("LR_WA");bw.newLine();
+                        }
+                    }
+                }
+                if (indexforMutationBurden!=10 && (indexforMutationBurden!=11)){
+                    cntother++;
+                    bw.write(temp+"\tNA\tNA");bw.newLine();
+                }
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println("10Cultivar:\t" + cnt10 + "\t11Landrace:\t" + cnt11 + "\tother:\t" + cntother );
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
 
     public void summaryGroupbyContinent(){
         String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/taxa_InfoDB.txt";
@@ -113,7 +234,15 @@ public class GermplasmInfo {
 
     }
 
-    public void addGroup(){
+    public void addMultipleColumn(){
+        //model
+//        String hmfileS = "";
+//        AoFile.readheader(hmfileS);
+//        String outfileS = "";
+//        int[] columnIndexes = {3,8,10,12,15,16};
+//        HashMap<String,String>[] hm = new AoFile().getHashMapsStringKey(hmfileS,0,columnIndexes);
+//        AoFile.addColumsbyString(outfileS,0,hm,"G\tP\tC\tIn\tSu\tC");
+
 //        String dbfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/taxa_InfoDB.txt";
 //        AoFile.readheader(dbfileS);
 //        String taxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/032_pca/001_input/001_matrix.txt";
@@ -130,7 +259,7 @@ public class GermplasmInfo {
         String taxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/032_pca/001_input/005_matrix_DD.txt";
         int[] columnIndexes = {3,8,10,12,15,16};
         HashMap<String,String>[] hm = new AoFile().getHashMapsStringKey(dbfileS,0,columnIndexes);
-        AoFile.addColumsbyString(taxaFileS,0,hm,"\tGenomeType\tPart_Continent\tContinent_forTree\tIndexforMutationBurden\tSubspecies\tContinent_by7");
+        AoFile.addColumsbyString(taxaFileS,0,hm,"GenomeType\tPart_Continent\tContinent_forTree\tIndexforMutationBurden\tSubspecies\tContinent_by7");
 
     }
 
