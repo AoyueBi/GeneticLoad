@@ -31,9 +31,62 @@ public class GermplasmInfo {
 
         //************* 向新建立的taxaDB中添加列信息 ***************//
 //        this.addColumntoTaxaDB();
-        this.addMultipleColumn();
+//        this.addMultipleColumn();
 //        this.summaryGroupbyContinent();
 //        this.summaryGroupbyLandrace();
+        this.addDDgroup();
+
+    }
+
+    /**
+     * DD粗山羊草明显有2个亚群存在，通过PCA和IBS distance 都可以得到这样的结果，
+     * 并且在离CS比较近的一个小群里，有 IG46623（PCA远，load高） 和 PI603234（PCA远，load高） PI603227（PCA近，load稍高） Load 和 PCA 明显散落。
+     * 离CS比较远的小群里，A5明显有些异常
+     * 在taxaInfoDB中增加一列，专门记录DD的2个小群：DD1 DD2
+     */
+    public void addDDgroup(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/taxa_InfoDB.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/taxa_InfoDB_2.txt";
+        String recordDDfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/032_pca/002_DD/DD_group.txt";
+        AoFile.readheader(infileS);
+        String[] dd1Array = AoFile.getStringArraybyList(recordDDfileS,0);
+        Arrays.sort(dd1Array);
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String header = br.readLine();
+            bw.write(header + "\tGroup_DD");bw.newLine();
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+                String taxa = l.get(0);
+                String genomeType = l.get(3);
+                if (genomeType.equals("DD")){
+                    int index = Arrays.binarySearch(dd1Array,taxa);
+                    if (index > -1){
+                        bw.write(temp + "\tDD_nearCS");bw.newLine();
+                    }
+                    else {
+                        bw.write(temp + "\tDD_farCS");bw.newLine();
+                    }
+                }
+                else {
+                    bw.write(temp + "\tNA");
+                    bw.newLine();
+                }
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
 
     }
 
