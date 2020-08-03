@@ -30,19 +30,21 @@ public class AoColor {
 //        String[] in = {"Cultivar","Domesticated_emmer","Free_threshing_tetraploid","Landrace","OtherHexaploid","OtherTetraploid","Wild_emmer"};
 //        String[] in = {"Ae.tauschii","Cultivar","Landrace","OtherHexaploid"};
 //        String[] in = {"Domesticated_emmer","Free_threshing_tetraploid","OtherTetraploid","Wild_emmer"};
-
 //        String[] in = {"Ae.tauschii", "Wild_emmer", "Domesticated_emmer","Free_threshing_tetraploid", "OtherTetraploid","Landrace","Cultivar","OtherHexaploid" };
-//        AoColor.subspecies(in);
+        String[] in = {"OtherHexaploid","Cultivar","Landrace",
+                "OtherTetraploid","Free_threshing_tetraploid","Domesticated_emmer","Wild_emmer","Ae.tauschii"};
+
+        AoColor.subspecies(in);
 
 //        String[] in = {"Africa" , "America" ,"Asia" ,   "Europe" , "Oceania"};
 //        String[] in = {"Africa", "America", "Central and South Asia", "East Asia", "Europe", "Oceania", "Western Asia"};
 //        String[] in = {"Africa", "America", "Central and South Asia", "East Asia", "Europe", "Western Asia"};
 //        String[] in = {"America" ,"Europe" , "Western Asia"};
-        String[] in = {"America","Europe","Africa","Western Asia","Central and South Asia","East Asia"};
+//        String[] in = {"America","Europe","Africa","Western Asia","Central and South Asia","East Asia"};
 
 //        AoColor.continent_5(in);
 //        AoColor.continent_7_shape(in);
-        AoColor.continent_7(in);
+//        AoColor.continent_7(in);
 
 //        String[] in = {"2","3","6","5","8","4","1","7","9","15","14","18","12","10","17","11","20","13","16","19"};
 //        AoColor.getSubspecies(in);

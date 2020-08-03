@@ -5,6 +5,10 @@
  */
 package AoUtils;
 
+import gnu.trove.list.array.TDoubleArrayList;
+import pgl.infra.dna.genot.GenoIOFormat;
+import pgl.infra.dna.genot.GenotypeGrid;
+import pgl.infra.dna.genot.GenotypeOperation;
 import pgl.infra.table.RowTable;
 import pgl.infra.utils.IOUtils;
 import pgl.infra.utils.PStringUtils;
@@ -29,6 +33,54 @@ public class CalVCF {
 //        this.mkPhylipFormat();
 //        this.mkdirs();
 //        this.extractVCF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/002_exonSNPVCF/chr032_exon_vmap2.1.vcf.gz","/Users/Aoyue/Documents/test.vcf","/Users/Aoyue/Documents/test.txt");
+
+        this.getIBSdistance();
+
+    }
+
+    /**
+     *
+     */
+    public void getIBSdistance(){
+
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/001_subsetVCF/Dsubgenome_diploid.vcf.gz";
+        GenotypeGrid gt = new GenotypeGrid(infileS,GenoIOFormat.VCF_GZ);
+
+        int taxaNum = gt.getTaxaNumber();
+        String[] taxa = gt.getTaxaNames();
+        System.out.println(taxaNum + "\t" + taxa.length);
+        float[][] ibsMatrix =   gt.getIBSDistanceMatrix();
+
+
+
+//        GenotypeGrid[] gts = new GenotypeGrid[fN];
+//        int totalSiteCount = 0;
+//        for (int i = 0; i < gts.length; i++) { //对genotypeTable 进行初始化
+//            gts[i] = new GenotypeGrid(fList.get(i).getAbsolutePath(), GenoIOFormat.VCF_GZ);
+//            totalSiteCount+=gts[i].getSiteNumber(); //获取 fN 个文件的总位点数
+//        }
+//        GenotypeOperation.mergeGenotypesBySite(gts[0], gts[1]); // 合并两个VCF文件
+//        GenotypeGrid gt = gts[0];
+//        TDoubleArrayList missingSite = new TDoubleArrayList(); // calculation 1
+//        TDoubleArrayList hetSite = new TDoubleArrayList(); // calculation 2
+//        TDoubleArrayList maf = new TDoubleArrayList(); // calculation 3
+//        TDoubleArrayList missingTaxon = new TDoubleArrayList(); // calculation 4
+//        TDoubleArrayList hetTaxon = new TDoubleArrayList(); // calculation 5
+//
+//        int step = gt.getSiteNumber()/size;
+//        for (int i = 0; i < gt.getSiteNumber(); i+=step) {
+//            missingSite.add(((double) gt.getMissingNumberBySite(i)/gt.getTaxaNumber()));
+//            hetSite.add(gt.getHeterozygousProportionBySite(i));
+//            maf.add(gt.getMinorAlleleFrequency(i));
+//        }
+//        for (int i = 0; i < gt.getTaxaNumber(); i++) {
+//            missingTaxon.add((double)gt.getMissingNumberByTaxon(i)/gt.getSiteNumber());
+//            hetTaxon.add(gt.getHeterozygousProportionByTaxon(i));
+//        }
+//
+//        String siteQCfileS = new File(outDirS,genomeType + "_site_QC.txt.gz").getAbsolutePath();
+//        String taxaQCFileS = new File (outDirS, genomeType+"_taxa_QC.txt.gz").getAbsolutePath();
+
 
 
     }

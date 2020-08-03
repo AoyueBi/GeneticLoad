@@ -54,7 +54,7 @@ public class ScriptHapscanner2 {
 //        this.mkParameter();
 //        this.mkJavaCmd();
 //        this.bgzip();
-        this.bcftools_merge2();
+//        this.bcftools_merge2();
 
         /**
          * QC

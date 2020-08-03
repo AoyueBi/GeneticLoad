@@ -88,8 +88,21 @@ public class FilterVCF2 {
 //        SplitScript.splitScript2("/Users/Aoyue/Documents/sh_vmap2.0tovmap2.1_20200526.sh",21,2);
 //        this.getsharedSNP(); //获取六倍体四倍体二倍体共有的SNP
 //        this.mergeSharedSNP();
-        CountSites.mergeChr1Aand2A_bysubgenome("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/029_countSiteSummary/003_pop/001_getsharedSNP_merged.txt","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/029_countSiteSummary/003_pop/001_getsharedSNP_merged_bysub.txt");
+//        CountSites.mergeChr1Aand2A_bysubgenome("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/029_countSiteSummary/003_pop/001_getsharedSNP_merged.txt","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/029_countSiteSummary/003_pop/001_getsharedSNP_merged_bysub.txt");
 
+
+        /**
+         * Variants rate
+         */
+
+        this.mergeVariantRate();
+    }
+
+    public void mergeVariantRate(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/016_vcfQC/017_variantsRate/001_variantsRate.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/016_vcfQC/017_variantsRate/002_variantsRate_byRefChr.txt";
+
+        new CountSites().mergeChr1and2txt_double(infileS,outfileS);
 
     }
 

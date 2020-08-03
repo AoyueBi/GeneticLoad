@@ -5,6 +5,7 @@
  */
 package Entrance;
 
+import AoUtils.CalVCF;
 import AoUtils.CountSites;
 import GermplasmInfo.GermplasmInfo;
 import GermplasmInfo.TaxaDB;
@@ -37,8 +38,8 @@ public class GeneticLoadEntrance {
 //        new RebuildVCF();
 //        new ScriptHapscanner2();
 //        new AoHeterozygosity();
-//        new  FilterVCF2();
-        new GermplasmInfo();
+        new  FilterVCF2();
+//        new GermplasmInfo();
 //        new VariantsSum();
 //        new SIFT();
 //        new DeleteriousCountbyIndi(); //根据数据库进行个体Load计算
