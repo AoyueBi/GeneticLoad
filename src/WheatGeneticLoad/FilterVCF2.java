@@ -99,10 +99,14 @@ public class FilterVCF2 {
     }
 
     public void mergeVariantRate(){
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/016_vcfQC/017_variantsRate/001_variantsRate.txt";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/016_vcfQC/017_variantsRate/002_variantsRate_byRefChr.txt";
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/016_vcfQC/017_variantsRate/001_variantsRate.txt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/016_vcfQC/017_variantsRate/002_variantsRate_byRefChr.txt";
+//        new CountSites().mergeChr1and2txt_double(infileS,outfileS);
 
-        new CountSites().mergeChr1and2txt_double(infileS,outfileS);
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/016_vcfQC/017_variantsRate/002_variantsRate_byRefChr.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/016_vcfQC/017_variantsRate/003_variantsRate_bySub.txt";
+        CountSites.mergeChr1Aand2A_bysubgenome(infileS,outfileS);
+
 
     }
 
