@@ -25,7 +25,7 @@ public class DeleteriousCountbyIndi {
 
     public DeleteriousCountbyIndi(){
 
-//        this.countDeleteriousVMapII_byChr();
+        this.countDeleteriousVMapII_byChr();
 //        this.DeltoSynonymousRatio();
 //        this.filterLandrace();
 

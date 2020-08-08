@@ -28,7 +28,8 @@ import pgl.infra.utils.wheat.RefV1Utils;
 public class AnnotationCrossover {
     public AnnotationCrossover(){
 //        this.convertCoordinate();
-        this.addRecombination();
+//        this.addRecombination();
+//        this.mergeExonAnnotation();
 
     }
 
@@ -67,13 +68,19 @@ public class AnnotationCrossover {
         }
     }
 
+    public void mergeExonAnnotation(){
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/020_exonSNPAnnotation_addRecombination_from018";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/021_exonSNPAnnotation_addRecombination_from018_merge/001_exonSNP_anno.txt.gz";
+        AoFile.mergeTxt(infileDirS,outfileS);
+    }
+
     /**
      *
-     *
+     * 在 exonAnnotation 数据库中添加 recombination 一列
      */
     public void addRecombination () {
-        String dirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/test/001/001_exonSNPAnnotation";
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/test/001/002_addRecombination";
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/018_exonSNPAnnotation";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/020_exonSNPAnnotation_addRecombination_from018";
         String recombinationFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/007_recombination/001_recombination/iwgsc_refseqv1.0_recombination_rate_chrID.txt";
         ColumnTable<String> t = new ColumnTable<>(recombinationFileS);
         int chrNum = Integer.parseInt(t.getCell(t.getRowNumber()-1, 0)); //获取最后一行第0列的数字，即染色体最大值，这里是42号染色体
@@ -92,53 +99,52 @@ public class AnnotationCrossover {
             endLists[index].add(Integer.parseInt(t.getCell(i, 2)));
             crossLists[index].add(Float.parseFloat(t.getCell(i, 3)));
         }
-        List<File> fList = IOUtils.getFileListInDirEndsWith(dirS, ".txt");
+        List<File> fList = AoFile.getFileListInDir(infileDirS);
         fList.parallelStream().forEach(f -> {
-
             String infileS = f.getAbsolutePath();
             String outfileS = new File(outfileDirS,f.getName()).getAbsolutePath();
-
-            Dyad<String, List<String>> two = VMapDBUtils.getDBInfo(f.getAbsolutePath()); //返回Dyad类型
-            String header = two.getFirstElement(); //返回表头
-            List<String> recordList = two.getSecondElement(); //返回每一行的内容的集合
-            String[] tem = header.split("\t");
             try {
-                BufferedWriter bw = IOUtils.getTextGzipWriter(f.getAbsolutePath());
-                StringBuilder sb = new StringBuilder(header);
-                sb.append("\t").append("RecombinationRate");
-                bw.write(sb.toString());
-                bw.newLine();
+                BufferedReader br = AoFile.readFile(infileS);
+                BufferedWriter bw = AoFile.writeFile(outfileS);
+                String header = br.readLine();
+                bw.write(header + "\tRecombinationRate");bw.newLine();
+                String temp = null;
+                List<String> l = new ArrayList<>();
+                int cnt = 0;
                 int chrIndex = -1;
                 int posIndex = -1;
                 int currentPos = -1;
-                List<String> l  = null;
-                for (int i = 0; i < recordList.size(); i++) {
+                StringBuilder sb = new StringBuilder();
+                while ((temp = br.readLine()) != null) {
                     sb.setLength(0);
-                    l = PStringUtils.fastSplit(recordList.get(i)); //读每一行的内容
+                    l = PStringUtils.fastSplit(temp);
                     chrIndex = Integer.parseInt(l.get(1))-1; // 索引1 含有染色体号
                     currentPos = Integer.parseInt(l.get(2)); //索引2 含有位置
                     posIndex = startLists[chrIndex].binarySearch(currentPos); //在 刚刚的起始集合里搜索 index
                     if (posIndex < 0) posIndex = -posIndex-2;
                     if (posIndex < 0) {  //如果index小于0，说明在最开始区间的前面（第一个window的最前面），即没有在起始位点集合中
-                        sb.append(recordList.get(i)).append("\t").append("NA");
+                        sb.append(temp).append("\t").append("NA");
                         bw.write(sb.toString());
                         bw.newLine();
                         continue;
                     }
-                    if (currentPos < endLists[chrIndex].get(posIndex)) { //改点和所在window的右侧最大值相比，如果小于他，说明是在该window里
-                        sb.append(recordList.get(i)).append("\t").append(crossLists[chrIndex].get(posIndex)); //获取该窗口对应的 重组率值
+                    if (currentPos < endLists[chrIndex].get(posIndex)) { //该点和所在window的右侧最大值相比，如果小于他，说明是在该window里
+                        sb.append(temp).append("\t").append(crossLists[chrIndex].get(posIndex)); //获取该窗口对应的 重组率值
                     }
                     else {
-                        sb.append(recordList.get(i)).append("\t").append("NA"); //如果该点不在window的右侧范围，说明是位于最后一个window并且超出最后一个window的右侧最大值
+                        sb.append(temp).append("\t").append("NA"); //如果该点不在window的右侧范围，说明是位于最后一个window并且超出最后一个window的右侧最大值
                     }
                     bw.write(sb.toString());
                     bw.newLine();
+                    cnt++;
                 }
+                br.close();
                 bw.flush();
                 bw.close();
-            }
-            catch (Exception e) {
+                System.out.println(f.getName() + "\tis completed at " + outfileS);
+            } catch (Exception e) {
                 e.printStackTrace();
+                System.exit(1);
             }
         });
     }

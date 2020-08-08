@@ -34,14 +34,14 @@ import java.util.List;
 public class GeneticLoadEntrance {
 
     public GeneticLoadEntrance() {
-        this.firstProcess();
+//        this.firstProcess();
 //        this.plot();
 //        this.infoDB();
 //        this.DBdeleterious();
 
         //ternary plot analysis
 //        this.geneExpression();
-//        this.rebuildVCF();
+        this.rebuildVCF();
 
     }
 
@@ -51,13 +51,12 @@ public class GeneticLoadEntrance {
 //        new AoHeterozygosity();
 //        new  FilterVCF2();
 //        new GermplasmInfo();
-//        new VariantsSum();
+        new VariantsSum();
 //        new SIFT();
 //        new DeleteriousCountbyIndi(); //根据数据库进行个体Load计算
 //        new TaxaDB();
 //        new AoIntrogression();
 
-        this.subsetFasta();
 
 
 
@@ -65,29 +64,6 @@ public class GeneticLoadEntrance {
 
     }
 
-    public void subsetFasta(){
-
-        String infileS = "/Users/Aoyue/Documents/TestData_wheat_fromLuLab/002_ref/chr001.fa";
-        String outfileS = "/Users/Aoyue/Documents/TestData_wheat_fromLuLab/002_ref/chr001_1Mb.fa.gz";
-        try {
-            BufferedReader br = AoFile.readFile(infileS);
-            BufferedWriter bw = AoFile.writeFile(outfileS);
-            String header = br.readLine();
-            bw.write(header);bw.newLine();
-            String temp = null;
-            for (int i = 0; i < 16667; i++) {
-                temp = br.readLine();
-                bw.write(temp);bw.newLine();
-            }
-            br.close();
-            bw.flush();
-            bw.close();
-            System.out.println();
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-    }
 
     public void geneExpression(){
         new GeneExpressionbywheat();
@@ -149,7 +125,7 @@ public class GeneticLoadEntrance {
 //        new Fst();
 //        new Pi();
 //        new TajimaD();
-        new AnnotationCrossover();
+//        new AnnotationCrossover();
 //        new XPCLR();
 //        AoMath.topK();
 //        new GOanalysis();
@@ -157,8 +133,6 @@ public class GeneticLoadEntrance {
 //        new GermplasmInfo();
 //        new DBgene();
 //        new GeneExpressionbywheat();
-
-
     }
 
 

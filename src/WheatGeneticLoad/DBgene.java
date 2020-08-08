@@ -30,7 +30,7 @@ public class DBgene {
 
     public DBgene(){
 //        this.getHexaploidAnnotation();
-        this.getTranscriptSum(); //多线程运行造成内存不足，故使用单个染色体进行运行
+//        this.getTranscriptSum(); //多线程运行造成内存不足，故使用单个染色体进行运行
 //        this.getTranscriptSum_bychr();
 //        this.script_getTranscriptSum();
 //        this.mergeTxt();
@@ -50,11 +50,9 @@ public class DBgene {
 //        this.getsubspeciesSNPAnnotation_Tetraploid_diploid();
 //        this.script_getTranscriptSum();
 //        this.mergeTxt();
-//                this.mkSpreadFormat_tetraploid_diploid();
-//                this.mergeSpreadTable_HexaploidTetraploidDiploid();
+//        this.mkSpreadFormat_tetraploid_diploid();
+//        this.mergeSpreadTable_HexaploidTetraploidDiploid();
 //        this.mergeSpreadTable();
-
-
 
     }
 
