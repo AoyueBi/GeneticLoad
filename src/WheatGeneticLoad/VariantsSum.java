@@ -100,16 +100,12 @@ public class VariantsSum {
 
         //*********** ratio of del/syn on genome landscape ********************//
         this.WindowDelvsSyn_fromExonAnnotation();
-
-
-
-
-
-
-
     }
 
-    public void addCDSLengthInWindow (String dbFileS) {
+    public void addCDSLengthInWindow (String dbFileS, int windowSize, int windowStep, String outfile2S) {
+//        int windowSize = 2000000;
+//        int windowStep = 1000000;
+
         String geneFeatureFileS = "/Users/Aoyue/Documents/Data/wheat/gene/v1.1/wheat_v1.1_Lulab.pgf";
 //        String dbFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/016_genomeScan_delvsSyn/001/001_delVSsynOnChr_2000000Window1000000step.txt";
         String hcGeneFileS = "/Users/Aoyue/Documents/Data/wheat/gene/001_geneHC/geneHC.txt";
@@ -118,8 +114,7 @@ public class VariantsSum {
         gf.sortGeneByName(); //通过名字排序
         List<String> chromosomeList = RefV1Utils.getChromosomeList();
         TIntArrayList cdsWindowList = new TIntArrayList();
-        int windowSize = 2000000;
-        int windowStep = 1000000;
+
         for (int i = 0; i < chromosomeList.size(); i++) {
             int chrlength = RefV1Utils.getChromosomeLength(chromosomeList.get(i));
             SimpleWindow sw = new SimpleWindow(chrlength, windowSize, windowStep);
@@ -132,8 +127,8 @@ public class VariantsSum {
                 int currentChrID = Integer.parseInt(gt.getCell(j, 2));
                 if (currentChrID < chrID) continue;
                 else if (currentChrID > (chrID +1)) break;
-                geneIndex = gf.getGeneIndex(gt.getCell(j, 0));
-                for (int k = 0; k < gf.getTranscriptNumber(geneIndex); k++) {
+                geneIndex = gf.getGeneIndex(gt.getCell(j, 0)); //根据基因名字获取索引
+                for (int k = 0; k < gf.getTranscriptNumber(geneIndex); k++) { //获取最长转录本的index
                     if (!gt.getCell(j,1).equals(gf.getTranscriptName(geneIndex, k)))continue;
                     tranIndex = k;
                     break;
@@ -151,22 +146,23 @@ public class VariantsSum {
             }
             cdsWindowList.add(sw.getWindowValuesInt());
         }
-        Dyad<String, List<String>> two = VMapDBUtils.getDBInfo(dbFileS);
-        String header = two.getFirstElement();
-        List<String> recordList = two.getSecondElement();
+
         try {
-            BufferedWriter bw = IOUtils.getTextWriter(dbFileS);
-            header = header + "\tCDSLength\tDelFrequency\tSynFrequency";
-            bw.write(header);
-            bw.newLine();
-            StringBuilder sb = new StringBuilder();
+            BufferedReader br = AoFile.readFile(dbFileS);
+            BufferedWriter bw = AoFile.writeFile(outfile2S);
+            String header = br.readLine();
+            bw.write(header + "\tCDSLength\tDelCountPerSite\tSynCountPerSite");bw.newLine();
+            String temp = null;
             List<String> l = new ArrayList<>();
+            int line = 0;
             int cdsLength = -1;
-            for (int i = 0; i < recordList.size(); i++) {
+            StringBuilder sb = new StringBuilder();
+            while ((temp = br.readLine()) != null) {
                 sb.setLength(0);
-                l = PStringUtils.fastSplit(recordList.get(i));
-                cdsLength = cdsWindowList.get(i);
-                sb.append(recordList.get(i)).append("\t").append(cdsLength).append("\t");
+                l = PStringUtils.fastSplit(temp);
+                cdsLength = cdsWindowList.get(line);
+                line++;
+                sb.append(temp).append("\t").append(cdsLength).append("\t");
                 if (cdsLength != 0) {
                     sb.append((float)((double)Integer.parseInt(l.get(3))/cdsLength)).append("\t");
                     sb.append((float)((double)Integer.parseInt(l.get(4))/cdsLength));
@@ -177,11 +173,13 @@ public class VariantsSum {
                 bw.write(sb.toString());
                 bw.newLine();
             }
+            br.close();
             bw.flush();
             bw.close();
-        }
-        catch (Exception e) {
+            System.out.println( "======== completed at " + outfile2S);
+        } catch (Exception e) {
             e.printStackTrace();
+            System.exit(1);
         }
     }
 
@@ -270,6 +268,7 @@ public class VariantsSum {
         int windowStep = 1000000; //1 M
         String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/019_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
         String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/016_genomeScan_delvsSyn/001/001_delVSsynOnChr_" + windowSize + "Window" + windowStep + "step.txt";
+        String outfile2S = outfileS.replaceFirst(".txt","_2.txt");
         AoFile.readheader(infileS);
         String[] chrArr = {"1A", "1B", "1D", "2A", "2B", "2D", "3A", "3B", "3D", "4A", "4B", "4D", "5A", "5B", "5D", "6A", "6B", "6D", "7A", "7B", "7D"};
         int chrNum = chrArr.length;
@@ -343,10 +342,11 @@ public class VariantsSum {
                     bw.newLine();
                 }
                 System.out.println("======== " + chromosome + " is completed.");
-                this.addCDSLengthInWindow(outfileS);
-                System.out.println("======== " + "add effective CDS length.");
             }
             bw.flush();bw.close();
+//*********************************** add recombination *******************************************
+            this.addCDSLengthInWindow(outfileS, windowSize, windowStep,outfile2S);
+            System.out.println("======== " + "add effective CDS length.");
 
         } catch (Exception e) {
             e.printStackTrace();
