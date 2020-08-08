@@ -5,16 +5,27 @@
  */
 package Entrance;
 
+import Annotation.AnnotationCrossover;
+import AoUtils.AoFile;
 import AoUtils.CalVCF;
 import AoUtils.CountSites;
 import GermplasmInfo.GermplasmInfo;
 import GermplasmInfo.TaxaDB;
 import Plot.PCA;
+import PopulationAnalysis.AoIntrogression;
 import PopulationAnalysis.DeleteriousCountbyPop;
 import WheatGeneticLoad.*;
+import pgl.infra.dna.FastaBit;
+import pgl.infra.dna.FastaByte;
+import pgl.infra.utils.PStringUtils;
 
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -23,14 +34,14 @@ import java.util.Date;
 public class GeneticLoadEntrance {
 
     public GeneticLoadEntrance() {
-//        this.firstProcess();
+        this.firstProcess();
 //        this.plot();
 //        this.infoDB();
 //        this.DBdeleterious();
 
         //ternary plot analysis
 //        this.geneExpression();
-        this.rebuildVCF();
+//        this.rebuildVCF();
 
     }
 
@@ -38,15 +49,44 @@ public class GeneticLoadEntrance {
 //        new RebuildVCF();
 //        new ScriptHapscanner2();
 //        new AoHeterozygosity();
-        new  FilterVCF2();
+//        new  FilterVCF2();
 //        new GermplasmInfo();
 //        new VariantsSum();
 //        new SIFT();
 //        new DeleteriousCountbyIndi(); //根据数据库进行个体Load计算
 //        new TaxaDB();
+//        new AoIntrogression();
+
+        this.subsetFasta();
 
 
 
+
+
+    }
+
+    public void subsetFasta(){
+
+        String infileS = "/Users/Aoyue/Documents/TestData_wheat_fromLuLab/002_ref/chr001.fa";
+        String outfileS = "/Users/Aoyue/Documents/TestData_wheat_fromLuLab/002_ref/chr001_1Mb.fa.gz";
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String header = br.readLine();
+            bw.write(header);bw.newLine();
+            String temp = null;
+            for (int i = 0; i < 16667; i++) {
+                temp = br.readLine();
+                bw.write(temp);bw.newLine();
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
     public void geneExpression(){
@@ -93,7 +133,7 @@ public class GeneticLoadEntrance {
         //new DvcfProcessor();
 //        new DataStorage();
 //        new SIFT();
-        new CountSites();
+//        new CountSites();
 //        new ScriptHapscanner2();
 //        new VariantsSum();
 //        new PopGenParaWheat();
@@ -109,7 +149,7 @@ public class GeneticLoadEntrance {
 //        new Fst();
 //        new Pi();
 //        new TajimaD();
-//        new AnnotationCrossover();
+        new AnnotationCrossover();
 //        new XPCLR();
 //        AoMath.topK();
 //        new GOanalysis();

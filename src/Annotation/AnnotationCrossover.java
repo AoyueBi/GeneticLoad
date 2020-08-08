@@ -73,7 +73,7 @@ public class AnnotationCrossover {
      */
     public void addRecombination () {
         String dirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/test/001/001_exonSNPAnnotation";
-        String outDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/test/001/002_addRecombination";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/test/001/002_addRecombination";
         String recombinationFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/007_recombination/001_recombination/iwgsc_refseqv1.0_recombination_rate_chrID.txt";
         ColumnTable<String> t = new ColumnTable<>(recombinationFileS);
         int chrNum = Integer.parseInt(t.getCell(t.getRowNumber()-1, 0)); //获取最后一行第0列的数字，即染色体最大值，这里是42号染色体
@@ -94,7 +94,10 @@ public class AnnotationCrossover {
         }
         List<File> fList = IOUtils.getFileListInDirEndsWith(dirS, ".txt");
         fList.parallelStream().forEach(f -> {
-            //String outfileS = new File (outDirS, f.getName()).getAbsolutePath();
+
+            String infileS = f.getAbsolutePath();
+            String outfileS = new File(outfileDirS,f.getName()).getAbsolutePath();
+
             Dyad<String, List<String>> two = VMapDBUtils.getDBInfo(f.getAbsolutePath()); //返回Dyad类型
             String header = two.getFirstElement(); //返回表头
             List<String> recordList = two.getSecondElement(); //返回每一行的内容的集合

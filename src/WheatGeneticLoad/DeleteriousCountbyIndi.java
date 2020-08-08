@@ -37,7 +37,7 @@ public class DeleteriousCountbyIndi {
 //        this.extractIBSdistance();
 //        this.addIBSdistancebySub();
 //        this.addGrouptoCorrelationFile();
-        this.addNewGrouptoLoadFile();
+//        this.addNewGrouptoLoadFile();
 
 
     }

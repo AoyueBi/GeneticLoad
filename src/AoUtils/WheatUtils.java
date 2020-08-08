@@ -98,6 +98,7 @@ public class WheatUtils {
 
     /**
      * 根据 chr pos 返回标准化到100的pos，取整数。 例如：chr1A 300
+     * Note: chr indicate the Ref Chr (1A 1B 1D ...), pos indicate the Ref pos
      * @param chromosome
      * @param pos
      * @return

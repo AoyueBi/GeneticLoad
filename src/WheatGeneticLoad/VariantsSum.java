@@ -88,7 +88,7 @@ public class VariantsSum {
 
         //********************** for calculation ****************//
 //        this.getDAFtable();
-        this.statisticCodingSNP();
+//        this.statisticCodingSNP();
 //        this.statisticNonsynSNP();
 //        this.getDeleteriouscount();
 //        this.getDeleteriousAnnotation();
@@ -2360,7 +2360,7 @@ public class VariantsSum {
 
     public VariantsSum() {
 
-        this.variantsSumFromRebuildVCF();
+//        this.variantsSumFromRebuildVCF();
 
 //        new CountSites().mergeChr1Aand2A_bysubgenome();
 
