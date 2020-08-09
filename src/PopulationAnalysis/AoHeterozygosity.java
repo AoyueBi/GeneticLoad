@@ -116,8 +116,6 @@ public class AoHeterozygosity {
             }
             System.out.println();
         }
-
-
     }
 
     public void changeChrPosandMergeGenoTable(){

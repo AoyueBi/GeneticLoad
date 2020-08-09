@@ -37,6 +37,7 @@ public class Bin {
 
 
     /**
+     * 作用：用来求二倍体 四倍体和六倍体 所有个体杂合度的直方分布，百分比按照每个组内各自计算
      * 未指定最大值
      * @param infileS
      * @param columnIndexGroup
@@ -63,7 +64,7 @@ public class Bin {
                 l = PStringUtils.fastSplit(temp);
                 cnt++;
                 String group = l.get(columnIndexGroup);
-                if (l.get(columnIndexValue).startsWith("N"))continue; //过滤时N的一行
+                if (l.get(columnIndexValue).startsWith("N"))continue; //过滤是N的一行
                 double value = Double.parseDouble(l.get(columnIndexValue));
                 int index = Arrays.binarySearch(groupArray,group);
                 if (index <0){
@@ -144,7 +145,7 @@ public class Bin {
         //计算每个Bin里面的平均值
         double[] fre = new double[bound.length];
         for (int i = 0; i < count.length; i++) {
-            fre[i] = (double) count[i]/valueList.size();
+            fre[i] = (double) count[i]/valueList.size(); //每个Bin内的个数，注册这个分类的总除以
         }
 
         // output
@@ -167,7 +168,7 @@ public class Bin {
     }
 
     /**
-     * 指定最大值
+     * 作用：用来求二倍体 四倍体和六倍体 所有个体杂合度的直方分布，百分比按照每个组内各自计算，指定最大值，比如都指定为1
      * @param infileS
      * @param columnIndexGroup
      * @param columnIndexValue
@@ -372,7 +373,7 @@ public class Bin {
 
 
     /**
-     *
+     * 和windowstep_posAve2 的区别是，本方法设置了最大值
      * @param posList
      * @param valueList
      * @param length

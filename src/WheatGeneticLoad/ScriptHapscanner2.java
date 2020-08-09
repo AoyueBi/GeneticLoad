@@ -126,8 +126,6 @@ public class ScriptHapscanner2 {
         double window = 0.01;
         String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/028_hapScannerAgain/007_qualityCheck/003_binTable/taxa_heter.txt";
         Bin.frequency2_byGroup(infileS,indexGroup,indexValue,window,window,outfileS);
-
-
     }
 
     public void getCol(){
