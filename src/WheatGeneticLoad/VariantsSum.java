@@ -99,12 +99,44 @@ public class VariantsSum {
 
         //*********** ratio of del/syn on genome landscape ********************//
 //        this.WindowDelvsSyn_fromExonAnnotation();
-//        this.calRecombinationtoBinTable();
+        this.calRecombinationtoBinTable();
 //        this.mergeFileandAddScalePos();
 
         this.WindowDel_Nonsyn_vsSyn_fromExonAnnotation();
 
 
+
+    }
+
+
+    public static void addRecombinationfromScience(){
+        String inputFile1 = ""; //
+        String inputFile2 = ""; //
+        String outFile = ""; //
+        Table<String,String,String> table2=RowTableTool.getTable(inputFile2, 0, 1, 4);
+        try (BufferedReader br1 = IOTool.getReader(inputFile1);
+             BufferedWriter bw = IOTool.getTextWriter(outFile)) {
+            String line=br1.readLine();
+            bw.write(line+"\tRecombinationRate");
+            bw.newLine();
+            List<String> temp;
+            String chr, pos;
+            while ((line=br1.readLine())!=null){
+                temp=PStringUtils.fastSplit(line);
+                chr="chr"+temp.get(0);
+                pos=temp.get(1);
+                if (table2.contains(chr,pos)){
+                    temp.add(table2.get(chr,pos));
+                }else {
+                    temp.add("NA");
+                }
+                bw.write(String.join("\t", temp));
+                bw.newLine();
+            }
+            bw.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void addCDSLengthInWindow2 (String dbFileS, int windowSize, int windowStep, String outfile2S) {
@@ -300,35 +332,11 @@ public class VariantsSum {
     }
 
 
-    public static void addRecombinationfromScience(String inputFile1, String inputFile2, String outFile){
-        Table<String,String,String> table2=RowTableTool.getTable(inputFile2, 0, 1, 4);
-        try (BufferedReader br1 = IOTool.getReader(inputFile1);
-             BufferedWriter bw = IOTool.getTextWriter(outFile)) {
-            String line=br1.readLine();
-            bw.write(line+"\tRecombinationRate");
-            bw.newLine();
-            List<String> temp;
-            String chr, pos;
-            while ((line=br1.readLine())!=null){
-                temp=PStringUtils.fastSplit(line);
-                chr="chr"+temp.get(0);
-                pos=temp.get(1);
-                if (table2.contains(chr,pos)){
-                    temp.add(table2.get(chr,pos));
-                }else {
-                    temp.add("NA");
-                }
-                bw.write(String.join("\t", temp));
-                bw.newLine();
-            }
-            bw.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     /**
      * 将重组率文件和del文件合并起来进行计算
+     * 该方法错误，完全删除
+     *
+     * @deprecated
      */
     public void mergeFileandAddScalePos(){
 //        String oriFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/016_genomeScan_delvsSyn/001/001_delVSsynOnChr_2000000Window1000000step_2.txt";
@@ -369,6 +377,9 @@ public class VariantsSum {
 
     /**
      * 计算每个Bin里面的重组率，并条件到bin文件中
+     * 该方法并不可行，计算出的重组率在图上是错的，该步骤完全删除
+     *
+     * @deprecated
      */
     public void calRecombinationtoBinTable(){
 //        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/019_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz"; //exon annotation file
