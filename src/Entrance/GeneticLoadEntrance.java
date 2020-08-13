@@ -36,7 +36,7 @@ public class GeneticLoadEntrance {
     public GeneticLoadEntrance() {
 //        this.firstProcess();
 //        this.plot();
-//        this.infoDB();
+//        this.infoDB(); // 种质信息库
 //        this.DBdeleterious();
 
         //ternary plot analysis
@@ -54,7 +54,7 @@ public class GeneticLoadEntrance {
         new VariantsSum();
 //        new SIFT();
 //        new DeleteriousCountbyIndi(); //根据数据库进行个体Load计算
-//        new TaxaDB();
+//        new TaxaDB();  //taxa 类
 //        new AoIntrogression();
 
 
@@ -81,7 +81,6 @@ public class GeneticLoadEntrance {
 
     public void infoDB(){
         new GermplasmInfo();
-
     }
 
 

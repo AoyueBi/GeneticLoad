@@ -6,8 +6,8 @@
 package WheatGeneticLoad;
 
 import AoUtils.*;
-import analysis.wheat.VMap2.DBDeleterious;
 import analysis.wheat.VMap2.VMapDBUtils;
+import daxing.common.IOTool;
 import daxing.common.RowTableTool;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.*;
@@ -24,12 +24,11 @@ import pgl.infra.utils.PStringUtils;
 import pgl.infra.utils.wheat.RefV1Utils;
 import pgl.infra.window.SimpleWindow;
 import tech.tablesaw.api.IntColumn;
-import tech.tablesaw.api.Table;
-import xiaohan.wheatRNAseq.test;
-
+import com.google.common.collect.Table;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -100,18 +99,347 @@ public class VariantsSum {
 
         //*********** ratio of del/syn on genome landscape ********************//
 //        this.WindowDelvsSyn_fromExonAnnotation();
-        this.addRecombinationtoBinTable();
+//        this.calRecombinationtoBinTable();
+//        this.mergeFileandAddScalePos();
+
+        this.WindowDel_Nonsyn_vsSyn_fromExonAnnotation();
+
+
+    }
+
+    public void addCDSLengthInWindow2 (String dbFileS, int windowSize, int windowStep, String outfile2S) {
+//        int windowSize = 2000000;
+//        int windowStep = 1000000;
+
+        String geneFeatureFileS = "/Users/Aoyue/Documents/Data/wheat/gene/v1.1/wheat_v1.1_Lulab.pgf";
+//        String dbFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/016_genomeScan_delvsSyn/001/001_delVSsynOnChr_2000000Window1000000step.txt";
+        String hcGeneFileS = "/Users/Aoyue/Documents/Data/wheat/gene/001_geneHC/geneHC.txt";
+        RowTable<String> gt = new RowTable<>(hcGeneFileS);
+        GeneFeature gf = new GeneFeature(geneFeatureFileS);
+        gf.sortGeneByName(); //通过名字排序
+        List<String> chromosomeList = RefV1Utils.getChromosomeList();
+        TIntArrayList cdsWindowList = new TIntArrayList();
+
+        for (int i = 0; i < chromosomeList.size(); i++) {
+            int chrlength = RefV1Utils.getChromosomeLength(chromosomeList.get(i));
+            SimpleWindow sw = new SimpleWindow(chrlength, windowSize, windowStep);
+            int chrID = RefV1Utils.getChrID(chromosomeList.get(i), 1);
+            int geneIndex = -1;
+            int tranIndex = -1;
+            int cdsStart = -1;
+            int cdsEnd = -1;
+            for (int j = 0; j < gt.getRowNumber(); j++) {
+                int currentChrID = Integer.parseInt(gt.getCell(j, 2));
+                if (currentChrID < chrID) continue;
+                else if (currentChrID > (chrID +1)) break;
+                geneIndex = gf.getGeneIndex(gt.getCell(j, 0)); //根据基因名字获取索引
+                for (int k = 0; k < gf.getTranscriptNumber(geneIndex); k++) { //获取最长转录本的index
+                    if (!gt.getCell(j,1).equals(gf.getTranscriptName(geneIndex, k)))continue;
+                    tranIndex = k;
+                    break;
+                }
+                List<Range> cdsList = gf.getCDSList(geneIndex, tranIndex);
+                for (int k = 0; k < cdsList.size(); k++) {
+                    cdsStart = cdsList.get(k).start;
+                    cdsEnd = cdsList.get(k).end;
+                    if (currentChrID == chrID + 1) {
+                        cdsStart = RefV1Utils.getPosOnChromosome(currentChrID, cdsStart);
+                        cdsEnd = RefV1Utils.getPosOnChromosome(currentChrID, cdsEnd);
+                    }
+                    sw.addPositionCountFromRange(cdsStart, cdsEnd);
+                }
+            }
+            cdsWindowList.add(sw.getWindowValuesInt());
+        }
+
+        try {
+            BufferedReader br = AoFile.readFile(dbFileS);
+            BufferedWriter bw = AoFile.writeFile(outfile2S);
+            String header = br.readLine();
+            bw.write(header + "\tCDSLength\tDelCountPerSite\tNonsynCountPersite\tSynCountPerSite");bw.newLine();
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int line = 0;
+            int cdsLength = -1;
+            StringBuilder sb = new StringBuilder();
+            while ((temp = br.readLine()) != null) {
+                sb.setLength(0);
+                l = PStringUtils.fastSplit(temp);
+                cdsLength = cdsWindowList.get(line);
+                line++;
+                sb.append(temp).append("\t").append(cdsLength).append("\t");
+                if (cdsLength != 0) {
+                    sb.append((float)((double)Integer.parseInt(l.get(4))/cdsLength)).append("\t");
+                    sb.append((float)((double)Integer.parseInt(l.get(5))/cdsLength)).append("\t");
+                    sb.append((float)((double)Integer.parseInt(l.get(6))/cdsLength));
+                }
+                else {
+                    sb.append(Float.NaN).append("\t").append(Float.NaN).append("\t").append(Float.NaN);
+                }
+                bw.write(sb.toString());
+                bw.newLine();
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println( "======== completed at " + outfile2S);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    /**
+     * 这里将 del 和 nonsyn 和 syn 的个数都计算出来
+     */
+    public void WindowDel_Nonsyn_vsSyn_fromExonAnnotation(){
+
+        int windowSize = 10000000; //10 M
+        int windowStep = 1000000; //1 M
+
+
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/019_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/016_genomeScan_delvsSyn/003_del_nonsyn_syn/001_del_nonsyn_synOnChr_" + windowSize + "Window" + windowStep + "step.txt";
+        String outfile2S = outfileS.replaceFirst(".txt","_addEffectiveCDSLength.txt");
+        AoFile.readheader(infileS);
+        String[] chrArr = {"1A", "1B", "1D", "2A", "2B", "2D", "3A", "3B", "3D", "4A", "4B", "4D", "5A", "5B", "5D", "6A", "6B", "6D", "7A", "7B", "7D"};
+        int chrNum = chrArr.length;
+        int[][] delePos = new int[chrNum][];
+        int[][] synPos = new int[chrNum][];
+        int[][] nonsynPos = new int[chrNum][];
+
+        TIntArrayList[] delposList = new TIntArrayList[chrNum];
+        TIntArrayList[] synposList = new TIntArrayList[chrNum];
+        TIntArrayList[] nonsynposList = new TIntArrayList[chrNum];
+
+        for (int i = 0; i < chrNum; i++) { //集合类数组，要初始化每一个list
+            delposList[i] = new TIntArrayList();
+            synposList[i] = new TIntArrayList();
+            nonsynposList[i] = new TIntArrayList();
+        }
+
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            String temp = null;
+            String header = br.readLine();
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                int chr =  Integer.parseInt(l.get(1));
+                int pos = Integer.parseInt(l.get(2));
+
+                String chromosome = RefV1Utils.getChromosome(chr,1); //获取 RefChr
+                int posonchromosome = RefV1Utils.getPosOnChromosome(chr,pos);
+                int index = Arrays.binarySearch(chrArr,chromosome); //染色体的索引号
+                String variantType = l.get(12);
+                String sift = l.get(16); // derived_sift
+                String gerp = l.get(20);
+                if (variantType.equals("NONSYNONYMOUS")){
+                    nonsynposList[index].add(posonchromosome);
+
+                    if (!sift.startsWith("N")){
+                        if(!gerp.startsWith("N")){
+                            double gerpd = Double.parseDouble(gerp);
+                            double siftd = Double.parseDouble(sift);
+                            if (siftd <= 0.05 && gerpd >= 1){
+                                delposList[index].add(posonchromosome);
+                            }
+                        }
+                    }
+                }
+                if (variantType.equals("SYNONYMOUS")){
+                    synposList[index].add(posonchromosome);
+                }
+            }
+            System.out.println("======== completing the posList DB on all chromosome.");
+
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String outheader = "CHROM\tBIN_START\tBIN_END\tBIN_START_scale\tDelCount\tNonsynCount\tSynCount\tDelSynRatio\tNonsynSynRatio"; //和vcftools的格式保持一致
+            bw.write(outheader);bw.newLine();
+
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < chrArr.length; i++) {
+                String chromosome = chrArr[i];
+                int chrLength = RefV1Utils.getChromosomeLength(chromosome);
+                SimpleWindow sw = new SimpleWindow(chrLength, windowSize, windowStep);
+
+                sw.addPositionCount(delposList[i].toArray());
+                int[] delWindowCount = sw.getWindowValuesInt();
+                sw.clearWindowValues();
+
+                sw.addPositionCount(synposList[i].toArray());
+                int[] synWindowCount = sw.getWindowValuesInt();
+                sw.clearWindowValues();
+
+                sw.addPositionCount(nonsynposList[i].toArray());
+                int[] nonsynWindowCount = sw.getWindowValuesInt();
+
+                int[] windowStarts = sw.getWindowStarts();
+                int[] windowEnds = sw.getWindowEnds();
+                for (int j = 0; j < windowStarts.length; j++) {
+                    sb.setLength(0);
+                    String posscale = WheatUtils.getScaledPos(chromosome,windowStarts[j]);
+                    sb.append(chromosome).append("\t").append(windowStarts[j]).append("\t").append(windowEnds[j]).append("\t").append(posscale).append("\t");
+                    sb.append(delWindowCount[j]).append("\t").append(nonsynWindowCount[j]).append("\t").append(synWindowCount[j]).append("\t");
+                    sb.append((float)((double)delWindowCount[j]/synWindowCount[j])).append("\t").append((float)((double)nonsynWindowCount[j]/synWindowCount[j]));
+                    bw.write(sb.toString());
+                    bw.newLine();
+                }
+                System.out.println("======== " + chromosome + " is completed.");
+            }
+            bw.flush();bw.close();
+//*********************************** add recombination *******************************************
+            this.addCDSLengthInWindow2(outfileS, windowSize, windowStep,outfile2S);
+            System.out.println("======== " + "add effective CDS length.");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+
+    public static void addRecombinationfromScience(String inputFile1, String inputFile2, String outFile){
+        Table<String,String,String> table2=RowTableTool.getTable(inputFile2, 0, 1, 4);
+        try (BufferedReader br1 = IOTool.getReader(inputFile1);
+             BufferedWriter bw = IOTool.getTextWriter(outFile)) {
+            String line=br1.readLine();
+            bw.write(line+"\tRecombinationRate");
+            bw.newLine();
+            List<String> temp;
+            String chr, pos;
+            while ((line=br1.readLine())!=null){
+                temp=PStringUtils.fastSplit(line);
+                chr="chr"+temp.get(0);
+                pos=temp.get(1);
+                if (table2.contains(chr,pos)){
+                    temp.add(table2.get(chr,pos));
+                }else {
+                    temp.add("NA");
+                }
+                bw.write(String.join("\t", temp));
+                bw.newLine();
+            }
+            bw.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 将重组率文件和del文件合并起来进行计算
+     */
+    public void mergeFileandAddScalePos(){
+//        String oriFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/016_genomeScan_delvsSyn/001/001_delVSsynOnChr_2000000Window1000000step_2.txt";
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/016_genomeScan_delvsSyn/001/003_delVSsynOnChr_2000000Window1000000step_addRecombination.txt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/016_genomeScan_delvsSyn/001/004_delVSsynOnChr_2000000Window1000000step.txt"; // bin file
+
+        String oriFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/016_genomeScan_delvsSyn/001/001_delVSsynOnChr_20000000Window5000000step_2.txt";
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/016_genomeScan_delvsSyn/001/003_delVSsynOnChr_50000000Window5000000step_addRecombination.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/016_genomeScan_delvsSyn/001/004_delVSsynOnChr_20000000Window5000000step.txt";
+
+        //获取recombination的集合
+        List<String> recombi = AoFile.getStringList(infileS,3);
+        try {
+            BufferedReader br = AoFile.readFile(oriFileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String header = br.readLine();
+            bw.write(header + "\tBIN_START_Scale\tRecombinationRate");bw.newLine();
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int line = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                String chromosome = l.get(0);
+                int posOnchromosome = Integer.parseInt(l.get(1));
+                String startScalePos = WheatUtils.getScaledPos(chromosome,posOnchromosome);
+                bw.write(temp + "\t" + startScalePos + "\t" + recombi.get(line));bw.newLine();
+                line++;
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
     /**
      * 计算每个Bin里面的重组率，并条件到bin文件中
      */
-    public void addRecombinationtoBinTable(){
-        String infileS = ""; //exon annotation file
-        String infileS2 = ""; // bin file
-        String outfileS ="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/016_genomeScan_delvsSyn/001/003_delVSsynOnChr_2000000Window1000000step_addRecombination.txt";
-        int window = 2000000;
-        int step = 1000000;
+    public void calRecombinationtoBinTable(){
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/019_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz"; //exon annotation file
+//        String outfileS ="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/016_genomeScan_delvsSyn/001/003_delVSsynOnChr_2000000Window1000000step_addRecombination.txt";
+//        int window = 2000000;
+//        int step = 1000000;
+
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/019_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz"; //exon annotation file
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/016_genomeScan_delvsSyn/001/003_delVSsynOnChr_50000000Window5000000step_addRecombination.txt";
+        int window = 20000000;
+        int step = 5000000;
+
+
+        AoFile.readheader(infileS);
+        String[] chrArr = {"1A", "1B", "1D", "2A", "2B", "2D", "3A", "3B", "3D", "4A", "4B", "4D", "5A", "5B", "5D", "6A", "6B", "6D", "7A", "7B", "7D"};
+        int chrNum = chrArr.length;
+        TDoubleArrayList[] posList = new TDoubleArrayList[chrNum];
+        TDoubleArrayList[] recombiList = new TDoubleArrayList[chrNum];
+        for (int i = 0; i < chrNum; i++) {
+            posList[i] = new TDoubleArrayList();
+            recombiList[i] = new TDoubleArrayList();
+        }
+
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            String temp = null;
+            String header = br.readLine();
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                int chr =  Integer.parseInt(l.get(1));
+                int pos = Integer.parseInt(l.get(2));
+                String recobi = l.get(21);
+                if (recobi.startsWith("N"))continue;
+                double recom = Double.parseDouble(recobi);
+                String chromosome = RefV1Utils.getChromosome(chr,1); //获取 RefChr
+                int posonchromosome = RefV1Utils.getPosOnChromosome(chr,pos);
+                int index = Arrays.binarySearch(chrArr,chromosome); //染色体的索引号
+                posList[index].add((double)posonchromosome);
+                recombiList[index].add(recom);
+            }
+            System.out.println("======== completing the posList DB on all chromosome.");
+
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String outheader = "CHROM\tBIN_START\tBIN_END\tRecombinationRate"; //和vcftools的格式保持一致
+            bw.write(outheader);bw.newLine();
+
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < chrArr.length; i++) {
+                String chromosome = chrArr[i];
+                int chrLength = RefV1Utils.getChromosomeLength(chromosome);
+
+                List<String>[] out = Bin.windowstep_posAve(posList[i],recombiList[i],chrLength,window,step);
+                for (int j = 0; j < out[0].size(); j++) {
+                    sb.setLength(0);
+                    double start = Double.parseDouble(out[0].get(j));
+                    double end = start + window;
+                    sb.append(chrArr[i]).append("\t").append(String.format("%.0f",start)).append("\t").append(String.format("%.0f",end)).
+                            append("\t").append(out[2].get(j));
+                    bw.write(sb.toString());bw.newLine();
+                }
+                System.out.println("======== " + chromosome + " is completed.");
+            }
+            bw.flush();bw.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+
 
 
 
@@ -193,11 +521,11 @@ public class VariantsSum {
                 line++;
                 sb.append(temp).append("\t").append(cdsLength).append("\t");
                 if (cdsLength != 0) {
-                    sb.append((float)((double)Integer.parseInt(l.get(3))/cdsLength)).append("\t");
-                    sb.append((float)((double)Integer.parseInt(l.get(4))/cdsLength));
+                    sb.append((float)((double)Integer.parseInt(l.get(4))/cdsLength)).append("\t");
+                    sb.append((float)((double)Integer.parseInt(l.get(5))/cdsLength));
                 }
                 else {
-                    sb.append(Float.NaN).append("\t").append(Float.NaN);
+                    sb.append(Float.NaN).append("\t").append(Float.NaN).append("\t").append(Float.NaN);
                 }
                 bw.write(sb.toString());
                 bw.newLine();
@@ -212,12 +540,23 @@ public class VariantsSum {
         }
     }
 
+    /**
+     * 这里只研究 del 和 syn
+     */
     public void WindowDelvsSyn_fromExonAnnotation(){
-        int windowSize = 2000000; //2 M
+//        int windowSize = 2000000; //2 M
+//        int windowStep = 1000000; //1 M
+
+//        int windowSize = 20000000; //20 M
+//        int windowStep = 5000000; //5 M
+
+        int windowSize = 10000000; //2 M
         int windowStep = 1000000; //1 M
+
+
         String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/019_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
         String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/016_genomeScan_delvsSyn/001/001_delVSsynOnChr_" + windowSize + "Window" + windowStep + "step.txt";
-        String outfile2S = outfileS.replaceFirst(".txt","_2.txt");
+        String outfile2S = outfileS.replaceFirst(".txt","_addEffectiveCDSLength.txt");
         AoFile.readheader(infileS);
         String[] chrArr = {"1A", "1B", "1D", "2A", "2B", "2D", "3A", "3B", "3D", "4A", "4B", "4D", "5A", "5B", "5D", "6A", "6B", "6D", "7A", "7B", "7D"};
         int chrNum = chrArr.length;
@@ -267,7 +606,7 @@ public class VariantsSum {
             System.out.println("======== completing the posList DB on all chromosome.");
 
             BufferedWriter bw = AoFile.writeFile(outfileS);
-            String outheader = "CHROM\tBIN_START\tBIN_END\tDelCount\tSynCount\tDelSynRatio"; //和vcftools的格式保持一致
+            String outheader = "CHROM\tBIN_START\tBIN_END\tBIN_START_scale\tDelCount\tSynCount\tDelSynRatio"; //和vcftools的格式保持一致
             bw.write(outheader);bw.newLine();
 
             StringBuilder sb = new StringBuilder();
@@ -286,7 +625,8 @@ public class VariantsSum {
                 int[] windowEnds = sw.getWindowEnds();
                 for (int j = 0; j < windowStarts.length; j++) {
                     sb.setLength(0);
-                    sb.append(chromosome).append("\t").append(windowStarts[j]).append("\t").append(windowEnds[j]).append("\t");
+                    String posscale = WheatUtils.getScaledPos(chromosome,windowStarts[j]);
+                    sb.append(chromosome).append("\t").append(windowStarts[j]).append("\t").append(windowEnds[j]).append("\t").append(posscale).append("\t");
                     sb.append(delWindowCount[j]).append("\t").append(synWindowCount[j]).append("\t").append((float)((double)delWindowCount[j]/synWindowCount[j]));
                     bw.write(sb.toString());
                     bw.newLine();
@@ -302,10 +642,7 @@ public class VariantsSum {
             e.printStackTrace();
             System.exit(1);
         }
-
     }
-
-
 
     /**
      * @deprecated
@@ -2535,8 +2872,7 @@ public class VariantsSum {
         Collections.sort(vmapList);
         String geneHCFileS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/001_geneHC/geneHC.txt";
         AoFile.readheader(geneHCFileS);
-
-        Table t = TablesawUtils.readTsv(geneHCFileS);
+        tech.tablesaw.api.Table t = TablesawUtils.readTsv(geneHCFileS);
         System.out.println(t.structure());
         t.sortAscendingOn("Chr", "TranStart");
         IntColumn chrColumn = t.intColumn("chr");

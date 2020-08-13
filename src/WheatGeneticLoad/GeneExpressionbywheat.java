@@ -28,8 +28,8 @@ public class GeneExpressionbywheat {
         /**
          * tissue express breadth
          */
-//        this.getTissueBreadth();
-//        this.getwindowDistrbution();
+        this.getTissueBreadth();
+        this.getwindowDistrbution();
 
         this.mergegeneExpression_fromJun();
 //        this.calBreadth_onRootandcoleotiple();

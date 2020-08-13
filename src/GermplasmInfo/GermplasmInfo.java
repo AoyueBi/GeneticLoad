@@ -34,8 +34,54 @@ public class GermplasmInfo {
 //        this.addMultipleColumn();
 //        this.summaryGroupbyContinent();
 //        this.summaryGroupbyLandrace();
-        this.addDDgroup();
+//        this.addDDgroup();
+//        this.addIntrogressionID();
 
+
+    }
+
+    /**
+     * Goal: 向 taxa_InfoDB.txt 中添加Introgression的ID，以倍性为基础，进行编号。如 H001 T001 D001
+     *
+     */
+    public void addIntrogressionID(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/taxa_InfoDB.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/taxa_InfoDB_addIntrogressionID.txt";
+        AoFile.readheader(infileS);
+        HashMap<String,String> hm = new HashMap<>();
+        String[] genome = {"AABBDD","AABB","DD"}; Arrays.sort(genome);
+        hm.put("AABBDD","H");hm.put("AABB","T");hm.put("DD","D");
+        int[] count = new int[genome.length];
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String header = br.readLine();
+            bw.write(header + "\tIntrogressionID");bw.newLine();
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+                String genomeType = l.get(3);
+                int index = Arrays.binarySearch(genome,genomeType);
+                if (index < 0) {
+                    System.out.println(temp);
+                }
+                count[index]++;
+                String num = PStringUtils.getNDigitNumber(3,count[index]);
+                String id = hm.get(genome[index]) + num;
+                bw.write(temp + "\t" + id);bw.newLine();
+                cnt++;
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println(cnt + " lines in this file");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
     /**

@@ -340,6 +340,7 @@ public class Model {
             BufferedReader br = AoFile.readFile(infileS);
             BufferedWriter bw = AoFile.writeFile(outfileS);
             String header = br.readLine();
+            bw.write(header);bw.newLine();
             String temp = null;
             List<String> l = new ArrayList<>();
             int cnt = 0;
