@@ -97,22 +97,33 @@ public class VariantsSum {
 //        this.countVariantsinGene();
 //        this.sortAndFilter();
 
-        //*********** ratio of del/syn on genome landscape ********************//
+        //*********** ratio of del/syn and nonsyn/syn on genome landscape ********************//
 //        this.WindowDelvsSyn_fromExonAnnotation();
-        this.calRecombinationtoBinTable();
-//        this.mergeFileandAddScalePos();
+//        this.WindowDel_Nonsyn_vsSyn_fromExonAnnotation();
+//        this.addRecombinationfromScience(); //该方法凑效！思路：将 del nonysn syn 数据的滑窗设置成和science一致，然后再将重组率文件合并，后续进行其他处理。本次数据分析采用此方法。
 
-        this.WindowDel_Nonsyn_vsSyn_fromExonAnnotation();
+        this.getPosfromOneindivi();
+
+    }
+
+    public void getPosfromOneindivi(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/016_exonVCF/chr001_exon_vmap2.1.vcf.gz";
+        String taxafileS ="/Users/Aoyue/Documents/taxa_test.txt";
+        String outfileS = "/Users/Aoyue/Documents/taxa_pos.vcf";
+
+//        this.extractVCF(infileS,outfileS,taxafileS);
+
+        TIntArrayList posList = CalVCF.extractVCFchrPos(infileS,taxafileS);
 
 
 
     }
 
 
-    public static void addRecombinationfromScience(){
-        String inputFile1 = ""; //
-        String inputFile2 = ""; //
-        String outFile = ""; //
+    public void addRecombinationfromScience(){
+        String inputFile1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/016_genomeScan_delvsSyn/003_del_nonsyn_syn/001_del_nonsyn_synOnChr_10000000Window1000000step_addEffectiveCDSLength.txt"; //
+        String inputFile2 = "/Users/Aoyue/Documents/Data/wheat/article/iwgsc_refseqv1.0_recombination_rate_analysis/iwgsc_refseqv1.0_recombination_rate_addScalePos.txt"; //重组率文件
+        String outFile = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/016_genomeScan_delvsSyn/003_del_nonsyn_syn/002_del_nonsyn_synOnChr_10000000Window1000000step.txt"; //
         Table<String,String,String> table2=RowTableTool.getTable(inputFile2, 0, 1, 4);
         try (BufferedReader br1 = IOTool.getReader(inputFile1);
              BufferedWriter bw = IOTool.getTextWriter(outFile)) {
@@ -188,7 +199,7 @@ public class VariantsSum {
             BufferedReader br = AoFile.readFile(dbFileS);
             BufferedWriter bw = AoFile.writeFile(outfile2S);
             String header = br.readLine();
-            bw.write(header + "\tCDSLength\tDelCountPerSite\tNonsynCountPersite\tSynCountPerSite");bw.newLine();
+            bw.write(header + "\tCDSLength\tDelCountPerSite\tNonsynCountPerSite\tSynCountPerSite");bw.newLine();
             String temp = null;
             List<String> l = new ArrayList<>();
             int line = 0;
@@ -226,8 +237,12 @@ public class VariantsSum {
      */
     public void WindowDel_Nonsyn_vsSyn_fromExonAnnotation(){
 
-        int windowSize = 10000000; //10 M
-        int windowStep = 1000000; //1 M
+//        int windowSize = 10000000; //10 M
+//        int windowStep = 1000000; //1 M
+
+        // 为了进行circos画图
+        int windowSize = 20000000; //10 M
+        int windowStep = 5000000; //1 M
 
 
         String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/019_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";

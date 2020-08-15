@@ -95,7 +95,61 @@ public class FilterVCF2 {
          * Variants rate
          */
 
-        this.mergeVariantRate();
+//        this.mergeVariantRate();
+
+        this.getIndelVCF();
+
+
+    }
+
+
+
+    /**
+     * 由于 hapscanner后，Indel的数目是 14,213,456， 故决定将indel全部抽取出来，进行质控
+     * 质控内容包括 maf miss
+     *
+     */
+    public void getIndelVCF(){
+        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/101_rawMergedVCF";
+        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/023_hapScanner_basedPopDepth/005_IndelsFrom_rawMergedVCF/001_IndelVCF";
+
+        List<File> fsList = AoFile.getFileListInDir(infileDirS);
+        Collections.sort(fsList);
+        fsList.parallelStream().forEach(f -> {
+            try {
+                String infileS = f.getAbsolutePath();
+                String outfileS = new File(outfileDirS,f.getName().split(".vcf")[0] + "_Indel.vcf").getAbsolutePath(); //输出非压缩格式，到最后统一压缩
+                BufferedReader br = AoFile.readFile(infileS);
+                BufferedWriter bw = AoFile.writeFile(outfileS);
+                String temp = null;
+                int cnttotal = 0;
+                int cntsubset = 0;
+                List<String> l = new ArrayList<>();
+                while ((temp = br.readLine()) != null) {
+                    if (temp.startsWith("#")) {
+                        bw.write(temp);
+                        bw.newLine();
+                    } else {
+                        cnttotal++;
+                        l = PStringUtils.fastSplit(temp);
+                        if ((l.get(4).contains("D")) || (l.get(4).contains("I"))) {
+                            bw.write(temp);
+                            bw.newLine();
+                            cntsubset++;
+                        }
+
+                    }
+                }
+                bw.flush();
+                bw.close();
+                br.close();
+                System.out.println(f.getName() + "\twith " + cnttotal + " bp has\t" + cntsubset + "\tindels at " + outfileS);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+        // java -jar 050_getIndelVCF.jar > log_050_getIndelVCF_20200815.txt 2>&1 &
     }
 
     public void mergeVariantRate(){

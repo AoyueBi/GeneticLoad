@@ -34,9 +34,32 @@ public class CalVCF {
 //        this.mkdirs();
 //        this.extractVCF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/002_exonSNPVCF/chr032_exon_vmap2.1.vcf.gz","/Users/Aoyue/Documents/test.vcf","/Users/Aoyue/Documents/test.txt");
 
-        this.getIBSdistance();
+//        this.getIBSdistance();
+
+        this.getPosfromOneindivi();
+
+
+
+
 
     }
+
+
+    public void getPosfromOneindivi(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/016_exonVCF/chr001_exon_vmap2.1.vcf.gz";
+        String taxafileS ="/Users/Aoyue/Documents/taxa_test.txt";
+        String outfileS = "/Users/Aoyue/Documents/taxa_pos.vcf";
+
+//        this.extractVCF(infileS,outfileS,taxafileS);
+
+        TIntArrayList posList = CalVCF.extractVCFchrPos(infileS,taxafileS);
+
+
+
+    }
+
+
+
 
     /**
      *
@@ -50,8 +73,6 @@ public class CalVCF {
         String[] taxa = gt.getTaxaNames();
         System.out.println(taxaNum + "\t" + taxa.length);
         float[][] ibsMatrix =   gt.getIBSDistanceMatrix();
-
-
 
 //        GenotypeGrid[] gts = new GenotypeGrid[fN];
 //        int totalSiteCount = 0;
@@ -80,8 +101,6 @@ public class CalVCF {
 //
 //        String siteQCfileS = new File(outDirS,genomeType + "_site_QC.txt.gz").getAbsolutePath();
 //        String taxaQCFileS = new File (outDirS, genomeType+"_taxa_QC.txt.gz").getAbsolutePath();
-
-
 
     }
 
@@ -203,6 +222,13 @@ public class CalVCF {
         }
 
         return out;
+    }
+
+    public static void main(String[] args) {
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/016_exonVCF/chr001_exon_vmap2.1.vcf.gz";
+        String taxafileS ="/Users/Aoyue/Documents/taxa_test.txt";
+        String outfileS = "/Users/Aoyue/Documents/taxa_pos.vcf";
+        extractVCFchrPos(infileS, taxafileS);
     }
 
 
