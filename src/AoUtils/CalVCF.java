@@ -36,29 +36,10 @@ public class CalVCF {
 
 //        this.getIBSdistance();
 
-        this.getPosfromOneindivi();
-
-
-
-
-
-    }
-
-
-    public void getPosfromOneindivi(){
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/016_exonVCF/chr001_exon_vmap2.1.vcf.gz";
-        String taxafileS ="/Users/Aoyue/Documents/taxa_test.txt";
-        String outfileS = "/Users/Aoyue/Documents/taxa_pos.vcf";
-
-//        this.extractVCF(infileS,outfileS,taxafileS);
-
-        TIntArrayList posList = CalVCF.extractVCFchrPos(infileS,taxafileS);
 
 
 
     }
-
-
 
 
     /**
@@ -669,6 +650,60 @@ public class CalVCF {
                     bw.write(sb.toString());
                     bw.newLine();
                     if (cnt % 1000000 == 0) {
+                        System.out.println("Output " + String.valueOf(cnt) + " SNPs");
+                    }
+                    cnt++;
+                }
+                bw.flush();
+                bw.close();
+                br.close();
+                System.out.println(String.valueOf(cnt) + " SNPs output from " + f.getAbsolutePath());
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
+        });
+    }
+
+    /**
+     * extract pos info from vcf file. eg: vcf ---- Chr Pos
+     *
+     * @param infileDirS
+     * @param outfileDirS
+     */
+    public static void mkHapPosWithoutHeader(String infileDirS, String outfileDirS) {
+        File[] fs = new File(infileDirS).listFiles();
+        List<File> fsList = Arrays.asList(fs);
+        fsList.parallelStream().forEach(f -> {
+            try {
+                String infileS = f.getAbsolutePath();
+                String outfileS = null;
+                BufferedReader br = null;
+                if (infileS.endsWith(".vcf")) {
+                    br = IOUtils.getTextReader(infileS);
+                    outfileS = new File(outfileDirS, f.getName().replaceFirst(".vcf", ".pos.txt.gz")).getAbsolutePath();
+                } else if (infileS.endsWith(".vcf.gz")) {
+                    br = IOUtils.getTextGzipReader(infileS);
+                    outfileS = new File(outfileDirS, f.getName().replaceFirst(".vcf.gz", ".pos.txt.gz")).getAbsolutePath();
+                }
+
+                BufferedWriter bw = AoFile.writeFile(outfileS);
+                String temp = null;
+                int cnt = 0;
+                List<String> l = null;
+                while ((temp = br.readLine()) != null) {
+                    if (temp.startsWith("#")) {
+                        continue;
+                    }
+                    temp = temp.substring(0, 40); //肯定够
+                    l = PStringUtils.fastSplit(temp);
+                    StringBuilder sb = new StringBuilder();
+                    sb = new StringBuilder(l.get(0));
+                    sb.append("\t").append(l.get(1));
+                    bw.write(sb.toString());
+                    bw.newLine();
+                    if (cnt % 1000 == 0) {
                         System.out.println("Output " + String.valueOf(cnt) + " SNPs");
                     }
                     cnt++;

@@ -63,14 +63,13 @@ public class FilterVCF2 {
 //        this.QC();
 //        this.mergeCheckFile();
 //        this.getBinTable();
-//        this.statVcfDepth_SD();
+//        this.statVcfDepth_SD(); //计算按照亚群和按照倍性区分的深度
 //        this.mergeTxtandAddGroup();
-//        this.getCol();
 
-//        this.mkDepthOfVMapII();
+//        this.mkDepthOfVMapII(); //计算taxa的深度
 //        this.mkDepthSummary();
 //        this.mergeTaxaDepth();
-        //        this.calSite();
+//                this.calSite();
 
 //        this.getMergedSubsetVCF_Hexaploid();
 
@@ -97,11 +96,50 @@ public class FilterVCF2 {
 
 //        this.mergeVariantRate();
 
-        this.getIndelVCF();
+        /**
+         * Indel的质控
+         */
+//        this.getIndelVCF();
+        this.extractPosAllele();
 
+//        this.QC_indel();
+//        this.mergeCheckFile();
+//        this.getBinTable();
+//        this.statVcfDepth_SD();
+//        this.mergeTxtandAddGroup();
 
     }
 
+    public void QC_indel(){
+        String abdinfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/007_IndelQC/000_VCFwithonlyIndel/ABsubgenome_hexa.vcf.gz";
+        String abinfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/007_IndelQC/000_VCFwithonlyIndel/ABsubgenome_tetra.vcf.gz";
+        String dinfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/007_IndelQC/000_VCFwithonlyIndel/Dsubgenome_diploid.vcf.gz";
+        String abd_DsubinfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/007_IndelQC/000_VCFwithonlyIndel/Dsubgenome_hexa.vcf.gz";
+
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/007_IndelQC/001_ori";
+
+        this.checkQuality(abinfileS,outfileDirS,"AB");
+        this.checkQuality(abdinfileS,outfileDirS,"ABD");
+        this.checkQuality(dinfileS,outfileDirS,"D");
+        this.checkQuality(abd_DsubinfileS,outfileDirS,"ABD_Dsub");
+
+    }
+
+    /**
+     * 提取Indel的chr pos ref alt
+     */
+    public void extractPosAllele(){
+//        String infileDirS = "/data4/home/aoyue/vmap2/analysis/023_hapScanner_basedPopDepth/005_IndelsFrom_rawMergedVCF/001_IndelVCF";
+//        String outfileDirS ="/data4/home/aoyue/vmap2/analysis/023_hapScanner_basedPopDepth/005_IndelsFrom_rawMergedVCF/003_variationLibrary_Indel";
+//        System.out.println("java -jar 007_mkHapPosAllele.jar " + infileDirS + " " + outfileDirS + " > log_mkHapPosAllele_20200816.txt 2>&1 &");
+
+        String infileDirS = "/data4/home/aoyue/vmap2/analysis/023_hapScanner_basedPopDepth/005_IndelsFrom_rawMergedVCF/001_IndelVCF";
+        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/023_hapScanner_basedPopDepth/005_IndelsFrom_rawMergedVCF/004_hapPos";
+        CalVCF.mkHapPosWithoutHeader(infileDirS,outfileDirS);
+
+        //java -jar PlantGenetics.jar > log_getHapPos_20200816.txt 2 >&1 &
+
+    }
 
 
     /**
@@ -165,10 +203,10 @@ public class FilterVCF2 {
 
     /**
      * 从抽样的VCF中，提取六倍体的42条染色体的VCF文件，并合并成一个文件
+     *
      */
     public void getMergedSubsetVCF_Hexaploid(){ //一次性将所有的jar都运行上
 
-        // java -jar PlantGenetics.jar /data4/home/aoyue/vmap2/genotype/mergedVCF/102_VMap2.0 /data4/home/aoyue/vmap2/genotype/mergedVCF/103_VMap2.1 > log_filterAlleletoBi_20200525.txt 2>&1 &
 
         //#/****************************** hexaploid ******************************/#
         String infileDirS = "/data4/home/aoyue/vmap2/analysis/025_subsetVCF/001_fromVMap2.0_singleChr0.001";
@@ -186,10 +224,6 @@ public class FilterVCF2 {
 
         new CountSites().mergesubsetVCF(outfileDirS,"/data4/home/aoyue/vmap2/analysis/025_subsetVCF/002_mergeVCFtoSub/ABDsubgenome_hexa.vcf.gz");
     }
-
-
-
-
 
 
     public void mergeSharedSNP(){
@@ -562,8 +596,11 @@ public class FilterVCF2 {
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/003_siteDepth";
 //        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/003_siteDepth/merge/site_depth.txt.gz";
 
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/003_siteDepth/bySub";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/003_siteDepth/bySub/merge/site_depth_bySubgenome.txt.gz";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/003_siteDepth/bySub";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/003_siteDepth/bySub/merge/site_depth_bySubgenome.txt.gz";
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/007_IndelQC/004_siteDepth/001_byPloidy";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/007_IndelQC/004_siteDepth/002_mergeAndAddsub/site_depth_byPloidy.txt.gz";
 
         File[] fs = AoFile.getFileArrayInDir(infileDirS);
         Arrays.sort(fs);
@@ -575,8 +612,8 @@ public class FilterVCF2 {
              * 需要改动,header的名字可以自定义
              */
             //read header
-//            bw.write(br.readLine() + "\tPloidy");
-            bw.write(br.readLine() + "\tSub");
+            bw.write(br.readLine() + "\tPloidy");
+//            bw.write(br.readLine() + "\tSub");
             bw.newLine();
 
             int cnttotal = 0;
@@ -587,7 +624,9 @@ public class FilterVCF2 {
                  * 需要改动
                  */
                 String name = fs[i].getName();
-                String group = name.split("subgenome")[0];
+//                String group = name.split("subgenome")[0];
+                String group = name.split("_depth")[0];
+
 
                 br = AoFile.readFile(infileS);
                 br.readLine(); //read header
@@ -618,8 +657,14 @@ public class FilterVCF2 {
 
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/001_subsetVCF";
 //        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/003_siteDepth";
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/001_subset";
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/003_siteDepth/bySub";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/001_subset";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/003_siteDepth/bySub";
+
+        // Indel的不同群体的深度和sd信息
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/007_IndelQC/000_VCFwithonlyIndel";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/007_IndelQC/004_siteDepth/001_byPloidy";
+
         List<File> fsList = AoFile.getFileListInDir(infileDirS);
         fsList.parallelStream().forEach(f  -> {
             String infileS = f.getAbsolutePath();
@@ -685,6 +730,7 @@ public class FilterVCF2 {
     }
 
     public void getBinTable(){
+        //*************** model *******************//
 //        int indexGroup = 0;
 //        int indexValue = 3;
 //        double window = 0.05;
@@ -707,16 +753,50 @@ public class FilterVCF2 {
 //        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/002_QC/003_binTable/site_heter.txt";
 //        Bin.frequency2_byGroup(infileS,indexGroup,indexValue,window,window,outfileS);
 
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/002_QC/002_merge/001_taxa_QC.txt.gz";
-        AoFile.readheader(infileS);
-
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/002_QC/002_merge/001_taxa_QC.txt.gz";
+//        AoFile.readheader(infileS);
 //        int indexGroup = 3;
 //        int indexValue = 1;
 //        double window = 0.01;
 //        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/002_QC/003_binTable/taxa_heter.txt";
 //        Bin.frequency2_byGroup(infileS,indexGroup,indexValue,window,window,outfileS);
 
+
+        /**
+         * Indel 的分Bin
+         */
+        //先检查header 0	GenomeType          //1	HeterozygousProportion          //2	MissingRate          //3	Maf
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/007_IndelQC/002_merge/001_site_QC.txt.gz";
+//        AoFile.readheader(infileS);
+
+        //maf的分bin
+//        int indexGroup = 0;
+//        int indexValue = 3;
+//        double window = 0.009;
+//        double max = 0.5;
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/007_IndelQC/003_binTable/maf.txt";
+//        Bin.frequency_byGroup(infileS,indexGroup,indexValue,max,window,window,outfileS);
+
+        //heter的分bin
+//        int indexGroup = 0;
+//        int indexValue = 1;
+//        double window = 0.05;
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/007_IndelQC/003_binTable/site_heter.txt";
+//        Bin.frequency2_byGroup(infileS,indexGroup,indexValue,window,window,outfileS);
+
+
+        //先检查 taxa质控的内容 0	Taxa        //1	HeterozygousProportion        //2	MissRate        //3	GenomeType
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/007_IndelQC/002_merge/001_taxa_QC.txt.gz";
+        AoFile.readheader(infileS);
+        int indexGroup = 3;
+        int indexValue = 1;
+        double window = 0.01;
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/007_IndelQC/003_binTable/taxa_heter.txt";
+        Bin.frequency2_byGroup(infileS,indexGroup,indexValue,window,window,outfileS);
+
+
     }
+
 
     /**
      * VCF quality control
@@ -732,12 +812,15 @@ public class FilterVCF2 {
      */
     public void mergeCheckFile(){
 
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/002_QC/001";
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/002_QC/002_merge";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/002_QC/001";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/002_QC/002_merge";
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/007_IndelQC/001_ori";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/007_IndelQC/002_merge";
 
         // change every time
-        String suffix = "_site_QC.txt.gz";
-//        String suffix = "_taxa_QC.txt.gz";
+//        String suffix = "_site_QC.txt.gz";
+        String suffix = "_taxa_QC.txt.gz";
 
         String outfileS = new File(outfileDirS,"001" + suffix).getAbsolutePath();
         File[] fs = new File(infileDirS).listFiles();
