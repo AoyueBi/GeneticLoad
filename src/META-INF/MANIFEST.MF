@@ -1,0 +1,25 @@
+Manifest-Version: 1.0
+Class-Path: ./lib/jxl-2.6.12.jar ./lib/koloboke-impl-jdk8-1.0.0.jar ./
+ lib/annotations-3.0.1u2.jar ./lib/biojava-core-4.2.0.jar ./lib/RCalle
+ r-3.1-SNAPSHOT-jar-with-dependencies.jar ./lib/biojava-alignment-4.2.
+ 0.jar ./lib/RCaller-2.1.1-SNAPSHOT.jar ./lib/trove-3.0.3.jar ./lib/bi
+ ojava-phylo-4.2.0.jar ./lib/commons-math3-3.6.1.jar ./lib/koloboke-im
+ pl-common-jdk8-1.0.0.jar ./lib/koloboke-api-jdk8-1.0.0.jar ./lib/snap
+ py-java-1.1.4.jar ./lib/itext5-itextpdf-5.5.11.jar ./lib/biojava-geno
+ me-4.2.0.jar ./lib/colt.jar ./lib/commons-cli-1.4.jar ./lib/sqlite-jd
+ bc-3.23.1.jar ./lib/mysql-connector-java-8.0.12.jar ./lib/slf4j-api-1
+ .7.26.jar ./lib/log4j-over-slf4j-1.7.26.jar ./lib/slf4j-simple-1.7.26
+ .jar ./lib/jsoup-1.12.1.jar ./lib/RoaringBitmap-0.8.11.jar ./lib/tabl
+ esaw-saw-0.36.0.jar ./lib/jackson-annotations-2.10.1.jar ./lib/smile-
+ core-2.0.0.jar ./lib/tablesaw-core-0.36.0.jar ./lib/univocity-parsers
+ -2.8.3.jar ./lib/smile-math-2.0.0.jar ./lib/tablesaw-excel-0.36.0.jar
+  ./lib/tablesaw-html-0.36.0.jar ./lib/fastutil-8.3.0.jar ./lib/htsjdk
+ -2.21.0.jar ./lib/jackson-core-2.10.1.jar ./lib/guava-23.0.jar ./lib/
+ tablesaw-beakerx-0.36.0.jar ./lib/smile-data-2.0.0.jar ./lib/smile-pl
+ ot-2.0.0.jar ./lib/jackson-databind-2.10.1.jar ./lib/tablesaw-json-0.
+ 36.0.jar ./lib/smile-netlib-2.0.0.jar ./lib/tablesaw-jsplot-0.36.0.ja
+ r ./lib/classgraph-4.8.54.jar ./lib/icu4j-65.1.jar ./lib/pebble-3.1.1
+ .jar ./lib/unbescape-1.1.6.RELEASE.jar ./lib/jxl-2.6.12.jar ./lib/jso
+ up-1.12.1.jar
+Main-Class: Entrance.GeneticLoadEntrance
+
