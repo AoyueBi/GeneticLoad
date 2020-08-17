@@ -97,12 +97,12 @@ public class FilterVCF2 {
 //        this.mergeVariantRate();
 
         /**
-         * Indel的质控
+         * Indel的质控, correct 前后变化
          */
 //        this.getIndelVCF();
-        this.extractPosAllele();
+//        this.extractPosAllele();
 
-//        this.QC_indel();
+        this.QC_indel();
 //        this.mergeCheckFile();
 //        this.getBinTable();
 //        this.statVcfDepth_SD();
@@ -111,17 +111,84 @@ public class FilterVCF2 {
     }
 
     public void QC_indel(){
-        String abdinfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/007_IndelQC/000_VCFwithonlyIndel/ABsubgenome_hexa.vcf.gz";
-        String abinfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/007_IndelQC/000_VCFwithonlyIndel/ABsubgenome_tetra.vcf.gz";
-        String dinfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/007_IndelQC/000_VCFwithonlyIndel/Dsubgenome_diploid.vcf.gz";
-        String abd_DsubinfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/007_IndelQC/000_VCFwithonlyIndel/Dsubgenome_hexa.vcf.gz";
+//        String abdinfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/007_IndelQC/000_VCFwithonlyIndel/ABsubgenome_hexa.vcf.gz";
+//        String abinfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/007_IndelQC/000_VCFwithonlyIndel/ABsubgenome_tetra.vcf.gz";
+//        String dinfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/007_IndelQC/000_VCFwithonlyIndel/Dsubgenome_diploid.vcf.gz";
+//        String abd_DsubinfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/007_IndelQC/000_VCFwithonlyIndel/Dsubgenome_hexa.vcf.gz";
 
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/007_IndelQC/001_ori";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/007_IndelQC/001_ori";
 
-        this.checkQuality(abinfileS,outfileDirS,"AB");
-        this.checkQuality(abdinfileS,outfileDirS,"ABD");
-        this.checkQuality(dinfileS,outfileDirS,"D");
-        this.checkQuality(abd_DsubinfileS,outfileDirS,"ABD_Dsub");
+//        this.checkQuality(abinfileS,outfileDirS,"AB");
+//        this.checkQuality(abdinfileS,outfileDirS,"ABD");
+//        this.checkQuality(dinfileS,outfileDirS,"D");
+//        this.checkQuality(abd_DsubinfileS,outfileDirS,"ABD_Dsub");
+
+
+/**
+ * 抽取 chr036 比较修改程序前后的基因型变化，对maf造成的影响
+ */
+
+///////******** corrected Indel
+//        String abdinfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/036_hapScanner_Indel/test/chr036.vcf.gz";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/036_hapScanner_Indel/test/";
+//        this.checkQuality(abdinfileS,outfileDirS,"ABD");
+
+        //maf的分bin
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/036_hapScanner_Indel/test/ABD_site_QC.txt.gz";
+//        int indexGroup = 0;
+//        int indexValue = 3;
+//        double window = 0.009;
+//        double max = 0.5;
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/036_hapScanner_Indel/test/maf.txt";
+//        Bin.frequency_byGroup(infileS,indexGroup,indexValue,max,window,window,outfileS);
+
+///////******** incorrected Indel
+//        String abdinfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/036_hapScanner_Indel/test/errorFile/chr036_Indel.vcf.gz";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/036_hapScanner_Indel/test/errorFile/";
+//        this.checkQuality(abdinfileS,outfileDirS,"ABD");
+
+
+//        //maf的分bin
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/036_hapScanner_Indel/test/errorFile/ABD_site_QC.txt.gz";
+//        int indexGroup = 0;
+//        int indexValue = 3;
+//        double window = 0.009;
+//        double max = 0.5;
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/036_hapScanner_Indel/test/errorFile/maf.txt";
+//        Bin.frequency_byGroup(infileS,indexGroup,indexValue,max,window,window,outfileS);
+
+        ///////******** corrected Insertion
+//        String abd_Insertion_infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/036_hapScanner_Indel/test/insertion_deletion/Insertion.vcf.gz";
+//        String abd_Deletion_infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/036_hapScanner_Indel/test/insertion_deletion/Deletion.vcf.gz";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/036_hapScanner_Indel/test/insertion_deletion/";
+//        this.checkQuality(abd_Insertion_infileS,outfileDirS,"ABD_Insertion");
+//        this.checkQuality(abd_Deletion_infileS,outfileDirS,"ABD_Deletion");
+
+        //maf的分bin
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/036_hapScanner_Indel/test/insertion_deletion/ABD_Insertion_site_QC.txt.gz";
+//        int indexGroup = 0;
+//        int indexValue = 3;
+//        double window = 0.009;
+//        double max = 0.5;
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/036_hapScanner_Indel/test/insertion_deletion/ABD_insertion_maf.txt";
+//        Bin.frequency_byGroup(infileS,indexGroup,indexValue,max,window,window,outfileS);
+
+
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/036_hapScanner_Indel/test/insertion_deletion/ABD_Deletion_site_QC.txt.gz";
+//        int indexGroup = 0;
+//        int indexValue = 3;
+//        double window = 0.009;
+//        double max = 0.5;
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/036_hapScanner_Indel/test/insertion_deletion/ABD_deletion_maf.txt";
+//        Bin.frequency_byGroup(infileS,indexGroup,indexValue,max,window,window,outfileS);
+
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/036_hapScanner_Indel/test/insertion_deletion/ABD_insertion_maf.txt";
+        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/036_hapScanner_Indel/test/insertion_deletion/ABD_deletion_maf.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/036_hapScanner_Indel/test/insertion_deletion/ABD_insertion_deletion_maf.txt";
+        File f = new File(infileS);
+        File f2 = new File(infileS2);
+        File[] fs = {f,f2};
+        AoFile.mergeTxt_byFileArray(fs, outfileS);
 
     }
 

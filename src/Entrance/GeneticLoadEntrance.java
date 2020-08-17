@@ -58,6 +58,8 @@ public class GeneticLoadEntrance {
 //        new TaxaDB();  //taxa 类
 //        new AoIntrogression();
 
+//        new ScriptHapscanner2(); // 进行indel的hapscanner
+
 
 
 

@@ -12,6 +12,7 @@ import java.util.*;
 
 import AoUtils.*;
 import gnu.trove.list.array.TDoubleArrayList;
+import gnu.trove.list.array.TIntArrayList;
 import pgl.graph.r.Histogram;
 import pgl.infra.dna.genot.GenoIOFormat;
 import pgl.infra.dna.genot.GenotypeGrid;
@@ -59,12 +60,59 @@ public class ScriptHapscanner2 {
         /**
          * QC
          */
-        this.qualityCheck();
+//        this.qualityCheck();
 //        this.mergeCheckFile();
 //        this.getBinTable();
 //        this.addSubspecies();
 
 
+        /**
+         * new Hapscanner 20200817 only for Indel
+         */
+
+
+
+
+
+    }
+
+    /**
+     * 先进行36号染色体的测试，并将拿到的结果进行indel 和 deletion 拆分，分别画出MAF分布图，看修改代码后的Indel genotype 是否正常。
+     *
+     */
+    public void getIndelandDeletionFile(){
+        String infileS = "";
+        String indelOutfileS = "";
+        String deletionOutfileS = "";
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(indelOutfileS);
+            BufferedWriter bw2 = AoFile.writeFile(deletionOutfileS);
+
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                if (temp.startsWith("#")) {
+                    continue;
+                }
+                temp = temp.substring(0, 40); //肯定够
+                l = PStringUtils.fastSplit(temp);
+                StringBuilder sb = new StringBuilder();
+                sb = new StringBuilder(l.get(2));
+
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
 
 
 

@@ -612,7 +612,7 @@ public class CalVCF {
     }
 
     /**
-     * extract pos info from vcf file. eg: vcf ---- Chr Pos
+     * extract pos info from vcf file. eg: vcf ---- ID Chr Pos Ref Alt
      *
      * @param infileDirS
      * @param outfileDirS
