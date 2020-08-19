@@ -31,7 +31,7 @@ public class FilterVCF2 {
 //        String a = "";
 //        String b = "";
 //        this.filter_singleThread(a,b); //最终过滤的时候采用的方法
-//        this.script();
+        this.script();
 //        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/030_FixVMap2/003_script/sh_filterMAFmissOccurrence20200522.sh",3,11);
 //        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/030_FixVMap2/003_script/sh_filterMAFmissOccurrence_2_20200522.sh",4,2);
 
@@ -102,7 +102,7 @@ public class FilterVCF2 {
 //        this.getIndelVCF();
 //        this.extractPosAllele();
 
-        this.QC_indel();
+//        this.QC_indel();
 //        this.mergeCheckFile();
 //        this.getBinTable();
 //        this.statVcfDepth_SD();
@@ -1367,12 +1367,21 @@ public class FilterVCF2 {
     }
 
     public void script(){
-        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/101_rawMergedVCF";
-//        String logDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/log";
-        String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
 
-        String outfileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/102_VMap2.0";
-        String logDirS = "/data4/home/aoyue/vmap2/analysis/023_hapScanner_basedPopDepth/log/004";
+        //模板
+//        String infileDirS = ""; //bcftools合并后的文件
+//        String outfileDirS = ""; //进行maf miss occurrence 过滤的文件
+//        String logDirS = ""; // 日志
+
+//        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/101_rawMergedVCF";
+//        String outfileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/102_VMap2.0";
+//        String logDirS = "/data4/home/aoyue/vmap2/analysis/023_hapScanner_basedPopDepth/log/004";
+
+        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/106_MergedIndel_fromHapScanner";
+        String outfileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/107_VMap2.0_Indel";
+        String logDirS = "/data4/home/aoyue/vmap2/analysis/029_hapScanner_onlyIndel/log_filterMafMissOccurrence/";
+
+        String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
 
 //        String[] chrArr = {"010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
 //        String[] chrArr = {"003","004","005","006","007","008","009"};
@@ -1380,7 +1389,9 @@ public class FilterVCF2 {
         for (int i = 0; i < chrArr.length; i++) {
             String infileS = new File(infileDirS,"chr" + chrArr[i] + ".vcf").getAbsolutePath();
             String logfileS = new File(logDirS,"log_" + new File(infileS).getName().split(".gz")[0]).getAbsolutePath(); //不管是不是gz结尾，我们只取gz前的部分，妙！
-            System.out.println("java -Xms200g -Xmx200g -jar 044_filterMafOccurrenceMiss.jar " + infileS + " " + outfileDirS + " > " + logfileS );
+//            System.out.println("java -Xms200g -Xmx200g -jar 044_filterMafOccurrenceMiss.jar " + infileS + " " + outfileDirS + " > " + logfileS + " 2 >&1 &" );
+            System.out.println("java -jar 044_filterMafOccurrenceMiss.jar " + infileS + " " + outfileDirS + " > " + logfileS + " 2 >&1 &" );
+
         }
     }
 

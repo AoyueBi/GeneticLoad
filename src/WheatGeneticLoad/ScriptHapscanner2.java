@@ -70,10 +70,151 @@ public class ScriptHapscanner2 {
          * new Hapscanner 20200817 only for Indel
          */
 
+//        this.mkParameter_forIndel();
+//        this.mkJavaCmd_Indel();
+//        this.bgzip();
+//        this.bcftools_merge2(); // 过滤步骤见 FilterVCF2类
 
 
+    }
 
 
+    /**
+     * 本方法的目的是：建立28条染色体的java 运行脚本。
+     */
+    public void mkJavaCmd_Indel() {
+        //AABB
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/036_hapScanner_Indel/006_CMD/sh_hapScanner_ABgenome_chr1_42_20200817.sh";
+        String[] chrArr ={"001","002","003","004","007","008","009","010","013","014","015","016","019","020","021","022","025","026","027","028","031","032","033","034","037","038","039","040"};
+
+        //AABBDD
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/036_hapScanner_Indel/006_CMD/sh_hapScanner_ABDgenome_20200817.sh";
+//        String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
+
+        //DD
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/036_hapScanner_Indel/006_CMD/sh_hapScanner_Dgenome_chr1_42_20200515.sh";
+//        String[] chrArr ={"005","006","011","012","017","018","023","024","029","030","035","036","041","042"};
+
+        String ploidy = AoString.getPloidy(chrArr);
+//        ploidy = "abd";
+
+        try {
+            //nohup java -Xmx100g -jar TIGER_v1.0.1.jar -a HapScanner -p ./parameters_006_d_hapScanner.txt > log_006_d_hapScanner.txt &
+            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            for (int i = 0; i < chrArr.length; i++) {
+                String chr = chrArr[i];
+                bw.write("java -Xmx100g -jar TIGER_v1.0.1.jar -a HapScanner -p ./parameters_");
+                bw.write(chr);
+                bw.write("_" + ploidy + "_hapScanner.txt > log_");
+                bw.write(chr);
+                bw.write("_" + ploidy + "_hapScanner2.txt");
+                bw.newLine();
+            }
+            bw.flush();
+            bw.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        // run this script
+//        System.out.println("nohup sh sh_hapScanner_Dgenome_chr1_42_20200515.sh > log_hapScanner_Dgenome_chr1_42_20200515.txt 2>&1 &");
+        // nohup sh sh_hapScanner_ABDgenome_onlyDsub_20200518.sh > log_hapScanner_ABDgenome_onlyDsub_20200518.txt 2>&1 &
+    }
+
+
+    /**
+     * 本方法的目的是：建立28条染色体的parameters文件。
+     */
+    public void mkParameter_forIndel() {
+//        // 参数文件本地输出
+//        String outfileDirS = "";
+//        // HPC Path set
+//        String[] chrArr ={};
+//        String taxaBamMapFileS = "";
+//        String outDirS = "";
+
+//        // 参数文件本地输出 AABB
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/036_hapScanner_Indel/004_para_ab";
+        // HPC Path set
+        String[] chrArr ={"001","002","003","004","007","008","009","010","013","014","015","016","019","020","021","022","025","026","027","028","031","032","033","034","037","038","039","040"};
+        String taxaBamMapFileS = "/data4/home/aoyue/vmap2/analysis/029_hapScanner_onlyIndel/ab/001_taxaRefBam_ABgenome.txt";
+        String outDirS = "/data4/home/aoyue/vmap2/analysis/029_hapScanner_onlyIndel/ab/out";
+
+        // 参数文件本地输出 AABBDD
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/036_hapScanner_Indel/003_para_abd";
+//        // HPC Path set
+//        String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
+//        String taxaBamMapFileS = "/data4/home/aoyue/vmap2/analysis/029_hapScanner_onlyIndel/abd/001_taxaRefBam_ABDgenome.txt";
+//        String outDirS = "/data4/home/aoyue/vmap2/analysis/029_hapScanner_onlyIndel/abd/out";
+
+        // 参数文件本地输出 DD
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/036_hapScanner_Indel/005_para_d";
+//        // HPC Path set
+//        String[] chrArr ={"005","006","011","012","017","018","023","024","029","030","035","036","041","042"};
+//        String taxaBamMapFileS = "/data4/home/aoyue/vmap2/analysis/029_hapScanner_onlyIndel/d/001_taxaRefBam_Dgenome.txt";
+//        String outDirS = "/data4/home/aoyue/vmap2/analysis/029_hapScanner_onlyIndel/d/out";
+
+        // no change
+        String posAlleleFileDirS = "/data4/home/aoyue/vmap2/analysis/023_hapScanner_basedPopDepth/005_IndelsFrom_rawMergedVCF/003_variationLibrary_Indel";
+        String posFileDirS = "/data4/home/aoyue/vmap2/analysis/023_hapScanner_basedPopDepth/005_IndelsFrom_rawMergedVCF/004_hapPos";
+        String ploidy = AoString.getPloidy(chrArr);
+        try {
+            for (int i = 0; i < chrArr.length; i++) {
+                String chr = chrArr[i];
+                int chrInt = Integer.parseInt(chr);
+                String posAlleleFileS = new File(posAlleleFileDirS,"chr" + chr + "_Indel.posAllele.txt.gz").getAbsolutePath();
+                String posFileS = new File(posFileDirS,"chr" + chr + "_Indel.pos.txt.gz").getAbsolutePath();
+                String outfileS = new File(outfileDirS, "parameters_" + chr + "_" + ploidy + "_hapScanner.txt").getAbsolutePath();
+
+                BufferedWriter bw = AoFile.writeFile(outfileS);
+                StringBuilder sb = new StringBuilder();
+                sb.append("@App:\tHapScanner\n" +
+                        "@Author:\tFei Lu\n" +
+                        "@Email:\tflu@genetics.ac.cn; dr.lufei@gmail.com\n" +
+                        "@Homepage:\thttps://plantgeneticslab.weebly.com/\n" +
+                        "\n" +
+                        "#HapScanner is used to perform genotyping of diploid species from whole genome sequenceing data, based on an existing genetic variation library.\n" +
+                        "#To run and pipeline, the machine should have both Java 8 and samtools installed. The lib directory should stay with TIGER.jar in the same folder.\n" +
+                        "#Command line example. java -Xmx100g -jar TIGER.jar -a HapScanner -p parameter_hapscanner.txt > log.txt &\n" +
+                        "#To specify options, please edit the the parameters below. Also, please keep the order of parameters.\n" +
+                        "\n" +
+                        "#Parameter 1: The taxaRefBam file containing information of taxon and its corresponding refernece genome and bam files. The bam file should have .bai file in the same folder\n" +
+                        taxaBamMapFileS + "\n" +
+                        "\n" +
+                        "#Parameter 2: The posAllele file (with header), the format is Chr\\tPos\\tRef\\tAlt (from VCF format). The positions come from genetic variation library.\n" +
+                        "#A maximum of 2 alternative alleles are supported, which is seperated by \",\", e.g. A,C.\n" +
+                        "#Deletion and insertion are supported, denoted as \"D\" and \"I\".\n" +
+                        posAlleleFileS + "\n" +
+                        "\n" +
+                        "#Parameter 3: The pos files (without header), the format is Chr\\tPos. The positions come from haplotype library, which is used in mpileup.\n" +
+                        posFileS + "\n" +
+                        "\n" +
+                        "#Parameter 4: The chromosome which will be scanned.\n" +
+                        chrInt + "\n" +
+                        "\n" +
+                        "#Parameter 5: Combined error rate of sequencing and misalignment. Heterozygous read mapping are more likely to be genotyped as homozygote when the combined error rate is high.\n" +
+                        "0.05\n" +
+                        "\n" +
+                        "#Parameter 6: The path of samtools\n" +
+                        "/data1/programs/samtools-1.8/samtools\n" +
+                        "\n" +
+                        "#Parameter 7: Number of threads\n" +
+                        "32\n" +
+                        "\n" +
+                        "#Parameter 8: The directory of output\n" +
+                        outDirS + "\n");
+
+                bw.write(sb.toString());
+                bw.newLine();
+                bw.flush();
+                bw.close();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
     /**
@@ -352,10 +493,15 @@ public class ScriptHapscanner2 {
      */
     public void bcftools_merge2() {
 
-        String abdFileDirS = "/data4/home/aoyue/vmap2/analysis/023_hapScanner_basedPopDepth/abd/out/VCF";
-        String abFileDirS = "/data4/home/aoyue/vmap2/analysis/023_hapScanner_basedPopDepth/ab/out/VCF";
-        String dFileDirS = "/data4/home/aoyue/vmap2/analysis/023_hapScanner_basedPopDepth/d/out/VCF";
-        String mergedFileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/101_rawMergedVCF";
+//        String abdFileDirS = "/data4/home/aoyue/vmap2/analysis/023_hapScanner_basedPopDepth/abd/out/VCF";
+//        String abFileDirS = "/data4/home/aoyue/vmap2/analysis/023_hapScanner_basedPopDepth/ab/out/VCF";
+//        String dFileDirS = "/data4/home/aoyue/vmap2/analysis/023_hapScanner_basedPopDepth/d/out/VCF";
+//        String mergedFileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/101_rawMergedVCF";
+
+        String abdFileDirS = "/data4/home/aoyue/vmap2/analysis/029_hapScanner_onlyIndel/abd/out/VCF";
+        String abFileDirS = "/data4/home/aoyue/vmap2/analysis/029_hapScanner_onlyIndel/ab/out/VCF";
+        String dFileDirS = "/data4/home/aoyue/vmap2/analysis/029_hapScanner_onlyIndel/d/out/VCF";
+        String mergedFileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/106_MergedIndel_fromHapScanner";
 
         String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
         for (int i = 0; i < 42; i++) {
@@ -370,7 +516,8 @@ public class ScriptHapscanner2 {
             }
 
             String mPath = new File(mergedFileDirS, "chr" + chr + ".vcf").getAbsolutePath();
-            System.out.println("/data1/programs/bcftools-1.8/bcftools merge -m all --force-samples -f PASS,. --threads 10 " + abdPath + " " + path2 + " -o " + mPath + " &");
+            //线程设置 10 8
+            System.out.println("/data1/programs/bcftools-1.8/bcftools merge -m all --force-samples -f PASS,. --threads 8 " + abdPath + " " + path2 + " -o " + mPath + " &");
         }
     }
 
@@ -383,7 +530,7 @@ public class ScriptHapscanner2 {
 
         for (int i = 0; i < chrArr.length; i++) {
             String chr = chrArr[i];
-            System.out.println("bgzip -@ 1 chr" + chr + ".vcf && tabix -p vcf chr" + chr + ".vcf.gz &");
+            System.out.println("bgzip -@ 4 chr" + chr + ".vcf && tabix -p vcf chr" + chr + ".vcf.gz &");
         }
     }
 

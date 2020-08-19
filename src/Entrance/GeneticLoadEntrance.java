@@ -50,7 +50,7 @@ public class GeneticLoadEntrance {
 //        new RebuildVCF();
 //        new ScriptHapscanner2();
 //        new AoHeterozygosity();
-        new  FilterVCF2();
+//        new  FilterVCF2();
 //        new GermplasmInfo();
 //        new VariantsSum();
 //        new SIFT();
@@ -59,6 +59,8 @@ public class GeneticLoadEntrance {
 //        new AoIntrogression();
 
 //        new ScriptHapscanner2(); // 进行indel的hapscanner
+        new  FilterVCF2();
+
 
 
 
