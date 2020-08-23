@@ -31,9 +31,11 @@ public class FilterVCF2 {
 //        String a = "";
 //        String b = "";
 //        this.filter_singleThread(a,b); //最终过滤的时候采用的方法
-        this.script();
+//        this.script();
 //        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/030_FixVMap2/003_script/sh_filterMAFmissOccurrence20200522.sh",3,11);
 //        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/030_FixVMap2/003_script/sh_filterMAFmissOccurrence_2_20200522.sh",4,2);
+        // 统计 Indel 位点个数
+//        CountSites.mergeChr1and2txt_int("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/029_countSiteSummary/002_vmap2.0/log_043_countSitesinFastCallformat_fixVMap2.0Indels_20200818.txt","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/029_countSiteSummary/002_vmap2.0/CountVariants_fixVMap2.0_Indel_20200818.txt");
 
 
         /**
@@ -52,7 +54,7 @@ public class FilterVCF2 {
 //        CountSites.mergeChr1and2txt_int("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/029_countSiteSummary/002_vmap2.0/log_043_countSitesinFastCallformat_fixVMap2.0_20200601.txt","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/029_countSiteSummary/002_vmap2.0/CountVariants_fixVMap2.0_202006.txt");
 //        CountSites.mergeChr1and2txt_int("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/029_countSiteSummary/002_vmap2.0/log_043_countSitesinFastCallformat_fixVMap2.0_20200604.txt","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/029_countSiteSummary/002_vmap2.0/CountVariants_fixVMap2.0_202006.txt");
 
-//        this.bgzip();
+        this.bgzip();
 //        this.sortTaxaName();
 
         /**
@@ -69,7 +71,7 @@ public class FilterVCF2 {
 //        this.mkDepthOfVMapII(); //计算taxa的深度
 //        this.mkDepthSummary();
 //        this.mergeTaxaDepth();
-//                this.calSite();
+//        this.calSite();
 
 //        this.getMergedSubsetVCF_Hexaploid();
 
@@ -97,7 +99,7 @@ public class FilterVCF2 {
 //        this.mergeVariantRate();
 
         /**
-         * Indel的质控, correct 前后变化
+         * ************** Indel的质控, correct 前后变化
          */
 //        this.getIndelVCF();
 //        this.extractPosAllele();
@@ -107,7 +109,137 @@ public class FilterVCF2 {
 //        this.getBinTable();
 //        this.statVcfDepth_SD();
 //        this.mergeTxtandAddGroup();
+        /**
+         * ************** VMap2.0 finalize
+         */
 
+//        this.finalizeVMapII();
+//        CountSites.mergeChr1Aand2A_bysubgenome("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/029_countSiteSummary/002_vmap2.0/CountVariants_fixVMap2.0_Indel_20200818.txt","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/029_countSiteSummary/002_vmap2.0/VMap2.0_Inde_bySubgenome.txt");
+
+//        this.test();
+
+    }
+
+
+    public void test(){
+
+        for (int i = 1; i < 43; i++) {
+            if (i != 29)continue;
+            System.out.println(i);
+        }
+    }
+
+    /**
+     * 将2020-05 VMap2.0 (i.e. hapscanner并过滤 MAF>=0.01 Miss<=0.2 Occurrence >=2) 中的 SNP 和Indel 结果只保留SNP(include biallelic and tri-allelic SNP)
+     * 将2020-08 新做出来Indel (revised hapscanner output --> 并过滤 MAF>=0.01 Miss<=0.2 Occurrence >=2) 和上文SNP排序并合并
+     */
+    public void finalizeVMapII(){
+
+//        String infileDirS = ""; //VMap2.0 include SNP and error Indel
+//        String infile2DirS = ""; //Vmap2.0 only include Indel
+//        String outfileDirS = "";
+
+
+        //test data
+//        String infileDirS = "/Users/Aoyue/Documents/in1"; //VMap2.0 include SNP and error Indel
+//        String infile2DirS = "/Users/Aoyue/Documents/in2"; //Vmap2.0 only include Indel
+//        String outfileDirS = "/Users/Aoyue/Documents/out";
+
+        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/102_VMap2.0"; //VMap2.0 include SNP and error Indel
+        String infile2DirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/107_VMap2.0_Indel"; //Vmap2.0 only include Indel
+        String outfileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/108_VMap2.0_final";
+
+//        int[] chrArray = new int[27];
+//        for (int i = 2; i < 29; i++) {
+//            chrArray[i-2]=i;
+//        }
+//        Arrays.sort(chrArray);
+
+        File[] fs = AoFile.getFileArrayInDir(infileDirS);
+        for (int i = 0; i < fs.length; i++) {
+            int chr = Integer.parseInt(fs[i].getName().substring(3,6));
+//            int id = Arrays.binarySearch(chrArray,chr);
+//            if (id>-1)continue;
+
+            if (chr != 29) continue;
+            String infileS = fs[i].getAbsolutePath();
+            String infileS2 = new File(infile2DirS,fs[i].getName().replaceFirst(".vcf",".vcf.gz")).getAbsolutePath();
+            String outfileS = new File(outfileDirS,fs[i].getName()).getAbsolutePath();
+            List<Record> rl = new ArrayList<>();
+            try{
+                BufferedReader br = AoFile.readFile(infileS);
+                BufferedWriter bw = AoFile.writeFile(outfileS);
+
+                String temp = null;
+                List<String> l = new ArrayList<>();
+                int cnt1 = 0;
+                while ((temp = br.readLine()) != null){
+                    if (temp.startsWith("#")){
+                        bw.write(temp);bw.newLine();continue;
+                    }
+                    l = PStringUtils.fastSplit(temp);
+                    String alt = l.get(4);
+                    if (alt.contains("D")|alt.contains("I"))continue;
+                    Record r = new Record(Integer.parseInt(l.get(1)),temp);
+                    rl.add(r);
+                    cnt1++;
+                }
+                br.close();
+
+                System.out.println("chr " + chr + "\t******** record list 1 is completed with snp number\t" + cnt1);
+                System.out.println(new SimpleDateFormat().format(new Date()));
+
+
+                br = AoFile.readFile(infileS2);
+                int cnt2 = 0;
+                while ((temp = br.readLine()) != null){
+                    if (temp.startsWith("#"))continue;
+                    l = PStringUtils.fastSplit(temp);
+                    Record r = new Record(Integer.parseInt(l.get(1)),temp);
+                    rl.add(r);
+                    cnt2++;
+                }
+                br.close();
+                System.out.println("chr " + chr + "\t******** record list 2 is completed with indel number\t" + cnt2);
+                System.out.println(new SimpleDateFormat().format(new Date()));
+
+                Collections.sort(rl);
+                System.out.println("chr " + chr + "\t******** finish sort the pos");
+                System.out.println(new SimpleDateFormat().format(new Date()));
+                StringBuilder sb = new StringBuilder();
+                for (int j = 0; j < rl.size(); j++) {
+                    sb.setLength(0);
+                    sb.append(rl.get(j).r);
+                    bw.write(sb.toString());bw.newLine();
+                }
+                bw.flush();bw.close();
+                System.out.println("chr " + chr + "\t======== finish writing the file");
+                System.out.println(new SimpleDateFormat().format(new Date()));
+
+
+            }catch (Exception e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
+        }
+        //nohup java -Xms400g -Xmx400g -jar PlantGenetics.jar > log_finalizeVMapII_20200820.txt 2>&1 &
+        // cat /data4/home/aoyue/vmap2/aaPlantGenetics/log_finalizeVMapII_20200820.txt
+
+        //nohup java -Xms400g -Xmx400g -jar PlantGenetics.jar > log_finalizeVMapII_20200820_chr29.txt 2>&1 &
+        // cat /data4/home/aoyue/vmap2/aaPlantGenetics/log_finalizeVMapII_20200820_chr29.txt
+
+
+    }
+
+    class Record implements Comparable<Record>{
+        int pos;
+        public String r;
+        public Record (int pos, String r){
+            this.pos = pos;
+            this.r = r;
+        }
+        @Override
+        public int compareTo(Record o){return this.pos-o.pos;}
     }
 
     public void QC_indel(){

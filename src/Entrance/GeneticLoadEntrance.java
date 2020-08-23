@@ -54,12 +54,12 @@ public class GeneticLoadEntrance {
 //        new GermplasmInfo();
 //        new VariantsSum();
 //        new SIFT();
-//        new DeleteriousCountbyIndi(); //根据数据库进行个体Load计算
+        new DeleteriousCountbyIndi(); //根据数据库进行个体Load计算
 //        new TaxaDB();  //taxa 类
 //        new AoIntrogression();
 
 //        new ScriptHapscanner2(); // 进行indel的hapscanner
-        new  FilterVCF2();
+//        new  FilterVCF2();
 
 
 

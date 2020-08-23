@@ -72,7 +72,7 @@ public class ScriptHapscanner2 {
 
 //        this.mkParameter_forIndel();
 //        this.mkJavaCmd_Indel();
-//        this.bgzip();
+        this.bgzip();
 //        this.bcftools_merge2(); // 过滤步骤见 FilterVCF2类
 
 

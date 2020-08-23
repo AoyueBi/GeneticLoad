@@ -3213,7 +3213,7 @@ public class CountSites {
     }
 
     /**
-     * 将计算出的snp位点数进行合并，成1D 2D 3D 4D 5D 6D 7D形式；
+     * 将计算出的snp位点数进行合并
      */
     public void mergeChr1and2_ABgenome(String infileS, String outfileS) {
 //        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/002_countSites/countSites.txt";
