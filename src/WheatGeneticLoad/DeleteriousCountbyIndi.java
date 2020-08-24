@@ -60,13 +60,6 @@ public class DeleteriousCountbyIndi {
 //        AoFile.readheader(SNPAnnoFileS);
 
         int cntNONSY = 0; //非同义突变的个数
-//**************** VMap2.0-2020 ************************* //
-//        String exonVCFDirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/002_exonSNPVCF";
-//        String SNPAnnoFileS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/004_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz"; //有害变异信息库
-        //本地信息库
-//        String exonVCFDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/016_exonVCF";
-//        String SNPAnnoFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/015_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz"; //有害变异信息库
-
 //**************** VMap2.0-2020 加上 derived SIFT 的数据库 ************************* //
         String exonVCFDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/016_exonVCF"; //外显子变异数据
         String SNPAnnoFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/019_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz"; //注释信息库合并后的总文件
@@ -78,26 +71,6 @@ public class DeleteriousCountbyIndi {
 //        System.out.println("************************************************************");
 //        AoFile.readheader("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/taxaList.txt");
 //        int a =3;
-        //########### 大麦和黑麦简约法 ******* VMap2.0-2020 *********** new data test ################
-        //########### 大麦和黑麦简约法 ******* VMap2.0-2020 *********** new data test ################
-        //########### 大麦和黑麦简约法 ******* VMap2.0-2020 *********** new data test ################
-        //########### 大麦和黑麦简约法 ******* VMap2.0-2020 *********** new data test ################
-
-        //###### synonymous
-//        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/003_VMap2.1DelCount/001_additiveDeleterious_synonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr.txt";
-//        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/003_VMap2.1DelCount/001_recessiveDeleterious_synonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr.txt";
-
-        //###### non-synonymous
-//        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/003_VMap2.1DelCount/002_additiveDeleterious_nonsynonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr.txt";
-//        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/003_VMap2.1DelCount/002_recessiveDeleterious_nonsynonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr.txt";
-
-        //###### deleterious by GERP
-//        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/003_VMap2.1DelCount/003_additiveDeleterious_nonsynGERP_ANCbarleyVSsecalePasimony_vmap2_bychr.txt"; //指的是非同义突变，并且GERP大于1的条件
-//        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/003_VMap2.1DelCount/003_recessiveDeleterious_nonsynGERP_ANCbarleyVSsecalePasimony_vmap2_bychr.txt"; //指的是非同义突变，并且GERP大于1的条件
-
-        //###### deleterious by GERP and SIFT
-//        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/003_VMap2.1DelCount/004_additiveDeleterious_nonsynGERPandSIFT_ANCbarleyVSsecalePasimony_vmap2_bychr.txt"; //指的是非同义突变，并且GERP大于1,SIFT<0.05的条件
-//        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/003_VMap2.1DelCount/004_recessiveDeleterious_nonsynGERPandSIFT_ANCbarleyVSsecalePasimony_vmap2_bychr.txt"; //指的是非同义突变，并且GERP大于1,SIFT<0.05的条件
 
         //########### 大麦和黑麦简约法 ******* VMap2.0-2020 *********** 加上Derived SIFT的数据库 2020-07-21 ################
         //########### 大麦和黑麦简约法 ******* VMap2.0-2020 *********** 加上Derived SIFT的数据库 2020-07-21 ################
