@@ -47,14 +47,14 @@ public class GeneticLoadEntrance {
     }
 
     public void rebuildVCF(){
-//        new RebuildVCF();
+        new RebuildVCF();
 //        new ScriptHapscanner2();
 //        new AoHeterozygosity();
 //        new  FilterVCF2();
 //        new GermplasmInfo();
 //        new VariantsSum();
 //        new SIFT();
-        new DeleteriousCountbyIndi(); //根据数据库进行个体Load计算
+//        new DeleteriousCountbyIndi(); //根据数据库进行个体Load计算
 //        new TaxaDB();  //taxa 类
 //        new AoIntrogression();
 
@@ -150,7 +150,15 @@ public class GeneticLoadEntrance {
         System.out.println("Aoyue Repository --- Here is the entrance of GeneticLoad!\n");
         System.out.println(new SimpleDateFormat().format(new Date()) + "\tbegin.");
 
-        new GeneticLoadEntrance();
+        String a="0.05";
+        float valueFloat=Float.parseFloat(a);
+        double valueDouble=Double.parseDouble(a);
+        if (valueDouble > 0.05){
+            System.out.println("valueDouble > 0.05");
+        }else {
+            System.out.println("valueDouble <= 0.05");
+        }
+//        new GeneticLoadEntrance();
 //        new GeneticLoadEntrance(args);
 //        new CountSites().filterSNPtoBi_parallel(args[0], args[1]);
 //        new FilterVCF2().filter_singleThread(args[0], args[1]);

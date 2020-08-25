@@ -39,8 +39,9 @@ public class DeleteriousCountbyIndi {
 //        this.addGrouptoCorrelationFile();
 //        this.addNewGrouptoLoadFile();
 
-        this.countDeleteriousVMapII_byChr_onlyHomo();
-//        this.test();
+        this.countDeleteriousVMapII_byChr_onlyHomo(); //统计分子是纯合，分母也是纯合基因型的3种分类； 统计分子是纯合，分母是纯合加杂合的3种分类； 统计分子是杂合，分母
+//        this.DeltoSynonymousRatio();
+//                this.filterLandrace();
 
         /**
          * ******** 计算个体load的时候，只看纯合子。 遇到杂合子就跳过
@@ -843,25 +844,92 @@ public class DeleteriousCountbyIndi {
 //        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/002_additiveDeleterious_nonsynonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr_bysub.txt"; //有害突变文件
 //        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/001_additiveDeleterious_synonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr_bysub.txt"; //同义突变文件
         //nonsyn del/ syn
-        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/004_additiveDeleterious_nonsynGERPandDerivedSIFT_ANCbarleyVSsecalePasimony_vmap2_bychr_bysub.txt"; //有害突变文件
-        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/001_additiveDeleterious_synonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr_bysub.txt"; //同义突变文件
+//        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/004_additiveDeleterious_nonsynGERPandDerivedSIFT_ANCbarleyVSsecalePasimony_vmap2_bychr_bysub.txt"; //有害突变文件
+//        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/001_additiveDeleterious_synonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr_bysub.txt"; //同义突变文件
+
+
+        ////////////////////////// ********************** 纯杂合分子 ********************* /////////////////////////////////
+        /**
+         * 把所有杂合子都去掉，只分析纯合状态下，所有是纯合子，分母也是纯合子的load的高低情况
+         */
+        //****** by taxa ******
+        //nonsyn/syn
+//        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/006_homo_nonsynonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr_bysub_mergeByTaxa.txt"; //同义突变文件
+//                String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/005_homo_synonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr_bysub_mergeByTaxa.txt"; //有害突变文件
+
+        //del/syn
+                String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/007_homo_nonsynGERPandDerivedSIFT_ANCbarleyVSsecalePasimony_vmap2_bychr_bysub_mergeByTaxa.txt"; //有害突变文件
+        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/005_homo_synonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr_bysub_mergeByTaxa.txt"; //同义突变文件
+
+        //****** by sub ******
+        //nonsyn/syn
+//                String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/006_homo_nonsynonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr_bysub.txt"; //有害突变文件
+//        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/005_homo_synonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr_bysub.txt"; //同义突变文件
+
+        //del/syn
+//                String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/007_homo_nonsynGERPandDerivedSIFT_ANCbarleyVSsecalePasimony_vmap2_bychr_bysub.txt"; //有害突变文件
+//        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/005_homo_synonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr_bysub.txt"; //同义突变文件
+
+
+        /**
+         * 分析纯纯纯纯纯合状态下，load的高低情况,分母是所有该类突变基因型在这个个体中的计数
+         */
+        //########### 大麦和黑麦简约法 VMap2.0-2020 2020-07-21 增加 derived sift 结果
+        //****** by taxa ******
+        //nonsyn/syn
+//        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/homoAndHeter/002_homoTotal_nonsynonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr_bysub_mergeByTaxa.txt"; //有害突变文件
+//        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/homoAndHeter/001_homoTotal_synonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr_bysub_mergeByTaxa.txt"; //同义突变文件
+        // del/syn
+//        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/homoAndHeter/003_homoTotal_nonsynGERPandDerivedSIFT_ANCbarleyVSsecaleParsimony_vmap2_bychr_bysub_mergeByTaxa.txt"; //有害突变文件
+//        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/homoAndHeter/001_homoTotal_synonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr_bysub_mergeByTaxa.txt"; //同义突变文件
+
+
+        //****** by sub ******
+        //nonsyn/syn
+//        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/homoAndHeter/002_homoTotal_nonsynonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr_bysub.txt"; //有害突变文件
+//        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/homoAndHeter/001_homoTotal_synonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr_bysub.txt"; //同义突变文件
+        // del/syn
+//        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/homoAndHeter/003_homoTotal_nonsynGERPandDerivedSIFT_ANCbarleyVSsecaleParsimony_vmap2_bychr_bysub.txt"; //有害突变文件
+//        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/homoAndHeter/001_homoTotal_synonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr_bysub.txt"; //同义突变文件
+
+
+        /**
+         * 分析杂杂杂杂杂杂杂杂合状态下，load的高低情况,分母是所有该类突变基因型在这个个体中的计数
+         */
+
+        //****** by taxa ******
+        //nonsyn/syn
+//        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/homoAndHeter/006_heterTotal_nonsynonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr_bysub_mergeByTaxa.txt"; //有害突变文件
+//        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/homoAndHeter/005_heterTotal_synonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr_bysub_mergeByTaxa.txt"; //同义突变文件
+        //del/syn
+//                String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/homoAndHeter/007_heterTotal_nonsynGERPandDerivedSIFT_ANCbarleyVSsecaleParsimony_vmap2_bychr_bysub_mergeByTaxa.txt"; //有害突变文件
+//        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/homoAndHeter/005_heterTotal_synonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr_bysub_mergeByTaxa.txt"; //同义突变文件
+
+
+        //****** by sub ******
+        //nonsyn/syn
+//        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/homoAndHeter/006_heterTotal_nonsynonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr_bysub.txt"; //有害突变文件
+//        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/homoAndHeter/005_heterTotal_synonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr_bysub.txt"; //同义突变文件
+        //del/syn
+//        String infileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/homoAndHeter/007_heterTotal_nonsynGERPandDerivedSIFT_ANCbarleyVSsecaleParsimony_vmap2_bychr_bysub.txt"; //有害突变文件
+//        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/homoAndHeter/005_heterTotal_synonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr_bysub.txt"; //同义突变文件
+
+
 
 
 
         String outfileS = new File(infileS1).getAbsolutePath().replaceFirst(".txt","_delVSsynonymous.txt");
         AoFile.readheader(infileS1);
 
-        TDoubleArrayList del = AoFile.getTDoubleList(infileS1,7); //bySub的情况
-        TDoubleArrayList syn = AoFile.getTDoubleList(infileS2,7); //bySub的情况
-        TDoubleArrayList delcount = AoFile.getTDoubleList(infileS1,2); //bySub的情况
-        TDoubleArrayList syncount = AoFile.getTDoubleList(infileS2,2); //bySub的情况
+//        TDoubleArrayList del = AoFile.getTDoubleList(infileS1,7); //bySub的情况
+//        TDoubleArrayList syn = AoFile.getTDoubleList(infileS2,7); //bySub的情况
+//        TDoubleArrayList delcount = AoFile.getTDoubleList(infileS1,2); //bySub的情况
+//        TDoubleArrayList syncount = AoFile.getTDoubleList(infileS2,2); //bySub的情况
 
-
-
-//        TDoubleArrayList del = AoFile.getTDoubleList(infileS1,6); //byTaxa的情况
-//        TDoubleArrayList syn = AoFile.getTDoubleList(infileS2,6); //byTaxa的情况
-//        TDoubleArrayList delcount = AoFile.getTDoubleList(infileS1,1); //byTaxa的情况
-//        TDoubleArrayList syncount = AoFile.getTDoubleList(infileS2,1); //byTaxa的情况
+        TDoubleArrayList del = AoFile.getTDoubleList(infileS1,6); //byTaxa的情况
+        TDoubleArrayList syn = AoFile.getTDoubleList(infileS2,6); //byTaxa的情况
+        TDoubleArrayList delcount = AoFile.getTDoubleList(infileS1,1); //byTaxa的情况
+        TDoubleArrayList syncount = AoFile.getTDoubleList(infileS2,1); //byTaxa的情况
 
         TDoubleArrayList ratioList = new TDoubleArrayList(del.size());
         for (int i = 0; i < del.size(); i++) {
@@ -935,8 +1003,14 @@ public class DeleteriousCountbyIndi {
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT";
 //        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/014_VMap2.1DelCount_derivedSIFT_filterLR_CL";
 
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/015_IBSdistanceAdjust/002_addIBS";
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/015_IBSdistanceAdjust/003_filterLR";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/015_IBSdistanceAdjust/002_addIBS";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/015_IBSdistanceAdjust/003_filterLR";
+
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/homoAndHeter";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/014_VMap2.1DelCount_derivedSIFT_filterLR_CL/homoAndHeter_filterLR";
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/014_VMap2.1DelCount_derivedSIFT_filterLR_CL";
 
 
         String taxaSummaryFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/taxa_InfoDB.txt";

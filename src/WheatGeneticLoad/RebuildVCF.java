@@ -26,7 +26,7 @@ public class RebuildVCF {
 //        this.densityFilter();
 //        this.mkReliableGenotypeSite();
 //        this.mkReliableIntersection();
-//        this.intersectionCheck();
+        this.intersectionCheck();
 
 
 //        this.addReliableGroupfromSample();
