@@ -25,7 +25,7 @@ public class DeleteriousCountbyIndi {
 
     public DeleteriousCountbyIndi(){
 
-        this.countDeleteriousVMapII_byChr();
+//        this.countDeleteriousVMapII_byChr();
 //        this.DeltoSynonymousRatio();
 //        this.filterLandrace();
 
@@ -39,6 +39,9 @@ public class DeleteriousCountbyIndi {
 //        this.addGrouptoCorrelationFile();
 //        this.addNewGrouptoLoadFile();
 
+        this.countDeleteriousVMapII_byChr_onlyHomo();
+//        this.test();
+
         /**
          * ******** 计算个体load的时候，只看纯合子。 遇到杂合子就跳过
          */
@@ -46,12 +49,18 @@ public class DeleteriousCountbyIndi {
 
     }
 
-
     //************************************************************************************ BEGIN ********************************************************************************************
 
     /**
      * 计算所有区域的mutation burden
      * 一共有 5 步
+     *
+     * 程序运行说明：每次运行程序，需更改的内容有：
+     * 1.输出文件类型  是同义 非同义 有害
+     * 2.判断条件
+     * 3.数据库中对应的index要核查
+     *
+     * 4.程序运行完毕后，需将结果进行核验，确保万无一失，再进行画图。
      */
     public void countDeleteriousVMapII_byChr_onlyHomo() {
         //######## 需要修改 ########//
@@ -78,22 +87,52 @@ public class DeleteriousCountbyIndi {
         //########### 大麦和黑麦简约法 ******* VMap2.0-2020 *********** 加上Derived SIFT的数据库 2020-07-21 ################
 
         //###### synonymous
-//        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/001_additiveDeleterious_synonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr.txt";
-//        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/001_recessiveDeleterious_synonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr.txt";
+//        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/005_homo_synonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr.txt";
+//        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/005_homo_synonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr.txt";
 
         //###### non-synonymous
-//        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/002_additiveDeleterious_nonsynonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr.txt";
-//        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/002_recessiveDeleterious_nonsynonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr.txt";
+//        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/006_homo_nonsynonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr.txt";
+//        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/006_homo_nonsynonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr.txt";
 
-        //###### deleterious by GERP and derived SIFT
-        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/004_additiveDeleterious_nonsynGERPandDerivedSIFT_ANCbarleyVSsecalePasimony_vmap2_bychr.txt"; //指的是非同义突变，并且GERP大于1,SIFT<0.05的条件
-        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/004_recessiveDeleterious_nonsynGERPandDerivedSIFT_ANCbarleyVSsecalePasimony_vmap2_bychr.txt"; //指的是非同义突变，并且GERP大于1,SIFT<0.05的条件
+        //###### deleterious by GERP and derived SIFT (分子是有害突变的纯合子计数， 分母是该位点在全基因组是有害突变，并且有基因型，并且是纯合子)
+//        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/007_homo_nonsynGERPandDerivedSIFT_ANCbarleyVSsecalePasimony_vmap2_bychr.txt"; //指的是非同义突变，并且GERP大于1,SIFT<0.05的条件
+//        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/007_homo_recessive_nonsynGERPandDerivedSIFT_ANCbarleyVSsecalePasimony_vmap2_bychr.txt"; //指的是非同义突变，并且GERP大于1,SIFT<0.05的条件
+
+
+
+        //########### 大麦和黑麦简约法 ******* VMap2.0-2020 *********** 加上Derived SIFT的数据库 2020-07-21 ################ 分母是该类型的突变有基因型，分子是纯合
+
+        //###### synonymous
+//        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/homoAndHeter/001_homoTotal_synonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr.txt";
+//        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/homoAndHeter/001_homoTotal_synonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr.txt";
+
+        //###### non-synonymous
+//        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/homoAndHeter/001_homoTotal_nonsynonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr.txt";
+//        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/homoAndHeter/001_homoTotal_nonsynonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr.txt";
+
+        //###### deleterious by GERP and derived SIFT (分子是有害突变的纯合子计数， 分母是该位点在全基因组是有害突变，并且有基因型，并且是纯合子)
+//        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/homoAndHeter/003_homoTotal_nonsynGERPandDerivedSIFT_ANCbarleyVSsecaleParsimony_vmap2_bychr.txt";
+//        String recCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/homoAndHeter/003_homoTotal_nonsynGERPandDerivedSIFT_ANCbarleyVSsecaleParsimony_vmap2_bychr.txt";
+
+
+        ////########### 大麦和黑麦简约法 ******* VMap2.0-2020 *********** 加上Derived SIFT的数据库 2020-07-21 ################ 分母是该类型的突变有基因型，分子是纯合
+
+        ////###### synonymous
+//        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/homoAndHeter/005_heterTotal_synonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr.txt";
+
+//        //###### non-synonymous
+//        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/homoAndHeter/006_heterTotal_nonsynonymous_ANCbarleyVSsecaleParsimony_vmap2_bychr.txt";
+//
+//        //###### deleterious by GERP and derived SIFT (分子是有害突变的纯合子计数， 分母是该位点在全基因组是有害突变，并且有基因型，并且是纯合子)
+        String addCountFileAddGroupS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/013_VMap2.1DelCount_derivedSIFT/homoAndHeter/007_heterTotal_nonsynGERPandDerivedSIFT_ANCbarleyVSsecaleParsimony_vmap2_bychr.txt";
+
+
+
 
 
 //************* 无需修改的路径 ****************** //
         String addCountFileS = new File(addCountFileAddGroupS).getAbsolutePath().replaceFirst(".txt",".temp.txt"); //有害变异加性模型输出文件
-        String recCountFileS = new File(recCountFileAddGroupS).getAbsolutePath().replaceFirst(".txt",".temp.txt"); //有害变异隐形模型输出文件
-
+//
 
         /**
          *  ################################### step1: 初始化染色体集合
@@ -297,6 +336,13 @@ public class DeleteriousCountbyIndi {
                             lll = PStringUtils.fastSplit(ll.get(0), "/"); //这里lll指的是基因型GT，lll被重新赋值，之前代表的是AD
                             int v1 = Integer.valueOf(lll.get(0)); //v1等于 ref
                             int v2 = Integer.valueOf(lll.get(1)); // v2 等于 alt
+
+                            /**
+                             * 添加一步杂合子过滤
+                             *
+                             */
+//                            if (ll.get(0).equals("0/1")) continue;
+
                             int sum = 0;
                             //如果ref是derived allele，那么idx[0]=0;idx[1]=1. 当是0/0时，sum=2; 0/1时，sum=1; 1/1时， sum=0.
                             //如果alt是derived allele，那么idx[0]=1;idx[1]=0. 当是0/0时，sum=0; 0/1时，sum=1; 1/1时， sum=2.
@@ -309,11 +355,13 @@ public class DeleteriousCountbyIndi {
                                 sum++;
                             }
                             if (sum == 0) {
+//                                siteWithMinDepthCount[chrIndex][taxaIndex]++; //taxa有多少个有害突变位点
+
                             } else if (sum == 1) {
                                 addCount[chrIndex][taxaIndex] += 0.5;
-                            } else {
-                                addCount[chrIndex][taxaIndex] += 1;
-                                recCount[chrIndex][taxaIndex] += 1;
+                            } else if (sum ==2){
+//                                addCount[chrIndex][taxaIndex] += 1;
+//                                siteWithMinDepthCount[chrIndex][taxaIndex]++; //taxa有多少个有害突变位点
                             }
                             siteWithMinDepthCount[chrIndex][taxaIndex]++; //taxa有多少个有害突变位点
                         }
@@ -342,20 +390,7 @@ public class DeleteriousCountbyIndi {
             for (int i = 0; i < addCount.length; i++) { //第一层是染色体号
                 String chr = String.valueOf(i + 1);
                 for (int j = 0; j < addCount[0].length; j++) { //第二层是该号染色体的有害变异个数
-                    bw.write(taxa[j] + "\t" + chr + "\t" + String.valueOf(addCount[i][j]) + "\t" + String.valueOf(siteWithMinDepthCount[i][j]));
-                    bw.newLine();
-                }
-            }
-            bw.flush();
-            bw.close();
-
-            bw = IOUtils.getTextWriter(recCountFileS);
-            bw.write("Taxa\tChr\tDeleteriousCountPerHaplotype\tSiteCountWithMinDepth"); //每个taxa有多少个加性效应的derivedAllele 每个taxa在del库中含有基因型的个数
-            bw.newLine();
-            for (int i = 0; i < addCount.length; i++) {
-                String chr = String.valueOf(i + 1);
-                for (int j = 0; j < addCount[0].length; j++) {
-                    bw.write(taxa[j] + "\t" + chr + "\t" + String.valueOf(recCount[i][j]) + "\t" + String.valueOf(siteWithMinDepthCount[i][j]));
+                    bw.write(taxa[j] + "\t" + chr + "\t" + addCount[i][j] + "\t" + siteWithMinDepthCount[i][j]);
                     bw.newLine();
                 }
             }
@@ -422,7 +457,6 @@ public class DeleteriousCountbyIndi {
             System.out.println("Now begin to merge final file by subgenome.");
             this.mergeFinalfilebySub(addCountFileAddGroupS); //##################### 重点！！！！！！合并文件！！！！！
             new File(addCountFileS).delete();
-            new File(recCountFileS).delete();
         }
         catch(Exception e){
             e.printStackTrace();
