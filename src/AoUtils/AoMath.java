@@ -5,6 +5,7 @@
  */
 package AoUtils;
 
+import com.sun.tools.javac.code.Lint;
 import gnu.trove.list.array.TDoubleArrayList;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import java.io.BufferedReader;
@@ -23,6 +24,97 @@ public class AoMath {
 
     public AoMath() {
 
+    }
+
+    /**
+     * 获取一个表格中，第1列分类下的，第2列的每个分类的set
+     * 例如：一个表格有10行
+     * 第一列包含3个因子：AABBDD AABB DD
+     * 第4列
+     */
+    public void getnlevelsforEachGroup(String infileS, int group1ColumnIndex, int group2ColumnIndex){
+        //第一步：获取第一列的set集合
+        List<String> lset1 = AoFile.getStringListbySet(infileS,group1ColumnIndex); //代表set转化而成的集合
+        List<String> lset2 = AoFile.getStringListbySet(infileS,group2ColumnIndex); //代表set转化而成的集合
+        System.out.println("******** The " + group1ColumnIndex + " column with factor " + lset1.size());
+        System.out.println("******** The " + group2ColumnIndex + " column with factor " + lset2.size());
+        //第二步：打印每一列含有的因子
+        for (int i = 0; i < lset1.size(); i++) {
+            System.out.print(lset1.get(i) + "\t");
+        }
+        System.out.println("");
+        for (int i = 0; i < lset2.size(); i++) {
+            System.out.print(lset2.get(i) + "\t");
+        }
+        System.out.println("");
+        //第三步：获取第一列每个因子包含的集合
+
+        int[][] sum = new int[lset2.size()][lset1.size()];
+        try{
+            BufferedReader br = AoFile.readFile(infileS);
+            String temp = null;
+            String header = br.readLine();
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+                String element1 = l.get(group1ColumnIndex);
+                String element2 = l.get(group2ColumnIndex);
+                int index1 = Collections.binarySearch(lset1,element1);
+                int index2 = Collections.binarySearch(lset2,element2);
+                sum[index2][index1]++;
+            }
+            br.close();
+
+            //写出文件
+            System.out.println("*******************************************************");
+            System.out.println("************** start to write the table ***************");
+            System.out.println("*******************************************************");
+
+            //以下是横表，比较长，不实用。
+//            System.out.print("sum");
+//            for (int i = 0; i < lset2.size(); i++) {
+//                System.out.print("\t" + lset2.get(i));
+//            }
+//            System.out.println("\tNlevel");
+//
+//            //统计每行的不是0的因子个数
+//            for (int i = 0; i < lset1.size(); i++) {
+//                System.out.print(lset1.get(i));
+//                int numfactor = 0;
+//                for (int j = 0; j < lset2.size(); j++) {
+//                    System.out.print("\t" + sum[i][j]);
+//                    if (sum[i][j] !=0) numfactor++;
+//                }
+//                System.out.println("\t" + numfactor);
+//            }
+
+            //以下是长表，比较短，实用。
+            int[] numfactor = new int[lset1.size()];
+            System.out.print("sum");
+            for (int i = 0; i < lset1.size(); i++) {
+                System.out.print("\t" + lset1.get(i));
+            }
+            System.out.println("");
+
+            for (int i = 0; i < lset2.size(); i++) {
+                System.out.print(lset2.get(i));
+                for (int j = 0; j < lset1.size(); j++) {
+                    System.out.print("\t" + sum[i][j]);
+                    if (sum[i][j] !=0) numfactor[j]++;
+                }
+                System.out.println("");
+            }
+            System.out.print("Nlevel\t");
+            for (int i = 0; i < numfactor.length; i++) {
+                System.out.print(numfactor[i] + "\t");
+            }
+            System.out.println("");
+        }catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
     /**

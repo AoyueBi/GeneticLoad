@@ -1286,7 +1286,7 @@ public class AoFile {
                 cnt++;
             }
             br.close();
-            System.out.println("Total num in the list is    " + cnt + "\t" + out.size());
+            System.out.println("Total num in the list is"+ "\t" + out.size());
             Collections.sort(out);
         }
         catch (Exception e) {

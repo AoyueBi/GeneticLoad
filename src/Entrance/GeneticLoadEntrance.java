@@ -7,6 +7,7 @@ package Entrance;
 
 import Annotation.AnnotationCrossover;
 import AoUtils.AoFile;
+import AoUtils.AoMath;
 import AoUtils.CalVCF;
 import AoUtils.CountSites;
 import GermplasmInfo.GermplasmInfo;
@@ -42,12 +43,13 @@ public class GeneticLoadEntrance {
 
         //ternary plot analysis
 //        this.geneExpression();
-        this.rebuildVCF();
+//        this.rebuildVCF();
+        new AoMath().getnlevelsforEachGroup("/Users/Aoyue/project/wheatVMapII/001_germplasm/GermplasmDB/001_toFeiLu/wheatVMapII_germplasmInfo.txt",5,11);
 
     }
 
     public void rebuildVCF(){
-        new RebuildVCF();
+//        new RebuildVCF();
 //        new ScriptHapscanner2();
 //        new AoHeterozygosity();
 //        new  FilterVCF2();
@@ -60,13 +62,6 @@ public class GeneticLoadEntrance {
 
 //        new ScriptHapscanner2(); // 进行indel的hapscanner
 //        new  FilterVCF2();
-
-
-
-
-
-
-
 
     }
 
@@ -150,15 +145,7 @@ public class GeneticLoadEntrance {
         System.out.println("Aoyue Repository --- Here is the entrance of GeneticLoad!\n");
         System.out.println(new SimpleDateFormat().format(new Date()) + "\tbegin.");
 
-        String a="0.05";
-        float valueFloat=Float.parseFloat(a);
-        double valueDouble=Double.parseDouble(a);
-        if (valueDouble > 0.05){
-            System.out.println("valueDouble > 0.05");
-        }else {
-            System.out.println("valueDouble <= 0.05");
-        }
-//        new GeneticLoadEntrance();
+        new GeneticLoadEntrance();
 //        new GeneticLoadEntrance(args);
 //        new CountSites().filterSNPtoBi_parallel(args[0], args[1]);
 //        new FilterVCF2().filter_singleThread(args[0], args[1]);
