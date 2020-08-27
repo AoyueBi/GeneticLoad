@@ -1615,6 +1615,55 @@ public class AoFile {
         return l;
 
     }
+
+    /**
+     *
+     * @param infileS
+     */
+    public static List<String> getHeader(String infileS){
+        List<String> l = new ArrayList<>();
+        try {
+            BufferedReader br = null;
+            if (infileS.endsWith(".txt")) {
+                br = IOUtils.getTextReader(infileS);
+            } else if (infileS.endsWith(".txt.gz")) {
+                br = IOUtils.getTextGzipReader(infileS);
+            }
+            else if (infileS.endsWith(".vcf.gz")) {
+                br = IOUtils.getTextGzipReader(infileS);
+            }else if (infileS.endsWith(".vcf")) {
+                br = IOUtils.getTextReader(infileS);
+            }
+            else if (infileS.endsWith(".xls")) {
+                br = IOUtils.getTextReader(infileS);
+            }
+            else if (infileS.endsWith(".TAB")) {
+                br = IOUtils.getTextReader(infileS);
+            }
+            else if (infileS.endsWith(".tsv")) {
+                br = IOUtils.getTextReader(infileS);
+            }
+            else if (infileS.endsWith(".gz")) {
+                br = IOUtils.getTextGzipReader(infileS);
+            }
+            String temp = br.readLine();
+            l = PStringUtils.fastSplit(temp);
+            int cnt = -1;
+//            for (int i = 0; i < l.size(); i++) {
+//                System.out.println(String.valueOf(i) + "\t" + String.valueOf(l.get(i)));
+//            }
+
+            br.close();
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return l;
+
+    }
+
+
     /**
      *
      * @param infileS

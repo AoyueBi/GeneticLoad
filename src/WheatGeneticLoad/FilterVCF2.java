@@ -54,7 +54,7 @@ public class FilterVCF2 {
 //        CountSites.mergeChr1and2txt_int("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/029_countSiteSummary/002_vmap2.0/log_043_countSitesinFastCallformat_fixVMap2.0_20200601.txt","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/029_countSiteSummary/002_vmap2.0/CountVariants_fixVMap2.0_202006.txt");
 //        CountSites.mergeChr1and2txt_int("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/029_countSiteSummary/002_vmap2.0/log_043_countSitesinFastCallformat_fixVMap2.0_20200604.txt","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/029_countSiteSummary/002_vmap2.0/CountVariants_fixVMap2.0_202006.txt");
 
-        this.bgzip();
+//        this.bgzip();
 //        this.sortTaxaName();
 
         /**
@@ -70,7 +70,7 @@ public class FilterVCF2 {
 
 //        this.mkDepthOfVMapII(); //计算taxa的深度
 //        this.mkDepthSummary();
-//        this.mergeTaxaDepth();
+        this.mergeTaxaDepth();
 //        this.calSite();
 
 //        this.getMergedSubsetVCF_Hexaploid();
@@ -695,11 +695,11 @@ public class FilterVCF2 {
 //        String taxaDepthDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/004_taxaDepth/ab";
 //        String taxaSummaryFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/004_taxaDepth/taxaDepth_ab.summary.txt";
 
-//        String taxaDepthDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/004_taxaDepth/d";
-//        String taxaSummaryFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/004_taxaDepth/taxaDepth_d.summary.txt";
+        String taxaDepthDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/004_taxaDepth/d";
+        String taxaSummaryFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/004_taxaDepth/taxaDepth_d.summary.txt";
 
-        String taxaDepthDirS = "/Users/Aoyue/Downloads/d";
-        String taxaSummaryFileS = "/Users/Aoyue/Downloads/d/taxaDepth_d.summary.txt";
+//        String taxaDepthDirS = "/Users/Aoyue/Downloads/d";
+//        String taxaSummaryFileS = "/Users/Aoyue/Downloads/d/taxaDepth_d.summary.txt";
 
         File[] fs = AoFile.getFileArrayInDir(taxaDepthDirS);
         Arrays.sort(fs);
@@ -734,11 +734,11 @@ public class FilterVCF2 {
 //        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/001_subsetVCF/ABsubgenome_tetra.vcf.gz";
 //        String taxaDepthDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/004_taxaDepth/ab";
 
-//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/001_subsetVCF/Dsubgenome_diploid.vcf.gz";
-//        String taxaDepthDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/004_taxaDepth/d";
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/001_subsetVCF/Dsubgenome_diploid.vcf.gz";
+        String taxaDepthDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/004_taxaDepth/d";
 
-        String infileS = "/Users/Aoyue/Downloads/chr005_subset.vcf.gz";
-        String taxaDepthDirS = "/Users/Aoyue/Downloads/d";
+//        String infileS = "/Users/Aoyue/Downloads/chr005_subset.vcf.gz";
+//        String taxaDepthDirS = "/Users/Aoyue/Downloads/d";
 
 
         try {

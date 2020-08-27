@@ -43,8 +43,9 @@ public class GeneticLoadEntrance {
 
         //ternary plot analysis
 //        this.geneExpression();
-//        this.rebuildVCF();
-        new AoMath().getnlevelsforEachGroup("/Users/Aoyue/project/wheatVMapII/001_germplasm/GermplasmDB/001_toFeiLu/wheatVMapII_germplasmInfo.txt",5,11);
+        this.rebuildVCF();
+
+//        new AoMath().getnlevelsforEachGroup("/Users/Aoyue/project/wheatVMapII/001_germplasm/GermplasmDB/001_toFeiLu/wheatVMapII_germplasmInfo.txt",5,11);
 
     }
 
@@ -62,6 +63,10 @@ public class GeneticLoadEntrance {
 
 //        new ScriptHapscanner2(); // 进行indel的hapscanner
 //        new  FilterVCF2();
+
+        new AoWheatTriads();
+
+
 
     }
 
