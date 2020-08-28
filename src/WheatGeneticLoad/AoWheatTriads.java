@@ -16,7 +16,7 @@ import java.util.*;
 public class AoWheatTriads {
 
     public AoWheatTriads(){
-        this.transformTriadsTable();
+        this.transformTriadsTable(); //for heatmap
 
     }
 
@@ -105,20 +105,34 @@ public class AoWheatTriads {
     /**
      * 所有以1开头 以2开头的文件，横向合并起来
      */
-    public void step3(){
+    public void step3(String infileDirS, String outfileDirS){
+//        String infileDirS = "";
+//        String outfileDirS = "";
+
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/001_sourceData/002_transform";
 //        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/001_sourceData/003_mergeByrowByChr";
 
 
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/003_dataProcessingfrom002/003";
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/003_dataProcessingfrom002/004";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/003_dataProcessingfrom002/003";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/003_dataProcessingfrom002/004";
+
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/003_dataProcessingfrom002/VrnA1/003";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/003_dataProcessingfrom002/VrnA1/004";
+
+
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/003_dataProcessingfrom002/Q/003";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/003_dataProcessingfrom002/Q/004";
+
+
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/003_dataProcessingfrom002/TtBtr/003";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/003_dataProcessingfrom002/TtBtr/004";
 
         File[] fsall = AoFile.getFileArrayInDir(infileDirS);
 
         Set<String> chrSet = new HashSet<>();
         for (int i = 0; i < fsall.length; i++) {
             File f = fsall[i];
-            String c = f.getName().substring(0,1);
+            String c = f.getName().substring(0,1); //获取染色体号
             chrSet.add(c);
         }
         //获取含有的染色体号
@@ -132,15 +146,25 @@ public class AoWheatTriads {
         }
     }
 
-    public void step2(){
-        //        String infileDirS = "";
+    public void step2(String infileDirS, String outfileDirS){
+//        String infileDirS = "";
 //        String outfileDirS = "";
 
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/001_sourceData/001_split";
 //        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/001_sourceData/002_transform";
 
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/003_dataProcessingfrom002/002";
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/003_dataProcessingfrom002/003";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/003_dataProcessingfrom002/002";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/003_dataProcessingfrom002/003";
+
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/003_dataProcessingfrom002/VrnA1/002";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/003_dataProcessingfrom002/VrnA1/003";
+
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/003_dataProcessingfrom002/Q/002";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/003_dataProcessingfrom002/Q/003";
+
+//                String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/003_dataProcessingfrom002/TtBtr/002";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/003_dataProcessingfrom002/TtBtr/003";
+
 
         File[] fs = AoFile.getFileArrayInDir(infileDirS);
         Arrays.sort(fs);
@@ -153,7 +177,6 @@ public class AoWheatTriads {
                 BufferedWriter bw = AoFile.writeFile(outfileS);
                 String sub = fs[i].getName().substring(1,2);
                 System.out.println("dealing with " + sub);
-
 
                 int column = AoFile.countFileColumnNumber(infileS); //获取列数
                 HashMap<Integer,String>[] hmArray = new HashMap[column-3]; //根据列数，建立pos taxa 对应的 HashMap
@@ -187,7 +210,7 @@ public class AoWheatTriads {
                 //开始写文件
                 //写表头
                 List<Integer> lpos = new ArrayList<>(hmArray[0].keySet());
-                Collections.sort(lpos);
+//                Collections.sort(lpos);
                 bw.write("Sub\tTaxa");
                 for (int j = 0; j < lpos.size(); j++) {
                     bw.write("\t" + lpos.get(j));
@@ -198,7 +221,7 @@ public class AoWheatTriads {
                 for (int j = 0; j < taxaArray.length; j++) {
                     String taxa = taxaArray[j];
                     bw.write(sub + "\t" + taxa);
-                    for (int k = 0; k < lpos.size(); k++) {
+                    for (int k = 0; k < lpos.size(); k++) { //数据转置
                         String test = hmArray[j].get(k);
                         bw.write("\t" + hmArray[j].get(lpos.get(k)));
                     }
@@ -215,7 +238,7 @@ public class AoWheatTriads {
     }
 
 
-    public void step1(){
+    public void step1(String infileS, String outfileDirS){
 
 //        String infileS = "";
 //        String outfileDirS = "";
@@ -227,8 +250,14 @@ public class AoWheatTriads {
 //            String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/003_dataProcessingfrom002/001/PpdA1.txt";
 //            String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/003_dataProcessingfrom002/002";
 
-            String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/003_dataProcessingfrom002/VrnA1/001/VrnA1.txt";
-            String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/003_dataProcessingfrom002/VrnA1/002";
+//            String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/003_dataProcessingfrom002/VrnA1/001/VrnA1.txt";
+//            String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/003_dataProcessingfrom002/VrnA1/002";
+
+//                    String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/003_dataProcessingfrom002/Q/001/Q.txt";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/003_dataProcessingfrom002/Q/002";
+
+//                    String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/003_dataProcessingfrom002/TtBtr/001/TtBtrA1A2.txt";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/003_dataProcessingfrom002/TtBtr/002";
 
             List<String> lchr = AoFile.getStringListbySet(infileS,0);
             String[] chrArray = lchr.toArray(new String[lchr.size()]);
@@ -260,9 +289,6 @@ public class AoWheatTriads {
                 bws[i].close();
             }
 
-
-            //************** step2
-
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
@@ -271,9 +297,21 @@ public class AoWheatTriads {
 
     public void transformTriadsTable(){
 
-        this.step1();
-//        this.step2();
-//        this.step3();
+//        String infileS = "";
+//        String outfileDirS = "";
+
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/002_ImportantGeneBlock/Q.txt";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/003_dataProcessingfrom002/test";
+        String[] outfileSS = new String[3];
+        for (int i = 0; i < outfileSS.length; i++) {
+            String dir = PStringUtils.getNDigitNumber(3,i+1);
+            outfileSS[i] = new File(outfileDirS,dir).getAbsolutePath();
+            new File(outfileSS[i]).mkdirs();
+        }
+
+        this.step1(infileS,outfileSS[0]); //将文件按照染色体一条一条拆分
+        this.step2(outfileSS[0],outfileSS[1]); //转置，并只取起始位置
+        this.step3(outfileSS[1],outfileSS[2]); //将文件根据染色体号进行合并，自动判断有几条染色体就合并成几个文件
 
 //        this.step4();
 //        this.step5();
