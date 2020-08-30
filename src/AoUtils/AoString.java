@@ -43,6 +43,14 @@ public class AoString {
         return out;
     }
 
+
+    /**
+     * 根据基因的名字获取染色体信息 //TraesCS1D02G011700
+     * @param gene
+     * @return
+     */
+    public static String getChrFromGene(String gene){ return gene.substring(7,9);}
+
     /**
      * 根据转录本的名字获取亚基因组信息 //TraesCS1A02G001800.1
      * @param gene

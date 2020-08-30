@@ -1,6 +1,9 @@
 package WheatGeneticLoad;
 
 import AoUtils.AoFile;
+import AoUtils.AoString;
+import pgl.infra.anno.gene.GeneFeature;
+import pgl.infra.table.RowTable;
 import pgl.infra.utils.IOUtils;
 import pgl.infra.utils.PStringUtils;
 
@@ -16,8 +19,40 @@ import java.util.*;
 public class AoWheatTriads {
 
     public AoWheatTriads(){
-        this.transformTriadsTable(); //for heatmap
+//        this.transformTriadsTable(); //for heatmap
+        this.getGeneInfo();
 
+    }
+
+    /**
+     * 为了将 del中是有害突变的杂合子在染色体上展示出来，特意提取heter信息，并整合做所需的文件
+     * gene chrom start end count
+     */
+    public void getGeneInfo(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/004_eachGenewithPos/001_/001_del_heter_annotation.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/004_eachGenewithPos/001_/002_del_heter_annotation.txt";
+        String geneFeatureFileS = "/Users/Aoyue/Documents/Data/wheat/gene/v1.1/wheat_v1.1_Lulab.pgf";
+        GeneFeature gf = new GeneFeature(geneFeatureFileS);
+        gf.sortGeneByName();
+        RowTable<String> t = new RowTable<>(infileS);
+
+        try{
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            for (int i = 0; i < t.getRowNumber(); i++) {
+                String gene = t.getCell(i,0);
+                String count = t.getCell(i,1);
+                int geneindex = gf.getGeneIndex(gene);
+                int start = gf.getGeneStart(geneindex);
+                int end = gf.getGeneEnd(geneindex);
+                String chr = AoString.getChrFromGene(gene);
+                bw.write(gene + "\t" + chr + "\t" + start + "\t" + end + "\t" + count); bw.newLine();
+            }
+            bw.flush();
+            bw.close();
+        }catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
     /**
