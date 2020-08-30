@@ -26,10 +26,10 @@ public class RebuildVCF {
 //        this.densityFilter();
 //        this.mkReliableGenotypeSite();
 //        this.mkReliableIntersection();
-        this.intersectionCheck();
+//        this.intersectionCheck();
 
 
-//        this.addReliableGroupfromSample();
+        this.addReliableGroupfromSample();
 //        this.addReliableInsecterGroupfromSample();
 //        this.mergeTxt2();
 
