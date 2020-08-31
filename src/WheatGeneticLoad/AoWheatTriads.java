@@ -1,11 +1,13 @@
 package WheatGeneticLoad;
 
 import AoUtils.AoFile;
+import AoUtils.AoMath;
 import AoUtils.AoString;
 import pgl.infra.anno.gene.GeneFeature;
 import pgl.infra.table.RowTable;
 import pgl.infra.utils.IOUtils;
 import pgl.infra.utils.PStringUtils;
+import pgl.infra.utils.wheat.RefV1Utils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -20,17 +22,89 @@ public class AoWheatTriads {
 
     public AoWheatTriads(){
 //        this.transformTriadsTable(); //for heatmap
-        this.getGeneInfo();
+//        this.getGeneInfo();
+        this.getDelHeter();
+//        this.chromoMapInput();
 
+    }
+
+
+    public void chromoMapInput(){
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/004_eachGenewithPos/000_sourceData";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/004_eachGenewithPos/002";
+        List<File> fsList = AoFile.getFileListInDir(infileDirS);
+        AoFile.readheader("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/004_eachGenewithPos/000_sourceData/C1.triadpos.txt.gz");
+        System.out.println("hhh");
+
+        String geneFeatureFileS = "/Users/Aoyue/Documents/Data/wheat/gene/v1.1/wheat_v1.1_Lulab.pgf";
+        GeneFeature gf = new GeneFeature(geneFeatureFileS);
+        gf.sortGeneByName();
+        fsList.parallelStream().forEach(f -> {
+            try {
+                String infileS = f.getAbsolutePath();
+                String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + ".txt").getAbsolutePath();
+                BufferedReader br = AoFile.readFile(infileS);
+                BufferedWriter bw = AoFile.writeFile(outfileS);
+                String header = br.readLine();
+                String temp = null;
+                List<String> l = new ArrayList<>();
+                while ((temp = br.readLine()) != null) {
+                    l = PStringUtils.fastSplit(temp);
+                    String gene = l.get(2);
+                    String count = l.get(15);
+                    if (Integer.parseInt(count)==0) continue;
+                    int geneindex = gf.getGeneIndex(gene);
+                    int start=gf.getGeneStart(geneindex);
+                    int end = gf.getGeneEnd(geneindex);
+                    int chrID=gf.getGeneChromosome(geneindex);
+                    int refStart= RefV1Utils.getPosOnChromosome(chrID, start);
+                    int refEnd=RefV1Utils.getPosOnChromosome(chrID, end);
+                    String chr = AoString.getChrFromGene(gene);
+                    bw.write(gene + "\t" + chr + "\t" + refStart + "\t" + refEnd + "\t" + count); bw.newLine();
+                }
+                bw.flush();
+                bw.close();
+                br.close();
+                System.out.println(f.getName() + "\tis completed at " + outfileS);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    /**
+     * 检查杂合子在 1 2 3 4 5 6 7 分别含有多少个基因
+     */
+    public void getDelHeter(){
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/004_eachGenewithPos/001_/003_C1_heter.txt";
+//        String infileS ="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/004_eachGenewithPos/001_/001_del_heter_annotation.txt";
+//        AoMath.countCaseInGroup(infileS,9);
+//        AoMath.countCaseInGroup(infileS,1);
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/004_eachGenewithPos/002";
+        List<File> fsList = AoFile.getFileListInDir(infileDirS);
+        for (int i = 0; i < fsList.size(); i++) {
+            String infileS = fsList.get(i).getAbsolutePath();
+            AoMath.countCaseInGroup(infileS,4);
+            System.out.println(fsList.get(i).getName() + " done");
+        }
     }
 
     /**
      * 为了将 del中是有害突变的杂合子在染色体上展示出来，特意提取heter信息，并整合做所需的文件
      * gene chrom start end count
+     *
+     * 测试用！！！！！！！！1
+     *
+     * // 注意pgf文件是1-42格式的
      */
     public void getGeneInfo(){
         String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/004_eachGenewithPos/001_/001_del_heter_annotation.txt";
         String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/004_eachGenewithPos/001_/002_del_heter_annotation.txt";
+
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/004_eachGenewithPos/001_/003_C1_heter.txt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/037_Triads/004_eachGenewithPos/001_/004_C1_heter.txt";
+
         String geneFeatureFileS = "/Users/Aoyue/Documents/Data/wheat/gene/v1.1/wheat_v1.1_Lulab.pgf";
         GeneFeature gf = new GeneFeature(geneFeatureFileS);
         gf.sortGeneByName();
@@ -41,11 +115,15 @@ public class AoWheatTriads {
             for (int i = 0; i < t.getRowNumber(); i++) {
                 String gene = t.getCell(i,0);
                 String count = t.getCell(i,1);
+//                String count = t.getCell(i,9);
                 int geneindex = gf.getGeneIndex(gene);
-                int start = gf.getGeneStart(geneindex);
+                int start=gf.getGeneStart(geneindex);
                 int end = gf.getGeneEnd(geneindex);
+                int chrID=gf.getGeneChromosome(geneindex);
+                int refStart= RefV1Utils.getPosOnChromosome(chrID, start);
+                int refEnd=RefV1Utils.getPosOnChromosome(chrID, end);
                 String chr = AoString.getChrFromGene(gene);
-                bw.write(gene + "\t" + chr + "\t" + start + "\t" + end + "\t" + count); bw.newLine();
+                bw.write(gene + "\t" + chr + "\t" + refStart + "\t" + refEnd + "\t" + count); bw.newLine();
             }
             bw.flush();
             bw.close();

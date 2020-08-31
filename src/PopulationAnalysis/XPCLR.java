@@ -76,6 +76,18 @@ public class XPCLR {
 //        this.checkTopGeneDistribution();
 
 
+        /**
+         * **************************************** VMap2.0 new version calculation ********************************************************
+         */
+
+        this.start();
+
+
+    }
+
+
+    public void start(){
+        System.out.println("I miss you");
     }
 
     public void checkTopGeneDistribution(){

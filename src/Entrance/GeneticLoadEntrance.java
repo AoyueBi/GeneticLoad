@@ -15,6 +15,7 @@ import GermplasmInfo.TaxaDB;
 import Plot.PCA;
 import PopulationAnalysis.AoIntrogression;
 import PopulationAnalysis.DeleteriousCountbyPop;
+import PopulationAnalysis.XPCLR;
 import WheatGeneticLoad.*;
 import gnu.trove.list.array.TIntArrayList;
 import pgl.infra.dna.FastaBit;
@@ -64,7 +65,8 @@ public class GeneticLoadEntrance {
 //        new ScriptHapscanner2(); // 进行indel的hapscanner
 //        new  FilterVCF2();
 
-        new AoWheatTriads();
+//        new AoWheatTriads();
+        new XPCLR();
 
 
 
