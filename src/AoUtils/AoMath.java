@@ -38,7 +38,7 @@ public class AoMath {
         for ( double value: values ) {
             double stdscore = (value-mean)/sd;
             valuez.add(stdscore);
-//            double sf = 1.0 - nd.cumulativeProbability(Math.abs(stdscore));
+//            double sf = 1.0 - nd.cumulativeProbability(Math.abs(stdscore)); //计算概率值
 //            System.out.println("" + stdscore + " " + sf);
         }
         out = valuez.toArray();

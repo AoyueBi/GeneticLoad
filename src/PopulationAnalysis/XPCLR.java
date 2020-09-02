@@ -81,11 +81,13 @@ public class XPCLR {
 
 //        this.checkAnnotationDBisinExonVCF(); //确定annotation的位点都在exonVCF中
 //        this.getExonVCFbyPloidy();
+
         this.mkSNPfile_hexaploid(); //分很多步骤
 //        this.mkSNPfile_tetraploid();
 
 //        this.checkLog();
-
+        //对exon位点数进行计数
+//        CountSites.countSites_singleStream("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/002_snp_file");
 //        this.getZScore();
 
 
@@ -97,7 +99,6 @@ public class XPCLR {
         double[] b = AoMath.ZScore(a);
         for (int i = 0; i < b.length; i++) {
             System.out.println(b[i]);
-
         }
     }
 
@@ -105,7 +106,7 @@ public class XPCLR {
      * 检查xpclr输出的结果中，是否都运行完毕
      */
     public void checkLog(){
-        String infileDirS = "/Users/Aoyue/Documents/007_log";
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/007_log";
         List<File> fsList = AoFile.getFileListInDir(infileDirS);
         fsList.parallelStream().forEach(f -> {
             try {
@@ -116,9 +117,10 @@ public class XPCLR {
                 String temp = null;
                 for (int i = 2; i < 8; i++) {
                     temp = br.readLine();
-                    if (i==7){
-                        System.out.println(chr + "\t" + temp);
-                    }
+                    System.out.println(temp);
+//                    if (i==7){
+//                        System.out.println(chr + "\t" + temp);
+//                    }
 
                 }
                 List<String> l = new ArrayList<>();
@@ -154,15 +156,17 @@ public class XPCLR {
         String outfileDirS4 = new File(outParentS,"004_merged003").getAbsolutePath(); new File(outfileDirS4).mkdirs();
         String outfileDirS5 = new File(outParentS,"005_genotype").getAbsolutePath();new File(outfileDirS5).mkdirs();
 
+
 //        this.step1_mkSNPfile(infileDirS,outfileDirS);
 //        this.step2_mkSNPfile(outfileDirS,outfileDirS2);
 
-        this.getSNPdensity_hexaploid(outfileDirS,outfileDirS3);
-        this.mergeTXT(outfileDirS3,outfileDirS4);
+//        this.getSNPdensity_hexaploid(outfileDirS,outfileDirS3);
+//        this.mergeTXT(outfileDirS3,outfileDirS4);
 
 //        this.getGenotype_parallele(infileDirS,pop1fileS,outfileDirS5);
 //        this.getGenotype_parallele(infileDirS,pop2fileS,outfileDirS5);
 //        this.getXPCLRscript("abd");
+        this.getXPCLRscript("ab");
 
 //        this.calDensity("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/001_chrPosRefAlt/chr042_exon_vmap2.1.pos.Base.txt.gz",1,2,100000,100000,"/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/001_chrPosRefAlt/chr042.txt");
     }
@@ -220,7 +224,7 @@ public class XPCLR {
             chrArr = new String[]{"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
             gwin = "0.0001";
             snpWin = "100";
-            gridSize = "100000";
+            gridSize = "2000";
             pop1 = "Cultivar";
             pop2 = "Landrace_EU";
             for (int j = 0; j < chrArr.length; j++) {
@@ -232,8 +236,8 @@ public class XPCLR {
                 String logS = new File(logDirS,new File(outfileS).getName().split(".gz")[0]+".log.txt").getAbsolutePath();
                 System.out.println("XPCLR -xpclr " + pop1fileS + " " + pop2fileS + " " +
                         snpInfoS + " " + outfileS + " -w1 " + gwin + " " + snpWin + " "+
-                        gridSize + " " + chr + " -p0 0.95" +
-                        " > " + logS + " &");
+                        gridSize + " " + chr + " -p0 0.95 " + " > " + logS + " &");
+
             }
         }
         else if (ploidy.equals("ab")){
@@ -245,7 +249,7 @@ public class XPCLR {
 
             gwin = "0.0001";
             snpWin = "100";
-            gridSize = "100000";
+            gridSize = "2000";
             pop1 = "Domesticated_emmer";
             pop2 = "Wild_emmer";
 
