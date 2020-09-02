@@ -7,6 +7,8 @@ package AoUtils;
 
 import com.sun.tools.javac.code.Lint;
 import gnu.trove.list.array.TDoubleArrayList;
+import org.apache.commons.math3.distribution.NormalDistribution;
+import org.apache.commons.math3.stat.StatUtils;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -24,6 +26,40 @@ public class AoMath {
 
     public AoMath() {
 
+    }
+
+    public static double[] ZScore(double[] values){
+        double[] out = new double[values.length];
+        TDoubleArrayList valuez = new TDoubleArrayList();
+        double variance = StatUtils.populationVariance(values);
+        double sd = Math.sqrt(variance);
+        double mean = StatUtils.mean(values);
+//        NormalDistribution nd = new NormalDistribution();
+        for ( double value: values ) {
+            double stdscore = (value-mean)/sd;
+            valuez.add(stdscore);
+//            double sf = 1.0 - nd.cumulativeProbability(Math.abs(stdscore));
+//            System.out.println("" + stdscore + " " + sf);
+        }
+        out = valuez.toArray();
+
+        return out;
+    }
+
+    /**
+     * 计算一组数据的z-score和p value
+     */
+    private void run() {
+        double[] values = {9967,11281,10752,10576,2366,11882,11798};
+        double variance = StatUtils.populationVariance(values);
+        double sd = Math.sqrt(variance);
+        double mean = StatUtils.mean(values);
+        NormalDistribution nd = new NormalDistribution();
+        for ( double value: values ) {
+            double stdscore = (value-mean)/sd;
+            double sf = 1.0 - nd.cumulativeProbability(Math.abs(stdscore));
+            System.out.println("" + stdscore + " " + sf);
+        }
     }
 
     /**

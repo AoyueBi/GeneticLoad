@@ -205,14 +205,6 @@ public class CalVCF {
         return out;
     }
 
-    public static void main(String[] args) {
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/016_exonVCF/chr001_exon_vmap2.1.vcf.gz";
-        String taxafileS ="/Users/Aoyue/Documents/taxa_test.txt";
-        String outfileS = "/Users/Aoyue/Documents/taxa_pos.vcf";
-        extractVCFchrPos(infileS, taxafileS);
-    }
-
-
     /**
      * 根据提供的taxa列表，从总的VCF文件中提取所需的 chr pos 文件，并对没有分离的位点进行去除,没有分离位点包括全部都是./.的位点
      *
@@ -617,7 +609,7 @@ public class CalVCF {
      * @param infileDirS
      * @param outfileDirS
      */
-    public void extractIDHapPosRefAlt(String infileDirS, String outfileDirS) {
+    public static void extractIDHapPosRefAlt(String infileDirS, String outfileDirS) {
 
         List<File> fsList = IOUtils.getVisibleFileListInDir(infileDirS);
         fsList.parallelStream().forEach(f -> {

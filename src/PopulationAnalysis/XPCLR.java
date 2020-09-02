@@ -1,8 +1,6 @@
 package PopulationAnalysis;
 
-import AoUtils.AoFile;
-import AoUtils.AoMath;
-import AoUtils.CountSites;
+import AoUtils.*;
 
 import analysis.wheat.VMap2.VMapDBUtils;
 import gnu.trove.list.TIntList;
@@ -15,6 +13,7 @@ import pgl.infra.utils.Dyad;
 import pgl.infra.utils.IOUtils;
 import pgl.infra.utils.PStringUtils;
 import pgl.infra.utils.wheat.RefV1Utils;
+import smile.stat.Stat;
 import tech.tablesaw.api.IntColumn;
 import tech.tablesaw.api.Table;
 
@@ -80,15 +79,522 @@ public class XPCLR {
          * **************************************** VMap2.0 new version calculation ********************************************************
          */
 
-        this.start();
+//        this.checkAnnotationDBisinExonVCF(); //确定annotation的位点都在exonVCF中
+//        this.getExonVCFbyPloidy();
+        this.mkSNPfile_hexaploid(); //分很多步骤
+//        this.mkSNPfile_tetraploid();
+
+//        this.checkLog();
+
+//        this.getZScore();
+
 
 
     }
 
+    public void getZScore(){
+        double[] a = {3,5,8,20,15,37};
+        double[] b = AoMath.ZScore(a);
+        for (int i = 0; i < b.length; i++) {
+            System.out.println(b[i]);
 
-    public void start(){
-        System.out.println("I miss you");
+        }
     }
+
+    /**
+     * 检查xpclr输出的结果中，是否都运行完毕
+     */
+    public void checkLog(){
+        String infileDirS = "/Users/Aoyue/Documents/007_log";
+        List<File> fsList = AoFile.getFileListInDir(infileDirS);
+        fsList.parallelStream().forEach(f -> {
+            try {
+                String infileS = f.getAbsolutePath();
+                String chr = f.getName().substring(3,6);
+                BufferedReader br = AoFile.readFile(infileS);
+                String header = br.readLine();
+                String temp = null;
+                for (int i = 2; i < 8; i++) {
+                    temp = br.readLine();
+                    if (i==7){
+                        System.out.println(chr + "\t" + temp);
+                    }
+
+                }
+                List<String> l = new ArrayList<>();
+                while ((temp = br.readLine()) != null) {
+                    l = PStringUtils.fastSplit(temp);
+
+                }
+                br.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+
+
+
+    /**
+     *
+     */
+    public void mkSNPfile_hexaploid(){
+
+        String pop1fileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/000_pop_bySubspecies/Cultivar.txt";//goal
+        String pop2fileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/000_pop_bySubspecies/Landrace_EU.txt"; //ref
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/000_exonVCF";
+        String outParentS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid";
+
+        //根据输出文件1，子目录输出
+        String outfileDirS = new File(outParentS,"001_chrPosRefAlt").getAbsolutePath(); new File(outfileDirS).mkdirs();
+        String outfileDirS2 = new File(outParentS,"002_snp_file").getAbsolutePath(); new File(outfileDirS2).mkdirs();
+        String outfileDirS3 = new File(outParentS,"003_calDensity").getAbsolutePath(); new File(outfileDirS3).mkdirs();
+        String outfileDirS4 = new File(outParentS,"004_merged003").getAbsolutePath(); new File(outfileDirS4).mkdirs();
+        String outfileDirS5 = new File(outParentS,"005_genotype").getAbsolutePath();new File(outfileDirS5).mkdirs();
+
+//        this.step1_mkSNPfile(infileDirS,outfileDirS);
+//        this.step2_mkSNPfile(outfileDirS,outfileDirS2);
+
+        this.getSNPdensity_hexaploid(outfileDirS,outfileDirS3);
+        this.mergeTXT(outfileDirS3,outfileDirS4);
+
+//        this.getGenotype_parallele(infileDirS,pop1fileS,outfileDirS5);
+//        this.getGenotype_parallele(infileDirS,pop2fileS,outfileDirS5);
+//        this.getXPCLRscript("abd");
+
+//        this.calDensity("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/001_chrPosRefAlt/chr042_exon_vmap2.1.pos.Base.txt.gz",1,2,100000,100000,"/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/001_chrPosRefAlt/chr042.txt");
+    }
+
+
+
+    /**
+     *
+     */
+    public void mkSNPfile_tetraploid(){
+        String pop1fileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/000_pop_bySubspecies/Domesticated_emmer.txt";//goal
+        String pop2fileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/000_pop_bySubspecies/Wild_emmer.txt"; //ref
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid/000_exonVCF";
+        String outParentS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid";
+
+        //根据输出文件1，子目录输出
+        String outfileDirS = new File(outParentS,"001_chrPosRefAlt").getAbsolutePath(); new File(outfileDirS).mkdirs();
+        String outfileDirS2 = new File(outParentS,"002_snp_file").getAbsolutePath(); new File(outfileDirS2).mkdirs();
+        String outfileDirS3 = new File(outParentS,"003_calDensity").getAbsolutePath(); new File(outfileDirS3).mkdirs();
+        String outfileDirS4 = new File(outParentS,"004_merged003").getAbsolutePath(); new File(outfileDirS4).mkdirs();
+        String outfileDirS5 = new File(outParentS,"005_genotype").getAbsolutePath();new File(outfileDirS5).mkdirs();
+
+
+//        this.step1_mkSNPfile(infileDirS,outfileDirS);
+//        this.step2_mkSNPfile(outfileDirS,outfileDirS2);
+//        this.getSNPdensity_tetraploid(outfileDirS,outfileDirS3);
+//        this.mergeTXT(outfileDirS3,outfileDirS4);
+//        this.getGenotype_parallele(infileDirS,pop1fileS,outfileDirS5);
+//        this.getGenotype_parallele(infileDirS,pop2fileS,outfileDirS5);
+        this.getXPCLRscript("ab");
+
+    }
+
+
+    public void getXPCLRscript(String ploidy){
+
+        String infileDirS = null;
+        String outfileDirS = null;
+        String snpInfoDirS = null;
+        String logDirS = null;
+        String[] chrArr;
+
+        String pop1 = null;
+        String pop2 = null;
+        String gwin = null;
+        String snpWin = null;
+        String gridSize = null;
+
+        if (ploidy.equals("abd")){
+            infileDirS = "/data4/home/aoyue/vmap2/analysis/030_XPCLR/004_hexaploid/005_genotype";
+            outfileDirS = "/data4/home/aoyue/vmap2/analysis/030_XPCLR/004_hexaploid/006_output";
+            snpInfoDirS = "/data4/home/aoyue/vmap2/analysis/030_XPCLR/004_hexaploid/002_snp_file";
+            logDirS = "/data4/home/aoyue/vmap2/analysis/030_XPCLR/004_hexaploid/007_log";
+            chrArr = new String[]{"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
+            gwin = "0.0001";
+            snpWin = "100";
+            gridSize = "100000";
+            pop1 = "Cultivar";
+            pop2 = "Landrace_EU";
+            for (int j = 0; j < chrArr.length; j++) {
+                int chr = Integer.parseInt(chrArr[j]);
+                String pop1fileS = new File(infileDirS,"chr" + chrArr[j] + "_exon_vmap2.1_" + pop1 + "_geno.txt").getAbsolutePath();
+                String pop2fileS = new File(infileDirS,"chr" + chrArr[j] + "_exon_vmap2.1_" + pop2 + "_geno.txt").getAbsolutePath();
+                String snpInfoS = new File(snpInfoDirS,"chr"+chrArr[j]+"_exon_vmap2.1.snp.txt").getAbsolutePath();
+                String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_" + pop1 + "_VS_" + pop2 + "_exonRegion_" + gwin + "_" + snpWin + "_" + gridSize).getAbsolutePath();
+                String logS = new File(logDirS,new File(outfileS).getName().split(".gz")[0]+".log.txt").getAbsolutePath();
+                System.out.println("XPCLR -xpclr " + pop1fileS + " " + pop2fileS + " " +
+                        snpInfoS + " " + outfileS + " -w1 " + gwin + " " + snpWin + " "+
+                        gridSize + " " + chr + " -p0 0.95" +
+                        " > " + logS + " &");
+            }
+        }
+        else if (ploidy.equals("ab")){
+            infileDirS = "/data4/home/aoyue/vmap2/analysis/030_XPCLR/005_tetraploid/005_genotype";
+            outfileDirS = "/data4/home/aoyue/vmap2/analysis/030_XPCLR/005_tetraploid/006_output";
+            snpInfoDirS = "/data4/home/aoyue/vmap2/analysis/030_XPCLR/005_tetraploid/002_snp_file";
+            logDirS = "/data4/home/aoyue/vmap2/analysis/030_XPCLR/005_tetraploid/007_log";
+            chrArr = new String[]{"001","002","003","004","007","008","009","010","013","014","015","016","019","020","021","022","025","026","027","028","031","032","033","034","037","038","039","040"};
+
+            gwin = "0.0001";
+            snpWin = "100";
+            gridSize = "100000";
+            pop1 = "Domesticated_emmer";
+            pop2 = "Wild_emmer";
+
+            for (int j = 0; j < chrArr.length; j++) {
+                int chr = Integer.parseInt(chrArr[j]);
+                String pop1fileS = new File(infileDirS,"chr" + chrArr[j] + "_exon_vmap2.1_" + pop1 + "_geno.txt").getAbsolutePath();
+                String pop2fileS = new File(infileDirS,"chr" + chrArr[j] + "_exon_vmap2.1_" + pop2 + "_geno.txt").getAbsolutePath();
+                String snpInfoS = new File(snpInfoDirS,"chr"+chrArr[j]+"_exon_vmap2.1.snp.txt").getAbsolutePath();
+                String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_" + pop1 + "_VS_" + pop2 + "_exonRegion_" + gwin + "_" + snpWin + "_" + gridSize).getAbsolutePath();
+                String logS = new File(logDirS,new File(outfileS).getName().split(".gz")[0]+".log.txt").getAbsolutePath();
+                System.out.println("XPCLR -xpclr " + pop1fileS + " " + pop2fileS + " " +
+                        snpInfoS + " " + outfileS + " -w1 " + gwin + " " + snpWin + " "+
+                        gridSize + " " + chr + " -p0 0.95" +
+                        " > " + logS + " &");
+            }
+        }
+
+        //-w1 0.0002 200 2000 1 -p1 0.95
+        //XPCLR -xpclr /data4/home/aoyue/vmap2/analysis/022_XPCLR/002_exon/004_genoFile/chr001_Cultivar_geno.txt /data4/home/aoyue/vmap2/analysis/022_XPCLR/002_exon/004_genoFile/chr001_Landrace_Europe_geno.txt /data4/home/aoyue/vmap2/analysis/022_XPCLR/002_exon/001_chrposRefAlt/chr001_exon_vmap2.1.pos.Base.txt chr001_CLvsEU_100kbwindow -w1 0.005 600 100000 1 -p0 0.95 > log_chr001_CLvsEU_100kbwindow.txt 2>&1 &
+    }
+
+    /**
+     * 根据文件夹获取pop的基因型XPCLR格式，多线程运行,适用于六倍体群体
+     */
+    public void getGenotype_parallele(String infileDirS,String popfileS,String outfileDirS){
+
+        String pop = new File(popfileS).getName().replaceFirst(".txt","");
+        List<String> queryTaxal = new AoFile().getStringListwithoutHeader(popfileS,0); //获取pop列表
+        Collections.sort(queryTaxal);
+
+        List<File> fsList = IOUtils.getVisibleFileListInDir(infileDirS);
+        fsList.parallelStream().forEach(f -> {
+            String infileS = f.getAbsolutePath();
+            String outfileS = new File(outfileDirS,f.getName().split(".vcf")[0]+ "_" + pop + "_geno.txt").getAbsolutePath();
+            try{
+                BufferedReader br = new AoFile().readFile(infileS);
+                BufferedWriter bw = new AoFile().writeFile(outfileS);
+                String temp = null;
+                List<String> l = new ArrayList<>();
+                List<Integer> indexHexa = new ArrayList<>();
+                int cnt = 0;
+                while ((temp = br.readLine()) != null) {
+                    if (temp.startsWith("##"))continue;
+                    if (temp.startsWith("#C")){
+                        l = PStringUtils.fastSplit(temp);
+                        for (int i = 9; i < l.size(); i++) {
+                            String taxon = l.get(i);
+                            int index = Collections.binarySearch(queryTaxal, taxon);
+                            if (index > -1) { //当找到列表中的taxa时，写列表中的taxa信息
+                                indexHexa.add(i);
+                            }
+                        }
+                        Collections.sort(indexHexa);
+//                    System.out.println("Finish find the pop index from vcffile.");
+                    }
+                    if (!temp.startsWith("#")) {
+                        l = PStringUtils.fastSplit(temp);
+                        List<String> lGeno = new ArrayList<>();
+                        for (int i = 0; i < indexHexa.size(); i++) { //无论有无基因型，都加进去了
+                            lGeno.add(l.get(indexHexa.get(i)));
+                        }
+                        String[] GenoArray = lGeno.toArray(new String[lGeno.size()]);
+
+                        String geno = this.getGenoInfo(GenoArray);
+                        bw.write(geno);
+                        bw.newLine();
+                        cnt++;
+                    }
+                }
+                System.out.println(cnt + " SNP " + new File(infileS).getName() + " is completed at " + outfileS);
+                br.close();
+                bw.flush();
+                bw.close();
+            }catch (Exception e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
+        });
+
+    }
+
+
+
+    public void mergeTXT(String infileDirS, String outfileDirS){
+        String outfileS = new File(outfileDirS,new File(infileDirS).listFiles()[0].getName().split("_exon_")[1]).getAbsolutePath() ;
+        AoFile.mergeTxt(infileDirS,outfileS);
+    }
+
+    /**
+     * 第二步：根据
+     */
+    public void getSNPdensity_tetraploid(String infileDirS, String outfileDirS){
+        int window = 50000;
+        int step = 10000;
+
+        //注意没有36号染色体
+        String[] chrArr ={"001","002","003","004","007","008","009","010","013","014","015","016","019","020","021","022","025","026","027","028","031","032","033","034","037","038","039","040"};
+
+        for (int j = 0; j < chrArr.length; j++) {
+            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_exon_vmap2.1.pos.Base.txt.gz").getAbsolutePath();
+            String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_exon_vmap2.1_snpDensity_" + window + "window_" + step + "step.txt.gz").getAbsolutePath();
+            this.calDensity(infileS,1,2,window,step,outfileS);
+        }
+
+    }
+
+    /**
+     * 第二步：根据
+     */
+    public void getSNPdensity_hexaploid(String infileDirS, String outfileDirS){
+//        int window = 50000;
+//        int step = 10000;
+
+        int window = 2000;
+        int step = 2000;
+
+        //注意没有36号染色体
+        String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","037","038","039","040","041","042"};
+
+        for (int j = 0; j < chrArr.length; j++) {
+            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_exon_vmap2.1.pos.Base.txt.gz").getAbsolutePath();
+            String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_exon_vmap2.1_snpDensity_" + window + "window_" + step + "step.txt.gz").getAbsolutePath();
+            this.calDensity(infileS,1,2,window,step,outfileS);
+        }
+
+    }
+
+
+    /**
+     *
+     * 根据science 发表的重组文件，向 snp info 中添加 genetic position
+     */
+    public void step2_mkSNPfile (String infileDirS, String outfileDirS) {
+
+        String recombinationFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/007_recombination/001_recombination/iwgsc_refseqv1.0_mapping_data_chrID.txt";
+
+        ColumnTable<String> t = new ColumnTable<>(recombinationFileS);
+        System.out.println(t.getRowNumber());
+        int chrNum = Integer.parseInt(t.getCell(t.getRowNumber()-1, 1)); //获取最后一行第2列的数字，即染色体最大值，这里是42号染色体
+        TIntArrayList[] startLists = new TIntArrayList[chrNum]; //42条染色体中，每条染色体的窗口起始位置的集合
+        TFloatArrayList[] geneticPosLists = new TFloatArrayList[chrNum]; //42条染色体中，每条染色体的每个窗口对应cross数值集合
+        for (int i = 0; i < startLists.length; i++) { //对每个数组内的集合进行初始化
+            startLists[i] = new TIntArrayList();
+            geneticPosLists[i] = new TFloatArrayList();
+        }
+        int index = -1;
+        for (int i = 0; i < t.getRowNumber(); i++) {
+            index = Integer.parseInt(t.getCell(i, 1))-1; //染色体号的索引，即1号染色体索引为0
+            startLists[index].add(Integer.parseInt(t.getCell(i, 2))); //将每个Bin的起始位置加入集合中
+            geneticPosLists[index].add(Float.parseFloat(t.getCell(i, 3)));
+        }
+        for (int i = 0; i < startLists.length; i++) {
+            startLists[i].sort();
+        }
+
+        List<File> fList = IOUtils.getFileListInDirEndsWith(infileDirS, ".txt.gz");
+        fList.parallelStream().forEach(f -> {
+            String infileS = f.getAbsolutePath();
+            String outfileS = new File(outfileDirS,f.getName().replaceFirst("_exon_vmap2.1.pos.Base.txt.gz","_exon_vmap2.1.snp.txt")).getAbsolutePath();
+            try {
+                BufferedReader br = AoFile.readFile(infileS);
+                BufferedWriter bw = AoFile.writeFile(outfileS);
+                String header = br.readLine();
+                String temp = null;
+                List<String> l = new ArrayList<>();
+                int cnt = 0;
+                int chrIndex = -1;
+                int posIndex = -1;
+                int currentPos = -1;
+                String geneticPos = null;
+                String ID = null;
+                while ((temp = br.readLine()) != null) {
+                    l = PStringUtils.fastSplit(temp);
+                    cnt++;
+                    ID = l.get(0);
+                    chrIndex = Integer.parseInt(l.get(1))-1; // 索引1 含有染色体号
+                    currentPos = Integer.parseInt(l.get(2)); //索引2 含有位置
+                    posIndex = startLists[chrIndex].binarySearch(currentPos); //在 刚刚的起始集合里搜索 index
+                    if (posIndex < 0) posIndex = -posIndex-2;
+                    if(posIndex == -1){ //说明在第一个数字前面
+                        geneticPos = String.format("%.6f", geneticPosLists[chrIndex].get(0)/100);
+                        bw.write(ID + "\t" + l.get(1)+ "\t" + geneticPos + "\t" + l.get(2)+ "\t" + l.get(3)+ "\t" + l.get(4));
+                        bw.newLine();
+                    }
+                    else if(posIndex == startLists[chrIndex].size()-1){ //说明在最后一个数字后面
+                        geneticPos = String.format("%.6f", geneticPosLists[chrIndex].get(startLists[chrIndex].size()-1)/100);
+                        bw.write(ID + "\t" + l.get(1)+ "\t" + geneticPos + "\t" + l.get(2)+ "\t" + l.get(3)+ "\t" + l.get(4));
+                        bw.newLine();
+                    }
+                    else{ //开始进行该点和集合点的比较，找最近值
+                        int pos1 = currentPos - startLists[chrIndex].get(posIndex);
+                        int pos2 = startLists[chrIndex].get(posIndex+1) - currentPos;
+                        if(pos1 > pos2){ //说明离2近
+                            geneticPos = String.format("%.6f", geneticPosLists[chrIndex].get(posIndex+1)/100);
+                            bw.write(ID + "\t" + l.get(1)+ "\t" + geneticPos + "\t" + l.get(2)+ "\t" + l.get(3)+ "\t" + l.get(4));
+                            bw.newLine();
+                        }else{ //说明离1近
+                            geneticPos = String.format("%.6f", geneticPosLists[chrIndex].get(posIndex)/100);
+                            bw.write(ID + "\t" + l.get(1)+ "\t" + geneticPos + "\t" + l.get(2)+ "\t" + l.get(3)+ "\t" + l.get(4));
+                            bw.newLine();
+                        }
+
+                    }
+
+                }
+                br.close();
+                bw.flush();
+                bw.close();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    /**
+     * 从VCF文件中提取最基本的信息
+     */
+    public void step1_mkSNPfile(String infileDirS, String outfileDirS){
+        this.getIDChrPosRefAlt(infileDirS,outfileDirS);
+    }
+
+
+    public void getIDChrPosRefAlt(String infileDirS, String outfileDirS){
+        List<File> fsList = IOUtils.getVisibleFileListInDir(infileDirS);
+        //去除 chr36 染色体,因为没有重组率信息
+        for (int i = 0; i < fsList.size(); i++) {
+            int chr = Integer.parseInt(fsList.get(i).getName().substring(3,6));
+            if (chr == 36) fsList.get(i).delete();
+        }
+        fsList.parallelStream().forEach(f -> {
+            try {
+                String infileS = f.getAbsolutePath();
+                String outfileS = new File(outfileDirS, f.getName().split(".vcf")[0] + ".pos.Base.txt.gz").getAbsolutePath();
+                BufferedReader br = AoFile.readFile(infileS);
+                BufferedWriter bw = AoFile.writeFile(outfileS);
+                String temp = null;
+                int cnt = 0;
+                bw.write("ID\tChr\tPos\tRef\tAlt\n");
+                List<String> l = null;
+                while ((temp = br.readLine()) != null) {
+                    if (temp.startsWith("#")) {
+                        continue;
+                    }
+                    temp = temp.substring(0, 40); //肯定够
+                    l = PStringUtils.fastSplit(temp);
+                    StringBuilder sb = new StringBuilder();
+                    sb = new StringBuilder(l.get(2));
+                    sb.append("\t").append(l.get(0)).append("\t").append(l.get(1)).append("\t").append(l.get(3)).append("\t").append(l.get(4));
+                    bw.write(sb.toString());
+                    bw.newLine();
+                    if (cnt % 1000000 == 0) {
+                        System.out.println("Output " + String.valueOf(cnt) + " SNPs");
+                    }
+                    cnt++;
+                }
+                bw.flush();
+                bw.close();
+                br.close();
+                System.out.println(String.valueOf(cnt) + " SNPs output from " + f.getAbsolutePath());
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
+        });
+    }
+
+    /**
+     * 获取exonVCF的子集
+     */
+    public void getExonVCFbyPloidy(){
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/016_exonVCF";
+/////////// 六倍体
+//        String taxafileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/000_pop_byPloidy/AABBDD.txt";
+//        String outfileDirS ="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/000_exonVCF";
+//        List<File> fsList = AoFile.getFileListInDir(infileDirS);
+//        fsList.parallelStream().forEach(f -> {
+//            String infileS = f.getAbsolutePath();
+//            String outfileS = new File(outfileDirS,f.getName()).getAbsolutePath();
+//            new CalVCF().extractVCF(infileS,outfileS,taxafileS);
+//            System.out.println(f.getName() + "\tis completed at " + outfileS);
+//        });
+
+/////////// 四倍体
+        String taxafileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/000_pop_byPloidy/AABB.txt";
+        String outfileDirS ="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid/000_exonVCF";
+        String[] chrArr ={"001","002","003","004","007","008","009","010","013","014","015","016","019","020","021","022","025","026","027","028","031","032","033","034","037","038","039","040"};
+
+        for (int i = 0; i < chrArr.length; i++) {
+            String chr = chrArr[i];
+            String infileS = new File(infileDirS,"chr" + chr + "_exon_vmap2.1.vcf.gz").getAbsolutePath();
+            String outfileS = new File(outfileDirS, "chr" + chr + "_exon_vmap2.1.vcf.gz").getAbsolutePath();
+            new CalVCF().extractVCF(infileS,outfileS,taxafileS);
+            System.out.println(chr + "\tis completed at " + outfileS);
+        }
+    }
+
+    /**
+     * 判断 annnotation DB 中的 site 是否都在 exon VCF 中
+     * 结果： 全部都在！
+     */
+    public void checkAnnotationDBisinExonVCF(){
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/018_exonSNPAnnotation";
+        String vcffileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/016_exonVCF";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/001_ifAnnotationExonVCF";
+        List<File> fsList = AoFile.getFileListInDir(infileDirS);
+        fsList.stream().forEach(f -> {
+            try {
+                String infileS = f.getAbsolutePath();
+                String exonVCFfileS = new File(vcffileDirS,f.getName().replaceFirst("_SNP_anno.txt.gz","_exon_vmap2.1.vcf.gz")).getAbsolutePath();
+                String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + ".txt").getAbsolutePath();
+
+                // 现获取ExonVCF 的pos库
+                TIntArrayList posList = CalVCF.extractVCFPos(exonVCFfileS);
+                posList.sort();
+
+                BufferedReader br = AoFile.readFile(infileS);
+                BufferedWriter bw = AoFile.writeFile(outfileS);
+                String header = br.readLine();
+                String temp = null;
+                List<String> l = new ArrayList<>();
+                while ((temp = br.readLine()) != null) {
+                    l = PStringUtils.fastSplit(temp);
+                    String chr = l.get(1);
+                    int pos = Integer.parseInt(l.get(2));
+                    int index = posList.binarySearch(pos);
+                    if (index < 0){
+                        System.out.println(chr + "\t" + pos);
+                    }
+                }
+                bw.flush();
+                bw.close();
+                br.close();
+                System.out.println(f.getName() + "\tis completed at " + outfileS);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    //********************************************** 以下 **************
+    //********************************************** 之前的程序 *************************************************************************************
+    //********************************************** 之前的程序 *************************************************************************************
+    //********************************************** 之前的程序 *************************************************************************************
+    //********************************************** 之前的程序 *************************************************************************************
+    //********************************************** 之前的程序 *************************************************************************************
+    //********************************************** 之前的程序 *************************************************************************************
 
     public void checkTopGeneDistribution(){
         List<String> l = new ArrayList<>();
@@ -1173,18 +1679,13 @@ public class XPCLR {
         }
 
         try {
-            BufferedWriter bw = null;
-            if (outfileS.endsWith(".txt")){
-                bw = IOUtils.getTextWriter(outfileS);
-            }
-            if (outfileS.endsWith(".txt.gz")){
-                bw = IOUtils.getTextGzipWriter(outfileS);
-            }
-            bw.write("CHROM\tBIN_START\tBIN_END\tN_VARIANTS");
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            bw.write("CHROM\tBIN_START\tBIN_END\tN_VARIANTS\tSub");
             bw.newLine();
             for (int i = 0; i < bound.length; i++) {
                 StringBuilder sb = new StringBuilder();
-                sb.append(chr).append("\t").append(bound[i][0]).append("\t").append(bound[i][1]-1).append("\t").append(count[i]);
+                String sub = AoString.getSubfromChrID(Integer.parseInt(chr));
+                sb.append(chr).append("\t").append(bound[i][0]).append("\t").append(bound[i][1]-1).append("\t").append(count[i]).append("\t").append(sub);
                 bw.write(sb.toString());
                 bw.newLine();
             }
@@ -1212,7 +1713,7 @@ public class XPCLR {
         TIntArrayList endList = new TIntArrayList();
         int start = 1;
         int end = start+windowSize;
-        while (start < chrLength) {
+        while (end < chrLength) { //这里将 start < chrLength 改为 end < chrLength
             startList.add(start);
             endList.add(end);
             start+=windowStep;

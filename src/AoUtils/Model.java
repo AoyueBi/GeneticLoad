@@ -167,13 +167,8 @@ public class Model {
         List<File> fsList = IOUtils.getVisibleFileListInDir(infileDirS);
         fsList.stream().forEach(f -> {
             String infileS = f.getAbsolutePath();
-            String outfileS = null;
-            if (infileS.endsWith(".txt")) {
-                outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "_RH_2Mwindow_1Mstep.txt.gz").getAbsolutePath();
-            } else if (infileS.endsWith(".txt.gz")) {
-                outfileS = new File(outfileDirS, f.getName().split(".txt.gz")[0] + "_RH_2Mwindow_1Mstep.txt.gz").getAbsolutePath();
-            }
-            new Bin().calwindowstep_ResidualHeterozygosity(infileS,2000000,1000000,outfileS);
+            String outfileS = new File(outfileDirS,f.getName()).getAbsolutePath();
+//            new CalVCF().extractVCF(infileS,outfileS,taxafileS);
             System.out.println(f.getName() + "\tis completed at " + outfileS);
         });
     }

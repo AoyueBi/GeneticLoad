@@ -52,6 +52,33 @@ public class AoString {
     public static String getChrFromGene(String gene){ return gene.substring(7,9);}
 
     /**
+     * 根据chr名字获取亚基因组信息 //001
+     * @param chr
+     * @return
+     */
+    public static String getSubfromChrID(int chr){
+        String out = null;
+//        String[] chrAArr ={"001","002","007","008","013","014","019","020","025","026","031","032","037","038"};
+//        String[] chrBArr ={"003","004","009","010","015","016","021","022","027","028","033","034","039","040"};
+//        String[] chrDArr ={"005","006","011","012","017","018","023","024","029","030","035","036","041","042"};
+
+        int[] chrAArr ={1,2,7,8,13,14,19,20,25,26,31,32,37,38};
+        int[] chrBArr ={3,4,9,10,15,16,21,22,27,28,33,34,39,40};
+        int[] chrDArr ={5,6,11,12,17,18,23,24,29,30,35,36,41,42};
+
+        Arrays.sort(chrAArr); Arrays.sort(chrBArr); Arrays.sort(chrDArr);
+
+        int indexA = Arrays.binarySearch(chrAArr,chr);
+        int indexB = Arrays.binarySearch(chrBArr,chr);
+        int indexD = Arrays.binarySearch(chrDArr,chr);
+
+        if (indexA > -1) out = "A";
+        if (indexB > -1) out = "B";
+        if (indexD > -1) out = "D";
+        return out;
+    }
+
+    /**
      * 根据转录本的名字获取亚基因组信息 //TraesCS1A02G001800.1
      * @param gene
      * @return

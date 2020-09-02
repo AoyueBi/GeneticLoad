@@ -23,7 +23,7 @@ public class AoWheatTriads {
     public AoWheatTriads(){
 //        this.transformTriadsTable(); //for heatmap
 //        this.getGeneInfo();
-        this.getDelHeter();
+//        this.getDelHeter();
 //        this.chromoMapInput();
 
     }
