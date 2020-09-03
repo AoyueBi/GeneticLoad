@@ -4,6 +4,7 @@ import AoUtils.*;
 
 import analysis.wheat.VMap2.VMapDBUtils;
 import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TFloatArrayList;
 import gnu.trove.list.array.TIntArrayList;
 
@@ -82,17 +83,115 @@ public class XPCLR {
 //        this.checkAnnotationDBisinExonVCF(); //确定annotation的位点都在exonVCF中
 //        this.getExonVCFbyPloidy();
 
-        this.mkSNPfile_hexaploid(); //分很多步骤
+//        this.mkSNPfile_hexaploid(); //分很多步骤
 //        this.mkSNPfile_tetraploid();
-
-//        this.checkLog();
+//        this.getXPCLRscript("abd");
+//        this.getXPCLRscript("ab");
         //对exon位点数进行计数
 //        CountSites.countSites_singleStream("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/002_snp_file");
 //        this.getZScore();
 
-
-
+//        this.X();
+        this.window();
     }
+
+    /**
+     * 将标准化的结果进行滑窗处理
+     */
+    public void window(){
+
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/Cultivar_VS_Landrace_EU_exonRegion_0.0001_100_500.xpclr.txt.gz";
+        AoFile.readheader(infileS);
+        int chrColumn = 8;
+        int posIndex = 9;
+        int valueIndex = 10;
+        double window = 100000;
+        double step = 50000;
+        String name = new File(infileS).getName().split(".txt")[0] + "_" + window + "window_" + step + "step.txt.gz";
+        String parent = new File(infileS).getParent();
+        String outfileS = new File(parent,name).getAbsolutePath();
+
+        System.out.println("nohup java -jar 051_AoWindowScan.jar " + infileS + " " + chrColumn + " " + posIndex + " " + valueIndex + " " + window + " " + step + " " + outfileS + " &" );
+    }
+
+    /**
+     * 将原始结果添加参考基因组的坐标，并对xpclr标准化
+     */
+    public void X(){
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/002_0.0001_100_500";
+
+        String outfileDirS = AoString.autoOutfileDirS(infileDirS);
+
+        new File(outfileDirS).mkdirs();
+        System.out.println(outfileDirS);
+        int a=3;
+        List<File> fsList = AoFile.getFileListInDir(infileDirS);
+        fsList.parallelStream().forEach(f -> {
+//            String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/chr001_Clutivar_VS_Landrace_EU_exonRegion_0.0001_100_100000.xpclr.txt";
+//            String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/008_xpclrHighlevel/ztest/chr001_Clutivar_VS_Landrace_EU_exonRegion_0.0001_100_100000.xpclr.txt";
+
+            String infileS = f.getAbsolutePath();
+            String outfileS = new File(outfileDirS,f.getName()).getAbsolutePath();
+
+            List<String> recordList = new ArrayList<>();
+            TDoubleArrayList valueList = new TDoubleArrayList();
+            try {
+                BufferedReader br = new AoFile().readFile(infileS);
+                String temp = null;
+                List<String> l = new ArrayList<>();
+                int cnt = 0;
+
+                while ((temp = br.readLine()) != null) {
+                    l = PStringUtils.fastSplit(temp," ");
+                    if (l.size() < 7)continue; //如果该行的list小于7，说明没有读写完全就终止了，是最后一行，应该去除
+                    cnt++;
+                    //2 217 1152 21716707.000000 0.651300 584.597428 0.000000
+                    double v = Double.parseDouble(l.get(5));
+                    valueList.add(v);
+                    recordList.add(temp);
+                }
+                br.close();
+
+                //开始处理标准化
+                double[] valueArray = valueList.toArray(new double[valueList.size()]);
+                double[] zscorevalueArray = AoMath.ZScore(valueArray);
+                double[] normalizedScore = AoMath.NormalizeScore(valueArray);
+
+                BufferedWriter bw = new AoFile().writeFile(outfileS);
+                bw.write("CHROM\tGrid\tN_SNPs\tPOS\tGenetic_pos\tXPCLR_score\tXPCLR_Zscore\tMax_s\tChrRef\tPosRef\tXPCLR_100score");
+                bw.newLine();
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < recordList.size(); i++) {
+                    temp = recordList.get(i);
+                    l = PStringUtils.fastSplit(temp," ");
+                    String chrS = l.get(0);
+                    String posS = l.get(3);
+                    int chrID = Integer.parseInt(chrS);
+                    int posID = (int) Double.parseDouble(posS);
+                    String chrref = RefV1Utils.getChromosome(chrID,posID);
+                    int posref = RefV1Utils.getPosOnChromosome(chrID,posID);
+                    sb.setLength(0);
+                    sb.append(l.get(0)).append("\t").append(l.get(1)).append("\t").append(l.get(2)).append("\t").
+                            append(l.get(3)).append("\t").append(l.get(4)).append("\t").append(l.get(5)).append("\t").append(zscorevalueArray[i]).
+                            append("\t").append(l.get(6)).append("\t").append(chrref).append("\t").append(posref).append("\t").append(normalizedScore[i]);
+
+                    bw.write(sb.toString());
+                    bw.newLine();
+                }
+                bw.flush();
+                bw.close();
+                System.out.println(cnt + "\t" + new File(infileS).getName() + " is completed.");
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
+
+        });
+
+        String outfileS = new File(new File(infileDirS).getParent(),fsList.get(0).getName().substring(7)).getAbsolutePath();
+        AoFile.mergeTxt(outfileDirS,outfileS);
+    }
+
 
     public void getZScore(){
         double[] a = {3,5,8,20,15,37};
@@ -102,44 +201,9 @@ public class XPCLR {
         }
     }
 
-    /**
-     * 检查xpclr输出的结果中，是否都运行完毕
-     */
-    public void checkLog(){
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/007_log";
-        List<File> fsList = AoFile.getFileListInDir(infileDirS);
-        fsList.parallelStream().forEach(f -> {
-            try {
-                String infileS = f.getAbsolutePath();
-                String chr = f.getName().substring(3,6);
-                BufferedReader br = AoFile.readFile(infileS);
-                String header = br.readLine();
-                String temp = null;
-                for (int i = 2; i < 8; i++) {
-                    temp = br.readLine();
-                    System.out.println(temp);
-//                    if (i==7){
-//                        System.out.println(chr + "\t" + temp);
-//                    }
-
-                }
-                List<String> l = new ArrayList<>();
-                while ((temp = br.readLine()) != null) {
-                    l = PStringUtils.fastSplit(temp);
-
-                }
-                br.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
-    }
-
-
-
 
     /**
-     *
+     *  准备六倍体的输入文件
      */
     public void mkSNPfile_hexaploid(){
 
@@ -165,8 +229,6 @@ public class XPCLR {
 
 //        this.getGenotype_parallele(infileDirS,pop1fileS,outfileDirS5);
 //        this.getGenotype_parallele(infileDirS,pop2fileS,outfileDirS5);
-//        this.getXPCLRscript("abd");
-        this.getXPCLRscript("ab");
 
 //        this.calDensity("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/001_chrPosRefAlt/chr042_exon_vmap2.1.pos.Base.txt.gz",1,2,100000,100000,"/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/001_chrPosRefAlt/chr042.txt");
     }
@@ -222,9 +284,9 @@ public class XPCLR {
             snpInfoDirS = "/data4/home/aoyue/vmap2/analysis/030_XPCLR/004_hexaploid/002_snp_file";
             logDirS = "/data4/home/aoyue/vmap2/analysis/030_XPCLR/004_hexaploid/007_log";
             chrArr = new String[]{"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
-            gwin = "0.0001";
+            gwin = "0.00001";
             snpWin = "100";
-            gridSize = "2000";
+            gridSize = "100";
             pop1 = "Cultivar";
             pop2 = "Landrace_EU";
             for (int j = 0; j < chrArr.length; j++) {
@@ -247,9 +309,9 @@ public class XPCLR {
             logDirS = "/data4/home/aoyue/vmap2/analysis/030_XPCLR/005_tetraploid/007_log";
             chrArr = new String[]{"001","002","003","004","007","008","009","010","013","014","015","016","019","020","021","022","025","026","027","028","031","032","033","034","037","038","039","040"};
 
-            gwin = "0.0001";
+            gwin = "0.00001";
             snpWin = "100";
-            gridSize = "2000";
+            gridSize = "100";
             pop1 = "Domesticated_emmer";
             pop2 = "Wild_emmer";
 
@@ -1152,7 +1214,7 @@ public class XPCLR {
             int cnt = 0;
             while ((temp = br.readLine()) != null) {
                 l = PStringUtils.fastSplit(temp," ");
-                if (l.size() < 7)continue;
+                if (l.size() < 7)continue; //如果该行的list小于7，说明没有读写完全就终止了，是最后一行，应该去除
                 cnt++;
                 //2 217 1152 21716707.000000 0.651300 584.597428 0.000000
                 String chrS = l.get(0);

@@ -4,6 +4,7 @@ package AoUtils;
  *
  */
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,6 +15,32 @@ import java.util.List;
 public class AoString {
     public AoString(){
 
+    }
+
+    /**
+     * 根据输入文件夹名称，自动构建输出文件夹名称，
+     * 即将/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/002_0.0001_100_500
+     * 改成/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/102_0.0001_100_500
+     * @param infileDirS
+     * @return
+     */
+    public static String autoOutfileDirS (String infileDirS){
+        String out = null;
+        String inDirSName = new File(infileDirS).getName();
+        char[] cc = new char[inDirSName.length()];
+
+        char first = inDirSName.charAt(0);
+        int a = Character.getNumericValue(first);
+        char first_modify = String.valueOf(a+1).charAt(0);
+
+        cc[0] = first_modify;
+        for (int i = 1; i < cc.length; i++) {
+            cc[i] = inDirSName.charAt(i);
+        }
+        out = new String(cc);
+
+        out = new File(new File(infileDirS).getParent(),out).getAbsolutePath();
+        return out;
     }
 
     /**

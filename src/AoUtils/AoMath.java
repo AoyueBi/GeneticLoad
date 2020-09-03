@@ -5,7 +5,6 @@
  */
 package AoUtils;
 
-import com.sun.tools.javac.code.Lint;
 import gnu.trove.list.array.TDoubleArrayList;
 import org.apache.commons.math3.distribution.NormalDistribution;
 import org.apache.commons.math3.stat.StatUtils;
@@ -26,6 +25,20 @@ public class AoMath {
 
     public AoMath() {
 
+    }
+
+    public static double[] NormalizeScore(double[] values){
+        double[] out = new double[values.length];
+        TDoubleArrayList valuez = new TDoubleArrayList();
+
+        double max = StatUtils.max(values);
+        for ( double value: values ) {
+            double stdscore = (double) value*50/max;
+            valuez.add(stdscore);
+        }
+        out = valuez.toArray();
+
+        return out;
     }
 
     public static double[] ZScore(double[] values){
