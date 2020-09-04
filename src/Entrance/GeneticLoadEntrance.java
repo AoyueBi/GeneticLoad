@@ -14,10 +14,7 @@ import GermplasmInfo.GermplasmInfo;
 import GermplasmInfo.TaxaDB;
 import Plot.PCA;
 import Plot.Tree;
-import PopulationAnalysis.AoIntrogression;
-import PopulationAnalysis.DeleteriousCountbyPop;
-import PopulationAnalysis.Fst;
-import PopulationAnalysis.XPCLR;
+import PopulationAnalysis.*;
 import WheatGeneticLoad.*;
 import gnu.trove.list.array.TIntArrayList;
 import pgl.infra.dna.FastaBit;
@@ -70,6 +67,8 @@ public class GeneticLoadEntrance {
 //        new AoWheatTriads();
 //        new XPCLR();
         new Fst();
+//        new Pi();
+//        new TajimaD();
 
 
 

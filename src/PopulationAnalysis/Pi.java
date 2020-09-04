@@ -1,6 +1,7 @@
 package PopulationAnalysis;
 
 import AoUtils.AoFile;
+import AoUtils.SplitScript;
 import gnu.trove.list.array.TDoubleArrayList;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import pgl.infra.utils.IOUtils;
@@ -14,14 +15,14 @@ import java.util.List;
 
 public class Pi {
     public Pi(){
-//        this.mkPiCommandbasedwinndow();
+        this.mkPiCommandbasedwinndow();
 //        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/102_Pi/001_script_based2Mwindow_1Mstep/pi_based2Mwindow_1Mstep_20200207.sh",23,4); //91cmd
 //        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/102_Pi/004_script_based100kbwindow_50kbstep/pi_based100kbwindow_50kbstep_20200213.sh",23,4); //91cmd
 
 //        this.getMeanPIvalue();
-//        this.mkPiCommandbasedwinndow_LandrcaeSub();
+//        this.mkPiCommandbasedwinndow_LandraceSub();
 //        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/102_Pi/007_script_based2Mwindow_1Mstep_landraceWAEUEA/pi_based2Mwindow_1Mstep.sh",34,5); //168
-        this.getMeanPIvaluefromLandraceWAEAEU();
+//        this.getMeanPIvaluefromLandraceWAEAEU();
     }
 
     /**
@@ -65,10 +66,10 @@ public class Pi {
 
     /**
      *  calculate the pi of Landrace_WA EU EA
-     *   I am so tired
+     *
      *
      */
-    public void mkPiCommandbasedwinndow_LandrcaeSub(){
+    public void mkPiCommandbasedwinndow_LandraceSub(){
         String windowsize = "2000000";
         String windowstep = "1000000";
 
@@ -124,12 +125,12 @@ public class Pi {
 
 
     /**
-     * get mean from a file， is the value equals -nan, continue
+     * get mean from a file， if the value equals -nan, continue
      *
      * @param infileS
      * @return
      */
-    public String getMean(String infileS){
+    private String getMean(String infileS){
         String out = null;
         try {
             BufferedReader br = IOUtils.getTextReader(infileS);
@@ -201,57 +202,111 @@ public class Pi {
     }
 
     public void mkPiCommandbasedwinndow(){
-//        String windowsize = "2000000";
-//        String windowstep = "1000000";
 
-        String windowsize = "100000";
-        String windowstep = "50000";
+//        //local path
+//        String grouplocalDirS = "";
+//        //HPC path
+//        String infileDirS = "";
+//        String groupDirS = "";
+//        String outfileDirS = "";
+//        //para
+//        String window = "";
+//        String step = "";
+        //        String scriptS = "";
 
+
+        /**
+         * first run
+         */
         //HPC path
-        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/013_VMapIIbyRef";
+//        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/013_VMapIIbyRef";
 //        String outfileDirS ="/data4/home/aoyue/vmap2/analysis/021_popGen/102_Pi/002_pi_based2Mwindow_1Mstep";
-        String groupDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/102_Pi/000_group";
-        String outfileDirS ="/data4/home/aoyue/vmap2/analysis/021_popGen/102_Pi/003_pi_based100kbwindow_50kbstep";
-
+//        String groupDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/102_Pi/000_group";
+//        String outfileDirS ="/data4/home/aoyue/vmap2/analysis/021_popGen/102_Pi/003_pi_based100kbwindow_50kbstep";
         //local path
-        String grouplocalDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/102_Pi/000_group";
+//        String grouplocalDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/102_Pi/000_group";
+        //        String window = "2000000";
+//        String step = "1000000";
+//        String window = "100000";
+//        String step = "50000";
+
+        /**
+         * VMap2.0 after May 1st
+         */
+        //local path
+        String grouplocalDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/002_Pi/000_group";
+        //HPC path
+        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/105_VMap2.1ByRef";
+        String groupDirS = "/data4/home/aoyue/vmap2/analysis/031_popGen/002_Pi/000_group";
+        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/031_popGen/002_Pi/002_pi_based100000window_50000step/001";
+        //para
+        String window = "100000";
+        String step = "50000";
+        int numcmd = 5;
+        String scriptS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/002_Pi/001_srcipt_based100000window_50000step/pi_based" + window + "window_" + step + "step_20200904.sh";
+
+
+
+        System.out.println("mkdir 001_srcipt_based" + window + "window_" + step + "step");
+        System.out.println("mkdir 002_pi_based" + window + "window_" + step + "step");
 
         List<File> fs = IOUtils.getVisibleFileListInDir(grouplocalDirS);
-        for (int i = 0; i < fs.size(); i++) {
-            String groupname = fs.get(i).getName().split(".txt")[0];
-            if (groupname.equals("Cultivar") || groupname.equals("Landrace")){
-                String[] chrArr = {"1A", "2A", "3A","4A", "5A", "6A", "7A", "1B", "2B", "3B", "4B", "5B", "6B", "7B", "1D", "2D", "3D",  "4D", "5D", "6D", "7D"};
-                for (int j = 0; j < chrArr.length; j++) {
-                    String infileS = new File(infileDirS,"chr" + chrArr[j] + "_vmap2.1.vcf").getAbsolutePath();
-                    String outfileS = new File(outfileDirS,groupname + "_chr" + chrArr[j] + "_based" + windowsize+ "Window_" + windowstep + "step").getAbsolutePath();
-                    String groupS = new File(groupDirS,groupname+".txt").getAbsolutePath();
-                    System.out.println("vcftools --vcf " + infileS + " --keep " + groupS +
-                            " --window-pi " + windowsize +  " --window-pi-step " + windowstep + "  --out " + outfileS );
+        try{
+            BufferedWriter bw = AoFile.writeFile(scriptS);
+            for (int i = 0; i < fs.size(); i++) {
+                String groupname = fs.get(i).getName().split(".txt")[0];
+                if (groupname.equals("Cultivar") || groupname.equals("Landrace")){
+                    String[] chrArr = {"1A", "2A", "3A","4A", "5A", "6A", "7A", "1B", "2B", "3B", "4B", "5B", "6B", "7B", "1D", "2D", "3D",  "4D", "5D", "6D", "7D"};
+                    for (int j = 0; j < chrArr.length; j++) {
+                        String infileS = new File(infileDirS,"chr" + chrArr[j] + "_vmap2.1.vcf.gz").getAbsolutePath();
+                        String outfileS = new File(outfileDirS,groupname + "_chr" + chrArr[j] + "_based" + window+ "Window_" + step + "step").getAbsolutePath();
+                        String groupS = new File(groupDirS,groupname+".txt").getAbsolutePath();
+                        StringBuilder sb = new StringBuilder();
+                        sb.append("vcftools --gzvcf ").append(infileS).append(" --keep ").append(groupS);
+                        sb.append(" --window-pi ").append(window).append(" --window-pi-step ").append(step);
+                        sb.append("  --out ").append(outfileS);
+                        System.out.println(sb.toString());
+                        bw.write(sb.toString());bw.newLine();
+                    }
+
+                }
+                else if (groupname.equals("Domesticated_emmer") || groupname.equals("Free_threshing_tetraploid") || groupname.equals("Wild_emmer")){
+                    String[] chrArr = {"1A", "2A", "3A","4A", "5A", "6A", "7A", "1B", "2B", "3B", "4B", "5B", "6B", "7B"};
+                    for (int j = 0; j < chrArr.length; j++) {
+                        String infileS = new File(infileDirS,"chr" + chrArr[j] + "_vmap2.1.vcf.gz").getAbsolutePath();
+                        String outfileS = new File(outfileDirS,groupname + "_chr" + chrArr[j] + "_based" + window+ "Window_" + step + "step").getAbsolutePath();
+                        String groupS = new File(groupDirS,groupname+".txt").getAbsolutePath();
+                        StringBuilder sb = new StringBuilder();
+                        sb.append("vcftools --gzvcf ").append(infileS).append(" --keep ").append(groupS);
+                        sb.append(" --window-pi ").append(window).append(" --window-pi-step ").append(step);
+                        sb.append("  --out ").append(outfileS);
+                        System.out.println(sb.toString());
+                        bw.write(sb.toString());bw.newLine();
+                    }
+
+                }
+                else if (groupname.equals("Ae.tauschii")){
+                    String[] chrArr = {"1D","2D", "3D", "4D", "5D", "6D","7D"};
+                    for (int j = 0; j < chrArr.length; j++) {
+                        String infileS = new File(infileDirS,"chr" + chrArr[j] + "_vmap2.1.vcf.gz").getAbsolutePath();
+                        String outfileS = new File(outfileDirS,groupname + "_chr" + chrArr[j] + "_based" + window+ "Window_" + step + "step").getAbsolutePath();
+                        String groupS = new File(groupDirS,groupname+".txt").getAbsolutePath();
+                        StringBuilder sb = new StringBuilder();
+                        sb.append("vcftools --gzvcf ").append(infileS).append(" --keep ").append(groupS);
+                        sb.append(" --window-pi ").append(window).append(" --window-pi-step ").append(step);
+                        sb.append("  --out ").append(outfileS);
+                        System.out.println(sb.toString());
+                        bw.write(sb.toString());bw.newLine();
+                    }
                 }
 
             }
-            else if (groupname.equals("Domesticated_emmer") || groupname.equals("Free_threshing_tetraploid") || groupname.equals("Wild_emmer")){
-                String[] chrArr = {"1A", "2A", "3A","4A", "5A", "6A", "7A", "1B", "2B", "3B", "4B", "5B", "6B", "7B"};
-                for (int j = 0; j < chrArr.length; j++) {
-                    String infileS = new File(infileDirS,"chr" + chrArr[j] + "_vmap2.1.vcf").getAbsolutePath();
-                    String outfileS = new File(outfileDirS,groupname + "_chr" + chrArr[j] + "_based" + windowsize+ "Window_" + windowstep + "step").getAbsolutePath();
-                    String groupS = new File(groupDirS,groupname+".txt").getAbsolutePath();
-                    System.out.println("vcftools --vcf " + infileS + " --keep " + groupS +
-                            " --window-pi " + windowsize +  " --window-pi-step " + windowstep + "  --out " + outfileS );
-                }
+            bw.flush();bw.close();
+            SplitScript.splitScript4(scriptS,numcmd); //脚本拆分
 
-            }
-            else if (groupname.equals("Ae.tauschii")){
-                String[] chrArr = {"1D","2D", "3D", "4D", "5D", "6D","7D"};
-                for (int j = 0; j < chrArr.length; j++) {
-                    String infileS = new File(infileDirS,"chr" + chrArr[j] + "_vmap2.1.vcf").getAbsolutePath();
-                    String outfileS = new File(outfileDirS,groupname + "_chr" + chrArr[j] + "_based" + windowsize+ "Window_" + windowstep + "step").getAbsolutePath();
-                    String groupS = new File(groupDirS,groupname+".txt").getAbsolutePath();
-                    System.out.println("vcftools --vcf " + infileS + " --keep " + groupS +
-                            " --window-pi " + windowsize +  " --window-pi-step " + windowstep +  "  --out " + outfileS );
-                }
-            }
-
+        }catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
         }
     }
 }

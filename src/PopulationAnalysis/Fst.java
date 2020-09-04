@@ -12,6 +12,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -39,12 +40,69 @@ public class Fst {
 //        this.mergeFSTwindow();
 
         //********************************* VMap2.0 after -- new Version ********************//
-        this.mkFstCommandbasedwinndow2();
+//        this.mkFstCommandbasedwinndow2();
         //today I read the article "The mutational constraint spectrum quantified from variation in 141,456 humans"
+        this.addGroupToFstwindow();
     }
 
     /**
-     * 终极版本！
+     * 向window滑窗的结果添加group信息，区分不同分组的比较
+     */
+    public void addGroupToFstwindow(){
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/004_mix_4A/001_fst";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/004_mix_4A/002_fst/chr4A.windowed.weir.fst";
+        File[] fs = AoFile.getFileArrayInDir(infileDirS);
+        Arrays.sort(fs);
+        try {
+            String infileS = fs[0].getAbsolutePath();
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            /**
+             * 需要改动,header的名字可以自定义
+             */
+            //read header
+            bw.write(br.readLine() + "\tTaxa");
+            bw.newLine();
+
+            int cnttotal = 0;
+            //read context
+            for (int i = 0; i < fs.length; i++) {
+                infileS = fs[i].getAbsolutePath();
+                /**
+                 * 需要改动
+                 */
+                String name = fs[i].getName();
+                String group = name.split("emmer")[1].split("_RH")[0];
+
+                br = AoFile.readFile(infileS);
+                br.readLine(); //read header
+                String temp = null;
+                int cnt = 0;
+                while ((temp = br.readLine()) != null) {
+                    cnt++;
+                    cnttotal++;
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(temp).append("\t").append(group);
+                    bw.write(sb.toString());
+                    bw.newLine();
+                }
+                System.out.println(fs[i].getName() + "\t" + cnt);
+            }
+            System.out.println("Total lines without header count is " + cnttotal + " at merged file " + outfileS );
+            br.close();
+            bw.flush();
+            bw.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+
+
+    /**
+     * 终极版本！运行fst命令的脚本
      */
     public void mkFstCommandbasedwinndow2() {
         /**
@@ -127,7 +185,7 @@ public class Fst {
                         String group1S = new File(group2FileDirS, group2FileS[i].getName()).getAbsolutePath();
                         String group2S = new File(group2FileDirS, group2FileS[j].getName()).getAbsolutePath();
                         StringBuilder sb = new StringBuilder();
-                        sb.append("vcftools --vcf ").append(infileS).append(" --weir-fst-pop ").append(group1S).append(" --weir-fst-pop ").append(group2S);
+                        sb.append("vcftools --gzvcf ").append(infileS).append(" --weir-fst-pop ").append(group1S).append(" --weir-fst-pop ").append(group2S);
                         sb.append(" --fst-window-size ").append(window).append(" --fst-window-step ").append(step);
                         sb.append(" --out ").append(outfileS);
                         System.out.println(sb.toString());

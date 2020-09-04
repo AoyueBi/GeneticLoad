@@ -644,6 +644,11 @@ public class AoFile {
         return bw;
     }
 
+    public static void addGroupbyFileName(String infileS, String regularE, String outfileS){
+
+
+    }
+
 
     /**
      * add more than one column to a file
