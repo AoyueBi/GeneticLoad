@@ -44,6 +44,28 @@ public class Script {
 //        this.mergelogTxt("/Users/Aoyue/Documents/log_024", "/Users/Aoyue/Documents/ploidy.txt");
     }
 
+    public void window_parallel(){
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/004_mix_4A/001_fst";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/004_mix_4A/003_fst_windowbyJava";
+        List<File> fsList = AoFile.getFileListInDir(infileDirS);
+        fsList.parallelStream().forEach(f -> {
+            String infileS = f.getAbsolutePath();
+            AoFile.readheader(infileS);
+            int chrColumn = 0;
+            int posIndex = 1;
+            int valueIndex = 4;
+            double window = 2000000;
+            double step = 1000000;
+            String name = new File(infileS).getName().split(".fst")[0] + "_" + window + "window_" + step + "step.txt.gz";
+            String parent = new File(infileS).getParent();
+            String outfileS = new File(outfileDirS,name).getAbsolutePath();
+
+            new AoWinScan().getwindowDistrbution_general(infileS,chrColumn,posIndex,valueIndex,window,step,outfileS);
+        });
+
+    }
+
     /**
      * 将标准化的结果进行滑窗处理
      */

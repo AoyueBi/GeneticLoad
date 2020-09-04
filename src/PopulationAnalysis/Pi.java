@@ -26,6 +26,13 @@ public class Pi {
     }
 
     /**
+     * 根据4A染色体的
+     */
+    public void getPiRatio(){
+
+    }
+
+    /**
      * 获取 Landrace细分类后的PI值
      *
      */

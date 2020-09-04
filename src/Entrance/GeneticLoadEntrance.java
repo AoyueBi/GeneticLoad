@@ -66,8 +66,8 @@ public class GeneticLoadEntrance {
 
 //        new AoWheatTriads();
 //        new XPCLR();
-        new Fst();
-//        new Pi();
+//        new Fst();
+        new Pi();
 //        new TajimaD();
 
 

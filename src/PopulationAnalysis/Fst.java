@@ -1,9 +1,6 @@
 package PopulationAnalysis;
 
-import AoUtils.AoFile;
-import AoUtils.AoMath;
-import AoUtils.CountSites;
-import AoUtils.SplitScript;
+import AoUtils.*;
 import gnu.trove.list.array.TDoubleArrayList;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import pgl.infra.utils.IOUtils;
@@ -42,15 +39,16 @@ public class Fst {
         //********************************* VMap2.0 after -- new Version ********************//
 //        this.mkFstCommandbasedwinndow2();
         //today I read the article "The mutational constraint spectrum quantified from variation in 141,456 humans"
-        this.window();
-//        this.addGroupToFstwindow();
+//        this.window();
+        this.addGroupToFstwindow();
     }
 
     /**
      * 向window滑窗的结果添加group信息，区分不同分组的比较
      */
     public void addGroupToFstwindow(){
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/004_mix_4A/001_fst";
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/004_mix_4A/003_fst_windowbyJava";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/004_mix_4A/001_fst";
         String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/004_mix_4A/002_fst/chr4A.windowed.weir.fst";
         File[] fs = AoFile.getFileArrayInDir(infileDirS);
         Arrays.sort(fs);
@@ -115,9 +113,9 @@ public class Fst {
             double step = 1000000;
             String name = new File(infileS).getName().split(".fst")[0] + "_" + window + "window_" + step + "step.txt.gz";
             String parent = new File(infileS).getParent();
-            String outfileS = new File(parent,name).getAbsolutePath();
+            String outfileS = new File(outfileDirS,name).getAbsolutePath();
 
-            System.out.println("nohup java -jar 051_AoWindowScan.jar " + infileS + " " + chrColumn + " " + posIndex + " " + valueIndex + " " + window + " " + step + " " + outfileS + " &" );
+            new AoWinScan().getwindowDistrbution_general(infileS,chrColumn,posIndex,valueIndex,window,step,outfileS);
         });
 
     }

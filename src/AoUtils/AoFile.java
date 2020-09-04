@@ -601,7 +601,10 @@ public class AoFile {
         }
         else if (infileS.endsWith(".fst")) {
             br = IOUtils.getTextReader(infileS);
-        }else if (infileS.endsWith(".pi")) {
+        }else if (infileS.endsWith(".Tajima.D")) {
+            br = IOUtils.getTextReader(infileS);
+        }
+        else if (infileS.endsWith(".pi")) {
             br = IOUtils.getTextReader(infileS);
         }
         else if (infileS.endsWith(".TAB")) {
@@ -1166,13 +1169,7 @@ public class AoFile {
     public static String[] getStringArraybySet(String infileS, int columnIndex){
         Set<String> out = new HashSet<>();
         try {
-            BufferedReader br = null;
-            if (infileS.endsWith(".txt")) {
-                br = IOUtils.getTextReader(infileS);
-            } else if (infileS.endsWith(".txt.gz")) {
-                br = IOUtils.getTextGzipReader(infileS);
-            }
-
+            BufferedReader br = AoFile.readFile(infileS);
             String temp = br.readLine(); //read header
             List<String> l = new ArrayList();
             int cnt = 0;
@@ -1701,7 +1698,10 @@ public class AoFile {
                 br = IOUtils.getTextGzipReader(infileS);
             }else if (infileS.endsWith(".fst")) {
                 br = IOUtils.getTextReader(infileS);
+            }else if (infileS.endsWith(".Tajima.D")) {
+                br = IOUtils.getTextReader(infileS);
             }
+
             String temp = br.readLine();
             List<String> l = PStringUtils.fastSplit(temp);
             int cnt = -1;
