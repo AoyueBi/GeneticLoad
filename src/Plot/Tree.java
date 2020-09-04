@@ -49,11 +49,44 @@ public class Tree {
 
 //        this.colRange_gerp();
 //        this.textLabel_gerp();
-        this.test();
+//        this.test();
 //        new AoMath().countCaseInGroup("/Users/Aoyue/Documents/test.txt",0);
+
+        this.extractTreeID();
+
+
 
 
     }
+
+    /**
+     * 从氨基酸序列比对文件中提取文件名字
+     */
+    public void extractTreeID(){
+        String infileS = "/Users/Aoyue/Documents/IGDB/04_PHD/未分类笔记/tree/hsp/Fig2a_hsp.txt";
+        String outfileS ="/Users/Aoyue/Documents/IGDB/04_PHD/未分类笔记/tree/hsp/Fig2a_hsp_IDlist.txt";
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = null;
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                if (temp.startsWith(">")) {
+                    bw.write(temp.substring(1));
+                    bw.newLine();
+                    cnt++;
+                }
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
 
     public void test(){
         String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/006_tree/005_ABsub_maf0.01_20191207/006_fromxuebo/002_labels/trash.txt";

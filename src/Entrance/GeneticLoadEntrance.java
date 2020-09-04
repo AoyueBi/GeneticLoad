@@ -13,8 +13,10 @@ import AoUtils.CountSites;
 import GermplasmInfo.GermplasmInfo;
 import GermplasmInfo.TaxaDB;
 import Plot.PCA;
+import Plot.Tree;
 import PopulationAnalysis.AoIntrogression;
 import PopulationAnalysis.DeleteriousCountbyPop;
+import PopulationAnalysis.Fst;
 import PopulationAnalysis.XPCLR;
 import WheatGeneticLoad.*;
 import gnu.trove.list.array.TIntArrayList;
@@ -66,7 +68,8 @@ public class GeneticLoadEntrance {
 //        new  FilterVCF2();
 
 //        new AoWheatTriads();
-        new XPCLR();
+//        new XPCLR();
+        new Fst();
 
 
 
@@ -98,7 +101,7 @@ public class GeneticLoadEntrance {
         //new CalVCF()
         //new Circos();
 //        new Tree();
-        new PCA();
+//        new PCA();
 
     }
 

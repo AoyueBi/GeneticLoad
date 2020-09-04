@@ -44,6 +44,26 @@ public class Script {
 //        this.mergelogTxt("/Users/Aoyue/Documents/log_024", "/Users/Aoyue/Documents/ploidy.txt");
     }
 
+    /**
+     * 将标准化的结果进行滑窗处理
+     */
+    public void window(){
+
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/Cultivar_VS_Landrace_EU_exonRegion_0.0001_100_500.xpclr.txt.gz";
+        AoFile.readheader(infileS);
+        int chrColumn = 8;
+        int posIndex = 9;
+        int valueIndex = 10;
+        double window = 100000;
+        double step = 50000;
+        String name = new File(infileS).getName().split(".txt")[0] + "_" + window + "window_" + step + "step.txt.gz";
+        String parent = new File(infileS).getParent();
+        String outfileS = new File(parent,name).getAbsolutePath();
+
+        System.out.println("nohup java -jar 051_AoWindowScan.jar " + infileS + " " + chrColumn + " " + posIndex + " " + valueIndex + " " + window + " " + step + " " + outfileS + " &" );
+    }
+
+
     public void script_sout() {
 //        String[] chrArr = {"1A", "1B", "2A", "2B", "3A", "3B", "4A", "4B", "5A", "5B", "6A", "6B", "7A", "7B"};
 //        String[] chrArr = {"1D","2D", "3D", "4D", "5D", "6D","7D"};

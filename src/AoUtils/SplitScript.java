@@ -10,7 +10,9 @@ import pgl.infra.utils.PStringUtils;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  *
@@ -24,6 +26,91 @@ public class SplitScript {
 //        this.splitScript("/Users/Aoyue/Documents/sh_filterMafbyPopHexaTetra20191026.sh", "sh_filterMafbyPopHexaTetra", 9, 3);
         
     }
+
+    /**
+     * 升级版，只需确定
+     * @param infileS
+     * @param numcmd
+     */
+    public static void splitScript3(String infileS, int numcmd) {
+        String parentS = new File(infileS).getParent();
+        new File(parentS,"splitScript").mkdirs();
+        String outfileDirS = new File(parentS,"splitScript").getAbsolutePath();
+        String shfileS = new File(outfileDirS,"sh_split.sh").getAbsolutePath();
+        String nameprefix = new File(infileS).getName().split(".sh")[0];
+        int fileNum = Integer.MIN_VALUE;
+
+        try {
+            int lineNum = new SplitScript().getLineNumwithoutHeader(infileS);
+            if (lineNum/numcmd == 0){
+                fileNum = lineNum/numcmd;
+            }else{
+                fileNum = lineNum/numcmd + 1;
+            }
+            String[] outfileS = new String[fileNum];
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter[] bw = new BufferedWriter[fileNum];
+            for (int i = 0; i < outfileS.length; i++) {
+                String num = PStringUtils.getNDigitNumber(3, i + 1);
+                outfileS[i] = new File(outfileDirS, nameprefix + "_" + num + ".sh").getAbsolutePath();
+                bw[i] = AoFile.writeFile(outfileS[i]);
+                String temp;
+                for (int j = 0; j < numcmd; j++) {
+                    if ((temp = br.readLine()) != null) {
+                        bw[i].write(temp);
+                        bw[i].newLine();
+                    }
+                }
+                bw[i].flush();
+                bw[i].close();
+            }
+            br.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        try {
+            File[] fs = new File(outfileDirS).listFiles();
+            fs = IOUtils.listFilesEndsWith(fs, ".sh");
+            Arrays.sort(fs);
+            BufferedWriter bw = IOUtils.getTextWriter(shfileS);
+            for (int i = 0; i < fs.length; i++) {
+                bw.write("sh " + fs[i].getName() + " > log_" + fs[i].getName().split(".sh")[0] +".txt 2>&1 &");
+                bw.newLine();
+            }
+            bw.flush();
+            bw.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    /**
+     * 获取没有表头的文件行数
+     * @param infileS
+     * @return
+     */
+    private int getLineNumwithoutHeader(String infileS){
+        int out = Integer.MIN_VALUE;
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            String temp = null;
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                cnt++;
+            }
+            br.close();
+            out = cnt;
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        return out;
+    }
+
 
     /**
      *
