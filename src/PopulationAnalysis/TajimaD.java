@@ -14,8 +14,8 @@ import java.util.List;
 public class TajimaD {
     public TajimaD(){
 //        this.mkTajimaDCommandbasedwinndow();
-//        this.window();
-        this.addGroupToTajimaDwindow();
+        this.window();
+//        this.addGroupToTajimaDwindow();
 
     }
 

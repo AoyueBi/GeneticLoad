@@ -1700,6 +1700,8 @@ public class AoFile {
                 br = IOUtils.getTextReader(infileS);
             }else if (infileS.endsWith(".Tajima.D")) {
                 br = IOUtils.getTextReader(infileS);
+            }else if (infileS.endsWith(".pi")) {
+                br = IOUtils.getTextReader(infileS);
             }
 
             String temp = br.readLine();

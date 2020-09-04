@@ -1,6 +1,7 @@
 package PopulationAnalysis;
 
 import AoUtils.AoFile;
+import AoUtils.AoWinScan;
 import AoUtils.SplitScript;
 import gnu.trove.list.array.TDoubleArrayList;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
@@ -15,7 +16,7 @@ import java.util.List;
 
 public class Pi {
     public Pi(){
-        this.mkPiCommandbasedwinndow();
+//        this.mkPiCommandbasedwinndow();
 //        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/102_Pi/001_script_based2Mwindow_1Mstep/pi_based2Mwindow_1Mstep_20200207.sh",23,4); //91cmd
 //        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/102_Pi/004_script_based100kbwindow_50kbstep/pi_based100kbwindow_50kbstep_20200213.sh",23,4); //91cmd
 
@@ -23,13 +24,64 @@ public class Pi {
 //        this.mkPiCommandbasedwinndow_LandraceSub();
 //        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/102_Pi/007_script_based2Mwindow_1Mstep_landraceWAEUEA/pi_based2Mwindow_1Mstep.sh",34,5); //168
 //        this.getMeanPIvaluefromLandraceWAEAEU();
+
+        this.window();
     }
 
+
+    public void window(){
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/004_mix_4A/007_pi";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/004_mix_4A/008_pi/";
+        List<File> fsList = AoFile.getFileListInDir(infileDirS);
+        fsList.parallelStream().forEach(f -> {
+            String infileS = f.getAbsolutePath();
+            AoFile.readheader(infileS);
+            int chrColumn = 0;
+            int posIndex = 1;
+            int valueIndex = 4;
+            double window = 2000000;
+            double step = 1000000;
+            String name = new File(infileS).getName().split(".pi")[0] + "_" + window + "window_" + step + "step.txt";
+            String parent = new File(infileS).getParent();
+            String outfileS = new File(outfileDirS,name).getAbsolutePath();
+
+            new AoWinScan().getwindowDistrbution_general(infileS,chrColumn,posIndex,valueIndex,window,step,outfileS);
+        });
+
+    }
+
+
     /**
-     * 根据4A染色体的
+     * 根据4A染色体的几个亚群，做一张综合的表
      */
     public void getPiRatio(){
+        String infileDirS = "";
+        String outfileS = "";
 
+
+        try {
+            String infileS = "";
+            BufferedReader br = IOUtils.getTextReader(infileS);
+            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            String temp = null;
+            int cnt = 0;
+            List<String> l = new ArrayList<>();
+            while ((temp = br.readLine()) != null) {
+                StringBuilder sb = new StringBuilder();
+                if (temp.startsWith("#")) {
+                    continue;
+                }
+                cnt++;
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
     /**
