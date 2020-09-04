@@ -42,7 +42,8 @@ public class Fst {
         //********************************* VMap2.0 after -- new Version ********************//
 //        this.mkFstCommandbasedwinndow2();
         //today I read the article "The mutational constraint spectrum quantified from variation in 141,456 humans"
-        this.addGroupToFstwindow();
+        this.window();
+//        this.addGroupToFstwindow();
     }
 
     /**
@@ -61,7 +62,7 @@ public class Fst {
              * 需要改动,header的名字可以自定义
              */
             //read header
-            bw.write(br.readLine() + "\tTaxa");
+            bw.write(br.readLine() + "\tGroup");
             bw.newLine();
 
             int cnttotal = 0;
@@ -72,7 +73,7 @@ public class Fst {
                  * 需要改动
                  */
                 String name = fs[i].getName();
-                String group = name.split("emmer")[1].split("_RH")[0];
+                String group = name.split("_chr")[0];
 
                 br = AoFile.readFile(infileS);
                 br.readLine(); //read header
@@ -97,6 +98,28 @@ public class Fst {
             e.printStackTrace();
             System.exit(1);
         }
+    }
+
+    public void window(){
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/004_mix_4A/001_fst";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/004_mix_4A/003_fst_windowbyJava";
+        List<File> fsList = AoFile.getFileListInDir(infileDirS);
+        fsList.parallelStream().forEach(f -> {
+            String infileS = f.getAbsolutePath();
+            AoFile.readheader(infileS);
+            int chrColumn = 0;
+            int posIndex = 1;
+            int valueIndex = 4;
+            double window = 2000000;
+            double step = 1000000;
+            String name = new File(infileS).getName().split(".fst")[0] + "_" + window + "window_" + step + "step.txt.gz";
+            String parent = new File(infileS).getParent();
+            String outfileS = new File(parent,name).getAbsolutePath();
+
+            System.out.println("nohup java -jar 051_AoWindowScan.jar " + infileS + " " + chrColumn + " " + posIndex + " " + valueIndex + " " + window + " " + step + " " + outfileS + " &" );
+        });
+
     }
 
 

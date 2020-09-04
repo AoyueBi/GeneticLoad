@@ -640,6 +640,8 @@ public class AoFile {
             bw=IOUtils.getTextWriter(outfileS);
         }else if (outfileS.endsWith(".md5")){
             bw=IOUtils.getTextWriter(outfileS);
+        }else if (outfileS.endsWith(".fst")){
+            bw=IOUtils.getTextWriter(outfileS);
         }
         return bw;
     }
@@ -1697,6 +1699,8 @@ public class AoFile {
             }
             else if (infileS.endsWith(".gz")) {
                 br = IOUtils.getTextGzipReader(infileS);
+            }else if (infileS.endsWith(".fst")) {
+                br = IOUtils.getTextReader(infileS);
             }
             String temp = br.readLine();
             List<String> l = PStringUtils.fastSplit(temp);
