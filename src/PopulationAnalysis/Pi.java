@@ -16,7 +16,7 @@ import java.util.List;
 
 public class Pi {
     public Pi(){
-//        this.mkPiCommandbasedwinndow();
+        this.mkPiCommandbasedwinndow();
 //        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/102_Pi/001_script_based2Mwindow_1Mstep/pi_based2Mwindow_1Mstep_20200207.sh",23,4); //91cmd
 //        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/102_Pi/004_script_based100kbwindow_50kbstep/pi_based100kbwindow_50kbstep_20200213.sh",23,4); //91cmd
 
@@ -25,7 +25,7 @@ public class Pi {
 //        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/102_Pi/007_script_based2Mwindow_1Mstep_landraceWAEUEA/pi_based2Mwindow_1Mstep.sh",34,5); //168
 //        this.getMeanPIvaluefromLandraceWAEAEU();
 
-        this.window();
+//        this.window();
     }
 
 
