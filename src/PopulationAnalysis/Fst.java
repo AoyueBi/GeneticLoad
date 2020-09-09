@@ -38,10 +38,183 @@ public class Fst {
 
         //********************************* VMap2.0 after -- new Version ********************//
 //        this.mkFstCommandbasedwinndow2();
-        //today I read the article "The mutational constraint spectrum quantified from variation in 141,456 humans"
+//        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/001_Fst/001_script_based100kwindow_50kstep/fst_baesd100kwindow_50kstep_20200907.sh",21,1);
 //        this.window();
-        this.addGroupToFstwindow();
+//        this.addGroupToFstwindow();
+
+//        this.getMeanFstValue();
+        this.getMatrixFst();
+
     }
+
+
+
+    /**
+     * 将分组文件转换成矩阵，并用来画PCA图,分成 AB D 两个文件
+     */
+    public void getMatrixFst(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/001_Fst/002_fst_based100000window_50000step/002/002_fst_mean.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/001_Fst/002_fst_based100000window_50000step/002/003_fst_matrix.txt";
+        String outfileS2 = new File(outfileS).getAbsolutePath().replaceFirst(".txt","_Dsub.txt");
+        //建立含有二维数组的List
+
+        String[] subspecies = {"Wild_emmer","Domesticated_emmer","Free_threshing_tetraploid","Landrace","Cultivar"};
+        String[] subspecies2 = {"Landrace","Cultivar","Ae.tauschii"};
+        Arrays.sort(subspecies);Arrays.sort(subspecies2);
+        double[][] aArray = new double[subspecies.length][subspecies.length];
+        double[][] bArray = new double[subspecies.length][subspecies.length];
+        double[][] dArray = new double[subspecies2.length][subspecies2.length];
+
+
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            BufferedWriter bw2 = AoFile.writeFile(outfileS2);
+
+            ///////////////////////////////////////////// A sub
+            String header = br.readLine();
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                if (!l.get(0).equals("A"))continue;
+                cnt++;
+                String pop1 = l.get(1).split("_VS_")[0];
+                String pop2 = l.get(1).split("_VS_")[1];
+                double fst = Double.parseDouble(l.get(2));
+                int index1 = Arrays.binarySearch(subspecies,pop1);
+                int index2 = Arrays.binarySearch(subspecies,pop2);
+                aArray[index1][index2] = fst;
+                aArray[index2][index1] = fst;
+            }
+            System.out.println(cnt + " chr A");
+            br.close();
+
+            bw.write("Sub\tGroup\t" + subspecies[0]);
+            for (int i = 1; i < subspecies.length; i++) {
+                bw.write("\t");
+                bw.write(subspecies[i]);
+            }
+            bw.newLine();
+            for (int i = 0; i < aArray.length; i++) {
+                bw.write("A\t" + subspecies[i]);
+                for (int j = 0; j < aArray[0].length; j++) {
+                    String v = String.valueOf(aArray[i][j]);
+                    bw.write("\t");
+                    bw.write(v);
+                }
+                bw.newLine();
+            }
+
+            ///////////////////////////////////////////// B sub
+            br = AoFile.readFile(infileS);
+            header = br.readLine();
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                if (!l.get(0).equals("B"))continue;
+                cnt++;
+                String pop1 = l.get(1).split("_VS_")[0];
+                String pop2 = l.get(1).split("_VS_")[1];
+                double fst = Double.parseDouble(l.get(2));
+                int index1 = Arrays.binarySearch(subspecies,pop1);
+                int index2 = Arrays.binarySearch(subspecies,pop2);
+                bArray[index1][index2] = fst;
+                bArray[index2][index1] = fst;
+
+            }
+            System.out.println(cnt + " chr B");
+            br.close();
+
+            for (int i = 0; i < bArray.length; i++) {
+                bw.write("B\t" + subspecies[i]);
+                for (int j = 0; j < bArray[0].length; j++) {
+                    String v = String.valueOf(bArray[i][j]);
+                    bw.write("\t");
+                    bw.write(v);
+                }
+                bw.newLine();
+            }
+
+            ///////////////////////////////////////////// D sub
+            br = AoFile.readFile(infileS);
+            header = br.readLine();
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                if (!l.get(0).equals("D"))continue;
+                cnt++;
+                String pop1 = l.get(1).split("_VS_")[0];
+                String pop2 = l.get(1).split("_VS_")[1];
+                double fst = Double.parseDouble(l.get(2));
+                int index1 = Arrays.binarySearch(subspecies2,pop1);
+                int index2 = Arrays.binarySearch(subspecies2,pop2);
+                dArray[index1][index2] = fst;
+                dArray[index2][index1] = fst;
+            }
+            System.out.println(cnt + " chr D");
+            br.close();
+
+
+            bw2.write("Sub\tGroup\t" + subspecies2[0]);
+            for (int i = 1; i < subspecies2.length; i++) {
+                bw2.write("\t");
+                bw2.write(subspecies2[i]);
+            }
+            bw2.newLine();
+            for (int i = 0; i < dArray.length; i++) {
+                bw2.write("D\t" + subspecies2[i]);
+                for (int j = 0; j < dArray[0].length; j++) {
+                    String v = String.valueOf(dArray[i][j]);
+                    bw2.write("\t");
+                    bw2.write(v);
+                }
+                bw2.newLine();
+            }
+            bw.flush();bw2.flush();
+            bw.close();bw2.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    public void getMeanFstValue(){
+        String taxaList = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/taxa_InfoDB.txt";
+        HashMap<String,String> hm = new AoFile().getHashMapStringKey(taxaList,15,3);//亚种和倍性之间的hashmap
+//        String infileDirS = "";
+//        String outfileS = "";
+
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/001_Fst/002_fst_based100000window_50000step/001";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/001_Fst/002_fst_based100000window_50000step/002/001_Fst_bySubspecies_20200907.txt";
+
+        List<File> fsList = IOUtils.getVisibleFileListInDir(infileDirS);
+        try {
+            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            bw.write("CHROM\tSub\tGroup\tPloidy\tMEAN_FST");
+            bw.newLine();
+            for (int i = 0; i < fsList.size(); i++) {
+                String infileS = fsList.get(i).getAbsolutePath();
+                String name = new File(infileS).getName(); //Cultivar_chr1D_based2000000Window_1000000step.windowed.pi
+                String chr = name.substring(name.indexOf("chr")+3,name.indexOf("chr")+5);
+                String sub = chr.substring(1);
+                String group = name.substring(0,name.indexOf("_chr"));
+                String ploidy = hm.get(group);
+                String value = this.getMean(infileS);
+                bw.write(chr + "\t" + sub + "\t" + group + "\t" + ploidy + "\t" + value);
+                bw.newLine();
+
+            }
+            bw.flush();
+            bw.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
 
     /**
      * 向window滑窗的结果添加group信息，区分不同分组的比较
@@ -638,15 +811,16 @@ public class Fst {
     public String getMean(String infileS){
         String out = null;
         try {
-            BufferedReader br = IOUtils.getTextReader(infileS);
+            BufferedReader br = AoFile.readFile(infileS);
             String temp = br.readLine();
             List<String> l = new ArrayList<>();
             TDoubleArrayList vList = new TDoubleArrayList();
             int cnt = 0;
             while ((temp = br.readLine()) != null) {
                 l = PStringUtils.fastSplit(temp);
-                String t = l.get(2);
-                if (t.startsWith("-n") || t.startsWith("n")) { //pos中 fst值为 -nan 的全部去掉
+//                String t = l.get(4); //********************** 需要修改
+                String t = l.get(4);
+                if (t.startsWith("-n") || t.startsWith("n") || t.startsWith("-") ) { //pos中 fst值为 -nan 的全部去掉
                     continue;
                 }
                 double v = Double.parseDouble(t);

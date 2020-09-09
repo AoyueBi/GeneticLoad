@@ -51,7 +51,7 @@ public class SplitScript {
             }
 
             String[] outfileS = new String[numfile];
-            BufferedReader br = IOUtils.getTextReader(infileS);
+            BufferedReader br = AoFile.readFile(infileS);
             BufferedWriter[] bw = new BufferedWriter[numfile];
             for (int i = 0; i < outfileS.length; i++) {
                 String num = PStringUtils.getNDigitNumber(3, i + 1);

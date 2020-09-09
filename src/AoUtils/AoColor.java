@@ -242,6 +242,36 @@ public class AoColor {
         return out;
     }
 
+    /**
+     *
+     * @param input
+     * @return
+     */
+
+    public static String subgenome(String[] input){
+        String out=null;
+
+        HashMap<String,String> hm = new HashMap<>();
+        String[] value = {"#fd8582","#967bce","#4bcdc6"};
+        String[] key = {"A","B","D"};
+        for (int i = 0; i < value.length; i++) {
+            hm.put(key[i],value[i]);
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("c(");
+        for (int i = 0; i < input.length; i++) {
+            String col = hm.get(input[i]);
+            sb.append("'").append(col).append("',");
+        }
+        sb.deleteCharAt(sb.length()-1);
+        sb.append(")");
+        out = sb.toString();
+        System.out.println(out);
+
+        return out;
+    }
+
 
     /**
      *

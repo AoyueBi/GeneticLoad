@@ -226,9 +226,23 @@ public class AoMath {
     }
 
 
+    /**
+     * there must be no NA value
+     * @param value
+     * @return
+     */
     public static String getRelativeMean(TDoubleArrayList value){
         String out = null;
-        double[] array = value.toArray();
+        TDoubleArrayList list = new TDoubleArrayList();
+
+
+        for (int i = 0; i < value.size(); i++) {
+            if (!Double.isNaN(value.get(i))){
+                list.add(value.get(i));
+            }
+        }
+
+        double[] array = list.toArray();
         DescriptiveStatistics d = new DescriptiveStatistics(array);
         double relativeMean = d.getMean(); //平均值
         out = String.format("%.4f", relativeMean);

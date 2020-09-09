@@ -11,12 +11,13 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
 public class Pi {
     public Pi(){
-        this.mkPiCommandbasedwinndow();
+//        this.mkPiCommandbasedwinndow();
 //        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/102_Pi/001_script_based2Mwindow_1Mstep/pi_based2Mwindow_1Mstep_20200207.sh",23,4); //91cmd
 //        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/102_Pi/004_script_based100kbwindow_50kbstep/pi_based100kbwindow_50kbstep_20200213.sh",23,4); //91cmd
 
@@ -25,14 +26,77 @@ public class Pi {
 //        new SplitScript().splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/102_Pi/007_script_based2Mwindow_1Mstep_landraceWAEUEA/pi_based2Mwindow_1Mstep.sh",34,5); //168
 //        this.getMeanPIvaluefromLandraceWAEAEU();
 
+
+        //        this.mkPiCommandbasedwinndow();
+                this.getMeanPIvalue();
 //        this.window();
+        this.addGroupToFstwindow();
+    }
+
+
+    /**
+     * 向window滑窗的结果添加group信息，区分不同分组的比较
+     */
+    public void addGroupToFstwindow(){
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/002_Pi/002_pi_based100000window_50000step/003_window";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/002_Pi/002_pi_based100000window_50000step/004_merge/001_Pi_2Mwindow_1Mstep.txt";
+        File[] fs = AoFile.getFileArrayInDir(infileDirS);
+        Arrays.sort(fs);
+        try {
+            String infileS = fs[0].getAbsolutePath();
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            /**
+             * 需要改动,header的名字可以自定义
+             */
+            //read header
+            bw.write(br.readLine() + "\tGroup");
+            bw.newLine();
+
+            int cnttotal = 0;
+            //read context
+            for (int i = 0; i < fs.length; i++) {
+                infileS = fs[i].getAbsolutePath();
+                /**
+                 * 需要改动
+                 */
+                String name = fs[i].getName();
+                String group = name.split("_chr")[0];
+
+                br = AoFile.readFile(infileS);
+                br.readLine(); //read header
+                String temp = null;
+                int cnt = 0;
+                while ((temp = br.readLine()) != null) {
+                    cnt++;
+                    cnttotal++;
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(temp).append("\t").append(group);
+                    bw.write(sb.toString());
+                    bw.newLine();
+                }
+                System.out.println(fs[i].getName() + "\t" + cnt);
+            }
+            System.out.println("Total lines without header count is " + cnttotal + " at merged file " + outfileS );
+            br.close();
+            bw.flush();
+            bw.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
 
     public void window(){
 
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/004_mix_4A/007_pi";
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/004_mix_4A/008_pi/";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/004_mix_4A/007_pi";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/004_mix_4A/008_pi/";
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/002_Pi/002_pi_based100000window_50000step/001";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/002_Pi/002_pi_based100000window_50000step/003_window";
+
         List<File> fsList = AoFile.getFileListInDir(infileDirS);
         fsList.parallelStream().forEach(f -> {
             String infileS = f.getAbsolutePath();
@@ -200,7 +264,7 @@ public class Pi {
             while ((temp = br.readLine()) != null) {
                 l = PStringUtils.fastSplit(temp);
                 String t = l.get(4);
-                if (t.startsWith("-n") || t.startsWith("n")) { //pos中 fst值为 -nan 的全部去掉
+                if (t.startsWith("-n") || t.startsWith("n")) { //pos中 pi值为 -nan 的全部去掉
                     continue;
                 }
                 double v = Double.parseDouble(t);
@@ -224,15 +288,22 @@ public class Pi {
      *
      */
     public void getMeanPIvalue(){
-        String taxaList = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/taxaList.txt";
-        HashMap<String,String> hm = new AoFile().getHashMapStringKey(taxaList,11,8);
+        String taxaList = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/taxa_InfoDB.txt";
+        HashMap<String,String> hm = new AoFile().getHashMapStringKey(taxaList,15,3);//亚种和倍性之间的hashmap
+//        String infileDirS = "";
+//        String outfileS = "";
+
+//        String taxaList = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/taxaList.txt";
+//        HashMap<String,String> hm = new AoFile().getHashMapStringKey(taxaList,11,8);//亚种和倍性之间的hashmap
 
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/102_Pi/002_pi_based2Mwindow_1Mstep";
 //        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/102_Pi/003_meadPI/Pi_bySubspecies_20200208.txt";
 
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/102_Pi/008_pi_based2Mwindow_1Mstep";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/102_Pi/009_meanPI/Pi_bySubspecies_20200208.txt";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/102_Pi/008_pi_based2Mwindow_1Mstep";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/102_Pi/009_meanPI/Pi_bySubspecies_20200208.txt";
 
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/002_Pi/002_pi_based100000window_50000step/001";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/002_Pi/002_pi_based100000window_50000step/002/001_Pi_bySubspecies_20200907.txt";
 
         List<File> fsList = IOUtils.getVisibleFileListInDir(infileDirS);
         try {

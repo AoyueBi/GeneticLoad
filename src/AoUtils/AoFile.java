@@ -596,6 +596,8 @@ public class AoFile {
             br = IOUtils.getTextReader(infileS);
         } else if (infileS.endsWith(".txt.gz")) {
             br = IOUtils.getTextGzipReader(infileS);
+        }else if (infileS.endsWith(".hwe.gz")) {
+            br = IOUtils.getTextGzipReader(infileS);
         }else if (infileS.endsWith(".gz")) {
             br = IOUtils.getTextGzipReader(infileS);
         }
@@ -622,6 +624,9 @@ public class AoFile {
         else if (infileS.endsWith(".md5")) {
             br = IOUtils.getTextReader(infileS);
         }
+        else if (infileS.endsWith(".hwe")) {
+            br = IOUtils.getTextReader(infileS);
+        }
         else if (infileS.endsWith(".fa")) {
             br = IOUtils.getTextReader(infileS);
         }
@@ -645,6 +650,8 @@ public class AoFile {
             bw=IOUtils.getTextWriter(outfileS);
         }else if (outfileS.endsWith(".fst")){
             bw=IOUtils.getTextWriter(outfileS);
+        }else if (outfileS.endsWith(".hwe")) {
+            bw = IOUtils.getTextWriter(outfileS);
         }
         return bw;
     }
@@ -1682,6 +1689,8 @@ public class AoFile {
             }
             else if (infileS.endsWith(".vcf.gz")) {
                 br = IOUtils.getTextGzipReader(infileS);
+            }else if (infileS.endsWith(".hwe.gz")) {
+                br = IOUtils.getTextGzipReader(infileS);
             }else if (infileS.endsWith(".vcf")) {
                 br = IOUtils.getTextReader(infileS);
             }
@@ -1702,7 +1711,10 @@ public class AoFile {
                 br = IOUtils.getTextReader(infileS);
             }else if (infileS.endsWith(".pi")) {
                 br = IOUtils.getTextReader(infileS);
+            } else if (infileS.endsWith(".hwe")) {
+                br = IOUtils.getTextReader(infileS);
             }
+
 
             String temp = br.readLine();
             List<String> l = PStringUtils.fastSplit(temp);

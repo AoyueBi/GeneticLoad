@@ -1,12 +1,16 @@
 package PopulationAnalysis;
 
 import AoUtils.AoFile;
+import AoUtils.AoMath;
 import AoUtils.AoWinScan;
 import AoUtils.SplitScript;
+import gnu.trove.list.array.TDoubleArrayList;
 import pgl.infra.utils.IOUtils;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -16,30 +20,99 @@ import java.util.List;
 public class AoP {
 
     public AoP(){
-        this.mkPCommand();
+//        this.mkPCommand();
+//        new SplitScript().splitScript4("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/005_P/001_script/P_basedSNP_20200906_removeChr4A.sh",20);
+
+//        this.window();
+        this.addGroupToPwindow();
+
 
     }
 
+    /**
+     * 向window滑窗的结果添加group信息，区分不同分组的比较
+     */
+    public void addGroupToPwindow(){
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/005_P/002";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/005_P/003/chr4A_basedSNP.Pvalue.txt";
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/005_P/004";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/005_P/003/chr4A_basedSNP_notRemovednan.Pvalue.txt";
+
+        File[] fs = AoFile.getFileArrayInDir(infileDirS);
+        Arrays.sort(fs);
+        try {
+            String infileS = fs[0].getAbsolutePath();
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            /**
+             * 需要改动,header的名字可以自定义
+             */
+            //read header
+            bw.write(br.readLine() + "\tGroup");
+            bw.newLine();
+
+            int cnttotal = 0;
+            //read context
+            for (int i = 0; i < fs.length; i++) {
+                infileS = fs[i].getAbsolutePath();
+                /**
+                 * 需要改动
+                 */
+                String name = fs[i].getName();
+                String group = name.split("_chr")[0];
+
+                br = AoFile.readFile(infileS);
+                br.readLine(); //read header
+                String temp = null;
+                int cnt = 0;
+                while ((temp = br.readLine()) != null) {
+                    cnt++;
+                    cnttotal++;
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(temp).append("\t").append(group);
+                    bw.write(sb.toString());
+                    bw.newLine();
+                }
+                System.out.println(fs[i].getName() + "\t" + cnt);
+            }
+            System.out.println("Total lines without header count is " + cnttotal + " at merged file " + outfileS );
+            br.close();
+            bw.flush();
+            bw.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+
+    /**
+     * 4A      55748   63/0/1  62.02/1.97/0.02 6.400000e+01    7.874016e-03    7.874016e-03    1.000000e+00
+     * 4A      55768   65/0/0  65.00/0.00/0.00 -nan    1.000000e+00    1.000000e+00    1.000000e+00
+     * cultivar 有 13 074 763 行，但是 -nan值有 8 846 767 行，占据超过一半
+     */
     public void window(){
 
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/004_mix_4A/007_pi";
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/004_mix_4A/008_pi/";
+        String infileDirS = "/data4/home/aoyue/vmap2/analysis/031_popGen/004_P/002_P/001";
+        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/031_popGen/004_P/002_P/002";
         List<File> fsList = AoFile.getFileListInDir(infileDirS);
         fsList.parallelStream().forEach(f -> {
             String infileS = f.getAbsolutePath();
             AoFile.readheader(infileS);
             int chrColumn = 0;
             int posIndex = 1;
-            int valueIndex = 4;
+            int valueIndex = 5;
             double window = 2000000;
             double step = 1000000;
-            String name = new File(infileS).getName().split(".pi")[0] + "_" + window + "window_" + step + "step.txt";
+            String name = new File(infileS).getName().split(".hwe.gz")[0] + "_" + window + "window_" + step + "step.txt";
             String parent = new File(infileS).getParent();
             String outfileS = new File(outfileDirS,name).getAbsolutePath();
 
             new AoWinScan().getwindowDistrbution_general(infileS,chrColumn,posIndex,valueIndex,window,step,outfileS);
         });
-
+        //java -jar PlantGenetics.jar > log_windowScanP_20200907.txt 2>&1 &
     }
 
 
