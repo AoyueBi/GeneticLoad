@@ -89,10 +89,39 @@ public class XPCLR {
 //        this.getXPCLRscript("ab");
         //对exon位点数进行计数
 //        CountSites.countSites_singleStream("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/002_snp_file");
-//        this.getZScore();
 
-//        this.X();
-        this.window();
+        this.X(); //对XPCLR结果进行初处理
+//        this.window();
+
+//        this.test();
+    }
+
+
+    /**
+     * 从XPCLR的结果中获取每条染色体的完成度，及最后一行到第几M
+     */
+    public void test(){
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/102_0.0001_100_500";
+        List<File> fsList = AoFile.getFileListInDir(infileDirS);
+        fsList.stream().forEach(f -> {
+            try {
+                String infileS = f.getAbsolutePath();
+                BufferedReader br = AoFile.readFile(infileS);
+                String header = br.readLine();
+                String temp = null;
+                String pos = null;
+                List<String> l = new ArrayList<>();
+                while ((temp = br.readLine()) != null) {
+                    l = PStringUtils.fastSplit(temp);
+                    pos = l.get(3);
+                }
+                String chr = f.getName().substring(3,6);
+                System.out.println(chr + "\t" + pos);
+                br.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     /**
@@ -118,9 +147,11 @@ public class XPCLR {
      * 将原始结果添加参考基因组的坐标，并对xpclr标准化
      */
     public void X(){
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/002_0.0001_100_500";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/002_0.0001_100_500";
 
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/001_0.0001_100_100000";
         String outfileDirS = AoString.autoOutfileDirS(infileDirS);
+
 
         new File(outfileDirS).mkdirs();
         System.out.println(outfileDirS);
@@ -154,11 +185,10 @@ public class XPCLR {
 
                 //开始处理标准化
                 double[] valueArray = valueList.toArray(new double[valueList.size()]);
-                double[] zscorevalueArray = AoMath.ZScore(valueArray);
                 double[] normalizedScore = AoMath.NormalizeScore(valueArray);
 
                 BufferedWriter bw = new AoFile().writeFile(outfileS);
-                bw.write("CHROM\tGrid\tN_SNPs\tPOS\tGenetic_pos\tXPCLR_score\tXPCLR_Zscore\tMax_s\tChrRef\tPosRef\tXPCLR_100score");
+                bw.write("CHROM\tGrid\tN_SNPs\tPOS\tGenetic_pos\tXPCLR_score\tMax_s\tChrRef\tPosRef\tXPCLR_100score");
                 bw.newLine();
                 StringBuilder sb = new StringBuilder();
                 for (int i = 0; i < recordList.size(); i++) {
@@ -172,7 +202,7 @@ public class XPCLR {
                     int posref = RefV1Utils.getPosOnChromosome(chrID,posID);
                     sb.setLength(0);
                     sb.append(l.get(0)).append("\t").append(l.get(1)).append("\t").append(l.get(2)).append("\t").
-                            append(l.get(3)).append("\t").append(l.get(4)).append("\t").append(l.get(5)).append("\t").append(zscorevalueArray[i]).
+                            append(l.get(3)).append("\t").append(l.get(4)).append("\t").append(l.get(5)).
                             append("\t").append(l.get(6)).append("\t").append(chrref).append("\t").append(posref).append("\t").append(normalizedScore[i]);
 
                     bw.write(sb.toString());
@@ -190,15 +220,6 @@ public class XPCLR {
 
         String outfileS = new File(new File(infileDirS).getParent(),fsList.get(0).getName().substring(7)).getAbsolutePath();
         AoFile.mergeTxt(outfileDirS,outfileS);
-    }
-
-
-    public void getZScore(){
-        double[] a = {3,5,8,20,15,37};
-        double[] b = AoMath.ZScore(a);
-        for (int i = 0; i < b.length; i++) {
-            System.out.println(b[i]);
-        }
     }
 
 
@@ -264,6 +285,8 @@ public class XPCLR {
     }
 
 
+
+
     public void getXPCLRscript(String ploidy){
 
         String infileDirS = null;
@@ -286,7 +309,7 @@ public class XPCLR {
             chrArr = new String[]{"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
             gwin = "0.00001";
             snpWin = "100";
-            gridSize = "100";
+            gridSize = "100000";
             pop1 = "Cultivar";
             pop2 = "Landrace_EU";
             for (int j = 0; j < chrArr.length; j++) {
@@ -299,7 +322,6 @@ public class XPCLR {
                 System.out.println("XPCLR -xpclr " + pop1fileS + " " + pop2fileS + " " +
                         snpInfoS + " " + outfileS + " -w1 " + gwin + " " + snpWin + " "+
                         gridSize + " " + chr + " -p0 0.95 " + " > " + logS + " &");
-
             }
         }
         else if (ploidy.equals("ab")){
@@ -1794,19 +1816,6 @@ public class XPCLR {
         return bound;
     }
 
-    /**
-     * Today I  just read REF and not programming
-     * Today I  just made annual summary and not programming
-     */
-
-    public void test(){
-        int a =12; int b = 12;
-        int c = Math.max(a,b);
-        float d = 0.131f;
-        System.out.println(String.format("%.6f", d/100));
-        System.out.println(d/100);
-
-    }
 
     /**
      *
