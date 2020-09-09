@@ -12,6 +12,7 @@ import daxing.common.RowTableTool;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.*;
 import gnu.trove.set.hash.TIntHashSet;
+import nonapi.io.github.classgraph.utils.FileUtils;
 import pgl.graph.tSaw.TablesawUtils;
 import pgl.infra.anno.gene.GeneFeature;
 import pgl.infra.range.Range;
@@ -29,6 +30,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.*;
 
 /**
@@ -50,7 +52,7 @@ public class VariantsSum {
 //        this.addAncestral();
 //        this.addDAF_parallel();
 //        this.addGerp();
-//        this.mergeExonSNPAnnotation();
+        this.mergeExonSNPAnnotation();
 
         //********************** for calculation ****************//
 //        this.getDAFtable();
@@ -98,13 +100,18 @@ public class VariantsSum {
 //        this.sortAndFilter();
 
         //*********** ratio of del/syn and nonsyn/syn on genome landscape ********************//
-//        this.WindowDelvsSyn_fromExonAnnotation();
+        this.WindowDelvsSyn_fromExonAnnotation();
 //        this.WindowDel_Nonsyn_vsSyn_fromExonAnnotation();
 //        this.addRecombinationfromScience(); //该方法凑效！思路：将 del nonysn syn 数据的滑窗设置成和science一致，然后再将重组率文件合并，后续进行其他处理。本次数据分析采用此方法。
 
-        this.getPosfromOneindivi();
+//        this.getPosfromOneindivi();
+
+
 
     }
+
+
+
 
     public void getPosfromOneindivi(){
         String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/016_exonVCF/chr001_exon_vmap2.1.vcf.gz";

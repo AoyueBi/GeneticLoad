@@ -38,7 +38,7 @@ public class DBgene {
         /**
          *  开始处理cultivar 和 landrace 的
          */
-//        this.getsubspeciesSNPAnnotation();
+        this.getsubspeciesSNPAnnotation();
 //        this.script_getTranscriptSum();
 //        this.mergeTxt();
 //        this.addGroupforgeneSummary();

@@ -498,6 +498,7 @@ public class AoFile {
         }
     }
 
+
     /**
      *
      * @param infileDirS
@@ -598,6 +599,8 @@ public class AoFile {
             br = IOUtils.getTextGzipReader(infileS);
         }else if (infileS.endsWith(".hwe.gz")) {
             br = IOUtils.getTextGzipReader(infileS);
+        }else if (infileS.endsWith(".csv.gz")) {
+            br = IOUtils.getTextGzipReader(infileS);
         }else if (infileS.endsWith(".gz")) {
             br = IOUtils.getTextGzipReader(infileS);
         }
@@ -644,6 +647,8 @@ public class AoFile {
             bw=IOUtils.getTextWriter(outfileS);
         }else if (outfileS.endsWith(".vcf.gz")) {
             bw = IOUtils.getTextGzipWriter(outfileS);
+        }else if (outfileS.endsWith(".csv.gz")) {
+            bw = IOUtils.getTextGzipWriter(outfileS);
         }else if (outfileS.endsWith(".sh")){
             bw=IOUtils.getTextWriter(outfileS);
         }else if (outfileS.endsWith(".md5")){
@@ -651,6 +656,8 @@ public class AoFile {
         }else if (outfileS.endsWith(".fst")){
             bw=IOUtils.getTextWriter(outfileS);
         }else if (outfileS.endsWith(".hwe")) {
+            bw = IOUtils.getTextWriter(outfileS);
+        }else if (outfileS.endsWith(".csv")) {
             bw = IOUtils.getTextWriter(outfileS);
         }
         return bw;
