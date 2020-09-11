@@ -64,13 +64,13 @@ public class GeneticLoadEntrance {
 //        new ScriptHapscanner2(); // 进行indel的hapscanner
 //        new  FilterVCF2();
 
-        new AoWheatTriads();
+//        new AoWheatTriads();
 //        new XPCLR();
 //        new Fst();
 //        new Pi();
-//        new TajimaD();
+        new TajimaD();
 //        new AoP();
-        new FdVSdel();
+//        new FdVSdel();
 
 
 

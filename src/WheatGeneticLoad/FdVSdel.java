@@ -37,6 +37,13 @@ public class FdVSdel {
 
     }
 
+    /**
+     * 将2个文件按列进行合并，chr pos 确定一个唯一值 有一个chr pos类
+     */
+    public void mergefileBycolumn(){
+
+
+    }
 
 
     public void mergeExonSNPAnnotation(){

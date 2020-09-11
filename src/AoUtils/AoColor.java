@@ -31,8 +31,10 @@ public class AoColor {
 //        String[] in = {"Ae.tauschii","Cultivar","Landrace","OtherHexaploid"};
 //        String[] in = {"Domesticated_emmer","Free_threshing_tetraploid","OtherTetraploid","Wild_emmer"};
 //        String[] in = {"Ae.tauschii", "Wild_emmer", "Domesticated_emmer","Free_threshing_tetraploid", "OtherTetraploid","Landrace","Cultivar","OtherHexaploid" };
-        String[] in = {"OtherHexaploid","Cultivar","Landrace",
-                "OtherTetraploid","Free_threshing_tetraploid","Domesticated_emmer","Wild_emmer","Ae.tauschii"};
+        String[] in = {"OtherHexaploid","Cultivar","Landrace", "OtherTetraploid","Free_threshing_tetraploid", "Domesticated_emmer","Wild_emmer", "Ae.tauschii"};
+
+//        String[] in = {"OtherHexaploid","Cultivar","Landrace",
+//                "OtherTetraploid","Free_threshing_tetraploid","Domesticated_emmer","Wild_emmer","Ae.tauschii"};
 
         AoColor.subspecies(in);
 

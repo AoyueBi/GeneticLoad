@@ -28,8 +28,8 @@ public class Pi {
 
 
         //        this.mkPiCommandbasedwinndow();
-                this.getMeanPIvalue();
-//        this.window();
+//                this.getMeanPIvalue();
+        this.window();
         this.addGroupToFstwindow();
     }
 

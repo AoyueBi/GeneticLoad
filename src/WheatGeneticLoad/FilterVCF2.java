@@ -70,7 +70,7 @@ public class FilterVCF2 {
 
 //        this.mkDepthOfVMapII(); //计算taxa的深度
 //        this.mkDepthSummary();
-        this.mergeTaxaDepth();
+//        this.mergeTaxaDepth();
 //        this.calSite();
 
 //        this.getMergedSubsetVCF_Hexaploid();

@@ -19,6 +19,7 @@ public class TajimaD {
 
     }
 
+
     public void addGroupToTajimaDwindow(){
         String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/004_mix_4A/005_TajimaD_windowbyJava";
         String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/004_mix_4A/006_TajimaD/chr4A.windowed.weir.TajimaD.txt.gz";
@@ -72,8 +73,12 @@ public class TajimaD {
 
     public void window(){
 
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/004_mix_4A/004_TajimaD";
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/004_mix_4A/005_TajimaD_windowbyJava";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/004_mix_4A/004_TajimaD";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/004_mix_4A/005_TajimaD_windowbyJava";
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/003_TajimaD/002_TajimaD_based50000window/001";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/003_TajimaD/002_TajimaD_based50000window/002_windowbyJava";
+
         List<File> fsList = AoFile.getFileListInDir(infileDirS);
         fsList.parallelStream().forEach(f -> {
             String infileS = f.getAbsolutePath();
