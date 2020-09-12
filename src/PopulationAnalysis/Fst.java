@@ -39,8 +39,8 @@ public class Fst {
         //********************************* VMap2.0 after -- new Version ********************//
 //        this.mkFstCommandbasedwinndow2();
 //        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/001_Fst/001_script_based100kwindow_50kstep/fst_baesd100kwindow_50kstep_20200907.sh",21,1);
-        this.window();
-//        this.addGroupToFstwindow();
+//        this.window();
+        this.addGroupToFstwindow();
 
 //        this.getMeanFstValue();
 //        this.getMatrixFst();
@@ -220,9 +220,13 @@ public class Fst {
      * 向window滑窗的结果添加group信息，区分不同分组的比较
      */
     public void addGroupToFstwindow(){
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/004_mix_4A/003_fst_windowbyJava";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/004_mix_4A/003_fst_windowbyJava";
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/004_mix_4A/001_fst";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/004_mix_4A/002_fst/chr4A.windowed.weir.fst";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/004_mix_4A/002_fst/chr4A.windowed.weir.fst";
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/001_Fst/002_fst_based100000window_50000step/003_windowbyJava";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/001_Fst/002_fst_based100000window_50000step/004_merge/001_Fst_2Mwindow_1Mstep.txt.gz";
+
         File[] fs = AoFile.getFileArrayInDir(infileDirS);
         Arrays.sort(fs);
         try {

@@ -34,10 +34,11 @@ public class Model {
 
         String infileDirS = "";
         String outfileDirS = "";
+    }
 
-
-
-
+    public void path(){
+        String infileDirS = "";
+        String outfileS = "";
     }
 
     /**
