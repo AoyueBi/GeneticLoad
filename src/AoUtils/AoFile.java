@@ -603,6 +603,8 @@ public class AoFile {
             br = IOUtils.getTextGzipReader(infileS);
         }else if (infileS.endsWith(".gz")) {
             br = IOUtils.getTextGzipReader(infileS);
+        }else if (infileS.endsWith(".TajimaD.gz")) {
+            br = IOUtils.getTextGzipReader(infileS);
         }
         else if (infileS.endsWith(".fst")) {
             br = IOUtils.getTextReader(infileS);

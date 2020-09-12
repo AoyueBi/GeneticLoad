@@ -28,16 +28,16 @@ public class Pi {
 
 
         //        this.mkPiCommandbasedwinndow();
-//                this.getMeanPIvalue();
-        this.window();
-        this.addGroupToFstwindow();
+                this.getMeanPIvalue();
+//        this.window();
+//        this.addGroupToPiwindow();
     }
 
 
     /**
      * 向window滑窗的结果添加group信息，区分不同分组的比较
      */
-    public void addGroupToFstwindow(){
+    public void addGroupToPiwindow(){
         String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/002_Pi/002_pi_based100000window_50000step/003_window";
         String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/002_Pi/002_pi_based100000window_50000step/004_merge/001_Pi_2Mwindow_1Mstep.txt";
         File[] fs = AoFile.getFileArrayInDir(infileDirS);

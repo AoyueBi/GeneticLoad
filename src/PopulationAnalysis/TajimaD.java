@@ -3,26 +3,112 @@ package PopulationAnalysis;
 import AoUtils.AoFile;
 import AoUtils.AoWinScan;
 import AoUtils.SplitScript;
+import gnu.trove.list.array.TDoubleArrayList;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import pgl.infra.utils.IOUtils;
+import pgl.infra.utils.PStringUtils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 public class TajimaD {
     public TajimaD(){
 //        this.mkTajimaDCommandbasedwinndow();
-        this.window();
+//        this.window();
 //        this.addGroupToTajimaDwindow();
+        this.getMeanTajimaDvalue();
 
+    }
+
+    /**
+     *
+     */
+    public void getMeanTajimaDvalue(){
+        String taxaList = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/taxa_InfoDB.txt";
+        HashMap<String,String> hm = new AoFile().getHashMapStringKey(taxaList,15,3);//亚种和倍性之间的hashmap
+//        String infileDirS = "";
+//        String outfileDirS = "";
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/003_TajimaD/002_TajimaD_based50000window/001";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/003_TajimaD/002_TajimaD_based50000window/004/001_TajimaD_bySubspecies_20200907.txt";
+
+
+        List<File> fsList = IOUtils.getVisibleFileListInDir(infileDirS);
+        try {
+            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            bw.write("CHROM\tSub\tGroup\tPloidy\tMEAN_TajimaD");
+            bw.newLine();
+            for (int i = 0; i < fsList.size(); i++) {
+                String infileS = fsList.get(i).getAbsolutePath();
+                String name = new File(infileS).getName(); //Cultivar_chr1D_based2000000Window_1000000step.windowed.pi
+                String chr = name.substring(name.indexOf("chr")+3,name.indexOf("chr")+5);
+                String sub = chr.substring(1);
+                String group = name.substring(0,name.indexOf("_chr"));
+                String ploidy = hm.get(group);
+                String value = this.getMean(infileS); //调用函数
+                bw.write(chr + "\t" + sub + "\t" + group + "\t" + ploidy + "\t" + value);
+                bw.newLine();
+
+            }
+            bw.flush();
+            bw.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    /**
+     * get mean from a file， if the value equals -nan, continue
+     *
+     * @param infileS
+     * @return
+     */
+    private String getMean(String infileS){
+        String out = null;
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            String temp = br.readLine();
+            List<String> l = new ArrayList<>();
+            TDoubleArrayList vList = new TDoubleArrayList();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                String t = l.get(3);
+                if (t.startsWith("-n") || t.startsWith("n")) { //pos中 pi值为 -nan 的全部去掉
+                    continue;
+                }
+                double v = Double.parseDouble(t);
+                vList.add(v);
+                cnt++; //有 fst值的位点数目
+            }
+            br.close();
+            double[] v = vList.toArray();
+            DescriptiveStatistics d = new DescriptiveStatistics(v);
+            double m = d.getMean();
+            out = String.format("%.6f", m);
+            System.out.println(infileS + " with mean pi " + out + " is completed");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+        return out;
     }
 
 
     public void addGroupToTajimaDwindow(){
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/004_mix_4A/005_TajimaD_windowbyJava";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/004_mix_4A/006_TajimaD/chr4A.windowed.weir.TajimaD.txt.gz";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/004_mix_4A/005_TajimaD_windowbyJava";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/004_mix_4A/006_TajimaD/chr4A.windowed.weir.TajimaD.txt.gz";
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/003_TajimaD/002_TajimaD_based50000window/002_windowbyJava";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/003_TajimaD/002_TajimaD_based50000window/003_merge/001_TajimaD_2Mwindow_1Mstep.txt";
+
         File[] fs = AoFile.getFileArrayInDir(infileDirS);
         Arrays.sort(fs);
         try {
@@ -94,7 +180,6 @@ public class TajimaD {
 
             new AoWinScan().getwindowDistrbution_general(infileS,chrColumn,posIndex,valueIndex,window,step,outfileS);
         });
-
     }
 
 
