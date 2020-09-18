@@ -141,7 +141,7 @@ public class AoMath {
 
             //以下是长表，比较短，实用。
             int[] numfactor = new int[lset1.size()];
-            System.out.print("sum");
+            System.out.print("region");
             for (int i = 0; i < lset1.size(); i++) {
                 System.out.print("\t" + lset1.get(i));
             }

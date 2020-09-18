@@ -12,6 +12,7 @@ import AoUtils.CalVCF;
 import AoUtils.CountSites;
 import GermplasmInfo.GermplasmInfo;
 import GermplasmInfo.TaxaDB;
+import Plot.AoMap;
 import Plot.PCA;
 import Plot.Tree;
 import PopulationAnalysis.*;
@@ -57,7 +58,7 @@ public class GeneticLoadEntrance {
 //        new GermplasmInfo();
 //        new VariantsSum();
 //        new SIFT();
-//        new DeleteriousCountbyIndi(); //根据数据库进行个体Load计算
+        new DeleteriousCountbyIndi(); //根据数据库进行个体Load计算
 //        new TaxaDB();  //taxa 类
 //        new AoIntrogression();
 
@@ -66,12 +67,12 @@ public class GeneticLoadEntrance {
 
 //        new AoWheatTriads();
 //        new XPCLR();
-        new Fst();
+//        new Fst();
 //        new Pi();
 //        new TajimaD();
 //        new AoP();
 //        new FdVSdel();
-
+//        new AoMap();
 
 
 

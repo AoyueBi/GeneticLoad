@@ -27,12 +27,11 @@ public class FdVSdel {
     public FdVSdel(){
 
         //*********** Fd vs del ********************//
-//        this.testFTTvsLR();
+//        this.testSubspecies();
 //        this.mergeFd();
 
 //        this.getsubspeciesSNPAnnotation();
 //        this.mergeExonSNPAnnotation();
-
         this.WindowDelvsSyn_fromExonAnnotation();
 
     }
@@ -47,8 +46,11 @@ public class FdVSdel {
 
 
     public void mergeExonSNPAnnotation(){
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/040_fdVSdel/003_SNPannotation_LR_EU/001";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/040_fdVSdel/003_SNPannotation_LR_EU/002/001_exonSNP_anno_landraceEU.txt.gz";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/040_fdVSdel/003_SNPannotation_LR_EU/001";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/040_fdVSdel/003_SNPannotation_LR_EU/002/001_exonSNP_anno_landraceEU.txt.gz";
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/040_fdVSdel/006_SNPannotation_CL/001";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/040_fdVSdel/006_SNPannotation_CL/002/001_exonSNP_anno_Cultivar.txt.gz";
         AoFile.mergeTxt(infileDirS,outfileS);
     }
 
@@ -61,8 +63,12 @@ public class FdVSdel {
         int windowSize = 2000000; //2 M
         int windowStep = 1000000; //1 M
 
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/040_fdVSdel/003_SNPannotation_LR_EU/002/001_exonSNP_anno_landraceEU.txt.gz";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/040_fdVSdel/004_genomeScan/001/001_delVSsynOnchr_" + windowSize + "Window_" + windowStep + "step.txt";
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/040_fdVSdel/003_SNPannotation_LR_EU/002/001_exonSNP_anno_landraceEU.txt.gz";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/040_fdVSdel/004_genomeScan/001/001_delVSsynOnchr_" + windowSize + "Window_" + windowStep + "step.txt";
+
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/040_fdVSdel/006_SNPannotation_CL/002/001_exonSNP_anno_Cultivar.txt.gz";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/040_fdVSdel/007_genomeScan/001/001_delVSsynOnchr_" + windowSize + "Window_" + windowStep + "step.txt";
+
 
 //        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/019_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
 //        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/016_genomeScan_delvsSyn/001/001_delVSsynOnChr_" + windowSize + "Window" + windowStep + "step.txt";
@@ -249,9 +255,14 @@ public class FdVSdel {
 
 
         //需要修改
+//        //landrace_EU
+//        String taxaList = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/012_GroupbyContinent/LR_EU.txt";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/040_fdVSdel/003_SNPannotation_LR_EU/001";
+
         //landrace_EU
-        String taxaList = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/012_GroupbyContinent/LR_EU.txt";
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/040_fdVSdel/003_SNPannotation_LR_EU/001";
+        String taxaList = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/012_GroupbyContinent/Cultivar.txt";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/040_fdVSdel/006_SNPannotation_CL/001";
+
 
         List<File> fsList = AoFile.getFileListInDir(infileDirS);
         AoFile.readheader(fsList.get(0).getAbsolutePath());
@@ -264,8 +275,8 @@ public class FdVSdel {
             //******* step2: 根据annotation 库， pos列， pols目标集合， 输出文件获取 注释文件的子集 ******//
             String infileS = f.getAbsolutePath();
             //需要修改，输出文件的名字 //需要修改，输出文件的名字 //需要修改，输出文件的名字
-            String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "_landraceEU_.txt.gz").getAbsolutePath();
-//            String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "_cultivar_.txt.gz").getAbsolutePath();
+//            String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "_landraceEU_.txt.gz").getAbsolutePath();
+            String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "_Cultivar_.txt.gz").getAbsolutePath();
             int colmnIndex = 2;
             File out = AoFile.filterTxtLines(infileS,2,posl,outfileS);
         });
@@ -273,23 +284,34 @@ public class FdVSdel {
     }
 
     public void mergeFd(){
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/040_fdVSdel/002_Fd_FTTvsLR";
-        String outfileS= "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/040_fdVSdel/002/Fd_vmap2.1.geno.Landrace.Free_threshing_tetraploid.txt";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/040_fdVSdel/002_Fd_FTTvsLR";
+//        String outfileS= "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/040_fdVSdel/002/Fd_vmap2.1.geno.Landrace.Free_threshing_tetraploid.txt";
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/040_fdVSdel/005_Fd_FTTvsCL";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/040_fdVSdel/005/Fd_vmap2.1.geno.Cultivar.Free_threshing_tetraploid.csv";
         AoFile.mergeTxt(infileDirS,outfileS);
     }
 
     /**
      * 获取ftt -> 欧洲LR 渗入的结果
      */
-    public void testFTTvsLR(){ //LR指的是欧洲的LR
+    public void testSubspecies(){ //LR指的是欧洲的LR
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/040_fdVSdel/001_fdBySubspeciesPop_2MWindow1MStep";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/040_fdVSdel/002_Fd_FTTvsLR";
+
         String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/040_fdVSdel/001_fdBySubspeciesPop_2MWindow1MStep";
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/040_fdVSdel/002_Fd_FTTvsLR";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/040_fdVSdel/005_Fd_FTTvsCL";
+
+
         List<File> fsList = AoFile.getFileListInDir(infileDirS);
         List<File> fList = new ArrayList<>();
         for (int i = 0; i < fsList.size(); i++) {
             File f = fsList.get(i);
             String filename = f.getName();
-            if (!filename.contains("Landrace.Free_threshing_tetraploid") && (!filename.contains("Landrace.Ae.tauschii")))continue;
+//            if (!filename.contains("Landrace.Free_threshing_tetraploid") && (!filename.contains("Landrace.Ae.tauschii")))continue;
+            if (!filename.contains("Cultivar.Free_threshing_tetraploid") && (!filename.contains("Cultivar.Ae.tauschii")))continue;
+
+
             fList.add(f);
         }
 
