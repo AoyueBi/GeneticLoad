@@ -3,6 +3,7 @@ package WheatGeneticLoad;
 import AoUtils.AoFile;
 import AoUtils.CalVCF;
 import AoUtils.WheatUtils;
+import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TIntArrayList;
 import pgl.infra.anno.gene.GeneFeature;
 import pgl.infra.range.Range;
@@ -16,6 +17,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -32,16 +34,277 @@ public class FdVSdel {
 
 //        this.getsubspeciesSNPAnnotation();
 //        this.mergeExonSNPAnnotation();
-        this.WindowDelvsSyn_fromExonAnnotation();
+//        this.WindowDelvsSyn_fromExonAnnotation();
+
+//        this.getPGIforAllHexaploid();
+        this.getPGIforAllHexaploid2();
+
 
     }
 
     /**
-     * 将2个文件按列进行合并，chr pos 确定一个唯一值 有一个chr pos类
+     * 获取所有个体亚基因组下不同亚群供体的Introgression 量
      */
-    public void mergefileBycolumn(){
+    public void getPGIforAllHexaploid2(){
+        String taxaInfoDB = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/taxa_InfoDB.txt";
+        AoFile.readheader(taxaInfoDB);
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/042_fd/000_sourceData_fdOfMinimumIBSDistance.byIndividual";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/042_fd/001_indiviPGI/002_indiviPGI_donorbySubspecies.txt";
+
+        HashMap<String,String> hm = AoFile.getHashMapStringKey(taxaInfoDB,23,24);
+
+        File[] fs = AoFile.getFileArrayInDir(infileDirS);
+        try{
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            bw.write("TaxaID\tTaxa");
+            bw.write("\tPGI_AT\tPGI_DE\tPGI_FT\tPGI_WE");
+            bw.write("\tPGI_ABsub_AT\tPGI_ABsub_DE\tPGI_ABsub_FT\tPGI_ABsub_WE");
+            bw.write("\tPGI_Asub_AT\tPGI_Asub_DE\tPGI_Asub_FT\tPGI_Asub_WE");
+            bw.write("\tPGI_Bsub_AT\tPGI_Bsub_DE\tPGI_Bsub_FT\tPGI_Bsub_WE");
+            bw.write("\tPGI_Dsub_AT\tPGI_Dsub_DE\tPGI_Dsub_FT\tPGI_Dsub_WE");
+            bw.write(" \tRegion");bw.newLine();
+            int cnt=0;
+            for (int i = 0; i < fs.length; i++) {
+                String infileS = fs[i].getAbsolutePath();
+                cnt++;
+                String taxa = new File(infileS).getName().split("_vmap2.1")[0];
+                String BySubContinent = hm.get(taxa);
+                String out = this.getPGIforIndivibysubspecies(infileS);
+                StringBuilder sb = new StringBuilder();
+                sb.append(cnt).append("\t").append(out);
+
+                bw.write(cnt + "\t" + out + "\t" + BySubContinent);bw.newLine();
+                if (cnt % 20 == 0) System.out.println(cnt + " has completed");
+            }
+
+            bw.flush();bw.close();
+
+        }catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+    }
 
 
+    /**
+     * 获取亚基因组中的四倍体亚种对六倍体的渗入情况 by sub by subspecies
+     */
+    public String getPGIforIndivibysubspecies(String infileS){
+        /**
+         chr	start	end	mid	sites	sitesUsed	ABBA	BABA	D	fd	fdM	MiniIBSP3
+         1A	1145386	1165204	1157825	100	37	1.3	0	1	1	0.9559	DE001
+         1A	1160037	1172622	1164866	100	41	0.925	0	1	1	0.9113	DE002
+         1A	1165211	1175279	1170722	100	32	0.625	0	1	1	0.7669	DE003
+         */
+        String out = null;
+//        String infileS = "/Users/Aoyue/Documents/CL001_vmap2.1.csv";
+        String taxa = new File(infileS).getName().split("_vmap2.1")[0];
+        double totalSize = 27828.939014; //Mb
+        double TotalSizeAsub = 9765.694567;
+        double TotalSizeBsub = 10247.337032;
+        double TotalSizeDsub = 7815.907415;
+        double TotalSizeABsub = 20013.031599;
+
+        String[] donorArray = {"AT","DE","FT","WE"}; Arrays.sort(donorArray);
+        TDoubleArrayList[] PGI = new TDoubleArrayList[donorArray.length];
+        TDoubleArrayList[] PGIAB = new TDoubleArrayList[donorArray.length];
+        TDoubleArrayList[] PGIA = new TDoubleArrayList[donorArray.length];
+        TDoubleArrayList[] PGIB = new TDoubleArrayList[donorArray.length];
+        TDoubleArrayList[] PGID = new TDoubleArrayList[donorArray.length];
+
+        for (int i = 0; i < PGI.length; i++) {
+            PGI[i] = new TDoubleArrayList();
+            PGIAB[i] = new TDoubleArrayList();
+            PGIA[i] = new TDoubleArrayList();
+            PGIB[i] = new TDoubleArrayList();
+            PGID[i] = new TDoubleArrayList();
+        }
+
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            String header = br.readLine();
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            double D = Double.NaN;
+            double fd = Double.NaN;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp,",");
+                String chr = l.get(0);
+                String sub = chr.substring(1);
+                int start = Integer.parseInt(l.get(1));
+                int end = Integer.parseInt(l.get(2));
+                D = Double.parseDouble(l.get(8));
+                fd = Double.parseDouble(l.get(9));
+                String donor = l.get(11);
+                String donorSubspecies = donor.substring(0,2);
+                if (D <= 0) continue;
+                if (fd != 1) continue;
+                double size = (double) (end - start)/1000000;
+                int index = Arrays.binarySearch(donorArray,donorSubspecies);
+                if (sub.equals("A")){
+                    PGI[index].add(size);
+                    PGIAB[index].add(size);
+                    PGIA[index].add(size);
+                }
+                if (sub.equals("B")){
+                    PGI[index].add(size);
+                    PGIAB[index].add(size);
+                    PGIB[index].add(size);
+
+                }
+                if (sub.equals("D")){
+                    PGI[index].add(size);
+                    PGID[index].add(size);
+                }
+                cnt++;
+            }
+            br.close();
+
+//            System.out.println(taxa + "\t" + PGI.sum() + "\t" + PGIsub[0].sum() + "\t"+ PGIsub[1].sum() + "\t"+ PGIsub[2].sum() + "\t"+ PGIAB.sum());
+
+            StringBuilder sb = new StringBuilder(taxa);
+
+            for (int i = 0; i < donorArray.length ; i++) { //PGI
+                sb.append("\t").append(PGI[i].sum()/totalSize);
+            }
+
+            for (int i = 0; i < donorArray.length ; i++) { //PGI_AB
+                sb.append("\t").append(PGIAB[i].sum()/TotalSizeABsub);
+            }
+
+            for (int i = 0; i < donorArray.length ; i++) {  //PGI_A
+                sb.append("\t").append(PGIA[i].sum()/TotalSizeAsub);
+            }
+
+            for (int i = 0; i < donorArray.length ; i++) { //PGI_B
+                sb.append("\t").append(PGIB[i].sum()/TotalSizeBsub);
+            }
+
+            for (int i = 0; i < donorArray.length ; i++) { //PGI_D
+                sb.append("\t").append(PGID[i].sum()/TotalSizeDsub);
+            }
+
+            out = sb.toString();
+            System.out.println(out);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        return out;
+    }
+
+
+    public void getPGIforAllHexaploid(){
+        String taxaInfoDB = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/taxa_InfoDB.txt";
+        AoFile.readheader(taxaInfoDB);
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/042_fd/000_sourceData_fdOfMinimumIBSDistance.byIndividual";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/042_fd/001_indiviPGI/001_indiviPGI.txt";
+
+        HashMap<String,String> hm = AoFile.getHashMapStringKey(taxaInfoDB,23,24);
+
+        File[] fs = AoFile.getFileArrayInDir(infileDirS);
+        try{
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            bw.write("TaxaID\tTaxa\tPGI\tPGI_Asub\tPGI_Bsub\tPGI_Dsub\tPGI_ABsub\tRegion");bw.newLine();
+            int cnt=0;
+            for (int i = 0; i < fs.length; i++) {
+                String infileS = fs[i].getAbsolutePath();
+                cnt++;
+                String taxa = new File(infileS).getName().split("_vmap2.1")[0];
+                String BySubContinent = hm.get(taxa);
+                String out = this.getPGIforIndivi(infileS);
+                bw.write(cnt + "\t" + out + "\t" + BySubContinent);bw.newLine();
+
+                if (cnt % 20 == 0) System.out.println(cnt + " has completed");
+            }
+
+            bw.flush();bw.close();
+
+        }catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+    }
+
+
+    /**
+     *  获取亚基因组水平的PGI，不区分亚基因组
+     */
+    public String getPGIforIndivi(String infileS){
+        /**
+         chr	start	end	mid	sites	sitesUsed	ABBA	BABA	D	fd	fdM	MiniIBSP3
+         1A	1145386	1165204	1157825	100	37	1.3	0	1	1	0.9559	DE001
+         1A	1160037	1172622	1164866	100	41	0.925	0	1	1	0.9113	DE002
+         1A	1165211	1175279	1170722	100	32	0.625	0	1	1	0.7669	DE003
+         */
+        String out = null;
+//        String infileS = "/Users/Aoyue/Documents/CL001_vmap2.1.csv";
+        String taxa = new File(infileS).getName().split("_vmap2.1")[0];
+        double totalSize = 27828.939014; //Mb
+        double TotalSizeAsub = 9765.694567;
+        double TotalSizeBsub = 10247.337032;
+        double TotalSizeDsub = 7815.907415;
+        double TotalSizeABsub = 20013.031599;
+
+        String[] subArray = {"A","B","D"}; Arrays.sort(subArray);
+        TDoubleArrayList PGI = new TDoubleArrayList();
+        TDoubleArrayList PGIAB = new TDoubleArrayList();
+        TDoubleArrayList[] PGIsub = new TDoubleArrayList[subArray.length];
+        for (int i = 0; i < PGIsub.length; i++) {
+            PGIsub[i] = new TDoubleArrayList();
+        }
+
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            String header = br.readLine();
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            double D = Double.NaN;
+            double fd = Double.NaN;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp,",");
+                String chr = l.get(0);
+                String sub = chr.substring(1);
+                int start = Integer.parseInt(l.get(1));
+                int end = Integer.parseInt(l.get(2));
+                D = Double.parseDouble(l.get(8));
+                fd = Double.parseDouble(l.get(9));
+                String donor = l.get(11);
+                if (D <= 0) continue;
+                if (fd != 1) continue;
+                double size = (double) (end - start)/1000000;
+                int index = Arrays.binarySearch(subArray,sub);
+                PGIsub[index].add(size);
+                PGI.add(size);
+                if (sub.equals("A") || sub.equals("B")){
+                    PGIAB.add(size);
+                }
+                cnt++;
+            }
+            br.close();
+
+//            System.out.println(taxa + "\t" + PGI.sum() + "\t" + PGIsub[0].sum() + "\t"+ PGIsub[1].sum() + "\t"+ PGIsub[2].sum() + "\t"+ PGIAB.sum());
+
+            StringBuilder sb = new StringBuilder();
+            sb.append(taxa).append("\t").append(PGI.sum()/totalSize);
+            sb.append("\t").append(PGIsub[0].sum()/TotalSizeAsub);
+            sb.append("\t").append(PGIsub[1].sum()/TotalSizeBsub);
+            sb.append("\t").append(PGIsub[2].sum()/TotalSizeDsub);
+            sb.append("\t").append(PGIAB.sum()/TotalSizeABsub);
+            out = sb.toString();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        return out;
     }
 
 

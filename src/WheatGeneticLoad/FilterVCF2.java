@@ -54,7 +54,7 @@ public class FilterVCF2 {
 //        CountSites.mergeChr1and2txt_int("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/029_countSiteSummary/002_vmap2.0/log_043_countSitesinFastCallformat_fixVMap2.0_20200601.txt","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/029_countSiteSummary/002_vmap2.0/CountVariants_fixVMap2.0_202006.txt");
 //        CountSites.mergeChr1and2txt_int("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/029_countSiteSummary/002_vmap2.0/log_043_countSitesinFastCallformat_fixVMap2.0_20200604.txt","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/029_countSiteSummary/002_vmap2.0/CountVariants_fixVMap2.0_202006.txt");
 
-//        this.bgzip();
+        this.bgzip();
 //        this.sortTaxaName();
 
         /**
@@ -521,17 +521,30 @@ public class FilterVCF2 {
         // java -jar PlantGenetics.jar /data4/home/aoyue/vmap2/genotype/mergedVCF/102_VMap2.0 /data4/home/aoyue/vmap2/genotype/mergedVCF/103_VMap2.1 > log_filterAlleletoBi_20200525.txt 2>&1 &
 
         //#/****************************** hexaploid ******************************/#
-        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/103_VMap2.1";
-        String outfileDirS ="/data4/home/aoyue/vmap2/genotype/mergedVCF/104_VCFbyPop/001_byPloidy";
-        String logDirS = "/data4/home/aoyue/vmap2/aaPlantGenetics/log_20200526";
-        String taxaListS = "/data4/home/aoyue/vmap2/analysis/000_taxaList/101_taxaListbyPloidy/BreadWheat_S420.txt";
+//        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/103_VMap2.1";
+//        String outfileDirS ="/data4/home/aoyue/vmap2/genotype/mergedVCF/104_VCFbyPop/001_byPloidy";
+//        String logDirS = "/data4/home/aoyue/vmap2/aaPlantGenetics/log_20200526";
+//        String taxaListS = "/data4/home/aoyue/vmap2/analysis/000_taxaList/101_taxaListbyPloidy/BreadWheat_S420.txt";
+
+        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/108_VMap2.0_final";
+        String outfileDirS ="/data4/home/aoyue/vmap2/analysis/032_vcf_S200_hexaploid";
+        String logDirS = "/data4/home/aoyue/vmap2/aaPlantGenetics/log_20200921";
+        String taxaListS = "/data4/home/aoyue/vmap2/analysis/000_taxaList/103_S196_hexaploid_10Xcoverage/S196_hexaploid_10Xcoverage.txt";
+
 
         String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
         for (int i = 0; i < chrArr.length; i++) {
-            String infileS = new File(infileDirS,"chr" + chrArr[i] + "_vmap2.1.vcf").getAbsolutePath();
-            String outfileS = new File(outfileDirS,"chr" + chrArr[i] + "_vmap2.1_hexaploid.vcf").getAbsolutePath();
+//            String infileS = new File(infileDirS,"chr" + chrArr[i] + "_vmap2.1.vcf").getAbsolutePath();
+//            String outfileS = new File(outfileDirS,"chr" + chrArr[i] + "_vmap2.1_hexaploid.vcf").getAbsolutePath();
+//            String logfileS = new File(logDirS,"log_" + new File(outfileS).getName().split(".gz")[0]).getAbsolutePath(); //不管是不是gz结尾，我们只取gz前的部分，妙！
+//            System.out.println("java -jar 049_extractVCF_GL.jar " + infileS + " " + outfileS + " " + taxaListS + " > " + logfileS + " 2>&1 &");
+
+            String infileS = new File(infileDirS,"chr" + chrArr[i] + "_vmap2.0.vcf.gz").getAbsolutePath();
+            String outfileS = new File(outfileDirS,"chr" + chrArr[i] + "_vmap2.0_hexaploid_S196.vcf").getAbsolutePath();
             String logfileS = new File(logDirS,"log_" + new File(outfileS).getName().split(".gz")[0]).getAbsolutePath(); //不管是不是gz结尾，我们只取gz前的部分，妙！
             System.out.println("java -jar 049_extractVCF_GL.jar " + infileS + " " + outfileS + " " + taxaListS + " > " + logfileS + " 2>&1 &");
+
+
         }
 
         //#/****************************** tetraploid ******************************/#
@@ -1172,7 +1185,8 @@ public class FilterVCF2 {
 
         for (int i = 0; i < chrArr.length; i++) {
             String chr = chrArr[i];
-            System.out.println("bgzip chr" + chr + "_vmap2.0.vcf && tabix -p vcf chr" + chr + "_vmap2.0.vcf.gz &");
+//            System.out.println("bgzip chr" + chr + "_vmap2.0.vcf && tabix -p vcf chr" + chr + "_vmap2.0.vcf.gz &");
+            System.out.println("bgzip -@ 4 chr" + chr + "_vmap2.0_hexaploid_S196.vcf && tabix -p vcf chr" + chr + "_vmap2.0_hexaploid_S196.vcf.gz &");
         }
     }
 

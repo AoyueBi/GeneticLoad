@@ -38,7 +38,7 @@ public class Script {
 //
 //        this.script_bw();
         this.script_sout();
-
+//
 
 //        
 //        this.mergelogTxt("/Users/Aoyue/Documents/log_024", "/Users/Aoyue/Documents/ploidy.txt");
