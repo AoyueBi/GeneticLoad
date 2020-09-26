@@ -41,9 +41,10 @@ public class AoColor {
 
 //        String[] in = {"Africa" , "America" ,"Asia" ,   "Europe" , "Oceania"};
 //        String[] in = {"Africa", "America", "Central and South Asia", "East Asia", "Europe", "Oceania", "Western Asia"};
-        String[] in = {"Africa", "America", "Central and South Asia", "East Asia", "Europe", "Western Asia"};
+//        String[] in = {"Africa", "America", "Central and South Asia", "East Asia", "Europe", "Western Asia"};
 //        String[] in = {"America" ,"Europe" , "Western Asia"};
 //        String[] in = {"America","Europe","Africa","Western Asia","Central and South Asia","East Asia"};
+        String[] in = {"Europe","America","Western Asia","Africa","Central and South Asia","East Asia"};
 
 //        AoColor.continent_5(in);
 //        AoColor.continent_7_shape(in);

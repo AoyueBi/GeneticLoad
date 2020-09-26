@@ -187,7 +187,7 @@ public class FdVSdel {
             }
 
             out = sb.toString();
-            System.out.println(out);
+//            System.out.println(out);
 
         } catch (Exception e) {
             e.printStackTrace();
