@@ -37,7 +37,7 @@ public class FdVSdel {
 //        this.WindowDelvsSyn_fromExonAnnotation();
 
 //        this.getPGIforAllHexaploid();
-        this.getPGIforAllHexaploid2();
+//        this.getPGIforAllHexaploid2();
 
 
     }
