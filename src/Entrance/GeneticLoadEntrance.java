@@ -71,7 +71,7 @@ public class GeneticLoadEntrance {
 //        new Pi();
 //        new TajimaD();
 //        new AoP();
-        new FdVSdel();
+//        new FdVSdel();
 //        new AoMap();
 
 
