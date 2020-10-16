@@ -85,17 +85,15 @@ public class XPCLR {
 
 //        this.mkSNPfile_hexaploid(); //分很多步骤
 //        this.mkSNPfile_tetraploid();
-        this.getXPCLRscript("abd");
+//        this.getXPCLRscript("abd");
 //        this.getXPCLRscript("ab");
         //对exon位点数进行计数
 //        CountSites.countSites_singleStream("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/002_snp_file");
 
 //        this.X(); //对XPCLR结果进行初处理
-//        this.window();
+        this.window(); //对结果进行滑窗处理
 
-//        this.test();
-
-//        this.getAlleleCount();
+//        this.getAlleleCount(); //周正奎方法流程
 
 
 
@@ -228,34 +226,6 @@ public class XPCLR {
     }
 
 
-
-    /**
-     * 从XPCLR的结果中获取每条染色体的完成度，及最后一行到第几M
-     */
-    public void test(){
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/102_0.0001_100_500";
-        List<File> fsList = AoFile.getFileListInDir(infileDirS);
-        fsList.stream().forEach(f -> {
-            try {
-                String infileS = f.getAbsolutePath();
-                BufferedReader br = AoFile.readFile(infileS);
-                String header = br.readLine();
-                String temp = null;
-                String pos = null;
-                List<String> l = new ArrayList<>();
-                while ((temp = br.readLine()) != null) {
-                    l = PStringUtils.fastSplit(temp);
-                    pos = l.get(3);
-                }
-                String chr = f.getName().substring(3,6);
-                System.out.println(chr + "\t" + pos);
-                br.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
-    }
-
     /**
      * 将标准化的结果进行滑窗处理
      */
@@ -322,7 +292,10 @@ public class XPCLR {
                 double[] normalizedScore = AoMath.NormalizeScore(valueArray);
 
                 BufferedWriter bw = new AoFile().writeFile(outfileS);
+//                bw.write("CHROM\tGrid\tN_SNPs\tPOS\tGenetic_pos\tXPCLR_score\tMax_s\tChrRef\tPosRef\tXPCLR_100score");
+                //经测试，Zscore的pattern和标准化到100的pattern是一样的，所以这里只标准化到100.
                 bw.write("CHROM\tGrid\tN_SNPs\tPOS\tGenetic_pos\tXPCLR_score\tMax_s\tChrRef\tPosRef\tXPCLR_100score");
+
                 bw.newLine();
                 StringBuilder sb = new StringBuilder();
                 for (int i = 0; i < recordList.size(); i++) {

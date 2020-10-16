@@ -44,6 +44,9 @@ public class Script {
 //        this.mergelogTxt("/Users/Aoyue/Documents/log_024", "/Users/Aoyue/Documents/ploidy.txt");
     }
 
+    /**
+     * 滑窗处理
+     */
     public void window_parallel(){
 
         String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/004_mix_4A/001_fst";
@@ -60,10 +63,8 @@ public class Script {
             String name = new File(infileS).getName().split(".fst")[0] + "_" + window + "window_" + step + "step.txt.gz";
             String parent = new File(infileS).getParent();
             String outfileS = new File(outfileDirS,name).getAbsolutePath();
-
             new AoWinScan().getwindowDistrbution_general(infileS,chrColumn,posIndex,valueIndex,window,step,outfileS);
         });
-
     }
 
     /**
