@@ -42,6 +42,15 @@ public class Model {
     }
 
     /**
+     * 输出的文件名字是 infileDirS 同目录下的一个文件
+     */
+    public void path2(){
+        String infileDirS = null;
+        List<File> fsList = null;
+        String outfileS = new File(new File(infileDirS).getParent(),fsList.get(0).getName().substring(7)).getAbsolutePath(); //直接命名出输出文件
+    }
+
+    /**
      * 批量获取taxa某些属性
      */
     public void getTaxaHashMap(){

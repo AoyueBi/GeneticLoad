@@ -91,7 +91,11 @@ public class XPCLR {
 //        CountSites.countSites_singleStream("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/002_snp_file");
 
 //        this.X(); //对XPCLR结果进行初处理
-        this.window(); //对结果进行滑窗处理
+//        this.window(); //对结果进行滑窗处理， 不推荐
+//        this.window_parallel(); //多个文件同时进行滑窗，错误，删除
+        this.window2(); //推荐
+//        AoFile.mergeTxt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/103_0.0001_100_500_window","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/Cultivar_VS_Landrace_EU_exonRegion_0.0001_100_500_100kbwindow50kbstep.xpclr.txt.gz");
+
 
 //        this.getAlleleCount(); //周正奎方法流程
 
@@ -227,7 +231,7 @@ public class XPCLR {
 
 
     /**
-     * 将标准化的结果进行滑窗处理
+     * 将标准化的结果进行滑窗处理，该方法必须调用本地包，不方便，推荐使用 window2 方法
      */
     public void window(){
 
@@ -246,15 +250,65 @@ public class XPCLR {
     }
 
     /**
+     * 将标准化的结果进行滑窗处理，推荐使用该方法
+     */
+    public void window2(){
+
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/Cultivar_VS_Landrace_EU_exonRegion_0.0001_100_500.xpclr.txt.gz";
+        AoFile.readheader(infileS);
+        int chrColumn = 5;
+        int posIndex = 6;
+        int valueIndex = 7;
+//        double window = 100000;
+//        double step = 50000;
+        double window = 2000000;
+        double step = 1000000;
+        String name = new File(infileS).getName().split(".txt")[0] + "_" + window + "window_" + step + "step.txt.gz";
+        String parent = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/104_0.0001_100_500_window";
+        String outfileS = new File(parent,name).getAbsolutePath();
+        new AoWinScan().getwindowDistrbution_general(infileS,chrColumn,posIndex,valueIndex,window,step,outfileS);
+
+//        System.out.println("nohup java -jar 051_AoWindowScan.jar " + infileS + " " + chrColumn + " " + posIndex + " " + valueIndex + " " + window + " " + step + " " + outfileS + " &" );
+    }
+
+
+
+
+    /**
+     * 滑窗处理,此方法在这里废弃，原因：必须使用合并的文件进行滑窗。因为我想用1A 1B 进行画图
+     * @deprecated
+     */
+    public void window_parallel(){
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/102_0.0001_100_500";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/103_0.0001_100_500_window";
+        List<File> fsList = AoFile.getFileListInDir(infileDirS);
+        fsList.parallelStream().forEach(f -> {
+            String infileS = f.getAbsolutePath();
+            AoFile.readheader(infileS);
+            int chrColumn = 5;
+            int posIndex = 6;
+            int valueIndex = 7;
+            double window = 100000;
+            double step = 50000;
+            String name = new File(infileS).getName().split(".txt")[0] + "_" + window + "window_" + step + "step.txt.gz";
+            String parent = new File(infileS).getParent();
+            String outfileS = new File(outfileDirS,name).getAbsolutePath();
+            new AoWinScan().getwindowDistrbution_general(infileS,chrColumn,posIndex,valueIndex,window,step,outfileS);
+        });
+    }
+
+
+    /**
      * 将原始结果添加参考基因组的坐标，并对xpclr标准化
      */
     public void X(){
-//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/002_0.0001_100_500";
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/002_0.0001_100_500";
 
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/001_0.0001_100_100000";
 //        String outfileDirS = AoString.autoOutfileDirS(infileDirS);
 
-        String infileDirS = "/Users/Aoyue/Documents/001";
+//        String infileDirS = "/Users/Aoyue/Documents/001";
         String outfileDirS = AoString.autoOutfileDirS(infileDirS);
 
         new File(outfileDirS).mkdirs();
@@ -294,7 +348,7 @@ public class XPCLR {
                 BufferedWriter bw = new AoFile().writeFile(outfileS);
 //                bw.write("CHROM\tGrid\tN_SNPs\tPOS\tGenetic_pos\tXPCLR_score\tMax_s\tChrRef\tPosRef\tXPCLR_100score");
                 //经测试，Zscore的pattern和标准化到100的pattern是一样的，所以这里只标准化到100.
-                bw.write("CHROM\tGrid\tN_SNPs\tPOS\tGenetic_pos\tXPCLR_score\tMax_s\tChrRef\tPosRef\tXPCLR_100score");
+                bw.write("CHROM\tGrid\tN_SNPs\tPOS\tGenetic_pos\tChrRef\tPosRef\tXPCLR_100score");
 
                 bw.newLine();
                 StringBuilder sb = new StringBuilder();
@@ -308,9 +362,11 @@ public class XPCLR {
                     String chrref = RefV1Utils.getChromosome(chrID,posID);
                     int posref = RefV1Utils.getPosOnChromosome(chrID,posID);
                     sb.setLength(0);
+                    //结果文件释义：0 （染色体号） 1（Grid） 2（N_SNPs） 3（POS） 4（Genetic_pos） 5（XPCLR_score） 6（Max_s）
                     sb.append(l.get(0)).append("\t").append(l.get(1)).append("\t").append(l.get(2)).append("\t").
-                            append(l.get(3)).append("\t").append(l.get(4)).append("\t").append(l.get(5)).
-                            append("\t").append(l.get(6)).append("\t").append(chrref).append("\t").append(posref).append("\t").append(normalizedScore[i]);
+                            append(l.get(3)).append("\t").append(l.get(4)).append("\t").
+//                            append(l.get(5)).append("\t").append(l.get(6)).append("\t").
+                            append(chrref).append("\t").append(posref).append("\t").append(normalizedScore[i]);
 
                     bw.write(sb.toString());
                     bw.newLine();
@@ -325,7 +381,7 @@ public class XPCLR {
 
         });
 
-        String outfileS = new File(new File(infileDirS).getParent(),fsList.get(0).getName().substring(7)).getAbsolutePath();
+        String outfileS = new File(new File(infileDirS).getParent(),fsList.get(0).getName().substring(7)).getAbsolutePath(); //直接命名出输出文件
         AoFile.mergeTxt(outfileDirS,outfileS);
     }
 
@@ -1217,7 +1273,6 @@ public class XPCLR {
             e.printStackTrace();
             System.exit(1);
         }
-
     }
 
 
