@@ -90,7 +90,7 @@ public class XPCLR {
         //对exon位点数进行计数
 //        CountSites.countSites_singleStream("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/002_snp_file");
 
-//        this.X(); //对XPCLR结果进行初处理
+//        this.X(); //对XPCLR结果进行初处理,并合所有文件
 //        this.window(); //对结果进行滑窗处理， 不推荐
 //        this.window_parallel(); //多个文件同时进行滑窗，错误，删除
         this.window2(); //推荐
@@ -254,7 +254,12 @@ public class XPCLR {
      */
     public void window2(){
 
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/Cultivar_VS_Landrace_EU_exonRegion_0.0001_100_500.xpclr.txt.gz";
+        //model
+//        String infileS = "";
+
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/Cultivar_VS_Landrace_EU_exonRegion_0.0001_100_500.xpclr.txt.gz";
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid/006_output/Domesticated_emmer_VS_Wild_emmer_exonRegion_0.0001_100_500.xpclr.txt.gz";
+
         AoFile.readheader(infileS);
         int chrColumn = 5;
         int posIndex = 6;
@@ -263,8 +268,13 @@ public class XPCLR {
 //        double step = 50000;
         double window = 2000000;
         double step = 1000000;
+
+//        double window = 100000;
+//        double step = 100000;
+
         String name = new File(infileS).getName().split(".txt")[0] + "_" + window + "window_" + step + "step.txt.gz";
-        String parent = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/104_0.0001_100_500_window";
+//        String parent = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/104_0.0001_100_500_window";
+        String parent = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid/006_output/103_0.0001_100_500_window";
         String outfileS = new File(parent,name).getAbsolutePath();
         new AoWinScan().getwindowDistrbution_general(infileS,chrColumn,posIndex,valueIndex,window,step,outfileS);
 
@@ -303,12 +313,21 @@ public class XPCLR {
      * 将原始结果添加参考基因组的坐标，并对xpclr标准化
      */
     public void X(){
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/002_0.0001_100_500";
+
+        //model
+        //String infileDirS = "";
+
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/002_0.0001_100_500";
 
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/001_0.0001_100_100000";
 //        String outfileDirS = AoString.autoOutfileDirS(infileDirS);
 
-//        String infileDirS = "/Users/Aoyue/Documents/001";
+
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid/006_output/001_0.0001_100_100000";
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid/006_output/002_output_0.0001_100_500";
+
+
+
         String outfileDirS = AoString.autoOutfileDirS(infileDirS);
 
         new File(outfileDirS).mkdirs();
