@@ -91,9 +91,10 @@ public class XPCLR {
 //        CountSites.countSites_singleStream("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/002_snp_file");
 
 //        this.X(); //对XPCLR结果进行初处理,并合所有文件
-//        this.window(); //对结果进行滑窗处理， 不推荐
-//        this.window_parallel(); //多个文件同时进行滑窗，错误，删除
-        this.window2(); //推荐
+        AoFile.mergeTxt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/002_0.0001_100_500","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/Clutivar_VS_Landrace_EU_exonRegion_0.0001_100_500.xpclr.txt.gz");
+//        this.window(); //对结果进行滑窗处理， 不推荐不推荐不推荐不推荐不推荐不推荐不推荐不推荐不推荐不推荐不推荐不推荐不推荐不推荐不推荐不推荐不推荐
+//        this.window_parallel(); //多个文件同时进行滑窗，错误，删除 错误，删除 错误，删除 错误，删除 错误，删除 错误，删除 错误，删除
+//        this.window2(); //推荐
 //        AoFile.mergeTxt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/103_0.0001_100_500_window","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/Cultivar_VS_Landrace_EU_exonRegion_0.0001_100_500_100kbwindow50kbstep.xpclr.txt.gz");
 
 
