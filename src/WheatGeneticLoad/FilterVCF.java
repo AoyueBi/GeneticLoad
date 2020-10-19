@@ -35,7 +35,7 @@ public class FilterVCF {
         //this.statVcfCoverage();
 //        this.subsetCovevsSDvsPV();
         //this.statVcfPValue();
-        //this.subsetCovevsSDvsPV();
+        this.subsetCovevsSDvsPV();
         //this.gethighdensitySNPPos();
         //this.addMultipleColumn();
 

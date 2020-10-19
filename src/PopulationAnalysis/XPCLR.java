@@ -11,6 +11,7 @@ import gnu.trove.list.array.TIntArrayList;
 import pgl.infra.table.ColumnTable;
 import pgl.infra.table.RowTable;
 import pgl.infra.utils.Dyad;
+import pgl.infra.utils.IOFileFormat;
 import pgl.infra.utils.IOUtils;
 import pgl.infra.utils.PStringUtils;
 import pgl.infra.utils.wheat.RefV1Utils;
@@ -21,6 +22,7 @@ import tech.tablesaw.api.Table;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import pgl.graph.tSaw.TablesawUtils;
 
@@ -91,18 +93,70 @@ public class XPCLR {
 //        CountSites.countSites_singleStream("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/002_snp_file");
 
 //        this.X(); //对XPCLR结果进行初处理,并合所有文件
-        AoFile.mergeTxt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/002_0.0001_100_500","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/Clutivar_VS_Landrace_EU_exonRegion_0.0001_100_500.xpclr.txt.gz");
+//        AoFile.mergeTxt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/102_0.0001_100_500","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/Clutivar_VS_Landrace_EU_exonRegion_0.0001_100_500.xpclr.txt.gz");
 //        this.window(); //对结果进行滑窗处理， 不推荐不推荐不推荐不推荐不推荐不推荐不推荐不推荐不推荐不推荐不推荐不推荐不推荐不推荐不推荐不推荐不推荐
 //        this.window_parallel(); //多个文件同时进行滑窗，错误，删除 错误，删除 错误，删除 错误，删除 错误，删除 错误，删除 错误，删除
 //        this.window2(); //推荐
-//        AoFile.mergeTxt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/103_0.0001_100_500_window","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/Cultivar_VS_Landrace_EU_exonRegion_0.0001_100_500_100kbwindow50kbstep.xpclr.txt.gz");
-
-
 //        this.getAlleleCount(); //周正奎方法流程
+        this.subsetXPCLR_singleStream();
 
 
 
     }
+
+
+
+    public void subsetXPCLR_singleStream() {
+        //model
+//        int goalRows = 100000;
+//        String infileS = "";
+//        String outfileS = "";
+
+
+//        int goalRows = 1000000;
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/Clutivar_VS_Landrace_EU_exonRegion_0.0001_100_500.xpclr.txt.gz";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/Clutivar_VS_Landrace_EU_exonRegion_0.0001_100_500.xpclr_" + goalRows + "lines.txt.gz";
+
+        //
+        int goalRows = 100000;
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid/006_output/Domesticated_emmer_VS_Wild_emmer_exonRegion_0.0001_100_500.xpclr.txt.gz";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid/006_output/Domesticated_emmer_VS_Wild_emmer_exonRegion_0.0001_100_500.xpclr_" + goalRows + "lines.txt.gz";
+
+
+
+
+        //check 文件行数， 目的行数， 求出比率
+        int rows = AoFile.countFileRowNumber(infileS); System.out.println("Total\t" + rows + "\tin input file");
+        double ratio = (double) goalRows / rows; //注意一定要在5000千加上 强制类型转换，不然不能得出小数
+
+
+        try {
+
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String header = br.readLine();
+            bw.write(header); bw.newLine();
+            String temp = null;
+            int cnt = 0;
+            long startTime = System.nanoTime();
+            while ((temp = br.readLine()) != null) {
+                    cnt++;
+                    double r = Math.random();
+                    if (r > ratio) continue; //返回带正号的 double 值，该值大于等于 0.0 且小于 1.0。返回值是一个伪随机选择的数，在该范围内（近似）均匀分布
+                    bw.write(temp);
+                    bw.newLine();
+            }
+            bw.flush();
+            bw.close();
+            br.close();
+            long endTime = System.nanoTime();
+            float excTime = (float) (endTime - startTime) / 1000000000;
+            System.out.println("Execution time: " + String.format("%.2f", excTime) + "s");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public void getAlleleCount(){
         String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/000_exonVCF/chr013_exon_vmap2.1.vcf.gz";

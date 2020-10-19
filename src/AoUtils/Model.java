@@ -8,6 +8,7 @@ package AoUtils;
 import gnu.trove.list.array.TIntArrayList;
 
 import pgl.infra.table.RowTable;
+import pgl.infra.utils.IOFileFormat;
 import pgl.infra.utils.IOUtils;
 import pgl.infra.utils.PStringUtils;
 
@@ -34,6 +35,30 @@ public class Model {
 
         String infileDirS = "";
         String outfileDirS = "";
+    }
+
+    /**
+     * 对小文件抽样
+     */
+    public void sampleOnSmallFile(){
+        int goalRows = 100000;
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/Clutivar_VS_Landrace_EU_exonRegion_0.0001_100_500.xpclr.txt.gz";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/Clutivar_VS_Landrace_EU_exonRegion_0.0001_100_500.xpclr_" + goalRows + "lines.txt.gz";
+        //check 文件行数， 目的行数， 求出比率
+        int rows = AoFile.countFileRowNumber(infileS);
+        System.out.println("Total\t" + rows + "\tin input file");
+        RowTable<String> t = new RowTable<>(infileS);
+        boolean[] ifOut = new boolean[rows]; //默认是false
+        double ratio = (double) goalRows / rows; //注意一定要在5000千加上 强制类型转换，不然不能得出小数
+        for (int i = 0; i < t.getRowNumber(); i++) {
+            double r = Math.random();
+            if (r > ratio) {
+
+            } else {
+                ifOut[i] = true;
+            }
+        }
+        t.writeTextTable(outfileS, IOFileFormat.Text, ifOut);
     }
 
     public void path(){
