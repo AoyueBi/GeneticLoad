@@ -93,7 +93,7 @@ public class AoFile {
 
 
     /**
-     * 提取文件的某几列，并且
+     * 提取文件的某几列，并且跳过以 skipString 开头的行
      * @param infileS
      * @param skipString
      * @param columns
@@ -1512,7 +1512,10 @@ public class AoFile {
                 cnttotal++;
                 l = PStringUtils.fastSplit(temp);
                 String goal = l.get(columnIndex);
-                if (goal.startsWith("N") | goal.startsWith("inf")) continue;
+                if(goal == null || goal == "" || goal.isEmpty()){  //!!!!! if there is no value, we should set the value as "NA".
+                    goal = "NA";
+                }
+                if (goal.startsWith("N") || goal.startsWith("inf") || goal.startsWith("-") || goal.startsWith("I")) continue; //
                 ll.add(Double.parseDouble(goal));
                 cnt++;
             }

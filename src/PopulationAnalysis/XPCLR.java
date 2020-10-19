@@ -82,27 +82,86 @@ public class XPCLR {
          * **************************************** VMap2.0 new version calculation ********************************************************
          */
 
-//        this.checkAnnotationDBisinExonVCF(); //确定annotation的位点都在exonVCF中
-//        this.getExonVCFbyPloidy();
+        /**
+         * 1： XPCLR 程序文件准备和脚本运行
+         */
+//        this.checkAnnotationDBisinExonVCF(); //确定annotation的位点都在exonVCF中!！！ 只运行一次即可
+//        this.getExonVCFbyPloidy(); //在提取基因型之前，先把没有分离的位点去除掉，因此要提取基因型，每次都需运行
+//        this.mkSNPfile_hexaploid(); //重要重要！！！分很多步骤
+//        this.mkSNPfile_tetraploid(); //
+        //        this.getAlleleCount(); //周正奎方法流程:暂不使用
+//        this.getXPCLRscript("abd"); //运行XPCLR时的脚本
+//        this.getXPCLRscript("ab");
 
-//        this.mkSNPfile_hexaploid(); //分很多步骤
-//        this.mkSNPfile_tetraploid();
-//        this.getXPCLRscript("abd");
-        this.getXPCLRscript("ab");
         //对exon位点数进行计数
 //        CountSites.countSites_singleStream("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/002_snp_file");
 
-//        this.X(); //对XPCLR结果进行初处理,并合所有文件
+        /**
+         * 2： 结果初处理，用来画 manhatton plot 和 whole genome distribution geom_line
+         */
+//        this.X(); //对XPCLR结果进行初处理：即添加表头, 制表符分割， 并合所有文件。做了2件事情！
 //        AoFile.mergeTxt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/102_0.0001_100_500","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/Clutivar_VS_Landrace_EU_exonRegion_0.0001_100_500.xpclr.txt.gz");
-//        this.window(); //对结果进行滑窗处理， 不推荐不推荐不推荐不推荐不推荐不推荐不推荐不推荐不推荐不推荐不推荐不推荐不推荐不推荐不推荐不推荐不推荐
-//        this.window_parallel(); //多个文件同时进行滑窗，错误，删除 错误，删除 错误，删除 错误，删除 错误，删除 错误，删除 错误，删除
-//        this.window2(); //推荐
-//        this.getAlleleCount(); //周正奎方法流程
+//        this.window(); //滑窗进行画图测试用
 //        this.subsetXPCLR_singleStream();
+
+
+        /**
+         * 获取TopK 的结果并进行后续分析
+         */
+
+        this.pipeTopK();
 
 
 
     }
+
+    public void pipeTopK(){
+
+        //        String parentFileS = "";
+
+        this.getThreshod();
+
+
+    }
+
+    public void getThreshod(){
+        //input model
+//        double topK = 0.01;
+//        String infileS = ""; //抽样的文件
+//        String xpclrFileS2 = ""; //所有的文件
+//        String outfileS = ""; //topK 的文件
+
+
+        double topK = 0.01;
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid/006_output/Domesticated_emmer_VS_Wild_emmer_exonRegion_0.0001_100_500.xpclr_100000lines.txt.gz"; //抽样的文件
+        String xpclrFileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid/006_output/Domesticated_emmer_VS_Wild_emmer_exonRegion_0.0001_100_500.xpclr.txt.gz"; //所有的文件
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid/008_TopK/test.txt"; //topK 的文件
+        String parentFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid";
+
+        TDoubleArrayList xpclrScores = AoFile.getTDoubleList(infileS,7);
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String header = br.readLine();
+            bw.write(header);bw.newLine();
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
 
 
 
@@ -123,15 +182,11 @@ public class XPCLR {
         String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid/006_output/Domesticated_emmer_VS_Wild_emmer_exonRegion_0.0001_100_500.xpclr_" + goalRows + "lines.txt.gz";
 
 
-
-
         //check 文件行数， 目的行数， 求出比率
         int rows = AoFile.countFileRowNumber(infileS); System.out.println("Total\t" + rows + "\tin input file");
         double ratio = (double) goalRows / rows; //注意一定要在5000千加上 强制类型转换，不然不能得出小数
 
-
         try {
-
             BufferedReader br = AoFile.readFile(infileS);
             BufferedWriter bw = AoFile.writeFile(outfileS);
             String header = br.readLine();
@@ -286,28 +341,12 @@ public class XPCLR {
 
 
     /**
-     * 将标准化的结果进行滑窗处理，该方法必须调用本地包，不方便，推荐使用 window2 方法
-     */
-    public void window(){
 
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/Cultivar_VS_Landrace_EU_exonRegion_0.0001_100_500.xpclr.txt.gz";
-        AoFile.readheader(infileS);
-        int chrColumn = 8;
-        int posIndex = 9;
-        int valueIndex = 10;
-        double window = 100000;
-        double step = 50000;
-        String name = new File(infileS).getName().split(".txt")[0] + "_" + window + "window_" + step + "step.txt.gz";
-        String parent = new File(infileS).getParent();
-        String outfileS = new File(parent,name).getAbsolutePath();
-
-        System.out.println("nohup java -jar 051_AoWindowScan.jar " + infileS + " " + chrColumn + " " + posIndex + " " + valueIndex + " " + window + " " + step + " " + outfileS + " &" );
-    }
 
     /**
      * 将标准化的结果进行滑窗处理，推荐使用该方法
      */
-    public void window2(){
+    public void window(){
 
         //model
 //        String infileS = "";
@@ -339,29 +378,7 @@ public class XPCLR {
 
 
 
-    /**
-     * 滑窗处理,此方法在这里废弃，原因：必须使用合并的文件进行滑窗。因为我想用1A 1B 进行画图
-     * @deprecated
-     */
-    public void window_parallel(){
 
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/102_0.0001_100_500";
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/103_0.0001_100_500_window";
-        List<File> fsList = AoFile.getFileListInDir(infileDirS);
-        fsList.parallelStream().forEach(f -> {
-            String infileS = f.getAbsolutePath();
-            AoFile.readheader(infileS);
-            int chrColumn = 5;
-            int posIndex = 6;
-            int valueIndex = 7;
-            double window = 100000;
-            double step = 50000;
-            String name = new File(infileS).getName().split(".txt")[0] + "_" + window + "window_" + step + "step.txt.gz";
-            String parent = new File(infileS).getParent();
-            String outfileS = new File(outfileDirS,name).getAbsolutePath();
-            new AoWinScan().getwindowDistrbution_general(infileS,chrColumn,posIndex,valueIndex,window,step,outfileS);
-        });
-    }
 
 
     /**
@@ -493,8 +510,8 @@ public class XPCLR {
 //        this.step1_mkSNPfile(infileDirS,outfileDirS);
 //        this.step2_mkSNPfile(outfileDirS,outfileDirS2);
 
-        this.getGenotype_parallele(infileDirS,pop1fileS,outfileDirS5);
-        this.getGenotype_parallele(infileDirS,pop2fileS,outfileDirS5);
+//        this.getGenotype_parallele(infileDirS,pop1fileS,outfileDirS5);
+//        this.getGenotype_parallele(infileDirS,pop2fileS,outfileDirS5);
 
         //        this.getSNPdensity_hexaploid(outfileDirS,outfileDirS3);
 //        this.mergeTXT(outfileDirS3,outfileDirS4);
@@ -588,15 +605,11 @@ public class XPCLR {
 //            snpInfoDirS = "/data4/home/aoyue/vmap2/analysis/030_XPCLR/005_tetraploid/002_snp_file";
 //            logDirS = "/data4/home/aoyue/vmap2/analysis/030_XPCLR/005_tetraploid/007_log";
 
-            String parentFileDirS = "/data4/home/aoyue/vmap2/analysis/030_XPCLR/006_tetraploid_FTT_DE";
+//            String parentFileDirS = "/data4/home/aoyue/vmap2/analysis/030_XPCLR/006_tetraploid_FTT_DE";
+//            String parentFileDirS = "\\.\\.";
 
 //            String parentFileDirS = "/data1/home/aoyue/vmap2/analysis/001_XPCLR/006_tetraploid_FTT_DE";
 //            String parentFileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/006_tetraploid_FTT_DE";
-
-            infileDirS = new File(parentFileDirS,"003_genotype").getAbsolutePath();
-            outfileDirS = new File(parentFileDirS,"006_output").getAbsolutePath();
-            snpInfoDirS = new File(parentFileDirS,"002_snp_file").getAbsolutePath();
-            logDirS = new File(parentFileDirS,"007_log").getAbsolutePath();
 
             chrArr = new String[]{"001","002","003","004","007","008","009","010","013","014","015","016","019","020","021","022","025","026","027","028","031","032","033","034","037","038","039","040"};
 
@@ -611,12 +624,19 @@ public class XPCLR {
 
             for (int j = 0; j < chrArr.length; j++) {
                 int chr = Integer.parseInt(chrArr[j]);
-                String pop1fileS = new File(infileDirS,"chr" + chrArr[j] + "_exon_vmap2.1_" + pop1 + "_geno.txt").getAbsolutePath();
-                String pop2fileS = new File(infileDirS,"chr" + chrArr[j] + "_exon_vmap2.1_" + pop2 + "_geno.txt").getAbsolutePath();
-                String snpInfoS = new File(snpInfoDirS,"chr"+chrArr[j]+"_exon_vmap2.1.snp.txt").getAbsolutePath();
-                String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_" + pop1 + "_VS_" + pop2 + "_exonRegion_" + gwin + "_" + snpWin + "_" + gridSize).getAbsolutePath();
-                String logS = new File(logDirS,new File(outfileS).getName().split(".gz")[0]+".log.txt").getAbsolutePath();
-                System.out.println("/data1/home/aoyue/XPCLR/bin/XPCLR -xpclr " + pop1fileS + " " + pop2fileS + " " +
+//                String pop1fileS = new File("chr" + chrArr[j] + "_exon_vmap2.1_" + pop1 + "_geno.txt").getAbsolutePath();
+//                String pop2fileS = new File(infileDirS,"chr" + chrArr[j] + "_exon_vmap2.1_" + pop2 + "_geno.txt").getAbsolutePath();
+//                String snpInfoS = new File(snpInfoDirS,"chr"+chrArr[j]+"_exon_vmap2.1.snp.txt").getAbsolutePath();
+//                String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_" + pop1 + "_VS_" + pop2 + "_exonRegion_" + gwin + "_" + snpWin + "_" + gridSize).getAbsolutePath();
+//                String logS = new File(logDirS,new File(outfileS).getName().split(".gz")[0]+".log.txt").getAbsolutePath();
+
+                String pop1fileS = "../003_genotype/" + "chr" + chrArr[j] + "_exon_vmap2.1_" + pop1 + "_geno.txt";
+                String pop2fileS = "../003_genotype/" + "chr" + chrArr[j] + "_exon_vmap2.1_" + pop2 + "_geno.txt";
+                String snpInfoS = "../002_snp_file/" + "chr"+chrArr[j]+"_exon_vmap2.1.snp.txt";
+                String outfileS = "./" + "chr" + chrArr[j] + "_" + pop1 + "_VS_" + pop2 + "_exonRegion_" + gwin + "_" + snpWin + "_" + gridSize;  //注意在此目录下运行命令！！！
+                String logS = "../007_log/" + new File(outfileS).getName().split(".gz")[0]+".log.txt";
+
+                System.out.println("XPCLR -xpclr " + pop1fileS + " " + pop2fileS + " " +
                         snpInfoS + " " + outfileS + " -w1 " + gwin + " " + snpWin + " "+
                         gridSize + " " + chr + " -p0 0.95" +
                         " > " + logS + " &");
@@ -972,7 +992,7 @@ public class XPCLR {
             }
             br.close();
 
-            AoMath.countCase_fromList_outFile(l);
+            AoMath.countCase_fromList_outFile(l); //有几个基因
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -1085,6 +1105,7 @@ public class XPCLR {
 
     /**
      * 将XPCLR的结果添加 gene 结果,只添加xpclr输出文件中的pos单个位点的结果
+     * @deprecated
      */
     public void addGeneID_onlyGridPos(){
         String geneHCFileS = "/Users/Aoyue/Documents/Data/wheat/gene/001_geneHC/geneHC.txt";
@@ -1193,6 +1214,7 @@ public class XPCLR {
 
     /**
      * 将XPCLR的结果添加 gene 结果, 单个pos向后计算50Kb，再进行区域内的位点判断
+     * @deprecated
      */
     public void addGeneID(){
         String geneHCFileS = "/Users/Aoyue/Documents/Data/wheat/gene/001_geneHC/geneHC.txt";
@@ -1204,7 +1226,7 @@ public class XPCLR {
         //先处理gene的表格，建立区间
         Table t = TablesawUtils.readTsv(geneHCFileS);
         System.out.println(t.structure());
-        t.sortAscendingOn("Chr","TranStart");
+        t.sortAscendingOn("Chr","TranStart"); //高置信基因按照chr name 排序
         IntColumn chrColumn = t.intColumn("chr"); //返回一个类 InColumn
         int chrNum = chrColumn.countUnique(); //意思是一共有42条染色体
         TIntList[] startLists = new TIntList[chrNum]; //所有的起始位点建立一个集合
@@ -1240,7 +1262,7 @@ public class XPCLR {
                 int chrIndex = Integer.parseInt(l.get(0));
                 currentPos = Integer.parseInt(l.get(3));
                 // 对 currentPos所在region内的所有pos进行判断
-                if(currentPos < 50000){ //说明在起始位点
+                if(currentPos < 50000){ //说明在起始位点的那个grid
                     for (int i = 0; i < currentPos; i++) {
                         int pos = i+1;
                         posIndex = startLists[chrIndex].binarySearch(pos);
@@ -1474,7 +1496,7 @@ public class XPCLR {
     }
 
     /**
-     * 将结果进行坐标转换，并添加表头
+     * 1.并添加表头2.将结果进行坐标转换 3.设置manhatton ID
      *
      */
     public void convertXPCLRCoordinate(){
