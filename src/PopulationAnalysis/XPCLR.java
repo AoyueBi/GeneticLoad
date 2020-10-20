@@ -119,12 +119,12 @@ public class XPCLR {
 
         //        String parentFileS = "";
 
-        this.getThreshod();
+        this.getThreshodFile();
 
 
     }
 
-    public void getThreshod(){
+    public void getThreshodFile(){
         //input model
 //        double topK = 0.01;
 //        String infileS = ""; //抽样的文件
@@ -136,11 +136,20 @@ public class XPCLR {
         String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid/006_output/Domesticated_emmer_VS_Wild_emmer_exonRegion_0.0001_100_500.xpclr_100000lines.txt.gz"; //抽样的文件
         String xpclrFileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid/006_output/Domesticated_emmer_VS_Wild_emmer_exonRegion_0.0001_100_500.xpclr.txt.gz"; //所有的文件
         String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid/008_TopK/test.txt"; //topK 的文件
-        String parentFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid";
 
+        /*==================================== step 1: 获取topK 的值域  =============================================*/
         TDoubleArrayList xpclrScores = AoFile.getTDoubleList(infileS,7);
+        int size = xpclrScores.size();
+        xpclrScores.sort();
+        xpclrScores.reverse();
+        System.out.println(xpclrScores.max());
+        double threshod = xpclrScores.get((int)(topK * size));
+        System.out.println("Top" + topK + " value on the whole-genome XPCLR-score is\t" + threshod);
+
+        /*==================================== step 2: 获取topK 的文件  =============================================*/
+
         try {
-            BufferedReader br = AoFile.readFile(infileS);
+            BufferedReader br = AoFile.readFile(xpclrFileS2);
             BufferedWriter bw = AoFile.writeFile(outfileS);
             String header = br.readLine();
             bw.write(header);bw.newLine();
@@ -150,7 +159,11 @@ public class XPCLR {
             while ((temp = br.readLine()) != null) {
                 l = PStringUtils.fastSplit(temp);
                 cnt++;
-
+                String xpclr = l.get(7);
+                if (xpclr.startsWith("N") ||xpclr.startsWith("inf") || xpclr.startsWith("-") || xpclr.startsWith("I"))continue;
+                double xpclrd = Double.parseDouble(xpclr);
+                if (xpclrd<threshod)continue;
+                bw.write(temp);bw.newLine();
             }
             br.close();
             bw.flush();
