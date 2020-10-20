@@ -47,12 +47,12 @@ public class VariantsSum {
 //        this.extractInfoFromVMap2();
 //        this.mkExonVCF();
 //        this.mkExonAnnotation(); //弃用
-//        this.mkExonAnnotation2();
+        this.mkExonAnnotation2();
 //        this.addSift(); //分为2种策略，其中一种已经注释掉。 只添加 alt, 以及同时添加 alt 和 ref 的结果
 //        this.addAncestral();
 //        this.addDAF_parallel();
 //        this.addGerp();
-        this.mergeExonSNPAnnotation();
+//        this.mergeExonSNPAnnotation();
 
         //********************** for calculation ****************//
 //        this.getDAFtable();
