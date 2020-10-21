@@ -499,6 +499,51 @@ public class AoFile {
     }
 
 
+
+    /**
+     * 合并m没有表头的文件,并手动添加表头
+     * @param infileDirS
+     * @param outfileS
+     */
+    public static void mergeTxtwithoutHeader(String infileDirS, String header, String outfileS) {
+        File[] fs = AoFile.getFileArrayInDir(infileDirS);
+        Arrays.sort(fs);
+        try {
+            BufferedReader br = null;
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            //read header
+            bw.write(header);
+            bw.newLine();
+            int cnttotal = 0;
+            //read context
+            for (int i = 0; i < fs.length; i++) {
+                String infileS = fs[i].getAbsolutePath();
+                br = AoFile.readFile(infileS);
+//                br.readLine();
+                String temp = null; //read header
+                int cnt = 0;
+                while ((temp = br.readLine()) != null) {
+                    cnt++;
+                    cnttotal++;
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(temp);
+                    bw.write(sb.toString());
+                    bw.newLine();
+                }
+                System.out.println(fs[i].getName() + "\t" + cnt);
+            }
+            System.out.println("Total lines without header count is " + cnttotal + " at merged file " + outfileS );
+            br.close();
+            bw.flush();
+            bw.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+
     /**
      *
      * @param infileDirS
@@ -552,9 +597,9 @@ public class AoFile {
      */
     public static void mergeTxtwithoutHeader(String infileDirS, String outfileS) {
 
-        File[] fs = new AoFile().getFileArrayInDir(infileDirS);
+        File[] fs = AoFile.getFileArrayInDir(infileDirS);
+        Arrays.sort(fs);
         try {
-
             BufferedReader br = null;
             BufferedWriter bw = AoFile.writeFile(outfileS);
             int cnttotal = 0;
