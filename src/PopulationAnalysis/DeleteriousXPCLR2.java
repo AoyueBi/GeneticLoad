@@ -27,21 +27,70 @@ public class DeleteriousXPCLR2 {
 
     public void pipeDeleteriousXPCLR(){
 
+        //**************************** 不必修改 **************************//
         String variantType = null;
         String variantType1 = "001_synonymous";
         String variantType2 = "002_nonsynonymous";
         String variantType3 = "003_nonsynGERPandDerivedSIFT";
-
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid/008_topK/top0.01_ChrPosTrans.txt.gz"; //受选择的变异位点
-        String parentFileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid";
-        String addCountFileAddGroupS2 = new File(parentFileS1,"009_deleteriousXPCLR").getAbsolutePath(); new File(addCountFileAddGroupS2).mkdirs();
-        variantType = variantType1;
-        addCountFileAddGroupS2 = new File(addCountFileAddGroupS2,variantType + "additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr.txt").getAbsolutePath();
-
-        this.countDeleteriousVMapII_byChr(infileS,addCountFileAddGroupS2,variantType);
+        String ifselected = null;
+        String ifselected1 = "1";
+        String ifselected2 = "0";
+        String[] choice1 = {variantType1,variantType2,variantType3};
+        String[] choice2 = {ifselected1,ifselected2};
+        //**************************** 不必修改 **************************//
 
 
+        //六倍体 LR-CL ，合计运行6次
 
+//        for (int i = 0; i < choice2.length; i++) { //合计2*3=6次循环
+//            ifselected = choice2[i];
+//            for (int j = 0; j < choice1.length; j++) {
+//                String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/008_topK/top0.01_ChrPosTrans.txt.gz"; //受选择的变异位点
+//                String parentFileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid";
+//                String addCountFileAddGroupS2 = new File(parentFileS1,"009_deleteriousXPCLR").getAbsolutePath(); new File(addCountFileAddGroupS2).mkdirs();
+//                variantType = choice1[j];
+//                addCountFileAddGroupS2 = new File(addCountFileAddGroupS2,variantType + "_ifselected" + ifselected + "_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr.txt").getAbsolutePath();
+//                this.countDeleteriousVMapII_byChr(infileS,ifselected,variantType,addCountFileAddGroupS2);
+//            }
+//        }
+
+
+        //四倍体 WE-DE
+        ///////先单个运行测试，后写成循环进行一次性跑完
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid/008_topK/top0.01_ChrPosTrans.txt.gz"; //受选择的变异位点
+//        String parentFileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid";
+//        String addCountFileAddGroupS2 = new File(parentFileS1,"009_deleteriousXPCLR").getAbsolutePath(); new File(addCountFileAddGroupS2).mkdirs();
+//        variantType = variantType3;
+//        String ifselected = "0";
+//        addCountFileAddGroupS2 = new File(addCountFileAddGroupS2,variantType + "_ifselected" + ifselected + "_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr.txt").getAbsolutePath();
+//        this.countDeleteriousVMapII_byChr(infileS,ifselected,variantType,addCountFileAddGroupS2);
+
+        //        for (int i = 0; i < choice2.length; i++) { //合计2*3=6次循环
+//            ifselected = choice2[i];
+//            for (int j = 0; j < choice1.length; j++) {
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid/008_topK/top0.01_ChrPosTrans.txt.gz"; //受选择的变异位点
+//        String parentFileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid";
+//                String addCountFileAddGroupS2 = new File(parentFileS1,"009_deleteriousXPCLR").getAbsolutePath(); new File(addCountFileAddGroupS2).mkdirs();
+//                variantType = choice1[j];
+//                addCountFileAddGroupS2 = new File(addCountFileAddGroupS2,variantType + "_ifselected" + ifselected + "_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr.txt").getAbsolutePath();
+//                this.countDeleteriousVMapII_byChr(infileS,ifselected,variantType,addCountFileAddGroupS2);
+//            }
+//        }
+
+
+        //四倍体 DE-FTT
+
+//        for (int i = 0; i < choice2.length; i++) { //合计2*3=6次循环
+//            ifselected = choice2[i];
+//            for (int j = 0; j < choice1.length; j++) {
+//                String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/006_tetraploid_FTT_DE/008_topK/top0.01_ChrPosTrans.txt.gz"; //受选择的变异位点
+//                String parentFileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/006_tetraploid_FTT_DE";
+//                String addCountFileAddGroupS2 = new File(parentFileS1,"009_deleteriousXPCLR").getAbsolutePath(); new File(addCountFileAddGroupS2).mkdirs();
+//                variantType = choice1[j];
+//                addCountFileAddGroupS2 = new File(addCountFileAddGroupS2,variantType + "_ifselected" + ifselected + "_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr.txt").getAbsolutePath();
+//                this.countDeleteriousVMapII_byChr(infileS,ifselected,variantType,addCountFileAddGroupS2);
+//            }
+//        }
     }
 
 
@@ -49,7 +98,7 @@ public class DeleteriousXPCLR2 {
      * 计算指定选择区域的mutation burden
      * 一共有 5 步
      */
-    public void countDeleteriousVMapII_byChr(String infileS, String addCountFileAddGroupS,String type) {
+    public void countDeleteriousVMapII_byChr(String infileS, String ifselected,String type, String addCountFileAddGroupS) {
 
         //model
 
@@ -67,6 +116,24 @@ public class DeleteriousXPCLR2 {
         //************* 无需修改的路径 ****************** //
         String addCountFileS = new File(addCountFileAddGroupS).getAbsolutePath().replaceFirst(".txt",".temp.txt"); //有害变异加性模型输出文件
 
+        /**
+         * ################################### step0: 建立受选择区域的集合，并在下文进行 posList 和 ancestral charList 构建时进行适当的过滤。
+         */
+
+        TIntArrayList[] selectedPosList = new TIntArrayList[42];
+        for (int i = 0; i < selectedPosList.length; i++) {
+            selectedPosList[i] = new TIntArrayList();
+        }
+        RowTable<String> selectedT = new RowTable<>(infileS);
+        for (int i = 0; i < selectedT.getRowNumber(); i++) {
+            int chr = selectedT.getCellAsInteger(i,0);
+            int pos = selectedT.getCellAsInteger(i,1);
+            selectedPosList[chr-1].add(pos);
+        }
+        for (int i = 0; i < selectedPosList.length; i++) {
+            selectedPosList[i].sort();
+        }
+        System.out.println("Finished step0: completing the initialization of selected list.");
 
 
         /**
@@ -107,11 +174,23 @@ public class DeleteriousXPCLR2 {
                 int chrID = Integer.parseInt(l.get(1));
                 int index = Integer.parseInt(l.get(1)) - 1; //染色体号的索引 ################ 需要修改 需要修改 需要修改 ################
                 int pos = Integer.parseInt(l.get(2)); //################ 需要修改 需要修改 需要修改 ################
+
+                /**
+                 * 进行受选择区域的判断,如果受选择，那么判断该位点是否受选择，不受选择的进行过滤。
+                 * 如果不受选择，那么判断该位点是否受选择，受选择的进行过滤。
+                 */
+
+                int indexselect = selectedPosList[index].binarySearch(pos);
+                if (ifselected.equals("1")){ //只保留受选择的位点，把不受选择的进行过滤
+                    if (indexselect <0) continue;
+                }
+                if (ifselected.equals("0")){ //只保留不受选择的位点，把受选择的进行过滤
+                    if (indexselect>= 0) continue;
+                }
+
                 String variantType = l.get(12); //################ 需要修改 需要修改 需要修改 ################
                 String sift = l.get(16); //################ 需要修改 需要修改 需要修改 ################
                 String gerp = l.get(20); //################ 需要修改 需要修改 需要修改 ################
-
-
 
                 /**
                  ******** 定义有害突变，不是有害突变，就忽略不计 ################ 需要修改 需要修改 需要修改 ################
@@ -191,7 +270,6 @@ public class DeleteriousXPCLR2 {
 
         chrList.parallelStream().forEach(chr -> {
             String delVmapFileS = "chr" + PStringUtils.getNDigitNumber(3, chr) + "_exon_vmap2.1.vcf.gz";
-//            String delVmapFileS = "chr" + PStringUtils.getNDigitNumber(3, chr) + "_exon_vmap2.1_filterbyHeter0.05.vcf.gz";
             //开始读写VCF文件
             delVmapFileS = new File(exonVCFDirS, delVmapFileS).getAbsolutePath();
             BufferedReader br = AoFile.readFile(delVmapFileS);
