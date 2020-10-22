@@ -87,7 +87,7 @@ public class XPCLR {
          */
 //        this.checkAnnotationDBisinExonVCF(); //确定annotation的位点都在exonVCF中!！！ 只运行一次即可
 //        this.getExonVCFbyPloidy(); //在提取基因型之前，先把没有分离的位点去除掉，因此要提取基因型，每次都需运行
-//        this.mkSNPfile_hexaploid(); //重要重要！！！分很多步骤
+        this.mkSNPfile_hexaploid(); //重要重要！！！分很多步骤
 //        this.mkSNPfile_tetraploid(); //
         //        this.getAlleleCount(); //周正奎方法流程:暂不使用
 //        this.getXPCLRscript("abd"); //运行XPCLR时的脚本

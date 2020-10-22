@@ -168,6 +168,42 @@ public class AoFile {
         }
     }
 
+
+    public static File filterTxtLines(String infileS, int columIndex, List<String> inlist, String outfileS){
+        File out = new File(outfileS);
+        Collections.sort(inlist);
+        try {
+            BufferedReader br = new AoFile().readFile(infileS);
+            BufferedWriter bw = new AoFile().writeFile(outfileS);
+            String header = br.readLine();
+            bw.write(header); bw.newLine();
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            int cntkeep = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+                String query = l.get(columIndex);
+                int index = Collections.binarySearch(inlist,query);
+                if (index < 0) continue;
+                cntkeep++;
+                bw.write(temp);
+                bw.newLine();
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println(cnt + "\tkeep lines " + cntkeep + "\t" + infileS + " is completed at " + outfileS );
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        return out;
+    }
+
+
     /**
      *  返回满足条件的某些行，即取子集
      *

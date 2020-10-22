@@ -21,7 +21,8 @@ import java.util.*;
 public class DeleteriousXPCLR2 {
 
     public DeleteriousXPCLR2(){
-        this.pipeDeleteriousXPCLR();
+//        this.pipeDeleteriousXPCLR();
+        this.pipeFilterTaxa();
 
     }
 
@@ -35,8 +36,14 @@ public class DeleteriousXPCLR2 {
         String ifselected = null;
         String ifselected1 = "1";
         String ifselected2 = "0";
+        String ratioType = null;
+        String ratioType1 = "bySub";
+        String ratioType2 = "bysub_mergeByTaxa";
         String[] choice1 = {variantType1,variantType2,variantType3};
         String[] choice2 = {ifselected1,ifselected2};
+        String[] choice3 = {ratioType1,ratioType2};
+
+
         //**************************** 不必修改 **************************//
 
 
@@ -51,6 +58,24 @@ public class DeleteriousXPCLR2 {
 //                variantType = choice1[j];
 //                addCountFileAddGroupS2 = new File(addCountFileAddGroupS2,variantType + "_ifselected" + ifselected + "_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr.txt").getAbsolutePath();
 //                this.countDeleteriousVMapII_byChr(infileS,ifselected,variantType,addCountFileAddGroupS2);
+//            }
+//        }
+
+        //求六倍体ratio non/syn  del/syn
+//        int cnt=0;
+//        for (int i = 0; i < choice2.length; i++) { //合计2*2*2=8次循环
+//            ifselected = choice2[i];
+//            for (int j = 1; j < choice1.length; j++) {
+//                variantType = choice1[j];
+//                for (int k = 0; k < choice3.length; k++) {
+//                    ratioType=choice3[k];
+//                    String parentFileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/009_deleteriousXPCLR";
+//                    String infileS1 = new File(parentFileS1,variantType + "_ifselected" + ifselected + "_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr_" + ratioType + ".txt").getAbsolutePath();
+//                    String infileS2 = new File(parentFileS1, "001_synonymous" + "_ifselected" + ifselected + "_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr_" + ratioType + ".txt").getAbsolutePath();
+//                    this.DeltoSynonymousRatio(infileS1,ratioType,infileS2);
+//                    cnt++;
+//                    System.out.println("********" + cnt + " " + "ifselected" + ifselected + " " + variantType + " " + ratioType);
+//                }
 //            }
 //        }
 
@@ -77,6 +102,25 @@ public class DeleteriousXPCLR2 {
 //            }
 //        }
 
+        //求四倍体ratio non/syn  del/syn
+
+//        int cnt=0;
+//        for (int i = 0; i < choice2.length; i++) { //合计2*2*2=8次循环
+//            ifselected = choice2[i];
+//            for (int j = 1; j < choice1.length; j++) {
+//                variantType = choice1[j];
+//                for (int k = 0; k < choice3.length; k++) {
+//                    ratioType=choice3[k];
+//                    String parentFileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid/009_deleteriousXPCLR";
+//                    String infileS1 = new File(parentFileS1,variantType + "_ifselected" + ifselected + "_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr_" + ratioType + ".txt").getAbsolutePath();
+//                    String infileS2 = new File(parentFileS1, "001_synonymous" + "_ifselected" + ifselected + "_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr_" + ratioType + ".txt").getAbsolutePath();
+//                    this.DeltoSynonymousRatio(infileS1,ratioType,infileS2);
+//                    cnt++;
+//                    System.out.println("********" + cnt + " " + "ifselected" + ifselected + " " + variantType + " " + ratioType);
+//                }
+//            }
+//        }
+
 
         //四倍体 DE-FTT
 
@@ -91,7 +135,148 @@ public class DeleteriousXPCLR2 {
 //                this.countDeleteriousVMapII_byChr(infileS,ifselected,variantType,addCountFileAddGroupS2);
 //            }
 //        }
+
+        //求四倍体 DE-FTT ratio non/syn  del/syn
+
+//        int cnt=0;
+//        for (int i = 0; i < choice2.length; i++) { //合计2*2*2=8次循环
+//            ifselected = choice2[i];
+//            for (int j = 1; j < choice1.length; j++) {
+//                variantType = choice1[j];
+//                for (int k = 0; k < choice3.length; k++) {
+//                    ratioType=choice3[k];
+//                    String parentFileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/006_tetraploid_FTT_DE/009_deleteriousXPCLR";
+//                    String infileS1 = new File(parentFileS1,variantType + "_ifselected" + ifselected + "_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr_" + ratioType + ".txt").getAbsolutePath();
+//                    String infileS2 = new File(parentFileS1, "001_synonymous" + "_ifselected" + ifselected + "_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr_" + ratioType + ".txt").getAbsolutePath();
+//                    this.DeltoSynonymousRatio(infileS1,ratioType,infileS2);
+//                    cnt++;
+//                    System.out.println("********" + cnt + " " + "ifselected" + ifselected + " " + variantType + " " + ratioType);
+//                }
+//            }
+//        }
     }
+
+
+    public void pipeFilterTaxa(){
+
+        String[] choice1 = {"WE_DE","DE_FTT","LR_CL"};
+        String[] choice2 = {"005_tetraploid","006_tetraploid_FTT_DE","004_hexaploid"};
+        String parentFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR";
+        for (int i = 0; i < choice1.length; i++) {
+            String infileDirS1 = new File(parentFileS,choice2[i]).getAbsolutePath();
+            String infileDirS = new File(infileDirS1,"009_deleteriousXPCLR").getAbsolutePath();
+            String outfileDirS = new File(infileDirS1,"010_deleteriousXPCLR_keep_" + choice1[i]).getAbsolutePath(); new File(outfileDirS).mkdirs();
+            File[] fs = AoFile.getFileArrayInDir(infileDirS);
+            for (int j = 0; j < fs.length; j++) {
+                String infileS = fs[j].getAbsolutePath();
+                String outfileS = new File(outfileDirS,fs[j].getName()).getAbsolutePath();
+                this.filterTaxa(infileS,choice1[i],outfileS);
+            }
+        }
+    }
+
+    /**
+     * 将按照sub和taxa产生的有害突变的结果，进行过滤，使六倍体栽培品种都为欧洲的栽培品种，六倍体的农家种都为欧洲的农家种
+     * 然后进行个体Load的判断
+     */
+    public void filterTaxa(String infileS, String type,String outfileS){
+        List<String> l1wede = new ArrayList<>();
+        List<String> l2deftt = new ArrayList<>();
+        List<String> l3lrcl = new ArrayList<>();
+
+
+        String taxaSummaryFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/taxa_InfoDB.txt";
+        AoFile.readheader(taxaSummaryFileS);
+
+
+        RowTable<String> t = new RowTable (taxaSummaryFileS);
+        for (int i = 0; i < t.getRowNumber(); i++) {
+            String taxa = t.getCell(i,0);
+            String subspecies = t.getCell(i,15);
+            String query1 = t.getCell(i,20);
+            if (type.equals("WE_DE")){
+                if (subspecies.equals("Wild_emmer") || subspecies.equals("Domesticated_emmer")){
+                    l1wede.add(taxa);
+                    AoFile.filterTxtLines(infileS,0, l1wede,outfileS);
+                }
+            }
+            if (type.equals("DE_FTT")){
+                if (subspecies.equals("Domesticated_emmer") || subspecies.equals("Free_threshing_tetraploid")){
+                    l2deftt.add(taxa);
+                    AoFile.filterTxtLines(infileS,0, l2deftt,outfileS);
+                }
+            }
+            if (type.equals("LR_CL")){
+                if (query1.equals("LR_EU") || query1.equals("Cultivar")){
+                    l3lrcl.add(taxa);
+                    AoFile.filterTxtLines(infileS,0, l3lrcl,outfileS);
+                }
+            }
+        }
+    }
+
+
+    public void DeltoSynonymousRatio(String infileS1, String ratioType, String infileS2){
+//        String infileS1 = ""; //有害突变文件
+//        String infileS2 = ""; //同义突变文件
+
+        String outfileS = new File(infileS1).getAbsolutePath().replaceFirst(".txt","_delVSsynonymous.txt");
+        AoFile.readheader(infileS1);
+
+        TDoubleArrayList del = new TDoubleArrayList();
+        TDoubleArrayList syn = new TDoubleArrayList();
+        TDoubleArrayList delcount = new TDoubleArrayList();
+        TDoubleArrayList syncount = new TDoubleArrayList();
+
+        if(ratioType.equals("bySub")){
+            del = AoFile.getTDoubleList(infileS1,7); //bySub的情况
+            syn = AoFile.getTDoubleList(infileS2,7); //bySub的情况
+            delcount = AoFile.getTDoubleList(infileS1,2); //bySub的情况
+            syncount = AoFile.getTDoubleList(infileS2,2); //bySub的情况
+
+
+        }else if (ratioType.equals("bysub_mergeByTaxa")){
+            del = AoFile.getTDoubleList(infileS1,6); //byTaxa的情况
+            syn = AoFile.getTDoubleList(infileS2,6); //byTaxa的情况
+            delcount = AoFile.getTDoubleList(infileS1,1); //byTaxa的情况
+            syncount = AoFile.getTDoubleList(infileS2,1); //byTaxa的情况
+        }
+
+        TDoubleArrayList ratioList = new TDoubleArrayList(del.size());
+        for (int i = 0; i < del.size(); i++) {
+            double r = (double)del.get(i)/syn.get(i); //String.format("%.3f",r)
+            ratioList.add(r);
+        }
+
+        //用count除以count
+        TDoubleArrayList ratioList2 = new TDoubleArrayList(delcount.size());
+        for (int i = 0; i < delcount.size(); i++) {
+            double r = (double)delcount.get(i)/syncount.get(i); //String.format("%.3f",r)
+            ratioList2.add(r);
+        }
+
+        try {
+            BufferedReader br = AoFile.readFile(infileS1);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = br.readLine();
+            bw.write(temp + "\tRatio_delVSsyn\tRatio_delVSsyn_bycount");
+            bw.newLine();
+            int i = 0;
+            while ((temp = br.readLine()) != null) {
+                bw.write(temp + "\t" + String.format("%.3f",ratioList.get(i))+ "\t" + String.format("%.3f",ratioList2.get(i)));
+                bw.newLine();
+                i++;
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
 
 
     /**
