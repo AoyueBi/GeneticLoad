@@ -23,9 +23,10 @@ import java.util.*;
  */
 public class DeleteriousCountbyIndi {
 
+    ////// 最新版结果
     public DeleteriousCountbyIndi(){
 
-//        this.countDeleteriousVMapII_byChr();
+        this.countDeleteriousVMapII_byChr();
 //        this.DeltoSynonymousRatio();
 //        this.filterLandrace();
 
@@ -39,7 +40,7 @@ public class DeleteriousCountbyIndi {
 //        this.addGrouptoCorrelationFile();
 //        this.addNewGrouptoLoadFile();
 
-        this.countDeleteriousVMapII_byChr_onlyHomo(); //统计分子是纯合，分母也是纯合基因型的3种分类； 统计分子是纯合，分母是纯合加杂合的3种分类； 统计分子是杂合，分母
+//        this.countDeleteriousVMapII_byChr_onlyHomo(); //统计分子是纯合，分母也是纯合基因型的3种分类； 统计分子是纯合，分母是纯合加杂合的3种分类； 统计分子是杂合，分母
 //        this.DeltoSynonymousRatio();
 //                this.filterLandrace();
 
@@ -1218,6 +1219,7 @@ public class DeleteriousCountbyIndi {
 
 
     //根据最终生成的文件，进行 A B D sub的合并,使每个taxa具有Asub Bsub Dsub的结果
+    /// hahhahaahha
     public void mergeFinalfilebySub(String infileS){
 
         //change

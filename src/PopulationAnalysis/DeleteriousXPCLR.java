@@ -22,7 +22,14 @@ public class DeleteriousXPCLR {
         this.mergeByTaxa();
 //        this.getPopmutationBurden();
 
+
+        /**
+         * ******************************* new version on VMap2.0 *******************************
+         */
+
     }
+
+
 
     /**
      * get the mutation burden on unselected regions
