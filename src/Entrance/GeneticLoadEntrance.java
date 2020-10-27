@@ -55,7 +55,7 @@ public class GeneticLoadEntrance {
 //        new ScriptHapscanner2();
 //        new AoHeterozygosity();
 //        new  FilterVCF2();
-//        new GermplasmInfo();
+        new GermplasmInfo();
 //        new VariantsSum();
 //        new SIFT();
 //        new DeleteriousCountbyIndi(); //根据数据库进行个体Load计算
@@ -73,7 +73,7 @@ public class GeneticLoadEntrance {
 //        new AoP();
 //        new FdVSdel();
 //        new AoMap();
-        new DeleteriousXPCLR2();
+//        new DeleteriousXPCLR2();
         
     }
 

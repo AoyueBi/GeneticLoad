@@ -21,8 +21,8 @@ import java.util.*;
 public class DeleteriousXPCLR2 {
 
     public DeleteriousXPCLR2(){
-//        this.pipeDeleteriousXPCLR();
-        this.pipeFilterTaxa();
+        this.pipeDeleteriousXPCLR();
+//        this.pipeFilterTaxa();
 
     }
 

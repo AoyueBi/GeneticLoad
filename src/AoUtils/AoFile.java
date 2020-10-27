@@ -847,6 +847,7 @@ public class AoFile {
 
     /**
      * add colum to a file
+     * 注意： header的第一个单词不用加制表符
      */
     public static void addColumbyint(String infileS,int keyIDindex, HashMap<Integer,String> hm,String headername){
         String outfileS = null;

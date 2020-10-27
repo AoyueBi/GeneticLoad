@@ -36,9 +36,33 @@ public class GermplasmInfo {
 //        this.summaryGroupbyLandrace();
 //        this.addDDgroup();
 //        this.addIntrogressionID();
+        this.add21subspeciesInfo();
 
 
     }
+
+    /**
+     * 添加非常详细的亚种信息！ 合计21个亚种
+     */
+    public void add21subspeciesInfo(){
+        String taxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/taxa_InfoDB.txt";
+        AoFile.readheader(taxaFileS);
+        HashMap<Integer,String> hm = new HashMap<>();
+        int[] key = new int[21];
+        for (int i = 0; i < key.length; i++) {
+            key[i] = i;
+        }
+        String[] value = {"strangulata", "carthlicum", "dicoccoides","dicoccum", "durum","ispahanicum","karamyschevii","polonicum","turanicum","turgidum","Cultivar","Landrace","OtherHexaploids"
+                ,"sphaerococcum","macha","spelta","tibeticum","vavilovii","petropavlovskyi","yunna-nense","compactum"};
+
+        for (int i = 0; i < value.length; i++) {
+            hm.put(key[i],value[i]);
+        }
+
+        AoFile.addColumbyint(taxaFileS,12,hm,"Subspeciesby21");
+    }
+
+
 
     /**
      * Goal: 向 taxa_InfoDB.txt 中添加Introgression的ID，以倍性为基础，进行编号。如 H001 T001 D001
