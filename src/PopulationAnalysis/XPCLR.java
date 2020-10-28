@@ -87,9 +87,9 @@ public class XPCLR {
          */
 //        this.checkAnnotationDBisinExonVCF(); //确定annotation的位点都在exonVCF中!！！ 只运行一次即可
 //        this.getExonVCFbyPloidy(); //在提取基因型之前，先把没有分离的位点去除掉，因此要提取基因型，每次都需运行
-        this.mkSNPfile_hexaploid(); //重要重要！！！分很多步骤
-//        this.mkSNPfile_tetraploid(); //
-        //        this.getAlleleCount(); //周正奎方法流程:暂不使用
+//        this.mkSNPfile_hexaploid(); //重要重要！！！分很多步骤
+        this.mkSNPfile_tetraploid(); //
+//                this.getAlleleCount(); //周正奎方法流程:暂不使用
 //        this.getXPCLRscript("abd"); //运行XPCLR时的脚本
 //        this.getXPCLRscript("ab");
 
@@ -109,7 +109,7 @@ public class XPCLR {
          * 3: 获取TopK 的结果并进行后续分析
          */
 //        this.checkInfNum();  //检查一下XPCLR中的异常值
-        this.pipeTopK();
+//        this.pipeTopK();
 
     }
 
@@ -750,14 +750,20 @@ public class XPCLR {
 //        String outParentS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid";
 
         ////////////////// 第二组
-        String pop1fileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/000_pop_bySubspecies/Free_threshing_tetraploid.txt";//goal
+//        String pop1fileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/000_pop_bySubspecies/Free_threshing_tetraploid.txt";//goal
+//        String pop2fileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/000_pop_bySubspecies/Domesticated_emmer.txt"; //ref
+//
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid/000_exonVCF";
+//        String outParentS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/006_tetraploid_FTT_DE";
+
+        ////////////////// 第三组
+        String pop1fileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/000_pop_bySubspecies/Durum.txt"; //goal
         String pop2fileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/000_pop_bySubspecies/Domesticated_emmer.txt"; //ref
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE/000_exonVCF";
+        String outParentS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE";
 
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid/000_exonVCF";
-        String outParentS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/006_tetraploid_FTT_DE";
 
-
-        //根据输出文件1，子目录输出
+                //根据输出文件1，子目录输出
         String outfileDirS = new File(outParentS,"001_chrPosRefAlt").getAbsolutePath(); new File(outfileDirS).mkdirs();
         String outfileDirS2 = new File(outParentS,"002_snp_file").getAbsolutePath(); new File(outfileDirS2).mkdirs();
         String outfileDirS6 = new File(outParentS,"002_snp_file2_merge").getAbsolutePath();new File(outfileDirS6).mkdirs();
@@ -767,12 +773,12 @@ public class XPCLR {
 
 
 //        this.step1_mkSNPfile(infileDirS,outfileDirS);
-//        this.step2_mkSNPfile(outfileDirS,outfileDirS2);
-//        this.getSNPdensity_tetraploid(outfileDirS,outfileDirS3);
-//        this.mergeTXT(outfileDirS3,outfileDirS4);
+        this.step2_mkSNPfile(outfileDirS,outfileDirS2);
 //        this.getGenotype_parallele(infileDirS,pop1fileS,outfileDirS5);
 //        this.getGenotype_parallele(infileDirS,pop2fileS,outfileDirS5);
-        this.mergeSNPfile(outfileDirS2,"SNPName\tchr\tGeneticDistance(Morgan)\tPhysicalDistance(bp)\tRefAllele\tTheOtherAllele", outfileDirS6);
+//        this.mergeSNPfile(outfileDirS2,"SNPName\tchr\tGeneticDistance(Morgan)\tPhysicalDistance(bp)\tRefAllele\tTheOtherAllele", outfileDirS6);
+        //        this.getSNPdensity_tetraploid(outfileDirS,outfileDirS3);
+//        this.mergeTXT(outfileDirS3,outfileDirS4);
 
     }
 
@@ -828,16 +834,6 @@ public class XPCLR {
             }
         }
         else if (ploidy.equals("ab")){
-//            infileDirS = "/data4/home/aoyue/vmap2/analysis/030_XPCLR/005_tetraploid/005_genotype";
-//            outfileDirS = "/data4/home/aoyue/vmap2/analysis/030_XPCLR/005_tetraploid/006_output";
-//            snpInfoDirS = "/data4/home/aoyue/vmap2/analysis/030_XPCLR/005_tetraploid/002_snp_file";
-//            logDirS = "/data4/home/aoyue/vmap2/analysis/030_XPCLR/005_tetraploid/007_log";
-
-//            String parentFileDirS = "/data4/home/aoyue/vmap2/analysis/030_XPCLR/006_tetraploid_FTT_DE";
-//            String parentFileDirS = "\\.\\.";
-
-//            String parentFileDirS = "/data1/home/aoyue/vmap2/analysis/001_XPCLR/006_tetraploid_FTT_DE";
-//            String parentFileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/006_tetraploid_FTT_DE";
 
             chrArr = new String[]{"001","002","003","004","007","008","009","010","013","014","015","016","019","020","021","022","025","026","027","028","031","032","033","034","037","038","039","040"};
 
@@ -847,8 +843,12 @@ public class XPCLR {
 //            pop1 = "Domesticated_emmer";
 //            pop2 = "Wild_emmer";
 
-            pop1 = "Free_threshing_tetraploid";
+//            pop1 = "Free_threshing_tetraploid";
+//            pop2 = "Domesticated_emmer";
+
+            pop1 = "Durum";
             pop2 = "Domesticated_emmer";
+
 
             for (int j = 0; j < chrArr.length; j++) {
                 int chr = Integer.parseInt(chrArr[j]);
@@ -1139,8 +1139,13 @@ public class XPCLR {
 //        });
 
 /////////// 四倍体
-        String taxafileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/000_pop_byPloidy/AABB.txt";
-        String outfileDirS ="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid/000_exonVCF";
+//        String taxafileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/000_pop_byPloidy/AABB.txt";
+//        String outfileDirS ="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid/000_exonVCF";
+//        String[] chrArr ={"001","002","003","004","007","008","009","010","013","014","015","016","019","020","021","022","025","026","027","028","031","032","033","034","037","038","039","040"};
+
+////////// 只挑选durum
+        String taxafileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/000_pop_byPloidy/AABB_DE_Dm.txt";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE/000_exonVCF";
         String[] chrArr ={"001","002","003","004","007","008","009","010","013","014","015","016","019","020","021","022","025","026","027","028","031","032","033","034","037","038","039","040"};
 
         for (int i = 0; i < chrArr.length; i++) {
