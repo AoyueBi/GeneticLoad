@@ -26,7 +26,7 @@ public class FilterVCF2 {
         /**
          * 过滤 MAF > 0.01  Occurrence>2 MissingRate<0.2
          */
-//        this.filter_parallel(); //老师的方法
+        this.filter_parallel(); //老师的方法
 //        this.filterMafbyPopHTD(); //我的方法
 //        String a = "";
 //        String b = "";
@@ -1747,7 +1747,7 @@ public class FilterVCF2 {
                 "##INFO=<ID=HT,Number=1,Type=Integer,Description=\"Number of heterozygotes\">\n" +
                 "##INFO=<ID=MAF,Number=1,Type=Float,Description=\"Minor allele frequency\">\n" +
                 "##INFO=<ID=AAF_ABD,Number=1,Type=Float,Description=\"Alternative allele frequency on hexaploid bread wheat\">\n" +
-                "##INFO=<ID=AAF_D,Number=1,Type=Float,Description=\"Alternative allele frequency on tetraploid emmer wheat\">\n" +  //这一行根据 D 还是 AB 有变化
+                "##INFO=<ID=AAF_D,Number=1,Type=Float,Description=\"Alternative allele frequency on diploid Aegilops tauschii\">\n" +  //这一行根据 D 还是 AB 有变化
                 "##ALT=<ID=D,Description=\"Deletion\">\n" +
                 "##ALT=<ID=I,Description=\"Insertion\">\n" +
                 "##Species=Wheat\n" +

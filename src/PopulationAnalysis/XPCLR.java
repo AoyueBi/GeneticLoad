@@ -88,10 +88,10 @@ public class XPCLR {
 //        this.checkAnnotationDBisinExonVCF(); //确定annotation的位点都在exonVCF中!！！ 只运行一次即可
 //        this.getExonVCFbyPloidy(); //在提取基因型之前，先把没有分离的位点去除掉，因此要提取基因型，每次都需运行
 //        this.mkSNPfile_hexaploid(); //重要重要！！！分很多步骤
-        this.mkSNPfile_tetraploid(); //
+//        this.mkSNPfile_tetraploid(); //
 //                this.getAlleleCount(); //周正奎方法流程:暂不使用
 //        this.getXPCLRscript("abd"); //运行XPCLR时的脚本
-//        this.getXPCLRscript("ab");
+        this.getXPCLRscript("ab");
 
         //对exon位点数进行计数
 //        CountSites.countSites_singleStream("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/002_snp_file");
@@ -864,10 +864,10 @@ public class XPCLR {
                 String outfileS = "./" + "chr" + chrArr[j] + "_" + pop1 + "_VS_" + pop2 + "_exonRegion_" + gwin + "_" + snpWin + "_" + gridSize;  //注意在此目录下运行命令！！！
                 String logS = "../007_log/" + new File(outfileS).getName().split(".gz")[0]+".log.txt";
 
-                System.out.println("XPCLR -xpclr " + pop1fileS + " " + pop2fileS + " " +
+                System.out.println("nohup XPCLR -xpclr " + pop1fileS + " " + pop2fileS + " " +
                         snpInfoS + " " + outfileS + " -w1 " + gwin + " " + snpWin + " "+
                         gridSize + " " + chr + " -p0 0.95" +
-                        " > " + logS + " &");
+                        " > " + logS + " 2>&1 &");
             }
         }
 
