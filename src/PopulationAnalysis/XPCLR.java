@@ -88,8 +88,8 @@ public class XPCLR {
 //        this.checkAnnotationDBisinExonVCF(); //确定annotation的位点都在exonVCF中!！！ 只运行一次即可
 //        this.getExonVCFbyPloidy(); //在提取基因型之前，先把没有分离的位点去除掉，因此要提取基因型，每次都需运行
 //        this.mkSNPfile_hexaploid(); //重要重要！！！分很多步骤
-//        this.mkSNPfile_tetraploid(); //
-                this.getAlleleCount(); //周正奎方法流程:暂不使用
+        this.mkSNPfile_tetraploid(); //
+//                this.getAlleleCount(); //周正奎方法流程:暂不使用
 //        this.getXPCLRscript("abd"); //运行XPCLR时的脚本
 //        this.getXPCLRscript("ab");
 
@@ -429,130 +429,7 @@ public class XPCLR {
     }
 
 
-    public void getAlleleCount(){
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/000_exonVCF/chr013_exon_vmap2.1.vcf.gz";
-        String objectfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/000_pop_bySubspecies/Cultivar.txt";
-        String reffileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/000_pop_bySubspecies/Landrace_EU.txt";
-        String outfileS = "/Users/Aoyue/Documents/chr013_exon_vmap2.1.alleleCount.txt";
-        this.getAlleleCountXPCLR(infileS,objectfileS,reffileS,outfileS);
-    }
 
-
-    public void getAlleleCountXPCLR(String infileS, String objectfileS, String reffileS, String outfileS){
-        List<String> queryTaxal = new AoFile().getStringListwithoutHeader(objectfileS,0); //获取pop列表
-        List<String> query2Taxal = new AoFile().getStringListwithoutHeader(reffileS,0); //获取pop列表
-
-        try {
-            BufferedReader br = new AoFile().readFile(infileS);
-            BufferedWriter bw = new AoFile().writeFile(outfileS);
-            String temp = null;
-            List<String> l = new ArrayList<>();
-            List<Integer> indexObject = new ArrayList<>();
-            List<Integer> indexRef = new ArrayList<>();
-            int cnt = 0;
-            while ((temp = br.readLine()) != null) {
-                if (temp.startsWith("##"))continue;
-                if (temp.startsWith("#C")){
-                    l = PStringUtils.fastSplit(temp);
-                    for (int i = 9; i < l.size(); i++) {
-                        String taxon = l.get(i);
-
-                        int index = Collections.binarySearch(queryTaxal, taxon);
-                        if (index > -1) { //当找到列表中的taxa时，写列表中的taxa信息
-                            indexObject.add(i);
-                        }
-
-                        int index2 = Collections.binarySearch(query2Taxal, taxon);
-                        if (index2 > -1) { //当找到列表中的taxa时，写列表中的taxa信息
-                            indexRef.add(i);
-                        }
-                    }
-                    Collections.sort(indexObject);
-                    Collections.sort(indexRef);
-
-//                    System.out.println("Finish find the pop index from vcffile.");
-                }
-                if (!temp.startsWith("#")) {
-                    l = PStringUtils.fastSplit(temp);
-                    List<String> lGeno = new ArrayList<>();
-                    List<String> lGeno2 = new ArrayList<>();
-
-                    for (int i = 0; i < indexObject.size(); i++) { //无论有无基因型，都加进去了
-                        lGeno.add(l.get(indexObject.get(i)));
-                    }
-
-
-                    for (int i = 0; i < indexRef.size(); i++) { //无论有无基因型，都加进去了
-                        lGeno2.add(l.get(indexRef.get(i)));
-                    }
-
-                    String[] GenoArray = lGeno.toArray(new String[lGeno.size()]);
-                    String[] Geno2Array = lGeno2.toArray(new String[lGeno2.size()]);
-
-                    String geno = this.getAlleleCountInfo(GenoArray);
-                    String geno2 = this.getAlleleCountInfo(Geno2Array);
-
-                    bw.write(geno + "\t" + geno2);
-                    bw.newLine();
-                    cnt++;
-                }
-            }
-            System.out.println(cnt + " SNP " + new File(infileS).getName() + " is completed at " + outfileS);
-            br.close();
-            bw.flush();
-            bw.close();
-            System.out.println();
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-    }
-
-    /**
-     * object Pop: 0 0 1 1 0 0 1 1
-     * ref Pop: 0 0 0 0 1 0
-     * Then, object include 4 individuals, total allele count in object is 8, allele 1 count is 4
-     *          ref include 3 individuals, total allele count in object is 6, allele 1 count is 1
-     *
-     * object Pop: 0 0 9 9 0 0 1 1
-     * ref Pop: 0 0 0 0 0 0
-     * Then, object include 4 individuals, total allele count in object is 6, allele 1 count is 2
-     *        ref include 3 individuals, total allele count in object is 6, allele 1 count is 0
-     *  9不能算作allele。 obj在前，ref在后。
-     * @param genoArray
-     * @return
-     */
-    public String getAlleleCountInfo(String[] genoArray) {
-        String out = null;
-        int totalCounts = 0;
-        int allele1Count = 0;
-
-        List<String> tempList = null;
-        List<String> temList = null;
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < genoArray.length; i++) {
-            tempList = PStringUtils.fastSplit(genoArray[i], ":"); //tempList是包含基因型GT AD PL的集合
-            temList = PStringUtils.fastSplit(tempList.get(0), "/"); //temList是包含基因型拆分后的集合
-            String ref1 = temList.get(0);
-            String alt2 = temList.get(1);
-            if (ref1.equals(".")){
-                ref1 = "9";
-                alt2 = "9";
-            }else {
-                totalCounts++;totalCounts++;
-                if (ref1.equals("1")){
-                    allele1Count++;
-                }
-                if (alt2.equals("1")){
-                    allele1Count++;
-                }
-            }
-        }
-
-        sb.append(totalCounts).append("\t").append(allele1Count);
-        out = sb.toString();
-        return out;
-    }
 
 
     /**
@@ -722,19 +599,20 @@ public class XPCLR {
         String outfileDirS4 = new File(outParentS,"005_merged004").getAbsolutePath(); new File(outfileDirS4).mkdirs();
 
 
-//        this.step1_mkSNPfile(infileDirS,outfileDirS);
-//        this.step2_mkSNPfile(outfileDirS,outfileDirS2);
+//        this.step1_mkSNPfile(infileDirS,outfileDirS); //提取chr pos ref alt 信息
+//        this.step2_mkSNPfile(outfileDirS,outfileDirS2); //添加重组率信息
         //        this.getSNPdensity_hexaploid(outfileDirS,outfileDirS3);
 //        this.mergeTXT(outfileDirS3,outfileDirS4);
 //        this.getGenotype_parallele(infileDirS,pop1fileS,outfileDirS5);
 //        this.getGenotype_parallele(infileDirS,pop2fileS,outfileDirS5);
-        this.mergeSNPfile(outfileDirS2,"SNPName\tchr\tGeneticDistance(Morgan)\tPhysicalDistance(bp)\tRefAllele\tTheOtherAllele", outfileDirS6);
+//        this.mergeSNPfile(outfileDirS2,"SNPName\tchr\tGeneticDistance(Morgan)\tPhysicalDistance(bp)\tRefAllele\tTheOtherAllele", outfileDirS6);
+
+
 
 
 
 //        this.calDensity("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/001_chrPosRefAlt/chr042_exon_vmap2.1.pos.Base.txt.gz",1,2,100000,100000,"/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/001_chrPosRefAlt/chr042.txt");
     }
-
 
 
     /**
@@ -769,17 +647,157 @@ public class XPCLR {
         String outfileDirS5 = new File(outParentS,"003_genotype").getAbsolutePath();new File(outfileDirS5).mkdirs();
         String outfileDirS3 = new File(outParentS,"004_calDensity").getAbsolutePath(); new File(outfileDirS3).mkdirs();
         String outfileDirS4 = new File(outParentS,"005_merged004").getAbsolutePath(); new File(outfileDirS4).mkdirs();
+        String outfileDirS7 = new File(outParentS,"003_count_file").getAbsolutePath();new File(outfileDirS7).mkdirs();
 
 
 //        this.step1_mkSNPfile(infileDirS,outfileDirS);
-        this.step2_mkSNPfile(outfileDirS,outfileDirS2);
+//        this.step2_mkSNPfile(outfileDirS,outfileDirS2);
 //        this.getGenotype_parallele(infileDirS,pop1fileS,outfileDirS5);
 //        this.getGenotype_parallele(infileDirS,pop2fileS,outfileDirS5);
+        this.step3_getAlleleCountXPCLR(infileDirS,outfileDirS2,pop1fileS,pop2fileS,outfileDirS7);
 //        this.mergeSNPfile(outfileDirS2,"SNPName\tchr\tGeneticDistance(Morgan)\tPhysicalDistance(bp)\tRefAllele\tTheOtherAllele", outfileDirS6);
         //        this.getSNPdensity_tetraploid(outfileDirS,outfileDirS3);
 //        this.mergeTXT(outfileDirS3,outfileDirS4);
 
     }
+
+//    public void getAlleleCount(){
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/000_exonVCF/chr013_exon_vmap2.1.vcf.gz";
+//        String objectfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/000_pop_bySubspecies/Cultivar.txt";
+//        String reffileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/000_pop_bySubspecies/Landrace_EU.txt";
+//        String outfileS = "/Users/Aoyue/Documents/chr013_exon_vmap2.1.alleleCount.txt";
+//        String snpfileDirS = "";
+//        this.getAlleleCountXPCLR(infileS,snpfileDirS,objectfileS,reffileS,outfileS);
+//    }
+
+
+    public void step3_getAlleleCountXPCLR(String infileDirS, String snpfileDirS, String objectfileS, String reffileS, String outfileDirS){
+        List<String> queryTaxal = new AoFile().getStringListwithoutHeader(objectfileS,0); //获取pop列表
+        List<String> query2Taxal = new AoFile().getStringListwithoutHeader(reffileS,0); //获取pop列表
+
+        List<File> fsList = IOUtils.getVisibleFileListInDir(infileDirS);
+        fsList.parallelStream().forEach(f -> {
+            String infileS = f.getAbsolutePath();
+            String outfileS = new File(outfileDirS,f.getName().split(".vcf")[0] + ".count.txt").getAbsolutePath();
+            String snpfileS = new File(snpfileDirS,f.getName().split(".vcf")[0] + ".snp.txt").getAbsolutePath();
+
+            try {
+                BufferedReader br = AoFile.readFile(infileS);
+                BufferedWriter bw = AoFile.writeFile(outfileS);
+                BufferedReader br2 = AoFile.readFile(snpfileS);
+                String temp = null;
+                List<String> l = new ArrayList<>();
+                List<Integer> indexObject = new ArrayList<>();
+                List<Integer> indexRef = new ArrayList<>();
+                int cnt = 0;
+                while ((temp = br.readLine()) != null) {
+                    if (temp.startsWith("##"))continue;
+                    if (temp.startsWith("#C")){
+                        l = PStringUtils.fastSplit(temp);
+                        for (int i = 9; i < l.size(); i++) {
+                            String taxon = l.get(i);
+
+                            int index = Collections.binarySearch(queryTaxal, taxon);
+                            if (index > -1) { //当找到列表中的taxa时，写列表中的taxa信息
+                                indexObject.add(i);
+                            }
+
+                            int index2 = Collections.binarySearch(query2Taxal, taxon);
+                            if (index2 > -1) { //当找到列表中的taxa时，写列表中的taxa信息
+                                indexRef.add(i);
+                            }
+                        }
+                        Collections.sort(indexObject);
+                        Collections.sort(indexRef);
+
+//                    System.out.println("Finish find the pop index from vcffile.");
+                    }
+                    if (!temp.startsWith("#")) {
+                        l = PStringUtils.fastSplit(temp);
+                        List<String> lGeno = new ArrayList<>();
+                        List<String> lGeno2 = new ArrayList<>();
+
+                        for (int i = 0; i < indexObject.size(); i++) { //无论有无基因型，都加进去了
+                            lGeno.add(l.get(indexObject.get(i)));
+                        }
+
+
+                        for (int i = 0; i < indexRef.size(); i++) { //无论有无基因型，都加进去了
+                            lGeno2.add(l.get(indexRef.get(i)));
+                        }
+
+                        String[] GenoArray = lGeno.toArray(new String[lGeno.size()]);
+                        String[] Geno2Array = lGeno2.toArray(new String[lGeno2.size()]);
+
+                        String geno = this.getAlleleCountInfo(GenoArray);
+                        String geno2 = this.getAlleleCountInfo(Geno2Array);
+
+                        List<String> snpinfoList = PStringUtils.fastSplit(br2.readLine());
+                        String snpnameMorPhy = snpinfoList.get(0) + "\t" + snpinfoList.get(2) + "\t" + snpinfoList.get(3);
+                        bw.write(snpnameMorPhy + "\t" + geno + "\t" + geno2);
+                        bw.newLine();
+                        cnt++;
+                    }
+                }
+                System.out.println(cnt + " SNP " + new File(infileS).getName() + " is completed at " + outfileS);
+                br.close();
+                bw.flush();
+                bw.close();
+                System.out.println();
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
+        });
+
+    }
+
+    /**
+     * object Pop: 0 0 1 1 0 0 1 1
+     * ref Pop: 0 0 0 0 1 0
+     * Then, object include 4 individuals, total allele count in object is 8, allele 1 count is 4
+     *          ref include 3 individuals, total allele count in object is 6, allele 1 count is 1
+     *
+     * object Pop: 0 0 9 9 0 0 1 1
+     * ref Pop: 0 0 0 0 0 0
+     * Then, object include 4 individuals, total allele count in object is 6, allele 1 count is 2
+     *        ref include 3 individuals, total allele count in object is 6, allele 1 count is 0
+     *  9不能算作allele。 obj在前，ref在后。
+     * @param genoArray
+     * @return
+     */
+    public String getAlleleCountInfo(String[] genoArray) {
+        String out = null;
+        int totalCounts = 0;
+        int allele1Count = 0;
+
+        List<String> tempList = null;
+        List<String> temList = null;
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < genoArray.length; i++) {
+            tempList = PStringUtils.fastSplit(genoArray[i], ":"); //tempList是包含基因型GT AD PL的集合
+            temList = PStringUtils.fastSplit(tempList.get(0), "/"); //temList是包含基因型拆分后的集合
+            String ref1 = temList.get(0);
+            String alt2 = temList.get(1);
+            if (ref1.equals(".")){
+                ref1 = "9";
+                alt2 = "9";
+            }else {
+                totalCounts++;totalCounts++;
+                if (ref1.equals("1")){
+                    allele1Count++;
+                }
+                if (alt2.equals("1")){
+                    allele1Count++;
+                }
+            }
+        }
+
+        sb.append(totalCounts).append("\t").append(allele1Count);
+        out = sb.toString();
+        return out;
+    }
+
 
     public void mergeSNPfile(String infileDirS, String header, String outfileDirS){
         String outfileS = new File(outfileDirS,new File(infileDirS).listFiles()[0].getName().split("_exon_")[1]+ ".gz").getAbsolutePath() ;
