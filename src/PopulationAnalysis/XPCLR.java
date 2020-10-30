@@ -89,9 +89,9 @@ public class XPCLR {
 //        this.getExonVCFbyPloidy(); //在提取基因型之前，先把没有分离的位点去除掉，因此要提取基因型，每次都需运行
 //        this.mkSNPfile_hexaploid(); //重要重要！！！分很多步骤
 //        this.mkSNPfile_tetraploid(); //
-//                this.getAlleleCount(); //周正奎方法流程:暂不使用
+                this.getAlleleCount(); //周正奎方法流程:暂不使用
 //        this.getXPCLRscript("abd"); //运行XPCLR时的脚本
-        this.getXPCLRscript("ab");
+//        this.getXPCLRscript("ab");
 
         //对exon位点数进行计数
 //        CountSites.countSites_singleStream("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/002_snp_file");
@@ -518,7 +518,7 @@ public class XPCLR {
      * ref Pop: 0 0 0 0 0 0
      * Then, object include 4 individuals, total allele count in object is 6, allele 1 count is 2
      *        ref include 3 individuals, total allele count in object is 6, allele 1 count is 0
-     *
+     *  9不能算作allele。 obj在前，ref在后。
      * @param genoArray
      * @return
      */
@@ -526,7 +526,6 @@ public class XPCLR {
         String out = null;
         int totalCounts = 0;
         int allele1Count = 0;
-
 
         List<String> tempList = null;
         List<String> temList = null;
