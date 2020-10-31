@@ -88,7 +88,7 @@ public class XPCLR {
 //        this.checkAnnotationDBisinExonVCF(); //确定annotation的位点都在exonVCF中!！！ 只运行一次即可
 //        this.getExonVCFbyPloidy(); //在提取基因型之前，先把没有分离的位点去除掉，因此要提取基因型，每次都需运行
 //        this.mkSNPfile_hexaploid(); //重要重要！！！分很多步骤
-        this.mkSNPfile_tetraploid(); //
+//        this.mkSNPfile_tetraploid(); //
 //                this.getAlleleCount(); //周正奎方法流程:暂不使用
 //        this.getXPCLRscript("abd"); //运行XPCLR时的脚本
 //        this.getXPCLRscript("ab");
@@ -109,7 +109,7 @@ public class XPCLR {
          * 3: 获取TopK 的结果并进行后续分析
          */
 //        this.checkInfNum();  //检查一下XPCLR中的异常值
-//        this.pipeTopK();
+        this.pipeTopK();
 
     }
 
@@ -148,7 +148,9 @@ public class XPCLR {
     }
 
 
-
+    /**
+     * 通过值域，进行topk以上的位点的筛选，并查看其所在基因
+     */
     public void pipeTopK(){
         //model
 //        String parentFileS = "";
@@ -175,16 +177,16 @@ public class XPCLR {
 //        String outfileS = new File(topKfileS3).getAbsolutePath().replaceFirst(".txt","_ChrPosTrans.txt");
 
         //model
-        String parentFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/006_tetraploid_FTT_DE";
-        String outfileDirS1 = new File(parentFileS,"008_topK").getAbsolutePath(); new File(outfileDirS1).mkdirs();
-        double topK = 0.01;
-        String samplefileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/006_tetraploid_FTT_DE/006_output/Free_threshing_tetraploid_VS_Domesticated_emmer_exonRegion_0.0001_100_500.xpclr100000lines.txt.gz";
-        String xpclrFileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/006_tetraploid_FTT_DE/006_output/Free_threshing_tetraploid_VS_Domesticated_emmer_exonRegion_0.0001_100_500.xpclr.txt.gz";
-        String topKfileS3 = new File(outfileDirS1,"top" + topK + ".txt.gz").getAbsolutePath();
-
-        int bin = 500;
-        String snpfileS = new File(parentFileS,"002_snp_file2_merge/vmap2.1.snp.txt.gz").getAbsolutePath();
-        String outfileS = new File(topKfileS3).getAbsolutePath().replaceFirst(".txt","_ChrPosTrans.txt");
+//        String parentFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/006_tetraploid_FTT_DE";
+//        String outfileDirS1 = new File(parentFileS,"008_topK").getAbsolutePath(); new File(outfileDirS1).mkdirs();
+//        double topK = 0.01;
+//        String samplefileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/006_tetraploid_FTT_DE/006_output/Free_threshing_tetraploid_VS_Domesticated_emmer_exonRegion_0.0001_100_500.xpclr100000lines.txt.gz";
+//        String xpclrFileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/006_tetraploid_FTT_DE/006_output/Free_threshing_tetraploid_VS_Domesticated_emmer_exonRegion_0.0001_100_500.xpclr.txt.gz";
+//        String topKfileS3 = new File(outfileDirS1,"top" + topK + ".txt.gz").getAbsolutePath();
+//
+//        int bin = 500;
+//        String snpfileS = new File(parentFileS,"002_snp_file2_merge/vmap2.1.snp.txt.gz").getAbsolutePath();
+//        String outfileS = new File(topKfileS3).getAbsolutePath().replaceFirst(".txt","_ChrPosTrans.txt");
 
 
         //model
@@ -200,9 +202,20 @@ public class XPCLR {
 //        String outfileS = new File(topKfileS3).getAbsolutePath().replaceFirst(".txt","_ChrPosTrans.txt");
 
 
+        //model
+        String parentFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE";
+        String outfileDirS1 = new File(parentFileS,"008_topK").getAbsolutePath(); new File(outfileDirS1).mkdirs();
+        double topK = 0.01;
+        String samplefileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE/006_output/Durum_VS_Domesticated_emmer_exonRegion_0.0001_100_500.xpclr100000lines.txt.gz";
+        String xpclrFileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE/006_output/Durum_VS_Domesticated_emmer_exonRegion_0.0001_100_500.xpclr.txt.gz";
+        String topKfileS3 = new File(outfileDirS1,"top" + topK + ".txt.gz").getAbsolutePath();
+
+        int bin = 500;
+        String snpfileS = new File(parentFileS,"002_snp_file2_merge/vmap2.1.snp.txt.gz").getAbsolutePath();
+        String outfileS = new File(topKfileS3).getAbsolutePath().replaceFirst(".txt","_ChrPosTrans.txt");
+
         this.getThreshodFile(samplefileS1,topK,xpclrFileS2,topKfileS3);
         this.getGeneListfromTopK(topKfileS3,bin,snpfileS,outfileS);
-
     }
 
 
@@ -394,9 +407,14 @@ public class XPCLR {
 //        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid/006_output/Domesticated_emmer_VS_Wild_emmer_exonRegion_0.0001_100_500.xpclr.txt.gz";
 //        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid/006_output/Domesticated_emmer_VS_Wild_emmer_exonRegion_0.0001_100_500.xpclr_" + goalRows + "lines.txt.gz";
 
-                int goalRows = 100000;
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/006_tetraploid_FTT_DE/006_output/Free_threshing_tetraploid_VS_Domesticated_emmer_exonRegion_0.0001_100_500.xpclr.txt.gz";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/006_tetraploid_FTT_DE/006_output/Free_threshing_tetraploid_VS_Domesticated_emmer_exonRegion_0.0001_100_500.xpclr" + goalRows + "lines.txt.gz";
+//        int goalRows = 100000;
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/006_tetraploid_FTT_DE/006_output/Free_threshing_tetraploid_VS_Domesticated_emmer_exonRegion_0.0001_100_500.xpclr.txt.gz";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/006_tetraploid_FTT_DE/006_output/Free_threshing_tetraploid_VS_Domesticated_emmer_exonRegion_0.0001_100_500.xpclr" + goalRows + "lines.txt.gz";
+
+        // Durum FTT
+        int goalRows = 100000;
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE/006_output/Durum_VS_Domesticated_emmer_exonRegion_0.0001_100_500.xpclr.txt.gz";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE/006_output/Durum_VS_Domesticated_emmer_exonRegion_0.0001_100_500.xpclr" + goalRows + "lines.txt.gz";
 
         //check 文件行数， 目的行数， 求出比率
         int rows = AoFile.countFileRowNumber(infileS); System.out.println("Total\t" + rows + "\tin input file");
@@ -487,15 +505,15 @@ public class XPCLR {
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/001_0.0001_100_100000";
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid/006_output/001_0.0001_100_100000";
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid/006_output/002_output_0.0001_100_500";
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/006_tetraploid_FTT_DE/006_output/001_0.0001_100_500";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/006_tetraploid_FTT_DE/006_output/001_0.0001_100_500";
 
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE/006_output/001_0.0001_100_500";
 
 
         String outfileDirS = AoString.autoOutfileDirS(infileDirS);
 
         new File(outfileDirS).mkdirs();
         System.out.println(outfileDirS);
-        int a=3;
         List<File> fsList = AoFile.getFileListInDir(infileDirS);
         fsList.parallelStream().forEach(f -> {
 //            String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/chr001_Clutivar_VS_Landrace_EU_exonRegion_0.0001_100_100000.xpclr.txt";
@@ -597,16 +615,17 @@ public class XPCLR {
         String outfileDirS5 = new File(outParentS,"003_genotype").getAbsolutePath();new File(outfileDirS5).mkdirs();
         String outfileDirS3 = new File(outParentS,"004_calDensity").getAbsolutePath(); new File(outfileDirS3).mkdirs();
         String outfileDirS4 = new File(outParentS,"005_merged004").getAbsolutePath(); new File(outfileDirS4).mkdirs();
+        String outfileDirS7 = new File(outParentS,"003_count_file").getAbsolutePath();new File(outfileDirS7).mkdirs();
 
 
 //        this.step1_mkSNPfile(infileDirS,outfileDirS); //提取chr pos ref alt 信息
 //        this.step2_mkSNPfile(outfileDirS,outfileDirS2); //添加重组率信息
-        //        this.getSNPdensity_hexaploid(outfileDirS,outfileDirS3);
-//        this.mergeTXT(outfileDirS3,outfileDirS4);
 //        this.getGenotype_parallele(infileDirS,pop1fileS,outfileDirS5);
 //        this.getGenotype_parallele(infileDirS,pop2fileS,outfileDirS5);
+        this.step3_getAlleleCountXPCLR(infileDirS,outfileDirS2,pop1fileS,pop2fileS,outfileDirS7);
 //        this.mergeSNPfile(outfileDirS2,"SNPName\tchr\tGeneticDistance(Morgan)\tPhysicalDistance(bp)\tRefAllele\tTheOtherAllele", outfileDirS6);
-
+        //        this.getSNPdensity_hexaploid(outfileDirS,outfileDirS3);
+//        this.mergeTXT(outfileDirS3,outfileDirS4);
 
 
 
@@ -650,11 +669,11 @@ public class XPCLR {
         String outfileDirS7 = new File(outParentS,"003_count_file").getAbsolutePath();new File(outfileDirS7).mkdirs();
 
 
-//        this.step1_mkSNPfile(infileDirS,outfileDirS);
-//        this.step2_mkSNPfile(outfileDirS,outfileDirS2);
+//        this.step1_mkSNPfile(infileDirS,outfileDirS); //提取chr pos ref alt 信息
+//        this.step2_mkSNPfile(outfileDirS,outfileDirS2); //添加重组率信息
 //        this.getGenotype_parallele(infileDirS,pop1fileS,outfileDirS5);
 //        this.getGenotype_parallele(infileDirS,pop2fileS,outfileDirS5);
-        this.step3_getAlleleCountXPCLR(infileDirS,outfileDirS2,pop1fileS,pop2fileS,outfileDirS7);
+//        this.step3_getAlleleCountXPCLR(infileDirS,outfileDirS2,pop1fileS,pop2fileS,outfileDirS7);
 //        this.mergeSNPfile(outfileDirS2,"SNPName\tchr\tGeneticDistance(Morgan)\tPhysicalDistance(bp)\tRefAllele\tTheOtherAllele", outfileDirS6);
         //        this.getSNPdensity_tetraploid(outfileDirS,outfileDirS3);
 //        this.mergeTXT(outfileDirS3,outfileDirS4);
@@ -856,7 +875,7 @@ public class XPCLR {
 
             gwin = "0.0001";
             snpWin = "100";
-            gridSize = "500";
+            gridSize = "100000";
 //            pop1 = "Domesticated_emmer";
 //            pop2 = "Wild_emmer";
 
@@ -877,14 +896,19 @@ public class XPCLR {
 
                 String pop1fileS = "../003_genotype/" + "chr" + chrArr[j] + "_exon_vmap2.1_" + pop1 + "_geno.txt";
                 String pop2fileS = "../003_genotype/" + "chr" + chrArr[j] + "_exon_vmap2.1_" + pop2 + "_geno.txt";
+                String countfileS = "../003_count_file/" + "chr" + chrArr[j]+"_exon_vmap2.1.count.txt";
                 String snpInfoS = "../002_snp_file/" + "chr"+chrArr[j]+"_exon_vmap2.1.snp.txt";
                 String outfileS = "./" + "chr" + chrArr[j] + "_" + pop1 + "_VS_" + pop2 + "_exonRegion_" + gwin + "_" + snpWin + "_" + gridSize;  //注意在此目录下运行命令！！！
                 String logS = "../007_log/" + new File(outfileS).getName().split(".gz")[0]+".log.txt";
 
-                System.out.println("nohup XPCLR -xpclr " + pop1fileS + " " + pop2fileS + " " +
+                System.out.println("nohup /data1/home/aoyue/biosoftware/XPCLR-newVersion2020/XPCLR_fromZhou/bin/ XPCLR -xpclr " + pop1fileS + " " + pop2fileS + " " +
                         snpInfoS + " " + outfileS + " -w1 " + gwin + " " + snpWin + " "+
                         gridSize + " " + chr + " -p0 0.95" +
                         " > " + logS + " 2>&1 &");
+
+//                System.out.println("nohup XPCLR -xpclr " + countfileS + " " + snpInfoS + " " + outfileS + " -w1 " + gwin + " " + snpWin + " "+
+//                        gridSize + " " + chr + " -p0 0.95" +
+//                        " > " + logS + " 2>&1 &");
             }
         }
 
