@@ -982,7 +982,6 @@ public class CountSites {
                             while ((temp = br.readLine()) != null) {
                                 if (temp.startsWith("#")) {
                                     continue;
-
                                 }
                                 StringBuilder sb = new StringBuilder();
                                 sb.append(temp);
@@ -1434,7 +1433,6 @@ public class CountSites {
                             String infileS = fs[i].getAbsolutePath();
                             BufferedReader br = AoFile.readFile(infileS);
                             String outfileS = new File(outfileDirS, "chr" + hmcntchr.get(chr) + fs[i].getName().substring(6)).getAbsolutePath();
-
 
                             //确定输出文件的路径，并读入header
                             String secondchr = PStringUtils.getNDigitNumber(3, chr + 1);

@@ -111,9 +111,55 @@ public class XPCLR {
 //        this.checkInfNum();  //检查一下XPCLR中的异常值
 //        this.pipeTopK();
 
-
 //        this.splitTxt();
-        this.extractChrPos();
+        this.getExonDensity();
+
+
+    }
+
+    public void getExonDensity(){
+
+//        String infileDirS = ""; //exonVCF
+//        String outfileDirS = ""; //extract chrPos
+//        String outfileDirS2 = ""; //RefChrPos
+//        String outfileS = ""; // mergedFile
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/000_exonVCF"; //exonVCF
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/000_chrPos"; //extract chrPos
+        String outfileDirS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/000_RefChrPos"; //RefChrPos
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/000_mergeRefChrPos/exon_vmap2.1.pos.txt.gz"; // mergedFile
+
+        this.extractChrPos(infileDirS,outfileDirS);
+        this.getRefChrPos(outfileDirS,outfileDirS2,outfileS);
+        this.windowExonSNPdensity(outfileS);
+    }
+
+    /**
+     * 将标准化的结果进行滑窗处理
+     */
+    public void windowExonSNPdensity(String infileS){
+
+//        String infileS = "";
+        AoFile.readheader(infileS);
+        int chrColumn = 0;
+        int posIndex = 1;
+        int valueIndex = 1;
+        double window = 1000000;
+        double step = 1000000;
+        String name = new File(infileS).getName().split(".txt")[0] + "_" + window + "window_" + step + "step.txt.gz";
+        String parent = new File(infileS).getParent();
+        String outfileS = new File(parent,name).getAbsolutePath();
+        new AoWinScan().getwindowDistrbution_general(infileS,chrColumn,posIndex,valueIndex,window,step,outfileS);
+//        System.out.println("nohup java -jar 051_AoWindowScan.jar " + infileS + " " + chrColumn + " " + posIndex + " " + valueIndex + " " + window + " " + step + " " + outfileS + " &" );
+    }
+
+
+    public void getRefChrPos(String infileDirS, String outfileDirS,String outfileS){
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/008_exon_snpDensity/001_chrPos";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/008_exon_snpDensity/002_RefChrPos";
+//        String outfileDirS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/008_exon_snpDensity/003_mergeRefChrPos/exon_vmap2.1.pos.txt.gz";
+        new CountSites().mergefileandChangeChrPos_chr1and2(infileDirS,outfileDirS);
+        AoFile.mergeTxt(outfileDirS,outfileS);
 
     }
 
@@ -122,9 +168,9 @@ public class XPCLR {
     /**
      * 提取外显子数据的chr pos 信息
      */
-    public void extractChrPos(){
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/016_exonVCF";
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/008_exon_snpDensity/001_chrPos";
+    public void extractChrPos(String infileDirS, String outfileDirS){
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/016_exonVCF";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/008_exon_snpDensity/001_chrPos";
 //        new CalVCF().mkHapPos(infileDirS,outfileDirS);
 
         List<File> fsList = AoFile.getFileListInDir(infileDirS);
@@ -601,8 +647,9 @@ public class XPCLR {
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid/006_output/002_output_0.0001_100_500";
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/006_tetraploid_FTT_DE/006_output/001_0.0001_100_500";
 
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE/006_output/001_0.0001_100_500";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE/006_output/001_0.0001_100_500";
 
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/003_0.0001_100_2000";
 
         String outfileDirS = AoString.autoOutfileDirS(infileDirS);
 
@@ -1263,15 +1310,15 @@ public class XPCLR {
     public void getExonVCFbyPloidy(){
         String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/016_exonVCF";
 /////////// 六倍体
-//        String taxafileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/000_pop_byPloidy/AABBDD.txt";
-//        String outfileDirS ="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/000_exonVCF";
-//        List<File> fsList = AoFile.getFileListInDir(infileDirS);
-//        fsList.parallelStream().forEach(f -> {
-//            String infileS = f.getAbsolutePath();
-//            String outfileS = new File(outfileDirS,f.getName()).getAbsolutePath();
-//            new CalVCF().extractVCF(infileS,outfileS,taxafileS);
-//            System.out.println(f.getName() + "\tis completed at " + outfileS);
-//        });
+        String taxafileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/000_pop_byPloidy/AABBDD.txt";
+        String outfileDirS ="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/000_exonVCF";
+        List<File> fsList = AoFile.getFileListInDir(infileDirS);
+        fsList.parallelStream().forEach(f -> {
+            String infileS = f.getAbsolutePath();
+            String outfileS = new File(outfileDirS,f.getName()).getAbsolutePath();
+            new CalVCF().extractVCF(infileS,outfileS,taxafileS);
+            System.out.println(f.getName() + "\tis completed at " + outfileS);
+        });
 
 /////////// 四倍体
 //        String taxafileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/000_pop_byPloidy/AABB.txt";
@@ -1279,17 +1326,17 @@ public class XPCLR {
 //        String[] chrArr ={"001","002","003","004","007","008","009","010","013","014","015","016","019","020","021","022","025","026","027","028","031","032","033","034","037","038","039","040"};
 
 ////////// 只挑选durum
-        String taxafileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/000_pop_byPloidy/AABB_DE_Dm.txt";
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE/000_exonVCF";
-        String[] chrArr ={"001","002","003","004","007","008","009","010","013","014","015","016","019","020","021","022","025","026","027","028","031","032","033","034","037","038","039","040"};
+//        String taxafileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/000_pop_byPloidy/AABB_DE_Dm.txt";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE/000_exonVCF";
+//        String[] chrArr ={"001","002","003","004","007","008","009","010","013","014","015","016","019","020","021","022","025","026","027","028","031","032","033","034","037","038","039","040"};
 
-        for (int i = 0; i < chrArr.length; i++) {
-            String chr = chrArr[i];
-            String infileS = new File(infileDirS,"chr" + chr + "_exon_vmap2.1.vcf.gz").getAbsolutePath();
-            String outfileS = new File(outfileDirS, "chr" + chr + "_exon_vmap2.1.vcf.gz").getAbsolutePath();
-            new CalVCF().extractVCF(infileS,outfileS,taxafileS);
-            System.out.println(chr + "\tis completed at " + outfileS);
-        }
+//        for (int i = 0; i < chrArr.length; i++) {
+//            String chr = chrArr[i];
+//            String infileS = new File(infileDirS,"chr" + chr + "_exon_vmap2.1.vcf.gz").getAbsolutePath();
+//            String outfileS = new File(outfileDirS, "chr" + chr + "_exon_vmap2.1.vcf.gz").getAbsolutePath();
+//            new CalVCF().extractVCF(infileS,outfileS,taxafileS);
+//            System.out.println(chr + "\tis completed at " + outfileS);
+//        }
     }
 
     /**
