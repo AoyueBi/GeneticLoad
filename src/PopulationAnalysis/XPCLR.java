@@ -109,7 +109,19 @@ public class XPCLR {
          * 3: 获取TopK 的结果并进行后续分析
          */
 //        this.checkInfNum();  //检查一下XPCLR中的异常值
-        this.pipeTopK();
+//        this.pipeTopK();
+
+//        this.splitTxt();
+        this.extractChrPos();
+
+    }
+
+    /**
+     * 提取外显子数据的chr pos 信息
+     */
+    public void extractChrPos(){
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/016_exonVCF";
+
 
     }
 
@@ -117,9 +129,41 @@ public class XPCLR {
      * 将19号染色体进行拆分，并分别计算XPCLR，看结果是否完整跑出
      */
     public void splitTxt(){
-        String infileS = "";
-        String outfileDirS = "";
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE/003_count_file/chr019_exon_vmap2.1.count.txt";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE/010_test_splitChr019";
+        int numfile = 4;
+        double lines = Double.NaN;
+        try {
 
+            String[] outfileSArray = new String[numfile];
+            //先查看文件有几行
+            int row = AoFile.countFileRowNumber(infileS);
+            if (row%numfile == 0){
+                lines = (double) row/numfile ;
+            }else {
+                lines = row/numfile +1 ;
+            }
+            System.out.println(row + " lines int the input file");
+            System.out.println(lines + " lines for each file");
+
+            BufferedReader br = AoFile.readFile(infileS);
+            String temp = null;
+//            String header = br.readLine();
+            for (int i = 0; i < outfileSArray.length; i++) {
+                String outfileS = new File(outfileDirS,i + ".txt").getAbsolutePath();
+                BufferedWriter bw = AoFile.writeFile(outfileS);
+                for (int j = 0; j < lines; j++) {
+                    bw.write(br.readLine());
+                    bw.newLine();
+                }
+                bw.flush();
+                bw.close();
+            }
+            br.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
 
     }
 
