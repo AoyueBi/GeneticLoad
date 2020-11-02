@@ -725,17 +725,9 @@ public class CalVCF {
         fsList.parallelStream().forEach(f -> {
             try {
                 String infileS = f.getAbsolutePath();
-                String outfileS = null;
-                BufferedReader br = null;
-                if (infileS.endsWith(".vcf")) {
-                    br = IOUtils.getTextReader(infileS);
-                    outfileS = new File(outfileDirS, f.getName().replaceFirst(".vcf", ".pos.txt.gz")).getAbsolutePath();
-                } else if (infileS.endsWith(".vcf.gz")) {
-                    br = IOUtils.getTextGzipReader(infileS);
-                    outfileS = new File(outfileDirS, f.getName().replaceFirst(".vcf.gz", ".pos.txt.gz")).getAbsolutePath();
-                }
-
-                BufferedWriter bw = IOUtils.getTextGzipWriter(outfileS);
+                String outfileS = new File(outfileDirS, f.getName().split(".vcf")[0] + ".pos.txt.gz").getAbsolutePath();
+                BufferedReader br = AoFile.readFile(infileS);
+                BufferedWriter bw = AoFile.writeFile(outfileS);
                 String temp = null;
                 int cnt = 0;
                 bw.write("Chr\tPos\n");

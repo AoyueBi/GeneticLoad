@@ -111,18 +111,60 @@ public class XPCLR {
 //        this.checkInfNum();  //检查一下XPCLR中的异常值
 //        this.pipeTopK();
 
+
 //        this.splitTxt();
         this.extractChrPos();
 
     }
+
+
 
     /**
      * 提取外显子数据的chr pos 信息
      */
     public void extractChrPos(){
         String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/016_exonVCF";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/008_exon_snpDensity/001_chrPos";
+//        new CalVCF().mkHapPos(infileDirS,outfileDirS);
 
+        List<File> fsList = AoFile.getFileListInDir(infileDirS);
+        for (int i = 0; i < fsList.size(); i++) {
+            File f = fsList.get(i);
+            try {
+                String infileS = f.getAbsolutePath();
+                String outfileS = new File(outfileDirS, f.getName().split(".vcf")[0] + ".pos.txt.gz").getAbsolutePath();
+                BufferedReader br = AoFile.readFile(infileS);
+                BufferedWriter bw = AoFile.writeFile(outfileS);
+                String temp = null;
+                int cnt = 0;
+                bw.write("Chr\tPos\n");
+                List<String> l = null;
+                while ((temp = br.readLine()) != null) {
+                    if (temp.startsWith("#")) {
+                        continue;
+                    }
+                    temp = temp.substring(0, 40); //肯定够
+                    l = PStringUtils.fastSplit(temp);
+                    StringBuilder sb = new StringBuilder();
+                    sb = new StringBuilder(l.get(0));
+                    sb.append("\t").append(l.get(1));
+                    bw.write(sb.toString());
+                    bw.newLine();
+//                    if (cnt % 1000 == 0) {
+//                        System.out.println("Output " + String.valueOf(cnt) + " SNPs");
+//                    }
+                    cnt++;
+                }
+                bw.flush();
+                bw.close();
+                br.close();
+                System.out.println(String.valueOf(cnt) + " SNPs output from " + f.getAbsolutePath());
 
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
+        }
     }
 
     /**
