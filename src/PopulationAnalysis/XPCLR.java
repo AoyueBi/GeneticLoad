@@ -113,6 +113,17 @@ public class XPCLR {
 
     }
 
+    /**
+     * 将19号染色体进行拆分，并分别计算XPCLR，看结果是否完整跑出
+     */
+    public void splitTxt(){
+        String infileS = "";
+        String outfileDirS = "";
+
+
+    }
+
+
 
     /**
      * 检查一下XPCLR中的异常值
@@ -217,9 +228,6 @@ public class XPCLR {
         this.getThreshodFile(samplefileS1,topK,xpclrFileS2,topKfileS3);
         this.getGeneListfromTopK(topKfileS3,bin,snpfileS,outfileS);
     }
-
-
-
 
 
     /**
