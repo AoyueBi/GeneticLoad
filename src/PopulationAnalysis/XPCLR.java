@@ -112,7 +112,7 @@ public class XPCLR {
 //        this.pipeTopK();
 
 //        this.splitTxt();
-        this.getExonDensity();
+//        this.getExonDensity();
 
 
     }
