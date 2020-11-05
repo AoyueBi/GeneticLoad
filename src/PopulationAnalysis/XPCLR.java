@@ -114,6 +114,21 @@ public class XPCLR {
 //        this.splitTxt();
 //        this.getExonDensity();
 
+//        this.testScript();
+
+
+    }
+
+    /**
+     * 测试单条染色体的小脚本
+     */
+    public void testScript(){
+        String chr = "1";
+        String morgen = "0.0001";
+        String snp = "100";
+        String grid = "2000";
+        System.out.println("nohup XPCLR -c ./" + chr + ".txt ./" + chr + "_" + morgen + "_" + snp + "_" + grid + " -w1 " + morgen + " " + snp + " " + grid + " " + chr +
+                " > ./" + chr + "_" + morgen +  "_" + snp + "_" + grid + ".log.txt 2>&1 &\n");
 
     }
 
@@ -649,8 +664,11 @@ public class XPCLR {
 
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE/006_output/001_0.0001_100_500";
 
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/003_0.0001_100_2000";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/003_0.0001_100_2000";
 
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE/006_output/z_test/001/";
+
+        String  infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE/006_output/z_test/002";
         String outfileDirS = AoString.autoOutfileDirS(infileDirS);
 
         new File(outfileDirS).mkdirs();

@@ -37,10 +37,10 @@ public class Fst {
 //        this.mergeFSTwindow();
 
         //********************************* VMap2.0 after -- new Version ********************//
-//        this.mkFstCommandbasedwinndow2();
+        this.mkFstCommandbasedwinndow2();
 //        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/001_Fst/001_script_based100kwindow_50kstep/fst_baesd100kwindow_50kstep_20200907.sh",21,1);
 //        this.window();
-        this.addGroupToFstwindow();
+//        this.addGroupToFstwindow();
 
 //        this.getMeanFstValue();
 //        this.getMatrixFst();
@@ -318,10 +318,35 @@ public class Fst {
 //        String infileDirS = ""; //HPC
 //        String outfileDirS = ""; //HPC
 //          String scriptS = ""; //local script file
-        //参数
-        int window = 100000;
-        int step = 50000;
-        int numcmd = 8;
+//        //参数
+//        int window = 100000;
+//        int step = 50000;
+//        int numcmd = 8;
+//        //其他需要修改参数： 输入文件名称
+////        String infileS = new File(infileDirS, "chr" + chr + "_vmap2.1.vcf").getAbsolutePath();
+//
+//        System.out.println("mkdir 001_srcipt_based" + window + "window_" + step + "step");
+//        System.out.println("mkdir 002_fst_based" + window + "window_" + step + "step");
+//
+//
+//        //local file： one: group
+//        String groupHexaandTetraDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/000_group/hexaandTetra";
+//        String groupHexaandDiDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/000_group/hexaandDi";
+//
+//        // HPC file: group fileDirS
+//        String group1FileDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/101_Fst/000_group/hexaandTetra";
+//        String group2FileDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/101_Fst/000_group/hexaandDi";
+//
+//        // HPC file: output fileDirS
+//        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/105_VMap2.1ByRef";
+//        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/031_popGen/002_fst_based100000window_50000step/001";
+//        String scriptS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/001_script_based100kwindow_50kstep/fst_based100kwindow_50kstep_20200213.sh"; //local script file
+//        new File(scriptS).getParentFile().mkdirs();
+
+
+        int window = 2000;
+        int step = 2000;
+        int numcmd = 21;
         //其他需要修改参数： 输入文件名称
 //        String infileS = new File(infileDirS, "chr" + chr + "_vmap2.1.vcf").getAbsolutePath();
 
@@ -330,7 +355,7 @@ public class Fst {
 
 
         //local file： one: group
-        String groupHexaandTetraDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/000_group/hexaandTetra";
+        String groupHexaandTetraDirS = "";
         String groupHexaandDiDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/000_group/hexaandDi";
 
         // HPC file: group fileDirS
@@ -342,6 +367,9 @@ public class Fst {
         String outfileDirS = "/data4/home/aoyue/vmap2/analysis/031_popGen/002_fst_based100000window_50000step/001";
         String scriptS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/001_script_based100kwindow_50kstep/fst_based100kwindow_50kstep_20200213.sh"; //local script file
         new File(scriptS).getParentFile().mkdirs();
+
+
+
 
         List<File> fs = AoFile.getFileListInDir(groupHexaandTetraDirS);
         File[] group1FileS = fs.toArray(new File[fs.size()]);
