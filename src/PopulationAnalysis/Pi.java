@@ -27,10 +27,37 @@ public class Pi {
 //        this.getMeanPIvaluefromLandraceWAEAEU();
 
 
-        //        this.mkPiCommandbasedwinndow();
-                this.getMeanPIvalue();
+//                this.mkPiCommandbasedwinndow();
+//                this.getMeanPIvalue();
 //        this.window();
 //        this.addGroupToPiwindow();
+
+        this.mkPiCMD_by2File();
+
+
+    }
+
+
+    public void mkPiCMD_by2File(){
+        //local path
+        String grouplocalDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/002_Pi/000_group";
+        //HPC path
+        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/105_VMap2.1ByRef";
+        String groupDirS = "/data4/home/aoyue/vmap2/analysis/031_popGen/002_Pi/000_group";
+        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/031_popGen/002_Pi/002_pi_based100000window_50000step/001";
+        //para
+        String window = "100000";
+        String step = "50000";
+        int numcmd = 5;
+        String scriptS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/002_Pi/001_srcipt_based100000window_50000step/pi_based" + window + "window_" + step + "step_20200904.sh";
+
+
+
+        System.out.println("mkdir 001_srcipt_based" + window + "window_" + step + "step");
+        System.out.println("mkdir 002_pi_based" + window + "window_" + step + "step");
+
+        List<File> fs = IOUtils.getVisibleFileListInDir(grouplocalDirS);
+
     }
 
 

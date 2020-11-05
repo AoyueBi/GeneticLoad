@@ -37,13 +37,92 @@ public class Fst {
 //        this.mergeFSTwindow();
 
         //********************************* VMap2.0 after -- new Version ********************//
-        this.mkFstCommandbasedwinndow2();
+//        this.mkFstCommandbasedwinndow2();
 //        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/001_Fst/001_script_based100kwindow_50kstep/fst_baesd100kwindow_50kstep_20200907.sh",21,1);
-//        this.window();
+        this.window();
 //        this.addGroupToFstwindow();
 
 //        this.getMeanFstValue();
 //        this.getMatrixFst();
+
+        this.mkFstCMD_by2File();
+//        this.mergeExonVCF();
+
+
+
+    }
+
+    /**
+     * 2件事情：1.将chr pos 转换为参考基因组的1A形式，2.将1和2文件合并，并命名为1A
+     */
+    public void mergeExonVCF(){
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE/000_exonVCF";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE/000_exonVCF_ref";
+        new CountSites().mergeVCFfileandChangeChrPos_chr1and2(infileDirS,outfileDirS);
+    }
+
+    /**
+     * 适用于只计算2个群体的 fst
+     */
+    public void mkFstCMD_by2File(){
+        int window = 2000;
+        int step = 2000;
+        int numcmd = 1;
+        //其他需要修改参数： 输入文件名称
+//        String infileS = new File(infileDirS, "chr" + chr + "_vmap2.1.vcf").getAbsolutePath();
+
+        System.out.println("mkdir 001_srcipt_based" + window + "window_" + step + "step");
+        System.out.println("mkdir 002_fst_based" + window + "window_" + step + "step");
+
+        //local file： one: group
+        String pop1FileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/000_pop_bySubspecies/Durum.txt";
+        String pop2FileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/000_pop_bySubspecies/Domesticated_emmer.txt";
+
+        // HPC file: group fileDirS
+        String groupFileDirS = "/data4/home/aoyue/vmap2/analysis/030_XPCLR/000_pop_bySubspecies";
+
+        // HPC file: output fileDirS
+        String infileDirS = "/data4/home/aoyue/vmap2/analysis/030_XPCLR/007_tetraploid_Dm_DE/000_exonVCF_ref";
+        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/030_XPCLR/007_tetraploid_Dm_DE/013_fstTest/001";
+        String scriptS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE/010_test3_pifst/001_script_based100kwindow_2kbstep/fst_based2kwindow_2kstep_20201105.sh"; //local script file
+        new File(scriptS).getParentFile().mkdirs();
+
+        List<File> fs = new ArrayList<>();
+        fs.add(new File(pop1FileS)); fs.add(new File(pop2FileS));
+        File[] group1FileS = fs.toArray(new File[fs.size()]);
+
+        try{
+            BufferedWriter bw = AoFile.writeFile(scriptS);
+            for (int i = 0; i < group1FileS.length - 1; i++) {
+                String pop1 = group1FileS[i].getName().replace(".txt", ""); //第一组的名字
+                for (int j = i + 1; j < group1FileS.length; j++) {
+                    String pop2 = group1FileS[j].getName().replace(".txt", ""); //第二组的名字
+                    String[] chrArr = {"1A", "2A", "3A","4A", "5A", "6A", "7A", "1B", "2B", "3B", "4B", "5B", "6B", "7B"};
+                    for (int k = 0; k < chrArr.length; k++) {
+                        String chr = chrArr[k];
+                        String infileS = new File(infileDirS, "chr" + chr + "_exon_vmap2.1.vcf.gz").getAbsolutePath();
+                        String outfileS = new File(outfileDirS, pop1 + "_VS_" + pop2 + "_chr" + chr).getAbsolutePath();
+                        String group1S = new File(groupFileDirS, group1FileS[i].getName()).getAbsolutePath();
+                        String group2S = new File(groupFileDirS, group1FileS[j].getName()).getAbsolutePath();
+                        StringBuilder sb = new StringBuilder();
+                        sb.append("vcftools --gzvcf ").append(infileS).append(" --weir-fst-pop ").append(group1S).append(" --weir-fst-pop ").append(group2S);
+                        sb.append(" --fst-window-size ").append(window).append(" --fst-window-step ").append(step);
+                        sb.append(" --out ").append(outfileS);
+                        System.out.println(sb.toString());
+                        bw.write(sb.toString());bw.newLine();
+
+                    }
+                }
+            }
+
+            bw.flush();bw.close();
+            SplitScript.splitScript3(scriptS,numcmd); //脚本拆分
+
+        }catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
 
     }
 
@@ -360,7 +439,7 @@ public class Fst {
 
         // HPC file: group fileDirS
         String group1FileDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/101_Fst/000_group/hexaandTetra";
-        String group2FileDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/101_Fst/000_group/hexaandDi";
+        String group2FileDirS = "/data4/home/oyue/vmap2/analysis/021_popGen/101_Fst/000_group/hexaandDi";
 
         // HPC file: output fileDirS
         String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/105_VMap2.1ByRef";
