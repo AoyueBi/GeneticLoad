@@ -45,19 +45,22 @@ public class Pi {
     public void piRatio(){
         String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE/010_test3_pifst/002_pi/003_pi_window_byaoCode/Domesticated_emmer_chr1A_basedSNP.sites_2000.0window_2000.0step.txt";
         String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE/010_test3_pifst/002_pi/003_pi_window_byaoCode/Durum_chr1A_basedSNP.sites_2000.0window_2000.0step.txt";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE/010_test3_pifst/002_pi/004_piRatio";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE/010_test3_pifst/002_pi/004_piRatio/chr1A_piRatio.txt";
 
         try {
             BufferedReader br = AoFile.readFile(infileS);
             BufferedReader br2 = AoFile.readFile(infileS2);
             BufferedWriter bw = AoFile.writeFile(outfileS);
-            String temp = null;
-            String temp2 = null;
+            bw.write("CHROM\tBIN_START\tBIN_END\tRatio"); bw.newLine();
+            String temp = br.readLine();
+            String temp2 = br2.readLine();
             int cnt = 0;
             List<String> l = new ArrayList<>();
             List<String> l2 = new ArrayList<>();
             double ratio = Double.NaN;
+            StringBuilder sb = new StringBuilder();
             while ((temp = br.readLine()) != null) {
+                sb.setLength(0);
                 temp2 = br2.readLine();
                 l = PStringUtils.fastSplit(temp);
                 l2 = PStringUtils.fastSplit(temp2);
@@ -67,8 +70,11 @@ public class Pi {
                 if (pi2.startsWith("N"))continue;
                 ratio = (double) Double.parseDouble(pi1)/Double.parseDouble(pi2);
                 System.out.println(ratio);
+                sb.append(l.get(0)).append("\t").append(l.get(1)).append("\t").append(l.get(2)).append("\t").append(ratio);
+                bw.write(sb.toString());
+                bw.newLine();
                 cnt++;
-                if (cnt > 20) break;
+//                if (cnt > 20) break;
             }
             br.close();
             bw.flush();
