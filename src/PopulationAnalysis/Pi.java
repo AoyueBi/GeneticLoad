@@ -32,31 +32,112 @@ public class Pi {
 //        this.window();
 //        this.addGroupToPiwindow();
 
-        this.mkPiCMD_by2File();
+//        this.mkPiCMD_by2File();
+//                this.window();
+                this.piRatio();
 
 
+    }
+
+    /**
+     * 求2条染色体的pi ratio
+     */
+    public void piRatio(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE/010_test3_pifst/002_pi/003_pi_window_byaoCode/Domesticated_emmer_chr1A_basedSNP.sites_2000.0window_2000.0step.txt";
+        String infileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE/010_test3_pifst/002_pi/003_pi_window_byaoCode/Durum_chr1A_basedSNP.sites_2000.0window_2000.0step.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE/010_test3_pifst/002_pi/004_piRatio";
+
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedReader br2 = AoFile.readFile(infileS2);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = null;
+            String temp2 = null;
+            int cnt = 0;
+            List<String> l = new ArrayList<>();
+            List<String> l2 = new ArrayList<>();
+            double ratio = Double.NaN;
+            while ((temp = br.readLine()) != null) {
+                temp2 = br2.readLine();
+                l = PStringUtils.fastSplit(temp);
+                l2 = PStringUtils.fastSplit(temp2);
+                String pi1 = l.get(4);
+                String pi2 = l2.get(4);
+                if (pi1.startsWith("N"))continue;
+                if (pi2.startsWith("N"))continue;
+                ratio = (double) Double.parseDouble(pi1)/Double.parseDouble(pi2);
+                System.out.println(ratio);
+                cnt++;
+                if (cnt > 20) break;
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println(cnt + " lines in the file.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
 
     public void mkPiCMD_by2File(){
         //local path
         String grouplocalDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/002_Pi/000_group";
+
+        String pop1FileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/000_pop_bySubspecies/Durum.txt";
+        String pop2FileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/000_pop_bySubspecies/Domesticated_emmer.txt";
+
+
         //HPC path
-        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/105_VMap2.1ByRef";
-        String groupDirS = "/data4/home/aoyue/vmap2/analysis/031_popGen/002_Pi/000_group";
-        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/031_popGen/002_Pi/002_pi_based100000window_50000step/001";
+        String infileDirS = "/data4/home/aoyue/vmap2/analysis/030_XPCLR/007_tetraploid_Dm_DE/000_exonVCF_ref";
+        String groupFileDirS = "/data4/home/aoyue/vmap2/analysis/030_XPCLR/000_pop_bySubspecies";
+        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/030_XPCLR/007_tetraploid_Dm_DE/013_fstTest/002_pi";
         //para
-        String window = "100000";
-        String step = "50000";
-        int numcmd = 5;
-        String scriptS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/002_Pi/001_srcipt_based100000window_50000step/pi_based" + window + "window_" + step + "step_20200904.sh";
+//        String window = "100000";
+//        String step = "50000";
+        int numcmd = 28;
+//        String scriptS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE/010_test3_pifst/002_script_Pi_basedSNP/pi_based" + window + "window_" + step + "step_20200904.sh";
+        String scriptS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE/010_test3_pifst/002_script_Pi_basedSNP/pi_basedSNP" + "_20201105.sh";
 
+        System.out.println("mkdir 001_srcipt_basedSNP");
+        System.out.println("mkdir 002_pi_basedSNP");
 
+//        System.out.println("mkdir 001_srcipt_based" + window + "window_" + step + "step");
+//        System.out.println("mkdir 002_pi_based" + window + "window_" + step + "step");
 
-        System.out.println("mkdir 001_srcipt_based" + window + "window_" + step + "step");
-        System.out.println("mkdir 002_pi_based" + window + "window_" + step + "step");
+//        List<File> fs = IOUtils.getVisibleFileListInDir(grouplocalDirS);
 
-        List<File> fs = IOUtils.getVisibleFileListInDir(grouplocalDirS);
+        List<File> fs = new ArrayList<>();
+        fs.add(new File(pop1FileS)); fs.add(new File(pop2FileS));
+
+        try{
+            BufferedWriter bw = AoFile.writeFile(scriptS);
+            for (int i = 0; i < fs.size(); i++) {
+                String groupname = fs.get(i).getName().split(".txt")[0];
+                    String[] chrArr = {"1A", "2A", "3A","4A", "5A", "6A", "7A", "1B", "2B", "3B", "4B", "5B", "6B", "7B"};
+                    for (int j = 0; j < chrArr.length; j++) {
+                        String infileS = new File(infileDirS,"chr" + chrArr[j] + "_exon_vmap2.1.vcf.gz").getAbsolutePath();
+//                        String outfileS = new File(outfileDirS,groupname + "_chr" + chrArr[j] + "_based" + window+ "Window_" + step + "step").getAbsolutePath();
+                        String outfileS = new File(outfileDirS,groupname + "_chr" + chrArr[j] + "_basedSNP").getAbsolutePath();
+                        String groupS = new File(groupFileDirS,groupname+".txt").getAbsolutePath();
+                        StringBuilder sb = new StringBuilder();
+                        sb.append("vcftools --gzvcf ").append(infileS).append(" --keep ").append(groupS);
+                        sb.append(" --site-pi");
+//                        sb.append(" --window-pi ").append(window).append(" --window-pi-step ").append(step);
+                        sb.append("  --out ").append(outfileS);
+                        System.out.println(sb.toString());
+                        bw.write(sb.toString());bw.newLine();
+                    }
+            }
+            bw.flush();bw.close();
+            SplitScript.splitScript4(scriptS,numcmd); //脚本拆分
+
+        }catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
 
     }
 
@@ -117,22 +198,34 @@ public class Pi {
 
 
     public void window(){
+        // model
+//        String infileDirS = "";
+//        String outfileDirS = "";
 
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/004_mix_4A/007_pi";
 //        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/004_mix_4A/008_pi/";
 
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/002_Pi/002_pi_based100000window_50000step/001";
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/002_Pi/002_pi_based100000window_50000step/003_window";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/002_Pi/002_pi_based100000window_50000step/001";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/002_Pi/002_pi_based100000window_50000step/003_window";
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE/010_test3_pifst/002_pi/002_pi_output";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE/010_test3_pifst/002_pi/003_pi_window_byaoCode";
 
         List<File> fsList = AoFile.getFileListInDir(infileDirS);
         fsList.parallelStream().forEach(f -> {
             String infileS = f.getAbsolutePath();
             AoFile.readheader(infileS);
+//            int chrColumn = 0;
+//            int posIndex = 1;
+//            int valueIndex = 4;
+//            double window = 2000000;
+//            double step = 1000000;
+
             int chrColumn = 0;
             int posIndex = 1;
-            int valueIndex = 4;
-            double window = 2000000;
-            double step = 1000000;
+            int valueIndex = 2;
+            double window = 2000;
+            double step = 2000;
             String name = new File(infileS).getName().split(".pi")[0] + "_" + window + "window_" + step + "step.txt";
             String parent = new File(infileS).getParent();
             String outfileS = new File(outfileDirS,name).getAbsolutePath();
@@ -150,29 +243,6 @@ public class Pi {
         String infileDirS = "";
         String outfileS = "";
 
-
-        try {
-            String infileS = "";
-            BufferedReader br = IOUtils.getTextReader(infileS);
-            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
-            String temp = null;
-            int cnt = 0;
-            List<String> l = new ArrayList<>();
-            while ((temp = br.readLine()) != null) {
-                StringBuilder sb = new StringBuilder();
-                if (temp.startsWith("#")) {
-                    continue;
-                }
-                cnt++;
-            }
-            br.close();
-            bw.flush();
-            bw.close();
-            System.out.println();
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
     }
 
     /**
