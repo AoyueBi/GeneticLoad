@@ -114,7 +114,7 @@ public class XPCLR {
 //        this.splitTxt();
 //        this.getExonDensity();
 
-//        this.testScript();
+        this.testScript();
 
 
     }
@@ -123,7 +123,7 @@ public class XPCLR {
      * 测试单条染色体的小脚本
      */
     public void testScript(){
-        String chr = "1";
+        String chr = "14";
         String morgen = "0.0001";
         String snp = "100";
         String grid = "2000";
@@ -798,11 +798,11 @@ public class XPCLR {
      */
     public void mkSNPfile_tetraploid(){
         ////////////////// 第一组
-//        String pop1fileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/000_pop_bySubspecies/Domesticated_emmer.txt";//goal
-//        String pop2fileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/000_pop_bySubspecies/Wild_emmer.txt"; //ref
-//
-//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid/000_exonVCF";
-//        String outParentS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid";
+        String pop1fileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/000_pop_bySubspecies/Domesticated_emmer.txt";//goal
+        String pop2fileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/000_pop_bySubspecies/Wild_emmer.txt"; //ref
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid/000_exonVCF";
+        String outParentS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid";
 
         ////////////////// 第二组
 //        String pop1fileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/000_pop_bySubspecies/Free_threshing_tetraploid.txt";//goal
@@ -812,10 +812,10 @@ public class XPCLR {
 //        String outParentS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/006_tetraploid_FTT_DE";
 
         ////////////////// 第三组
-        String pop1fileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/000_pop_bySubspecies/Durum.txt"; //goal
-        String pop2fileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/000_pop_bySubspecies/Domesticated_emmer.txt"; //ref
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE/000_exonVCF";
-        String outParentS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE";
+//        String pop1fileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/000_pop_bySubspecies/Durum.txt"; //goal
+//        String pop2fileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/000_pop_bySubspecies/Domesticated_emmer.txt"; //ref
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE/000_exonVCF";
+//        String outParentS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE";
 
 
                 //根据输出文件1，子目录输出
@@ -832,7 +832,7 @@ public class XPCLR {
 //        this.step2_mkSNPfile(outfileDirS,outfileDirS2); //添加重组率信息
 //        this.getGenotype_parallele(infileDirS,pop1fileS,outfileDirS5);
 //        this.getGenotype_parallele(infileDirS,pop2fileS,outfileDirS5);
-//        this.step3_getAlleleCountXPCLR(infileDirS,outfileDirS2,pop1fileS,pop2fileS,outfileDirS7);
+        this.step3_getAlleleCountXPCLR(infileDirS,outfileDirS2,pop1fileS,pop2fileS,outfileDirS7);
 //        this.mergeSNPfile(outfileDirS2,"SNPName\tchr\tGeneticDistance(Morgan)\tPhysicalDistance(bp)\tRefAllele\tTheOtherAllele", outfileDirS6);
         //        this.getSNPdensity_tetraploid(outfileDirS,outfileDirS3);
 //        this.mergeTXT(outfileDirS3,outfileDirS4);
