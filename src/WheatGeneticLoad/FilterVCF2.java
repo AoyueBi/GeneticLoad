@@ -26,7 +26,7 @@ public class FilterVCF2 {
         /**
          * 过滤 MAF > 0.01  Occurrence>2 MissingRate<0.2
          */
-        this.filter_parallel(); //老师的方法
+//        this.filter_parallel(); //老师的方法
 //        this.filterMafbyPopHTD(); //我的方法
 //        String a = "";
 //        String b = "";
@@ -54,7 +54,7 @@ public class FilterVCF2 {
 //        CountSites.mergeChr1and2txt_int("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/029_countSiteSummary/002_vmap2.0/log_043_countSitesinFastCallformat_fixVMap2.0_20200601.txt","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/029_countSiteSummary/002_vmap2.0/CountVariants_fixVMap2.0_202006.txt");
 //        CountSites.mergeChr1and2txt_int("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/029_countSiteSummary/002_vmap2.0/log_043_countSitesinFastCallformat_fixVMap2.0_20200604.txt","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/029_countSiteSummary/002_vmap2.0/CountVariants_fixVMap2.0_202006.txt");
 
-        this.bgzip();
+//        this.bgzip();
 //        this.sortTaxaName();
 
         /**
@@ -85,7 +85,7 @@ public class FilterVCF2 {
          * 提取六四二倍体的VCF
          */
 
-//        this.runJarParallele();
+        this.runJarParallele();
 //        SplitScript.splitScript2("/Users/Aoyue/Documents/sh_vmap2.0tovmap2.1_20200526.sh",21,2);
 //        this.getsharedSNP(); //获取六倍体四倍体二倍体共有的SNP
 //        this.mergeSharedSNP();
@@ -526,10 +526,19 @@ public class FilterVCF2 {
 //        String logDirS = "/data4/home/aoyue/vmap2/aaPlantGenetics/log_20200526";
 //        String taxaListS = "/data4/home/aoyue/vmap2/analysis/000_taxaList/101_taxaListbyPloidy/BreadWheat_S420.txt";
 
-        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/108_VMap2.0_final";
-        String outfileDirS ="/data4/home/aoyue/vmap2/analysis/032_vcf_S200_hexaploid";
-        String logDirS = "/data4/home/aoyue/vmap2/aaPlantGenetics/log_20200921";
-        String taxaListS = "/data4/home/aoyue/vmap2/analysis/000_taxaList/103_S196_hexaploid_10Xcoverage/S196_hexaploid_10Xcoverage.txt";
+//        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/108_VMap2.0_final";
+//        String outfileDirS ="/data4/home/aoyue/vmap2/analysis/032_vcf_S200_hexaploid";
+//        String logDirS = "/data4/home/aoyue/vmap2/aaPlantGenetics/log_20200921";
+//        String taxaListS = "/data4/home/aoyue/vmap2/analysis/000_taxaList/103_S196_hexaploid_10Xcoverage/S196_hexaploid_10Xcoverage.txt";
+
+        /**
+         * 提取LuLab JiaoLab 的10X数据，给康李鹏和治梁用
+         */
+        String infileDirS = "/data4/home/aoyue/vmap2/genotype/fastcall/abd";
+        String outfileDirS ="/data4/home/aoyue/vmap2/genotype/vcf_S306_10X_hexaploid_LuLabJiaoLab";
+        String logDirS = "/data4/home/aoyue/vmap2/aaPlantGenetics/log_20201111";
+        String taxaListS = "/data4/home/aoyue/vmap2/genotype/taxaList_toKang_withOnlyBamID_20201111.txt";
+
 
 
         String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
@@ -539,8 +548,13 @@ public class FilterVCF2 {
 //            String logfileS = new File(logDirS,"log_" + new File(outfileS).getName().split(".gz")[0]).getAbsolutePath(); //不管是不是gz结尾，我们只取gz前的部分，妙！
 //            System.out.println("java -jar 049_extractVCF_GL.jar " + infileS + " " + outfileS + " " + taxaListS + " > " + logfileS + " 2>&1 &");
 
-            String infileS = new File(infileDirS,"chr" + chrArr[i] + "_vmap2.0.vcf.gz").getAbsolutePath();
-            String outfileS = new File(outfileDirS,"chr" + chrArr[i] + "_vmap2.0_hexaploid_S196.vcf").getAbsolutePath();
+//            String infileS = new File(infileDirS,"chr" + chrArr[i] + "_vmap2.0.vcf.gz").getAbsolutePath();
+//            String outfileS = new File(outfileDirS,"chr" + chrArr[i] + "_vmap2.0_hexaploid_S196.vcf").getAbsolutePath();
+//            String logfileS = new File(logDirS,"log_" + new File(outfileS).getName().split(".gz")[0]).getAbsolutePath(); //不管是不是gz结尾，我们只取gz前的部分，妙！
+//            System.out.println("java -jar 049_extractVCF_GL.jar " + infileS + " " + outfileS + " " + taxaListS + " > " + logfileS + " 2>&1 &");
+
+            String infileS = new File(infileDirS,"chr" + chrArr[i] + ".ABDgenome.vcf.gz").getAbsolutePath();
+            String outfileS = new File(outfileDirS,"chr" + chrArr[i] + "_10X_fastcall_hexaploid.vcf").getAbsolutePath();
             String logfileS = new File(logDirS,"log_" + new File(outfileS).getName().split(".gz")[0]).getAbsolutePath(); //不管是不是gz结尾，我们只取gz前的部分，妙！
             System.out.println("java -jar 049_extractVCF_GL.jar " + infileS + " " + outfileS + " " + taxaListS + " > " + logfileS + " 2>&1 &");
 
