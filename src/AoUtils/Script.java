@@ -37,11 +37,27 @@ public class Script {
 //        this.splitScript();
 //
 //        this.script_bw();
-        this.script_sout();
+//        this.script_sout();
+
+        this.window_single();
 //
 
-//        
-//        this.mergelogTxt("/Users/Aoyue/Documents/log_024", "/Users/Aoyue/Documents/ploidy.txt");
+    }
+
+    public void window_single(){
+
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid/011_test_checkBrt1Gene/002_changeGeneticPos/15.txt";
+        AoFile.readheader(infileS);
+        int chrColumn = 100;
+        int posIndex = 2;
+        int valueIndex = 2;
+        double window = 2000;
+        double step = 2000;
+        String name = new File(infileS).getName().split(".txt")[0] + "_" + window + "window_" + step + "step.txt.gz";
+        String parent = new File(infileS).getParent();
+        String outfileS = new File(parent,name).getAbsolutePath();
+        new AoWinScan().getwindowDistrbution_general(infileS,chrColumn,posIndex,valueIndex,window,step,outfileS);
+
     }
 
     /**

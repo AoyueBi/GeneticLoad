@@ -123,7 +123,7 @@ public class XPCLR {
      * 测试单条染色体的小脚本
      */
     public void testScript(){
-        String chr = "14";
+        String chr = "15";
         String morgen = "0.0001";
         String snp = "100";
         String grid = "2000";
@@ -832,9 +832,9 @@ public class XPCLR {
 //        this.step2_mkSNPfile(outfileDirS,outfileDirS2); //添加重组率信息
 //        this.getGenotype_parallele(infileDirS,pop1fileS,outfileDirS5);
 //        this.getGenotype_parallele(infileDirS,pop2fileS,outfileDirS5);
-        this.step3_getAlleleCountXPCLR(infileDirS,outfileDirS2,pop1fileS,pop2fileS,outfileDirS7);
+//        this.step3_getAlleleCountXPCLR(infileDirS,outfileDirS2,pop1fileS,pop2fileS,outfileDirS7);
 //        this.mergeSNPfile(outfileDirS2,"SNPName\tchr\tGeneticDistance(Morgan)\tPhysicalDistance(bp)\tRefAllele\tTheOtherAllele", outfileDirS6);
-        //        this.getSNPdensity_tetraploid(outfileDirS,outfileDirS3);
+//                this.getSNPdensity_tetraploid(outfileDirS,outfileDirS3);
 //        this.mergeTXT(outfileDirS3,outfileDirS4);
 
     }
@@ -2412,6 +2412,10 @@ public class XPCLR {
             e.printStackTrace();
             System.exit(1);
         }
+    }
+
+    public void test(){
+
     }
 
 
