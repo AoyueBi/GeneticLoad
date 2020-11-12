@@ -51,10 +51,10 @@ public class GeneticLoadEntrance {
     }
 
     public void rebuildVCF(){
-//        new RebuildVCF();
+        new RebuildVCF();
 //        new ScriptHapscanner2();
 //        new AoHeterozygosity();
-        new  FilterVCF2();
+//        new  FilterVCF2();
 //        new GermplasmInfo();
 //        new VariantsSum();
 //        new SIFT();
@@ -74,7 +74,7 @@ public class GeneticLoadEntrance {
 //        new FdVSdel();
 //        new AoMap();
 //        new DeleteriousXPCLR2();
-        
+
     }
 
 
@@ -157,8 +157,8 @@ public class GeneticLoadEntrance {
         System.out.println("Aoyue Repository --- Here is the entrance of GeneticLoad!\n");
         System.out.println(new SimpleDateFormat().format(new Date()) + "\tbegin.");
 
-        new GeneticLoadEntrance();
-//        new GeneticLoadEntrance(args);
+//        new GeneticLoadEntrance();
+        new GeneticLoadEntrance(args);
 //        new CountSites().filterSNPtoBi_parallel(args[0], args[1]);
 //        new FilterVCF2().filter_singleThread(args[0], args[1]);
 //        CountSites.mergeVCFbysubgenome(args[0], args[1]);
@@ -234,8 +234,7 @@ public class GeneticLoadEntrance {
 //        CountSites.countSitesinFastCallformat(args[0]);
 
 //        new FilterVCF2().filter2(args[0]);
-
-
+        new RebuildVCF().checkErrorFromFastCall(args[0]);
 
     }
 

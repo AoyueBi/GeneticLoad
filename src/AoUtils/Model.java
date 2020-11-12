@@ -393,29 +393,6 @@ public class Model {
 
     public void TryCatch(){
 
-        try {
-            String infileS = "";
-            String outfileS = "";
-            BufferedReader br = AoFile.readFile(infileS);
-            BufferedWriter bw = AoFile.writeFile(outfileS);
-            String temp = null;
-            String header = br.readLine();
-            List<String> l = new ArrayList<>();
-            int cnt = 0;
-            while ((temp = br.readLine()) != null) {
-                l = PStringUtils.fastSplit(temp);
-                cnt++;
-
-            }
-            br.close();
-            bw.flush();
-            bw.close();
-            System.out.println();
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-
         try{
 
         }catch (Exception e) {

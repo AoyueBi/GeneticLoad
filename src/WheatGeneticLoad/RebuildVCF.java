@@ -29,11 +29,67 @@ public class RebuildVCF {
 //        this.intersectionCheck();
 
 
-        this.addReliableGroupfromSample();
+//        this.addReliableGroupfromSample();
 //        this.addReliableInsecterGroupfromSample();
 //        this.mergeTxt2();
 
+        /**
+         * 对fastcall 文件的检查
+         */
+
+//        this.checkErrorFromFastCall();
+
     }
+
+    /**
+     * 在对fastcall文件进行VCF提取时，发现index out of bound, 故写程序提取结果查找异常。
+     */
+    public void checkErrorFromFastCall(String infileS){
+        //model
+//        String infileS = "";
+
+//        String infileS = "/Users/Aoyue/Documents/test.vcf";
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            String header = br.readLine();
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            int cntError = 0;
+            int size = Integer.MIN_VALUE;
+            while ((temp = br.readLine()) != null) {
+                if (temp.startsWith("##"))continue;
+                if (temp.startsWith("#C")){
+                    l = PStringUtils.fastSplit(temp);
+                    size = l.size();
+                    System.out.println("total size is " + size);
+                    continue;
+                }
+                cnt++;
+                l = PStringUtils.fastSplit(temp);
+                if (l.size() == size)continue;
+                else {
+                    System.out.println(temp);
+                    cntError++;
+                }
+            }
+            br.close();
+            System.out.println(cnt + "  snps    " + cntError + "    error snps in " + new File(infileS).getName());
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+        //java -jar PlantGenetics.jar /data4/home/aoyue/vmap2/genotype/fastcall/abd/chr002.ABDgenome.vcf.gz > log_20201111/log_chr002_10X_fastcall_hexaploid.txt 2>&1 &
+        //java -jar PlantGenetics.jar /data4/home/aoyue/vmap2/genotype/fastcall/abd/chr033.ABDgenome.vcf.gz > log_20201111/log_chr033_10X_fastcall_hexaploid.txt 2>&1 &
+        //java -jar PlantGenetics.jar /data4/home/aoyue/vmap2/genotype/fastcall/abd/chr034.ABDgenome.vcf.gz > log_20201111/log_chr034_10X_fastcall_hexaploid.txt 2>&1 &
+
+        // 2 3353399
+        //33 12060211
+        //34 9975515
+    }
+
+
+
 
 
     public void mergeTxt2(){

@@ -28,7 +28,7 @@ public class Script {
 //        this.bgzip_AB();
 //        this.bgzip_ABD();
 
-//        this.script_ABD();
+        this.script_ABD();
 //        this.script_AB();
 //        this.script_D();
 
@@ -39,7 +39,7 @@ public class Script {
 //        this.script_bw();
 //        this.script_sout();
 
-        this.window_single();
+//        this.window_single();
 //
 
     }
@@ -337,9 +337,13 @@ public class Script {
             String chr = PStringUtils.getNDigitNumber(3, i);
             String infileS = new File(infileDirS,"chr"+chr+"_vmap2.1_AnnoDB.txt.gz").getAbsolutePath();
             String outfileS = new File(outfileDirS,"chr"+chr+"_vmap2.1_AnnoDB_majorminor.txt").getAbsolutePath();
-            System.out.println("zcat "+infileS+"|cut -f1,2,5,6 > " + outfileS + " &");
+//            System.out.println("zcat "+infileS+"|cut -f1,2,5,6 > " + outfileS + " &");
             //zcat chr001_vmap2.1_AnnoDB.txt.gz |head -n 10|cut -f1,2,5,6
+
+            System.out.println("gzip chr" + chr + "_10X_fastcall_hexaploid.vcf &");
         }
+
+
     }
 
     public void script_ABD_file() {

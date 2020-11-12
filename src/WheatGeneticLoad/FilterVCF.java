@@ -32,10 +32,10 @@ import pgl.infra.pos.ChrPos;
 public class FilterVCF {
 
     public FilterVCF() {
-        //this.statVcfCoverage();
+//        this.statVcfCoverage();
 //        this.subsetCovevsSDvsPV();
         //this.statVcfPValue();
-        this.subsetCovevsSDvsPV();
+//        this.subsetCovevsSDvsPV();
         //this.gethighdensitySNPPos();
         //this.addMultipleColumn();
 
