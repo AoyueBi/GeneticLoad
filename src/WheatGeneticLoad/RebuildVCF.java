@@ -82,6 +82,7 @@ public class RebuildVCF {
         //java -jar PlantGenetics.jar /data4/home/aoyue/vmap2/genotype/fastcall/abd/chr002.ABDgenome.vcf.gz > log_20201111/log_chr002_10X_fastcall_hexaploid.txt 2>&1 &
         //java -jar PlantGenetics.jar /data4/home/aoyue/vmap2/genotype/fastcall/abd/chr033.ABDgenome.vcf.gz > log_20201111/log_chr033_10X_fastcall_hexaploid.txt 2>&1 &
         //java -jar PlantGenetics.jar /data4/home/aoyue/vmap2/genotype/fastcall/abd/chr034.ABDgenome.vcf.gz > log_20201111/log_chr034_10X_fastcall_hexaploid.txt 2>&1 &
+        // sed -i '3353399d' chr002.ABDgenome.vcf &
 
         // 2 3353399
         //33 12060211
