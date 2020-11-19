@@ -33,6 +33,10 @@ public class Triadsgenes {
     static List<String> geneBList = new ArrayList<>();
     static List<String> geneDList = new ArrayList<>();
 
+
+    //        GeneDB genedb = new GeneDB(); //需要修改
+    //        Triadsgenes tg = new Triadsgenes();  //需要修改
+
     public Triadsgenes(){
         this.readDBfile();
     }

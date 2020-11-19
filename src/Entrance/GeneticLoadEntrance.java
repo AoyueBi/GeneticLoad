@@ -76,10 +76,6 @@ public class GeneticLoadEntrance {
 //        new DeleteriousXPCLR2();
         new DBgene();
 
-
-        String inputDir = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/019_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
-        AoFile.readheader(inputDir);
-
     }
 
 

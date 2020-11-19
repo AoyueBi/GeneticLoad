@@ -1,6 +1,7 @@
 package WheatGeneticLoad;
 
 import AoUtils.AoFile;
+import AoUtils.AoString;
 import AoUtils.CalVCF;
 import AoUtils.Triads.Standardization;
 import AoUtils.Triads.Triadsgenes;
@@ -71,25 +72,63 @@ public class DBgene {
      * 向表观图谱加入 triadsID,统一编号
      */
     public void addTriadIDforEpigenomicMap(){
-        String infileS = "";
-        String outfileS = "";
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/source/Epigenomic_map_inWheat.txt.gz";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/004_epigenomic/001_EpigenomicMap_addTriadsID.txt.gz";
+
+        Triadsgenes tg = new Triadsgenes();
+        System.out.println("cnt" + tg.getTriadNum());
         try {
             BufferedReader br = AoFile.readFile(infileS);
             BufferedWriter bw = AoFile.writeFile(outfileS);
-            String header = br.readLine();
+            String header = null;
+            List<String> headList = PStringUtils.fastSplit(br.readLine());
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < headList.size(); i++) {
+                sb.append(headList.get(i)).append("\t");
+                i++;
+            }
+            header = sb.deleteCharAt(sb.length()-1).toString();
+            bw.write("TriadID" + "\t");
             bw.write(header);bw.newLine();
+            br.readLine();
             String temp = null;
             List<String> l = new ArrayList<>();
             int cnt = 0;
-            while ((temp = br.readLine()) != null) {
-                l = PStringUtils.fastSplit(temp);
-                cnt++;
+            String geneA;
+            String geneA_02;
 
+            while ((temp = br.readLine()) != null) {
+                sb.setLength(0);
+                l = PStringUtils.fastSplit(temp);
+
+                //判断8组geneid是否相等
+//                for (int i = 0; i < 14; i++) {
+//                    if (!l.get(i).equals(l.get(i+2))){
+//                        System.out.println(l.get(i) + "\t" + l.get(i+2));
+//                    }
+//                    i++;
+//                }
+                geneA = l.get(0).split(";")[0]; //该基因为01版本的基因
+                geneA_02 = AoString.getv11geneName(geneA);
+                String triadID = tg.getTriadID(geneA_02);
+                if(triadID == null || triadID == ""){  //!!!!! if there is no value, we should set the value as "NA".
+                    triadID = "NA";
+                }
+                else{
+                    sb.append(triadID);
+                    for (int i = 0; i < l.size(); i++) {
+                        i++;
+                        sb.append("\t").append(l.get(i));
+                    }
+                    bw.write(sb.toString());
+                    bw.newLine();
+                    cnt++;
+                }
             }
             br.close();
             bw.flush();
             bw.close();
-            System.out.println();
+            System.out.println( "epigenomic " + " count " + cnt);
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
