@@ -38,7 +38,7 @@ public class DBgene {
         /**
          *  开始处理cultivar 和 landrace 的
          */
-        this.getsubspeciesSNPAnnotation();
+//        this.getsubspeciesSNPAnnotation();
 //        this.script_getTranscriptSum();
 //        this.mergeTxt();
 //        this.addGroupforgeneSummary();
@@ -54,7 +54,39 @@ public class DBgene {
 //        this.mergeSpreadTable_HexaploidTetraploidDiploid();
 //        this.mergeSpreadTable();
 
+        /**
+         * 2020-11-19 update my data
+         */
+//        this.getHexaploidAnnotation_();
+        //        this.script_getTranscriptSum();
+//        this.mergeTxt();
+                this.mkSpreadFormat_hexaploid();
+
+
     }
+
+
+    /**
+     * 2020-11-19 周四 update
+     */
+    public void getHexaploidAnnotation_(){
+//        String inputDir = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/019_exonSNPAnnotation_merge/";
+//        String outDir = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/001_exonSNPAnnotation_hexaploid";
+
+        String inputDir = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/018_exonSNPAnnotation";
+        String outDir = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/001_exonSNPAnnotation_hexaploid";
+
+        List<File> files= AoFile.getFileListInDir(inputDir);
+        String[] outNames=files.stream().map(File::getName).map(s->s.replaceAll("_anno.txt.gz", "_hexaploid_anno.txt")).toArray(String[]::new);
+        RowTableTool<String> rowTable;
+        Predicate<List<String>> removed= l->Double.parseDouble(l.get(8))==0;
+        for (int i = 0; i < files.size(); i++) {
+            rowTable=new RowTableTool<>(files.get(i).getAbsolutePath());
+            rowTable.removeIf(removed);
+            rowTable.write(new File(outDir, outNames[i]).getAbsolutePath());
+        }
+    }
+
 
     /**
      *  求出3个表格的交集,即 landrace cultivar and Tetraploid Diploid
@@ -279,10 +311,14 @@ public class DBgene {
     public void mkSpreadFormat_hexaploid(){
 //        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/006_TriadsGeneLoadforPop/001_hexaploid/test.txt";
 //        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/006_TriadsGeneLoadforPop/001_hexaploid/001_spreadTable_landraceCultivar/001_triadsLoad_landrace.txt";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/006_TriadsGeneLoadforPop/001_hexaploid/001_spreadTable_landraceCultivar/001_triadsLoad_cultivar.txt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/006_TriadsGeneLoadforPop/001_hexaploid/001_spreadTable_landraceCultivar/001_triadsLoad_cultivar.txt";
 
-        GeneDB genedb = new GeneDB();
-        Triadsgenes tg = new Triadsgenes();
+        /**
+         * 2020-11-19 update result
+         */
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/003_traids_load/001_triadsLoad_hexaploid.txt";
+        GeneDB genedb = new GeneDB(); //需要修改
+        Triadsgenes tg = new Triadsgenes();  //需要修改
         try {
             BufferedWriter bw = AoFile.writeFile(outfileS);
             bw.write("TriadID\tNonVsSynRatioA\tNonVsSynRatioB\tNonVsSynRatioD\tNonVsSynRatioRegion");
@@ -324,7 +360,13 @@ public class DBgene {
         // landrace
 //        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/004_geneSummary_byChr/003_merge/001_LandraceEU_geneSummary.txt.gz";
         //cultivar
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/004_geneSummary_byChr/003_merge/001_Cultivar_geneSummary.txt.gz";
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/004_geneSummary_byChr/003_merge/001_Cultivar_geneSummary.txt.gz";
+
+        /**
+         * update data
+         */
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/002_z1_geneSummary_merge/001_geneSummary_hexaploid.txt.gz";
+
 
         String[] geneArray = AoFile.getgeneArraybyList(infileS,0);
         List<String>[] geneInfo = new List[geneArray.length];
@@ -354,6 +396,25 @@ public class DBgene {
             }
             return out;
         }
+
+
+        public String getDelVsSynRatio(String gene){
+            String out = null;
+            int synNum = Integer.MIN_VALUE;
+            int delNum = Integer.MIN_VALUE;
+            double ratio = Double.NaN;
+            int index = Arrays.binarySearch(geneArray,gene);
+            if (index > -1){
+                 synNum = Integer.parseInt(geneInfo[index].get(5));
+                 delNum = Integer.parseInt(geneInfo[index].get(12));
+                 ratio = (double) synNum/delNum;
+                 out = String.valueOf(ratio);
+            }else{
+                out = "NA";
+            }
+            return out;
+        }
+
 
         public String getPercentageNon(String gene){
             String out = null;
@@ -545,8 +606,13 @@ public class DBgene {
 //        AoFile.mergeTxt(infileDirS,outfileS);
 
         //合并 tetraploid diploid
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/006_TriadsGeneLoadforPop/002_tetraploid_diploid/002_geneSummary/001_bychr";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/006_TriadsGeneLoadforPop/002_tetraploid_diploid/002_geneSummary/002_merge/001_tetraploid_diploid_geneSummary.txt.gz";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/006_TriadsGeneLoadforPop/002_tetraploid_diploid/002_geneSummary/001_bychr";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/006_TriadsGeneLoadforPop/002_tetraploid_diploid/002_geneSummary/002_merge/001_tetraploid_diploid_geneSummary.txt.gz";
+//        AoFile.mergeTxt(infileDirS,outfileS);
+
+        //合并 hexaploid 的
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/002_geneSummary_byChr";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/002_z1_geneSummary_merge/001_geneSummary_hexaploid.txt.gz";
         AoFile.mergeTxt(infileDirS,outfileS);
 
     }
@@ -567,9 +633,15 @@ public class DBgene {
 //        String outfileDirS ="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/004_geneSummary_byChr/002_Cultivar";
 
         //Tetraploid
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/006_TriadsGeneLoadforPop/002_tetraploid_diploid/001_annotation/001"; // 需要总结的 库 snpAnnotation 文件
-        String outfileDirS ="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/006_TriadsGeneLoadforPop/002_tetraploid_diploid/002_geneSummary/001_bychr"; // 每条染色体上的基因生成的总结
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/006_TriadsGeneLoadforPop/002_tetraploid_diploid/001_annotation/001"; // 需要总结的 库 snpAnnotation 文件
+//        String outfileDirS ="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/006_TriadsGeneLoadforPop/002_tetraploid_diploid/002_geneSummary/001_bychr"; // 每条染色体上的基因生成的总结
 
+
+        /**
+         * 2020-11-19 周四 update my data
+         */
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/001_exonSNPAnnotation_hexaploid"; // 需要总结的 库 snpAnnotation 文件
+        String outfileDirS ="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/002_geneSummary_byChr"; // 每条染色体上的基因生成的总结
 
         String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
         String[] chrArrAB ={"001","002","003","004","007","008","009","010","013","014","015","016","019","020","021","022","025","026","027","028","031","032","033","034","037","038","039","040"};
@@ -593,16 +665,20 @@ public class DBgene {
 //            String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_vmap2.1_Cultivar_geneSummary.txt").getAbsolutePath();
 
             //Tetraploid and Diploid
-            String infileS = null;
-            String outfileS = null;
-            int index = Arrays.binarySearch(chrArrAB,chrArr[j]);
-            if (index > -1){ // is AABB
-                infileS = new File(infileDirS,"chr" + chrArr[j] + "_SNP_anno_tetraploid.txt.gz").getAbsolutePath();
-                outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_vmap2.1_tetraploid_geneSummary.txt.gz").getAbsolutePath();
-            }else{ //is DD
-                infileS = new File(infileDirS,"chr" + chrArr[j] + "_SNP_anno_diploid.txt.gz").getAbsolutePath();
-                outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_vmap2.1_diploid_geneSummary.txt.gz").getAbsolutePath();
-            }
+//            String infileS = null;
+//            String outfileS = null;
+//            int index = Arrays.binarySearch(chrArrAB,chrArr[j]);
+//            if (index > -1){ // is AABB
+//                infileS = new File(infileDirS,"chr" + chrArr[j] + "_SNP_anno_tetraploid.txt.gz").getAbsolutePath();
+//                outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_vmap2.1_tetraploid_geneSummary.txt.gz").getAbsolutePath();
+//            }else{ //is DD
+//                infileS = new File(infileDirS,"chr" + chrArr[j] + "_SNP_anno_diploid.txt.gz").getAbsolutePath();
+//                outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_vmap2.1_diploid_geneSummary.txt.gz").getAbsolutePath();
+//            }
+
+            // hexaploid
+            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_SNP_hexaploid_anno.txt.gz").getAbsolutePath();
+            String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_vmap2.1_hexaploid_geneSummary.txt.gz").getAbsolutePath();
             this.getTranscriptSum_bychr(infileS,outfileS);
             System.out.println("chr" + chrArr[j] + " is completed at " + outfileS);
         }
@@ -709,12 +785,22 @@ public class DBgene {
                     cnt++; //检测程序运行的情况
                     if (cnt%1000000 == 0) System.out.println("chr"+String.valueOf(chrIndex+1)+"\t"+String.valueOf(cnt) + " ###hmpInfo Process");
                     l = PStringUtils.fastSplit(temp);
+
+//                    int pos = Integer.valueOf(l.get(2));
+//                    String ref = l.get(3);
+//                    String alt = l.get(4);
+//                    String ancestral = l.get(31);
+//                    String variant_type = l.get(12);
+//                    String sift = l.get(13);
+//                    String trans = l.get(10);
+//                    String gerp = l.get(20);
+
                     int pos = Integer.valueOf(l.get(2));
                     String ref = l.get(3);
                     String alt = l.get(4);
-                    String ancestral = l.get(31);
+                    String ancestral = l.get(15);
                     String variant_type = l.get(12);
-                    String sift = l.get(13);
+                    String sift = l.get(16);
                     String trans = l.get(10);
                     String gerp = l.get(20);
 
@@ -771,7 +857,7 @@ public class DBgene {
                         }
                         else if (!sift.startsWith("NA")){
                             double siftd = Double.parseDouble(sift);
-                            if (siftd < 0.05){ //start1
+                            if (siftd <= 0.05){ //start1
                                 delCount[geneIndex]++;
                                 delPosList.add(pos);
                                 if (derivedState == 1) { //说明 derived allele是 ref
@@ -780,7 +866,7 @@ public class DBgene {
 
                                 if (gerp.startsWith("NA"))continue;
                                 double scoreValue = Double.parseDouble(gerp);
-                                if (scoreValue > gerpCut) {
+                                if (scoreValue >= gerpCut) {
                                     delHGCount[geneIndex]++;
                                 }
                                 if (derivedState == 1) {
@@ -1126,6 +1212,7 @@ public class DBgene {
             rowTable=new RowTableTool<>(files.get(i).getAbsolutePath());
             rowTable.removeIf(removed);
             rowTable.write(new File(outDir, outNames[i]).getAbsolutePath());
+
         }
     }
 }
