@@ -58,10 +58,42 @@ public class DBgene {
          * 2020-11-19 update my data
          */
 //        this.getHexaploidAnnotation_();
-        //        this.script_getTranscriptSum();
+//        this.script_getTranscriptSum();
 //        this.mergeTxt();
-                this.mkSpreadFormat_hexaploid();
+//                this.mkSpreadFormat_hexaploid();
+                this.addTriadIDforEpigenomicMap();
 
+
+    }
+
+
+    /**
+     * 向表观图谱加入 triadsID,统一编号
+     */
+    public void addTriadIDforEpigenomicMap(){
+        String infileS = "";
+        String outfileS = "";
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String header = br.readLine();
+            bw.write(header);bw.newLine();
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
 
     }
 
