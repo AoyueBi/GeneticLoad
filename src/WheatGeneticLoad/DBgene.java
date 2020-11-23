@@ -394,8 +394,8 @@ public class DBgene {
         Triadsgenes tg = new Triadsgenes();  //需要修改
         try {
             BufferedWriter bw = AoFile.writeFile(outfileS);
-//            bw.write("TriadID\tNonVsSynRatioA\tNonVsSynRatioB\tNonVsSynRatioD\tNonVsSynRatioRegion");
-            bw.write("TriadID\tNonVsSynRatioA\tNonVsSynRatioB\tNonVsSynRatioD\tNonVsSynRatioRegion");
+//            bw.write("TriadID\tNonVsSynRatioA\tNonVsSynRatioB\tNonVsSynRatioD\tNonVsSynRatioRegion"); ///////////////////////////////// need modify
+            bw.write("TriadID\tDelVsSynRatioA\tDelVsSynRatioB\tDelVsSynRatioD\tDelVsSynRatioRegion");
             bw.newLine();
             int cnt=0;
             int cntremaining =0;
@@ -405,9 +405,15 @@ public class DBgene {
                 String genea = tg.getGeneinAsub(triadID);
                 String geneb = tg.getGeneinBsub(triadID);
                 String gened = tg.getGeneinDsub(triadID);
-                String ratioA = genedb.getNonVsSynRatio(genea);
-                String ratioB = genedb.getNonVsSynRatio(geneb);
-                String ratioD = genedb.getNonVsSynRatio(gened);
+//                String ratioA = genedb.getNonVsSynRatio(genea);
+//                String ratioB = genedb.getNonVsSynRatio(geneb);
+//                String ratioD = genedb.getNonVsSynRatio(gened);
+
+                String ratioA = genedb.getDelVsSynRatio(genea);
+                String ratioB = genedb.getDelVsSynRatio(geneb);
+                String ratioD = genedb.getDelVsSynRatio(gened);
+
+
                 //filter NA
                 if (ratioA.startsWith("N") || ratioB.startsWith("N") || ratioD.startsWith("N")) continue;
                 double[] ratiodABD = {Double.parseDouble(ratioA),Double.parseDouble(ratioB),Double.parseDouble(ratioD)};
@@ -481,7 +487,7 @@ public class DBgene {
             if (index > -1){
                  synNum = Integer.parseInt(geneInfo[index].get(5));
                  delNum = Integer.parseInt(geneInfo[index].get(12));
-                 ratio = (double) synNum/delNum;
+                 ratio = (double) delNum/synNum;
                  out = String.valueOf(ratio);
             }else{
                 out = "NA";
