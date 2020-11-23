@@ -61,8 +61,8 @@ public class DBgene {
 //        this.getHexaploidAnnotation_();
 //        this.script_getTranscriptSum();
 //        this.mergeTxt();
-//                this.mkSpreadFormat_hexaploid();
-                this.addTriadIDforEpigenomicMap();
+                this.mkSpreadFormat_hexaploid();
+//                this.addTriadIDforEpigenomicMap();
 
 
     }
@@ -387,11 +387,14 @@ public class DBgene {
         /**
          * 2020-11-19 update result
          */
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/003_traids_load/001_triadsLoad_hexaploid.txt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/003_traids_load/001_triadsLoad_hexaploid.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/003_traids_load/002_triadsLoad_delVSsyn_hexaploid.txt";
+
         GeneDB genedb = new GeneDB(); //需要修改
         Triadsgenes tg = new Triadsgenes();  //需要修改
         try {
             BufferedWriter bw = AoFile.writeFile(outfileS);
+//            bw.write("TriadID\tNonVsSynRatioA\tNonVsSynRatioB\tNonVsSynRatioD\tNonVsSynRatioRegion");
             bw.write("TriadID\tNonVsSynRatioA\tNonVsSynRatioB\tNonVsSynRatioD\tNonVsSynRatioRegion");
             bw.newLine();
             int cnt=0;
