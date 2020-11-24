@@ -387,15 +387,18 @@ public class DBgene {
         /**
          * 2020-11-19 update result
          */
-//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/003_traids_load/001_triadsLoad_hexaploid.txt";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/003_traids_load/002_triadsLoad_delVSsyn_hexaploid.txt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/003_traids_load/001_triadsLoad_hexaploid.txt"; //nonsyn vs syn
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/003_traids_load/002_triadsLoad_delVSsyn_hexaploid.txt"; // del VS syn
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/003_traids_load/003_triadsLoad_delFre_hexaploid.txt"; // del frequency
 
         GeneDB genedb = new GeneDB(); //需要修改
         Triadsgenes tg = new Triadsgenes();  //需要修改
         try {
             BufferedWriter bw = AoFile.writeFile(outfileS);
 //            bw.write("TriadID\tNonVsSynRatioA\tNonVsSynRatioB\tNonVsSynRatioD\tNonVsSynRatioRegion"); ///////////////////////////////// need modify
-            bw.write("TriadID\tDelVsSynRatioA\tDelVsSynRatioB\tDelVsSynRatioD\tDelVsSynRatioRegion");
+//            bw.write("TriadID\tDelVsSynRatioA\tDelVsSynRatioB\tDelVsSynRatioD\tDelVsSynRatioRegion");
+            bw.write("TriadID\tDelFreA\tDelFreB\tDelFreD\tDelFreRegion");
+
             bw.newLine();
             int cnt=0;
             int cntremaining =0;
@@ -409,9 +412,13 @@ public class DBgene {
 //                String ratioB = genedb.getNonVsSynRatio(geneb);
 //                String ratioD = genedb.getNonVsSynRatio(gened);
 
-                String ratioA = genedb.getDelVsSynRatio(genea);
-                String ratioB = genedb.getDelVsSynRatio(geneb);
-                String ratioD = genedb.getDelVsSynRatio(gened);
+//                String ratioA = genedb.getDelVsSynRatio(genea);
+//                String ratioB = genedb.getDelVsSynRatio(geneb);
+//                String ratioD = genedb.getDelVsSynRatio(gened);
+
+                String ratioA = genedb.getPercentageDel(genea);
+                String ratioB = genedb.getPercentageDel(geneb);
+                String ratioD = genedb.getPercentageDel(gened);
 
 
                 //filter NA
@@ -489,6 +496,17 @@ public class DBgene {
                  delNum = Integer.parseInt(geneInfo[index].get(12));
                  ratio = (double) delNum/synNum;
                  out = String.valueOf(ratio);
+            }else{
+                out = "NA";
+            }
+            return out;
+        }
+
+        public String getPercentageDel(String gene){
+            String out = null;
+            int index = Arrays.binarySearch(geneArray,gene);
+            if (index > -1){
+                out = geneInfo[index].get(13);
             }else{
                 out = "NA";
             }
