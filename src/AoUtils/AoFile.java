@@ -314,6 +314,24 @@ public class AoFile {
      * @param inDirS
      * @return
      */
+    public static List<File> getFileEndwithInDir (String inDirS, String suffix) {
+        File[] fs = new File(inDirS).listFiles();
+        List<File> fList = new ArrayList<>();
+        for (int i = 0; i < fs.length; i++) {
+            if (fs[i].isHidden()) continue;
+            if(fs[i].isDirectory()) continue;
+            if (!fs[i].getName().endsWith(suffix)) continue;
+            fList.add(fs[i]);
+        }
+        Collections.sort(fList);
+        return fList;
+    }
+
+    /**
+     * 获取文件集合
+     * @param inDirS
+     * @return
+     */
     public static List<File> getFileListInDir (String inDirS) {
         File[] fs = new File(inDirS).listFiles();
         List<File> fList = new ArrayList<>();

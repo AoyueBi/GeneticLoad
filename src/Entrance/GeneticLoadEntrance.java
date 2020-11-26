@@ -66,7 +66,7 @@ public class GeneticLoadEntrance {
 //        new  FilterVCF2();
 
 //        new AoWheatTriads();
-//        new XPCLR();
+        new XPCLR();
 //        new Fst();
 //        new Pi();
 //        new TajimaD();
@@ -74,7 +74,7 @@ public class GeneticLoadEntrance {
 //        new FdVSdel();
 //        new AoMap();
 //        new DeleteriousXPCLR2();
-        new DBgene();
+//        new DBgene();
 
     }
 

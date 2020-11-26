@@ -30,13 +30,13 @@ public class GermplasmInfo {
 //        this.mergeTxt();
 
         //************* 向新建立的taxaDB中添加列信息 ***************//
-//        this.addColumntoTaxaDB();
+        this.addColumntoTaxaDB();
 //        this.addMultipleColumn();
 //        this.summaryGroupbyContinent();
 //        this.summaryGroupbyLandrace();
 //        this.addDDgroup();
 //        this.addIntrogressionID();
-        this.add21subspeciesInfo();
+//        this.add21subspeciesInfo();
 
 
     }
