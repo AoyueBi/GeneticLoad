@@ -129,15 +129,15 @@ public class XPCLR {
         for (int i = 1; i < 43; i++) {
             String chr = PStringUtils.getNDigitNumber(3, i);
 
-//            String morgen = "0.0001";
-//            String snp = "400";
-//            String grid = "100000";
-
             String morgen = "0.0001";
-            String snp = "200";
-            String grid = "2000";
+            String snp = "400";
+            String grid = "100000";
 
-            String method = "";
+//            String morgen = "0.0001";
+//            String snp = "200";
+//            String grid = "2000";
+
+            String method = "log2";
 
             //log2 方法
 //            System.out.println("nohup XPCLR -c ./" + "chr" + chr + "_exon_vmap2.1.countlog2.txt ../002_out/chr" + chr + "_log2_" + morgen + "_" + snp + "_" + grid + " -w1 " + morgen + " " + snp + " " + grid + " " + i +
@@ -151,7 +151,7 @@ public class XPCLR {
 //                    " > ../002_out/003/chr" + chr + "_log10_" + morgen +  "_" + snp + "_" + grid + ".log.txt 2>&1 &");
 
             String soft = "nohup XPCLR -c";
-            String input = "../003_input/chr" + chr + "_exon_vmap2.1.count.txt";
+            String input = "../008_input/chr" + chr + "_exon_vmap2.1.countlog2.txt";
             String output = "./chr" + chr + "_" + method + "_" + morgen + "_" + snp + "_" + grid;
             String para = "-w1 " + morgen + " " + snp + " " + grid + " " + i;
             String log = "> ./chr" + chr + "_" + method + "_" + morgen + "_" + snp + "_" + grid + ".log.txt 2>&1 &";
@@ -719,7 +719,12 @@ public class XPCLR {
 
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/012_tetraploid_WE_DE/006_output/001";
 
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/013_tetraploid_DE_Durum/006_output/001";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/013_tetraploid_DE_Durum/006_output/001";
+
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/011_hexaploid/006_output/003";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/012_tetraploid_WE_DE/006_output/003";
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/013_tetraploid_DE_Durum/006_output/003";
+
         String outfileDirS = AoString.autoOutfileDirS(infileDirS);
 
         new File(outfileDirS).mkdirs();
