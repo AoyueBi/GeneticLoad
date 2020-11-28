@@ -893,18 +893,24 @@ public class XPCLR {
 //        String outParentS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/012_tetraploid_WE_DE/";
 
         ////////////////// 第五组： DE Durum 全部重新跑
-        String pop1fileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/pop_source/Durum.txt"; //goal
-        String pop2fileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/pop_source/Domesticated_emmer.txt"; //ref
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/012_tetraploid_WE_DE/000_exonVCF"; //vcf
-        String outParentS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/013_tetraploid_DE_Durum";
+//        String pop1fileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/pop_source/Durum.txt"; //goal
+//        String pop2fileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/pop_source/Domesticated_emmer.txt"; //ref
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/012_tetraploid_WE_DE/000_exonVCF"; //vcf
+//        String outParentS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/013_tetraploid_DE_Durum";
+
+        ////////////////// 第六组： WE DE Indel
+        String pop1fileS = "/data4/home/aoyue/vmap2/analysis/030_XPCLR/014_pop_source/Durum.txt"; //goal
+        String pop2fileS = "/data4/home/aoyue/vmap2/analysis/030_XPCLR/014_pop_source/Domesticated_emmer.txt"; //ref
+        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/107_VMap2.0_Indel"; //vcf
+        String outParentS = "/data4/home/aoyue/vmap2/analysis/030_XPCLR/011_tetraploid_WE_DE/010_Indel_allele";
 
                 //根据输出文件1，子目录输出
-        String outfileDirS = new File(outParentS,"001_chrPosRefAlt").getAbsolutePath(); new File(outfileDirS).mkdirs();
-        String outfileDirS2 = new File(outParentS,"002_snp_file").getAbsolutePath(); new File(outfileDirS2).mkdirs();
-        String outfileDirS6 = new File(outParentS,"002_snp_file2_merge").getAbsolutePath();new File(outfileDirS6).mkdirs();
-        String outfileDirS5 = new File(outParentS,"003_genotype").getAbsolutePath();new File(outfileDirS5).mkdirs();
-        String outfileDirS3 = new File(outParentS,"004_calDensity").getAbsolutePath(); new File(outfileDirS3).mkdirs();
-        String outfileDirS4 = new File(outParentS,"005_merged004").getAbsolutePath(); new File(outfileDirS4).mkdirs();
+//        String outfileDirS = new File(outParentS,"001_chrPosRefAlt").getAbsolutePath(); new File(outfileDirS).mkdirs();
+//        String outfileDirS2 = new File(outParentS,"002_snp_file").getAbsolutePath(); new File(outfileDirS2).mkdirs();
+//        String outfileDirS6 = new File(outParentS,"002_snp_file2_merge").getAbsolutePath();new File(outfileDirS6).mkdirs();
+//        String outfileDirS5 = new File(outParentS,"003_genotype").getAbsolutePath();new File(outfileDirS5).mkdirs();
+//        String outfileDirS3 = new File(outParentS,"004_calDensity").getAbsolutePath(); new File(outfileDirS3).mkdirs();
+//        String outfileDirS4 = new File(outParentS,"005_merged004").getAbsolutePath(); new File(outfileDirS4).mkdirs();
         String outfileDirS7 = new File(outParentS,"003_count_file").getAbsolutePath();new File(outfileDirS7).mkdirs();
 
 
@@ -913,7 +919,11 @@ public class XPCLR {
 //        this.getGenotype_parallele(infileDirS,pop1fileS,outfileDirS5);
 //        this.getGenotype_parallele(infileDirS,pop2fileS,outfileDirS5);
 //        this.step3_getAlleleCountXPCLR(infileDirS,outfileDirS2,pop1fileS,pop2fileS,outfileDirS7);
-        this.step3_getAlleleCountXPCLR_2(infileDirS,pop1fileS,pop2fileS,outfileDirS7); //VCF 文件
+//        this.step3_getAlleleCountXPCLR_2(infileDirS,pop1fileS,pop2fileS,outfileDirS7); //VCF 文件
+
+        this.step3_getAlleleCountXPCLR_3(infileDirS,pop1fileS,pop2fileS,outfileDirS7); //VCF 最最原始的文件，自动去除全是0/0的位点
+
+
 
 //        this.mergeSNPfile(outfileDirS2,"SNPName\tchr\tGeneticDistance(Morgan)\tPhysicalDistance(bp)\tRefAllele\tTheOtherAllele", outfileDirS6);
 //                this.getSNPdensity_tetraploid(outfileDirS,outfileDirS3);
@@ -932,7 +942,16 @@ public class XPCLR {
 
 
     /**
-     * 程序优化，主要目的：不必单独提取六倍体 四倍体的VCF， 直接从总的VCF文件中得到XPCLR的输入文件
+     * 程序优化，主要目的：不必单独提取六倍体 四倍体的VCF，直接去除没有分离的位点。 直接从总的VCF文件中得到XPCLR的输入文件
+     * ALT
+     * D,C
+     * D,C
+     * I,T
+     * D,C
+     * I,T
+     * D,G
+     * D,A
+     * D,C
      * @param infileDirS
      * @param objectfileS
      * @param reffileS
@@ -942,10 +961,11 @@ public class XPCLR {
         List<String> queryTaxal = new AoFile().getStringListwithoutHeader(objectfileS,0); //获取pop列表
         List<String> query2Taxal = new AoFile().getStringListwithoutHeader(reffileS,0); //获取pop列表
 
-        List<File> fsList = IOUtils.getVisibleFileListInDir(infileDirS);
+//        List<File> fsList = IOUtils.getVisibleFileListInDir(infileDirS);
+        List<File> fsList = AoFile.getFileEndwithInDir(infileDirS,".vcf.gz");
         fsList.parallelStream().forEach(f -> {
             String infileS = f.getAbsolutePath();
-            String outfileS = new File(outfileDirS,f.getName().split(".vcf")[0] + ".count.txt.gz").getAbsolutePath();
+            String outfileS = new File(outfileDirS,f.getName().split(".vcf")[0] + ".count.txt").getAbsolutePath();
 
             try {
                 BufferedReader br = AoFile.readFile(infileS);
@@ -957,6 +977,8 @@ public class XPCLR {
                 List<Integer> indexRef = new ArrayList<>();
                 int cnt = 0;
                 while ((temp = br.readLine()) != null) {
+                    int cntNogenotype = 0;
+                    int cntNogenotype1 = 0;
                     if (temp.startsWith("##"))continue;
                     if (temp.startsWith("#C")){
                         l = PStringUtils.fastSplit(temp);
@@ -982,6 +1004,8 @@ public class XPCLR {
                         l = PStringUtils.fastSplit(temp);
                         List<String> lGeno = new ArrayList<>();
                         List<String> lGeno2 = new ArrayList<>();
+                        String altList = l.get(4);
+                        if (altList.length() > 1) continue; //去除 alt 含有 2个的情况
 
                         for (int i = 0; i < indexObject.size(); i++) { //无论有无基因型，都加进去了
                             lGeno.add(l.get(indexObject.get(i)));
@@ -992,11 +1016,33 @@ public class XPCLR {
                             lGeno2.add(l.get(indexRef.get(i)));
                         }
 
+//                        /**
+//                         * 先判断是否全是 ./. 基因型，若是，本行变异位点直接过滤
+//                         */
+//
+//                        for (int i = 0; i < lGeno.size(); i++) {
+//                            if (lGeno.get(i).startsWith(".")){
+//                                cntNogenotype++;
+//                            }
+//                            if (lGeno2.get(i).startsWith(".")){
+//                                cntNogenotype1++;
+//                            }
+//                        }
+//
+//                        if (cntNogenotype == indexObject.size() || (cntNogenotype1 == indexRef.size())) continue; //如果obj 和 ref 2个群体内，任一群体全为 ./.，那么就不分析本行
+
+
                         String[] GenoArray = lGeno.toArray(new String[lGeno.size()]);
                         String[] Geno2Array = lGeno2.toArray(new String[lGeno2.size()]);
 
                         String geno = this.getAlleleCountInfo(GenoArray);
                         String geno2 = this.getAlleleCountInfo(Geno2Array);
+
+                        /**
+                         * 进行alt 的判断，若 pop1 全是 0/0, pop2 也全是0/0， 那么就过滤掉该位点 !!!!!!!!!!!!!!!!!!!!!!! 重要
+                         */
+
+                        if (Integer.parseInt(geno.split("\t")[1])==0 && (Integer.parseInt(geno2.split("\t")[1])==0)) continue;
 
 //                        List<String> snpinfoList = PStringUtils.fastSplit(br2.readLine());
 //                        String snpnameMorPhy = snpinfoList.get(0) + "\t" + snpinfoList.get(3);
@@ -1019,6 +1065,7 @@ public class XPCLR {
             }
         });
 
+        //java -Xms50g -Xmx200g -jar PlantGenetics.jar > log_step3_getAlleleCountXPCLR_3_20201128.txt 2>&1 &
     }
 
     /**
@@ -1227,10 +1274,10 @@ public class XPCLR {
                 alt2 = "9";
             }else {
                 totalCounts++;totalCounts++;
-                if (ref1.equals("1")){
+                if (ref1.equals("1")){ //基因型的第一位
                     allele1Count++;
                 }
-                if (alt2.equals("1")){
+                if (alt2.equals("1")){ //基因型的第二位
                     allele1Count++;
                 }
             }

@@ -356,7 +356,7 @@ public class CalVCF {
                         }
                     }
 
-                    if (cntNogenotype == lTaxaGeno.size()) { //过滤 所有taxa都没有基因型的位点
+                    if (cntNogenotype == lTaxaGeno.size()) { //过滤 所有taxa都没有基因型的位点 全部 ./.
                         cntSiteNogeno++;
                         continue;
                     } //若不过滤，则全是./.的位点在下面的分离测试中会统计到
@@ -400,7 +400,7 @@ public class CalVCF {
      * @param altList
      * @return
      */
-    public boolean ifSegregationIncl2alt(String[] genoArray, String altList) {
+    public static boolean ifSegregationIncl2alt(String[] genoArray, String altList) {
         int nAlt = PStringUtils.fastSplit(altList, ",").size();
         int[] acCnt = new int[1 + nAlt]; //所有包括ref和alt的个数
         int cntNogenotype = 0;
@@ -994,7 +994,7 @@ public class CalVCF {
      * @param altList
      * @return
      */
-    public boolean ifSegregation(String[] genoArray, String altList) {
+    public static boolean ifSegregation(String[] genoArray, String altList) {
         int nAlt = PStringUtils.fastSplit(altList, ",").size();
         int[] acCnt = new int[1 + nAlt]; //所有包括ref和alt的个数
         List<String> tempList = null;
