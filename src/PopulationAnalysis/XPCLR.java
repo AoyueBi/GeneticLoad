@@ -88,7 +88,7 @@ public class XPCLR {
 //        this.checkAnnotationDBisinExonVCF(); //确定annotation的位点都在exonVCF中!！！ 只运行一次即可
 //        this.getExonVCFbyPloidy(); //在提取基因型之前，先把没有分离的位点去除掉，因此要提取基因型，每次都需运行
 //        this.mkSNPfile_hexaploid(); //重要重要！！！分很多步骤
-//        this.mkSNPfile_tetraploid(); //
+        this.mkSNPfile_tetraploid(); //
 //                this.getAlleleCount(); //周正奎方法流程:暂不使用
 //        this.getXPCLRscript("abd"); //运行XPCLR时的脚本
 //        this.getXPCLRscript("ab");
@@ -99,7 +99,7 @@ public class XPCLR {
         /**
          * 2： 结果初处理，用来画 manhatton plot 和 whole genome distribution geom_line
          */
-        this.X(); //对XPCLR结果进行初处理：即添加表头, 制表符分割， 并合所有文件。做了2件事情！
+//        this.X(); //对XPCLR结果进行初处理：即添加表头, 制表符分割， 并合所有文件。做了2件事情！
 //        AoFile.mergeTxt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/102_0.0001_100_500","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/Clutivar_VS_Landrace_EU_exonRegion_0.0001_100_500.xpclr.txt.gz");
 //        this.window(); //滑窗进行画图测试用
 //        this.subsetXPCLR_singleStream();
@@ -930,6 +930,105 @@ public class XPCLR {
 //        this.getAlleleCountXPCLR(infileS,snpfileDirS,objectfileS,reffileS,outfileS);
 //    }
 
+
+    /**
+     * 程序优化，主要目的：不必单独提取六倍体 四倍体的VCF， 直接从总的VCF文件中得到XPCLR的输入文件
+     * @param infileDirS
+     * @param objectfileS
+     * @param reffileS
+     * @param outfileDirS
+     */
+    public void step3_getAlleleCountXPCLR_3(String infileDirS, String objectfileS, String reffileS, String outfileDirS){
+        List<String> queryTaxal = new AoFile().getStringListwithoutHeader(objectfileS,0); //获取pop列表
+        List<String> query2Taxal = new AoFile().getStringListwithoutHeader(reffileS,0); //获取pop列表
+
+        List<File> fsList = IOUtils.getVisibleFileListInDir(infileDirS);
+        fsList.parallelStream().forEach(f -> {
+            String infileS = f.getAbsolutePath();
+            String outfileS = new File(outfileDirS,f.getName().split(".vcf")[0] + ".count.txt.gz").getAbsolutePath();
+
+            try {
+                BufferedReader br = AoFile.readFile(infileS);
+                BufferedWriter bw = AoFile.writeFile(outfileS);
+//                BufferedReader br2 = AoFile.readFile(snpfileS);
+                String temp = null;
+                List<String> l = new ArrayList<>();
+                List<Integer> indexObject = new ArrayList<>();
+                List<Integer> indexRef = new ArrayList<>();
+                int cnt = 0;
+                while ((temp = br.readLine()) != null) {
+                    if (temp.startsWith("##"))continue;
+                    if (temp.startsWith("#C")){
+                        l = PStringUtils.fastSplit(temp);
+                        for (int i = 9; i < l.size(); i++) {
+                            String taxon = l.get(i);
+
+                            int index = Collections.binarySearch(queryTaxal, taxon);
+                            if (index > -1) { //当找到列表中的taxa时，写列表中的taxa信息
+                                indexObject.add(i);
+                            }
+
+                            int index2 = Collections.binarySearch(query2Taxal, taxon);
+                            if (index2 > -1) { //当找到列表中的taxa时，写列表中的taxa信息
+                                indexRef.add(i);
+                            }
+                        }
+                        Collections.sort(indexObject);
+                        Collections.sort(indexRef);
+
+//                    System.out.println("Finish find the pop index from vcffile.");
+                    }
+                    if (!temp.startsWith("#")) {
+                        l = PStringUtils.fastSplit(temp);
+                        List<String> lGeno = new ArrayList<>();
+                        List<String> lGeno2 = new ArrayList<>();
+
+                        for (int i = 0; i < indexObject.size(); i++) { //无论有无基因型，都加进去了
+                            lGeno.add(l.get(indexObject.get(i)));
+                        }
+
+
+                        for (int i = 0; i < indexRef.size(); i++) { //无论有无基因型，都加进去了
+                            lGeno2.add(l.get(indexRef.get(i)));
+                        }
+
+                        String[] GenoArray = lGeno.toArray(new String[lGeno.size()]);
+                        String[] Geno2Array = lGeno2.toArray(new String[lGeno2.size()]);
+
+                        String geno = this.getAlleleCountInfo(GenoArray);
+                        String geno2 = this.getAlleleCountInfo(Geno2Array);
+
+//                        List<String> snpinfoList = PStringUtils.fastSplit(br2.readLine());
+//                        String snpnameMorPhy = snpinfoList.get(0) + "\t" + snpinfoList.get(3);
+
+//                        bw.write(snpnameMorPhy + "\t" + geno + "\t" + geno2);
+
+                        bw.write(l.get(2) + "\t" + l.get(1) + "\t" + geno + "\t" + geno2);
+                        bw.newLine();
+                        cnt++;
+                    }
+                }
+                System.out.println(cnt + " SNP " + new File(infileS).getName() + " is completed at " + outfileS);
+                br.close();
+                bw.flush();
+                bw.close();
+                System.out.println();
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
+        });
+
+    }
+
+    /**
+     * 从已经提取的没有分离的位点VCF中，计算频率。
+     * @param infileDirS
+     * @param objectfileS
+     * @param reffileS
+     * @param outfileDirS
+     */
+
     public void step3_getAlleleCountXPCLR_2(String infileDirS, String objectfileS, String reffileS, String outfileDirS){
         List<String> queryTaxal = new AoFile().getStringListwithoutHeader(objectfileS,0); //获取pop列表
         List<String> query2Taxal = new AoFile().getStringListwithoutHeader(reffileS,0); //获取pop列表
@@ -1492,7 +1591,7 @@ public class XPCLR {
      * 获取exonVCF的子集,按照倍性进行提取
      */
     public void getExonVCFbyPloidy(){
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/016_exonVCF";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/016_exonVCF";
 /////////// 六倍体
 //        String taxafileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/000_pop_byPloidy/AABBDD.txt";
 //        String outfileDirS ="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/000_exonVCF";
@@ -1517,15 +1616,26 @@ public class XPCLR {
 //        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE/000_exonVCF";
 
 
+
 ///////// 四倍体，全部个体都用上
-        String taxafileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/010_pop_byPloidy/AABB.txt";
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/012_tetraploid_WE_DE/000_exonVCF";
+//        String taxafileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/010_pop_byPloidy/AABB.txt";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/012_tetraploid_WE_DE/000_exonVCF";
+//        String[] chrArr ={"001","002","003","004","007","008","009","010","013","014","015","016","019","020","021","022","025","026","027","028","031","032","033","034","037","038","039","040"};
+
+        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/107_VMap2.0_Indel";
+        String taxafileS = "/data4/home/aoyue/vmap2/analysis/030_XPCLR/013_pop_byPloidy/AABB.txt";
+        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/030_XPCLR/011_tetraploid_WE_DE/010_Indel_VCF";
         String[] chrArr ={"001","002","003","004","007","008","009","010","013","014","015","016","019","020","021","022","025","026","027","028","031","032","033","034","037","038","039","040"};
+
 
         for (int i = 0; i < chrArr.length; i++) {
             String chr = chrArr[i];
-            String infileS = new File(infileDirS,"chr" + chr + "_exon_vmap2.1.vcf.gz").getAbsolutePath();
-            String outfileS = new File(outfileDirS, "chr" + chr + "_exon_vmap2.1.vcf.gz").getAbsolutePath();
+//            String infileS = new File(infileDirS,"chr" + chr + "_exon_vmap2.1.vcf.gz").getAbsolutePath();
+//            String outfileS = new File(outfileDirS, "chr" + chr + "_exon_vmap2.1.vcf.gz").getAbsolutePath();
+
+            String infileS = new File(infileDirS,"chr" + chr + "_vmap2.0.vcf.gz").getAbsolutePath();
+            String outfileS = new File(outfileDirS, "chr" + chr + "_Indel_vmap2.0.vcf.gz").getAbsolutePath();
+
             new CalVCF().extractVCF(infileS,outfileS,taxafileS);
             System.out.println(chr + "\tis completed at " + outfileS);
         }
