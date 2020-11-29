@@ -88,7 +88,7 @@ public class XPCLR {
 //        this.checkAnnotationDBisinExonVCF(); //确定annotation的位点都在exonVCF中!！！ 只运行一次即可
 //        this.getExonVCFbyPloidy(); //在提取基因型之前，先把没有分离的位点去除掉，因此要提取基因型，每次都需运行
 //        this.mkSNPfile_hexaploid(); //重要重要！！！分很多步骤
-        this.mkSNPfile_tetraploid(); //
+//        this.mkSNPfile_tetraploid(); //
 //                this.getAlleleCount(); //周正奎方法流程:暂不使用
 //        this.getXPCLRscript("abd"); //运行XPCLR时的脚本
 //        this.getXPCLRscript("ab");
@@ -151,7 +151,7 @@ public class XPCLR {
 //                    " > ../002_out/003/chr" + chr + "_log10_" + morgen +  "_" + snp + "_" + grid + ".log.txt 2>&1 &");
 
             String soft = "nohup XPCLR -c";
-            String input = "../008_input/chr" + chr + "_exon_vmap2.1.countlog2.txt";
+            String input = "../004_in/chr" + chr + "_vmap2.0.count_log2.txt";
             String output = "./chr" + chr + "_" + method + "_" + morgen + "_" + snp + "_" + grid;
             String para = "-w1 " + morgen + " " + snp + " " + grid + " " + i;
             String log = "> ./chr" + chr + "_" + method + "_" + morgen + "_" + snp + "_" + grid + ".log.txt 2>&1 &";
