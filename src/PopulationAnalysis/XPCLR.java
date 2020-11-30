@@ -38,13 +38,13 @@ public class XPCLR {
          */
 //        this.checkAnnotationDBisinExonVCF(); //确定annotation的位点都在exonVCF中!！！ 只运行一次即可
 //        this.getExonVCFbyPloidy(); //在提取基因型之前，先把没有分离的位点去除掉，因此要提取基因型，每次都需运行
-        this.mkSNPfile_hexaploid(); //重要重要！！！分很多步骤
+//        this.mkSNPfile_hexaploid(); //重要重要！！！分很多步骤
 //        this.mkSNPfile_tetraploid(); //
 //                this.getAlleleCount(); //周正奎方法流程:暂不使用
 //        this.getXPCLRscript("abd"); //运行XPCLR时的脚本
 //        this.getXPCLRscript("ab");
 //        this.testScript();
-//        this.XPCLR_Script(); //////************ 通用脚本
+        this.XPCLR_Script(); //////************ 通用脚本
 
         //对exon位点数进行计数
 //        CountSites.countSites_singleStream("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/002_snp_file");
@@ -137,10 +137,10 @@ public class XPCLR {
 
         for (int i = 1; i < 43; i++) {
 
-            int[] darray = {5,6,11,12,17,18,23,24,29,30,35,36,41,42};
-            Arrays.sort(darray);
-            int index = Arrays.binarySearch(darray,i);
-            if (index > -1) continue;
+//            int[] darray = {5,6,11,12,17,18,23,24,29,30,35,36,41,42};
+//            Arrays.sort(darray);
+//            int index = Arrays.binarySearch(darray,i);
+//            if (index > -1) continue;
 
             String chr = PStringUtils.getNDigitNumber(3, i);
 
