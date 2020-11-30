@@ -38,11 +38,13 @@ public class XPCLR {
          */
 //        this.checkAnnotationDBisinExonVCF(); //确定annotation的位点都在exonVCF中!！！ 只运行一次即可
 //        this.getExonVCFbyPloidy(); //在提取基因型之前，先把没有分离的位点去除掉，因此要提取基因型，每次都需运行
-//        this.mkSNPfile_hexaploid(); //重要重要！！！分很多步骤
-        this.mkSNPfile_tetraploid(); //
+        this.mkSNPfile_hexaploid(); //重要重要！！！分很多步骤
+//        this.mkSNPfile_tetraploid(); //
 //                this.getAlleleCount(); //周正奎方法流程:暂不使用
 //        this.getXPCLRscript("abd"); //运行XPCLR时的脚本
 //        this.getXPCLRscript("ab");
+//        this.testScript();
+//        this.XPCLR_Script(); //////************ 通用脚本
 
         //对exon位点数进行计数
 //        CountSites.countSites_singleStream("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/002_snp_file");
@@ -65,9 +67,9 @@ public class XPCLR {
 //        this.splitTxt();
 //        this.getExonDensity();
 
-//        this.testScript();
+
 //
-//        this.XPCLR_Script();
+
 
 
 
@@ -131,7 +133,15 @@ public class XPCLR {
      */
     public void XPCLR_Script(){
 
+
+
         for (int i = 1; i < 43; i++) {
+
+            int[] darray = {5,6,11,12,17,18,23,24,29,30,35,36,41,42};
+            Arrays.sort(darray);
+            int index = Arrays.binarySearch(darray,i);
+            if (index > -1) continue;
+
             String chr = PStringUtils.getNDigitNumber(3, i);
 
             String morgen = "0.0001";
@@ -835,19 +845,27 @@ public class XPCLR {
 
         //// 第二次重跑
 
-        String pop1fileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/pop_source/Clutivar.txt"; //goal
-        String pop2fileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/pop_source/Landrace_EU.txt"; //ref
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/011_hexaploid/000_exonVCF";
-        String outParentS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/011_hexaploid";
+//        String pop1fileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/pop_source/Clutivar.txt"; //goal
+//        String pop2fileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/pop_source/Landrace_EU.txt"; //ref
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/011_hexaploid/000_exonVCF";
+//        String outParentS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/011_hexaploid";
+
+        //////////////////// 第三组： lr cl Indel
+        String pop1fileS = "/data4/home/aoyue/vmap2/analysis/030_XPCLR/014_pop_source/Clutivar.txt"; //goal
+        String pop2fileS = "/data4/home/aoyue/vmap2/analysis/030_XPCLR/014_pop_source/Landrace_EU.txt"; //ref
+        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/107_VMap2.0_Indel"; //vcf
+        String outParentS = "/data4/home/aoyue/vmap2/analysis/030_XPCLR/010_hexaploid/010_Indel_allele";
+
 
         //根据输出文件1，子目录输出
-        String outfileDirS = new File(outParentS,"001_chrPosRefAlt").getAbsolutePath(); new File(outfileDirS).mkdirs();
-        String outfileDirS2 = new File(outParentS,"002_snp_file").getAbsolutePath(); new File(outfileDirS2).mkdirs();
-        String outfileDirS6 = new File(outParentS,"002_snp_file2_merge").getAbsolutePath();new File(outfileDirS6).mkdirs();
-        String outfileDirS5 = new File(outParentS,"003_genotype").getAbsolutePath();new File(outfileDirS5).mkdirs();
-        String outfileDirS3 = new File(outParentS,"004_calDensity").getAbsolutePath(); new File(outfileDirS3).mkdirs();
-        String outfileDirS4 = new File(outParentS,"005_merged004").getAbsolutePath(); new File(outfileDirS4).mkdirs();
+//        String outfileDirS = new File(outParentS,"001_chrPosRefAlt").getAbsolutePath(); new File(outfileDirS).mkdirs();
+//        String outfileDirS2 = new File(outParentS,"002_snp_file").getAbsolutePath(); new File(outfileDirS2).mkdirs();
+//        String outfileDirS6 = new File(outParentS,"002_snp_file2_merge").getAbsolutePath();new File(outfileDirS6).mkdirs();
+//        String outfileDirS5 = new File(outParentS,"003_genotype").getAbsolutePath();new File(outfileDirS5).mkdirs();
+//        String outfileDirS3 = new File(outParentS,"004_calDensity").getAbsolutePath(); new File(outfileDirS3).mkdirs();
+//        String outfileDirS4 = new File(outParentS,"005_merged004").getAbsolutePath(); new File(outfileDirS4).mkdirs();
         String outfileDirS7 = new File(outParentS,"003_count_file").getAbsolutePath();new File(outfileDirS7).mkdirs();
+
 
 
 //        this.step1_mkSNPfile(infileDirS,outfileDirS); //提取chr pos ref alt 信息
@@ -856,7 +874,8 @@ public class XPCLR {
 //        this.getGenotype_parallele(infileDirS,pop2fileS,outfileDirS5);
 
 //        this.step3_getAlleleCountXPCLR(infileDirS,outfileDirS2,pop1fileS,pop2fileS,outfileDirS7); //VCF 文件
-        this.step3_getAlleleCountXPCLR_2(infileDirS,pop1fileS,pop2fileS,outfileDirS7); //VCF 文件
+//        this.step3_getAlleleCountXPCLR_2(infileDirS,pop1fileS,pop2fileS,outfileDirS7); //VCF 文件
+        this.step3_getAlleleCountXPCLR_3(infileDirS,pop1fileS,pop2fileS,outfileDirS7); //VCF 最最原始的文件，自动去除全是0/0的位点
 
 //        this.mergeSNPfile(outfileDirS2,"SNPName\tchr\tGeneticDistance(Morgan)\tPhysicalDistance(bp)\tRefAllele\tTheOtherAllele", outfileDirS6);
         //        this.getSNPdensity_hexaploid(outfileDirS,outfileDirS3);
@@ -941,7 +960,8 @@ public class XPCLR {
 
 //        this.mergeSNPfile(outfileDirS2,"SNPName\tchr\tGeneticDistance(Morgan)\tPhysicalDistance(bp)\tRefAllele\tTheOtherAllele", outfileDirS6);
 //                this.getSNPdensity_tetraploid(outfileDirS,outfileDirS3);
-//                this.getSingleChrSNPdensity();
+
+//                this.getSingleChrSNPdensity(); ///test snp densityone of single chr
 //        this.mergeTXT(outfileDirS3,outfileDirS4);
 
         //test single chr density
@@ -953,9 +973,11 @@ public class XPCLR {
 //        String infileS = "";
 //        String outfileS = "";
 
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/012_tetraploid_WE_DE/007_indel/001_density/chr001_vmap2.0.count_log2.txt";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/012_tetraploid_WE_DE/007_indel/001_density/chr001_vmap2.0.count_snpDensity.txt";
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/012_tetraploid_WE_DE/007_indel/001_density/chr001_vmap2.0.count_log2.txt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/012_tetraploid_WE_DE/007_indel/001_density/chr001_vmap2.0.count_snpDensity.txt";
 
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/012_tetraploid_WE_DE/007_indel/001_density/test.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/012_tetraploid_WE_DE/007_indel/001_density/chr001_vmap2.0.count_snpDensity.txt";
         int window = 100000;
         int step = 100000;
         this.calDensity(infileS,0,3,window,step,outfileS);
@@ -1096,7 +1118,7 @@ public class XPCLR {
             }
         });
 
-        //java -Xms50g -Xmx200g -jar PlantGenetics.jar > log_step3_getAlleleCountXPCLR_3_20201128.txt 2>&1 &
+        //java -Xms50g -Xmx200g -jar PlantGenetics.jar > log_step3_getAlleleCountXPCLR_3_lrcl_20201128.txt 2>&1 &
     }
 
     /**
