@@ -40,6 +40,25 @@ public class Model {
     }
 
     /**
+     * 为了列出文件中的 vcf 文件或者 vcf.gz 文件，不管是压缩还是不压缩都可以，建立了index也可以
+     */
+    public void listVCFFile(){
+        String infileDirS = "";
+        File[] fs = new File(infileDirS).listFiles();
+        File[] fs1 = IOUtils.listFilesEndsWith(fs,"vcf.gz");
+        File[] fs2 = IOUtils.listFilesEndsWith(fs,"vcf");
+        List<File> fsList = new ArrayList<>();
+        for (int i = 0; i < fs1.length; i++) {
+            fsList.add(fs1[i]);
+        }
+        for (int i = 0; i < fs2.length; i++) {
+            fsList.add(fs2[i]);
+        }
+
+        Collections.sort(fsList);
+    }
+
+    /**
      * 对小文件抽样
      */
     public void sampleOnSmallFile(){

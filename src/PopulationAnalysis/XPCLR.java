@@ -44,7 +44,7 @@ public class XPCLR {
 //        this.getXPCLRscript("abd"); //运行XPCLR时的脚本
 //        this.getXPCLRscript("ab");
 //        this.testScript();
-        this.XPCLR_Script(); //////************ 通用脚本
+//        this.XPCLR_Script(); //////************ 通用脚本
 
         //对exon位点数进行计数
 //        CountSites.countSites_singleStream("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/002_snp_file");
@@ -740,8 +740,10 @@ public class XPCLR {
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/012_tetraploid_WE_DE/006_output/003";
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/013_tetraploid_DE_Durum/006_output/003";
 
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/012_tetraploid_WE_DE/007_indel/005_out";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/012_tetraploid_WE_DE/007_indel/005_out";
 
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/012_tetraploid_WE_DE/007_indel/005_out";
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/011_hexaploid/007_indel/005_out";
         String outfileDirS = AoString.autoOutfileDirS(infileDirS);
 
         new File(outfileDirS).mkdirs();
@@ -938,12 +940,12 @@ public class XPCLR {
 
 
         //根据输出文件1，子目录输出
-        String outfileDirS = new File(outParentS,"001_chrPosRefAlt").getAbsolutePath(); new File(outfileDirS).mkdirs();
-        String outfileDirS2 = new File(outParentS,"002_snp_file").getAbsolutePath(); new File(outfileDirS2).mkdirs();
-        String outfileDirS6 = new File(outParentS,"002_snp_file2_merge").getAbsolutePath();new File(outfileDirS6).mkdirs();
-        String outfileDirS5 = new File(outParentS,"003_genotype").getAbsolutePath();new File(outfileDirS5).mkdirs();
-        String outfileDirS3 = new File(outParentS,"004_calDensity").getAbsolutePath(); new File(outfileDirS3).mkdirs();
-        String outfileDirS4 = new File(outParentS,"005_merged004").getAbsolutePath(); new File(outfileDirS4).mkdirs();
+//        String outfileDirS = new File(outParentS,"001_chrPosRefAlt").getAbsolutePath(); new File(outfileDirS).mkdirs();
+//        String outfileDirS2 = new File(outParentS,"002_snp_file").getAbsolutePath(); new File(outfileDirS2).mkdirs();
+//        String outfileDirS6 = new File(outParentS,"002_snp_file2_merge").getAbsolutePath();new File(outfileDirS6).mkdirs();
+//        String outfileDirS5 = new File(outParentS,"003_genotype").getAbsolutePath();new File(outfileDirS5).mkdirs();
+//        String outfileDirS3 = new File(outParentS,"004_calDensity").getAbsolutePath(); new File(outfileDirS3).mkdirs();
+//        String outfileDirS4 = new File(outParentS,"005_merged004").getAbsolutePath(); new File(outfileDirS4).mkdirs();
         String outfileDirS7 = new File(outParentS,"003_count_file").getAbsolutePath();new File(outfileDirS7).mkdirs();
 
 
@@ -954,8 +956,7 @@ public class XPCLR {
 //        this.step3_getAlleleCountXPCLR(infileDirS,outfileDirS2,pop1fileS,pop2fileS,outfileDirS7);
 //        this.step3_getAlleleCountXPCLR_2(infileDirS,pop1fileS,pop2fileS,outfileDirS7); //VCF 文件
 
-        this.step3_getAlleleCountXPCLR_3(infileDirS,pop1fileS,pop2fileS,outfileDirS7); //VCF 最最原始的文件，自动去除全是0/0的位点
-
+//        this.step3_getAlleleCountXPCLR_3(infileDirS,pop1fileS,pop2fileS,outfileDirS7); //VCF 最最原始的文件，自动去除全是0/0的位点
 
 
 //        this.mergeSNPfile(outfileDirS2,"SNPName\tchr\tGeneticDistance(Morgan)\tPhysicalDistance(bp)\tRefAllele\tTheOtherAllele", outfileDirS6);
@@ -1014,8 +1015,21 @@ public class XPCLR {
         List<String> queryTaxal = new AoFile().getStringListwithoutHeader(objectfileS,0); //获取pop列表
         List<String> query2Taxal = new AoFile().getStringListwithoutHeader(reffileS,0); //获取pop列表
 
-//        List<File> fsList = IOUtils.getVisibleFileListInDir(infileDirS);
-        List<File> fsList = AoFile.getFileEndwithInDir(infileDirS,".vcf.gz");
+        File[] fs = new File(infileDirS).listFiles();
+        File[] fs1 = IOUtils.listFilesEndsWith(fs,"vcf.gz");
+        File[] fs2 = IOUtils.listFilesEndsWith(fs,"vcf");
+        List<File> fsList = new ArrayList<>();
+        for (int i = 0; i < fs1.length; i++) {
+            fsList.add(fs1[i]);
+        }
+        for (int i = 0; i < fs2.length; i++) {
+            fsList.add(fs2[i]);
+        }
+
+        Collections.sort(fsList);
+
+//        List<File> fsList = AoFile.getFileEndwithInDir(infileDirS,".vcf.gz");
+
         fsList.parallelStream().forEach(f -> {
             String infileS = f.getAbsolutePath();
             String outfileS = new File(outfileDirS,f.getName().split(".vcf")[0] + ".count.txt").getAbsolutePath();
