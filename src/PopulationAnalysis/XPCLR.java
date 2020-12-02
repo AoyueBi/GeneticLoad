@@ -135,13 +135,15 @@ public class XPCLR {
 
 
 
-        String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
+//        String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
+        String[] chrArr ={"001","002","003","004","007","008","009","010","013","014","015","016","019","020","021","022","025","026","027","028","031","032","033","034","037","038","039","040"};
 
 
         try {
             BufferedWriter bw = AoFile.writeFile("/Users/Aoyue/Documents/sh.sh");
             for (int i = 0; i < chrArr.length; i++) {
                 String chr = chrArr[i];
+                int chrInt = Integer.parseInt(chr);
                 String morgen = "0.0001";
                 String snp = "200";
                 String grid = "100000";
@@ -155,7 +157,7 @@ public class XPCLR {
                 String soft = "nohup XPCLR -c";
                 String input = "../004_in/chr" + chr + "_vmap2.0.count_log2.txt";
                 String output = "./chr" + chr + "_" + method + "_" + morgen + "_" + snp + "_" + grid;
-                String para = "-w1 " + morgen + " " + snp + " " + grid + " " + (i+1);
+                String para = "-w1 " + morgen + " " + snp + " " + grid + " " + chrInt;
                 String log = "> ./chr" + chr + "_" + method + "_" + morgen + "_" + snp + "_" + grid + ".log.txt 2>&1 &";
                 String cmd = soft + " " + input + " " + output + " " + para + " " + log;
                 System.out.println(cmd);
