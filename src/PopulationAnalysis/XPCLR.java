@@ -44,7 +44,7 @@ public class XPCLR {
 //        this.getXPCLRscript("abd"); //运行XPCLR时的脚本
 //        this.getXPCLRscript("ab");
 //        this.testScript();
-//        this.XPCLR_Script(); //////************ 通用脚本
+        this.XPCLR_Script(); //////************ 通用脚本
 
         //对exon位点数进行计数
 //        CountSites.countSites_singleStream("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/002_snp_file");
@@ -135,45 +135,72 @@ public class XPCLR {
 
 
 
-        for (int i = 1; i < 43; i++) {
+        String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
 
-//            int[] darray = {5,6,11,12,17,18,23,24,29,30,35,36,41,42};
-//            Arrays.sort(darray);
-//            int index = Arrays.binarySearch(darray,i);
-//            if (index > -1) continue;
 
-            String chr = PStringUtils.getNDigitNumber(3, i);
-
-            String morgen = "0.0001";
-            String snp = "200";
-            String grid = "100000";
+        try {
+            BufferedWriter bw = AoFile.writeFile("/Users/Aoyue/Documents/sh.sh");
+            for (int i = 0; i < chrArr.length; i++) {
+                String chr = chrArr[i];
+                String morgen = "0.0001";
+                String snp = "200";
+                String grid = "100000";
 
 //            String morgen = "0.0001";
 //            String snp = "200";
 //            String grid = "2000";
 
-            String method = "log2";
+                String method = "log2";
 
-            //log2 方法
-//            System.out.println("nohup XPCLR -c ./" + "chr" + chr + "_exon_vmap2.1.countlog2.txt ../002_out/chr" + chr + "_log2_" + morgen + "_" + snp + "_" + grid + " -w1 " + morgen + " " + snp + " " + grid + " " + i +
-//                    " > ../002_out/chr" + chr + "_log2_" + morgen +  "_" + snp + "_" + grid + ".log.txt 2>&1 &");
+                String soft = "nohup XPCLR -c";
+                String input = "../004_in/chr" + chr + "_vmap2.0.count_log2.txt";
+                String output = "./chr" + chr + "_" + method + "_" + morgen + "_" + snp + "_" + grid;
+                String para = "-w1 " + morgen + " " + snp + " " + grid + " " + (i+1);
+                String log = "> ./chr" + chr + "_" + method + "_" + morgen + "_" + snp + "_" + grid + ".log.txt 2>&1 &";
+                String cmd = soft + " " + input + " " + output + " " + para + " " + log;
+                System.out.println(cmd);
 
-            //log10 方法
-//            System.out.println("nohup XPCLR -c ./" + "chr" + chr + "_exon_vmap2.1.countlog10.txt ../002_out/003/chr" + chr + "_log10_" + morgen + "_" + snp + "_" + grid + " -w1 " + morgen + " " + snp + " " + grid + " " + i +
-//                    " > ../002_out/003/chr" + chr + "_log10_" + morgen +  "_" + snp + "_" + grid + ".log.txt 2>&1 &");
+                bw.write(cmd);
+                bw.newLine();
+            }
+            bw.flush();
+            bw.close();
 
-//            System.out.println("nohup XPCLR -c ./" + "chr" + chr + "_exon_vmap2.1.countlog10.txt ../002_out/003/chr" + chr + "_log10_" + morgen + "_" + snp + "_" + grid + " -w1 " + morgen + " " + snp + " " + grid + " " + i +
-//                    " > ../002_out/003/chr" + chr + "_log10_" + morgen +  "_" + snp + "_" + grid + ".log.txt 2>&1 &");
-
-            String soft = "nohup XPCLR -c";
-            String input = "../004_in/chr" + chr + "_vmap2.0.count_log2.txt";
-            String output = "./chr" + chr + "_" + method + "_" + morgen + "_" + snp + "_" + grid;
-            String para = "-w1 " + morgen + " " + snp + " " + grid + " " + i;
-            String log = "> ./chr" + chr + "_" + method + "_" + morgen + "_" + snp + "_" + grid + ".log.txt 2>&1 &";
-            String cmd = soft + " " + input + " " + output + " " + para + " " + log;
-            System.out.println(cmd);
-
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
         }
+
+
+
+//        for (int i = 1; i < 43; i++) {
+//
+////            int[] darray = {5,6,11,12,17,18,23,24,29,30,35,36,41,42};
+////            Arrays.sort(darray);
+////            int index = Arrays.binarySearch(darray,i);
+////            if (index > -1) continue;
+//
+//            String chr = PStringUtils.getNDigitNumber(3, i);
+//
+//            String morgen = "0.0001";
+//            String snp = "200";
+//            String grid = "100000";
+//
+////            String morgen = "0.0001";
+////            String snp = "200";
+////            String grid = "2000";
+//
+//            String method = "log2";
+//
+//            String soft = "nohup XPCLR -c";
+//            String input = "../004_in/chr" + chr + "_vmap2.0.count_log2.txt";
+//            String output = "./chr" + chr + "_" + method + "_" + morgen + "_" + snp + "_" + grid;
+//            String para = "-w1 " + morgen + " " + snp + " " + grid + " " + i;
+//            String log = "> ./chr" + chr + "_" + method + "_" + morgen + "_" + snp + "_" + grid + ".log.txt 2>&1 &";
+//            String cmd = soft + " " + input + " " + output + " " + para + " " + log;
+//            System.out.println(cmd);
+
+//        }
     }
 
     /**

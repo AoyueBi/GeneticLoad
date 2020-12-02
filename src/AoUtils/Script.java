@@ -136,8 +136,9 @@ public class Script {
         String[] chrArr ={"001","002","003","004","007","008","009","010","013","014","015","016","019","020","021","022","025","026","027","028","031","032","033","034","037","038","039","040"};
 //        String[] chrArr ={"005","006","011","012","017","018","023","024","029","030","035","036","041","042"};
 
+
         try {
-            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            BufferedWriter bw = IOUtils.getTextWriter("");
             for (int i = 0; i < chrArr.length; i++) {
                 String chr = chrArr[i];
                 bw.write("");
