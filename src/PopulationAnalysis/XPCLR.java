@@ -3,11 +3,13 @@ package PopulationAnalysis;
 import AoUtils.*;
 
 import analysis.wheat.VMap2.VMapDBUtils;
+import daxing.common.IOTool;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TFloatArrayList;
 import gnu.trove.list.array.TIntArrayList;
 
+import org.apache.commons.lang3.StringUtils;
 import pgl.infra.table.ColumnTable;
 import pgl.infra.table.RowTable;
 import pgl.infra.utils.Dyad;
@@ -133,10 +135,163 @@ public class XPCLR {
     }
 
     public void geneDeal(){
+
+        String inGenebankS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/01_ori/sequence.txt";
+        String locusTitleS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/locusTitleDB.txt";
+
 //        this.getGeneListFromNCBI();
 //        this.removeDuplicate();
-        this.addCNTtooriFasta();
+//        this.addCNTtooriFasta();
+//        this.getSubsetGeneFasta();
+        this.extractLocusTitle(inGenebankS,locusTitleS);
+
+
     }
+
+    public void extractLocusTitle(String inGenebankS, String locusTitleS){
+
+        String infileS = "";
+        String outfileS = "";
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String header = br.readLine();
+            bw.write(header);bw.newLine();
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+
+
+
+//        try (BufferedReader br = IOUtils.getTextReader(inGenebankS);
+//             BufferedWriter bw = IOUtils.getTextWriter(locusTitleS)) {
+//            String line;
+//            String[] temp;
+//            StringBuilder sb=new StringBuilder();
+//            StringBuilder stringBuilder=new StringBuilder();
+//            stringBuilder.setLength(0);
+//
+//            while ((line=br.readLine())!=null){
+//                temp= StringUtils.split(line, " ");
+//                sb.setLength(0);
+//                if (line.startsWith("LOCUS")){
+//                    sb.append(temp[1]).append("\t");
+//                    stringBuilder.setLength(0);
+//                    while ((line=br.readLine()).startsWith("  TITLE") ){
+//                        stringBuilder.append(line.substring(12)).append(" ");
+//                    }
+//                    stringBuilder.deleteCharAt(stringBuilder.length()-1);
+//                    sb.append(stringBuilder.toString());
+//                    bw.write(sb.toString());
+//                    bw.newLine();
+//                }
+//            }
+//            bw.flush();
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
+    }
+
+
+    public void getSubsetGeneFasta(){
+        String genedbS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/GeneID_removeDuplicate.txt";
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/sequence_addCnt.fasta.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/003/sequence_unique.fasta.txt";
+
+        List<String> geneNameList = new ArrayList<>();
+        List<String> fastaList = new ArrayList<>();
+        HashMap<String,String> hmIndexGene = new HashMap<>();
+        List<String> indexList = new ArrayList<>();
+
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            StringBuilder sb = new StringBuilder();
+            while ((temp = br.readLine()) != null) {
+                sb.setLength(0);
+                if (temp.startsWith(">")){
+                    l = PStringUtils.fastSplit(temp," ");
+                    String name = l.get(1);
+                    while((temp = br.readLine()) != null){
+                        if (temp.isEmpty() || temp == "" || temp == null) break;
+                        sb.append(temp).append("\n");
+                    }
+
+                    String fasta = sb.toString();
+                    /**
+                     * filter fasta length more than 30 kb
+                     */
+                    if (fasta.length() > 30000) continue;
+                    geneNameList.add(name);
+                    fastaList.add(fasta);
+                    cnt++;
+//                    System.out.println(name);
+                }
+            }
+            br.close();
+
+            System.out.println(cnt + " genes ************************************************************************ in the inatial db");
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        try {
+            BufferedReader br = AoFile.readFile(genedbS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                String indexID = l.get(0).split(" ")[1];
+                String gene = l.get(0).split(" ")[0] + l.get(0).split(" ")[1]+ ":" + l.get(1);
+
+//                String gene = l.get(0) + "_" + l.get(1);
+                indexList.add(indexID);
+                hmIndexGene.put(indexID,gene);
+            }
+            System.out.println("total " + indexList.size() + " unique genes finally");
+
+            Collections.sort(indexList);
+            int cnt = 0;
+            for (int i = 0; i < geneNameList.size(); i++) {
+                int index = Collections.binarySearch(indexList,geneNameList.get(i)); //在库中是第几个 index
+                if (index > -1){
+                    cnt++;
+                    bw.write(">" + hmIndexGene.get(indexList.get(index))); bw.newLine();
+                    bw.write(fastaList.get(i)); bw.newLine();
+                }
+            }
+
+            System.out.println(cnt + " genes remain in the final fasta beacuse remove duplicates and 30 kb longer bases");
+            bw.flush();
+            bw.close();
+
+        }catch (Exception e){
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+    }
+
 
     public void removeDuplicate(){
         String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/GeneID.txt";

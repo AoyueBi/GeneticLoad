@@ -763,6 +763,8 @@ public class AoFile {
             bw = IOUtils.getTextWriter(outfileS);
         }else if (outfileS.endsWith(".csv")) {
             bw = IOUtils.getTextWriter(outfileS);
+        }else if (outfileS.endsWith(".fasta")) {
+            bw = IOUtils.getTextWriter(outfileS);
         }
         return bw;
     }
