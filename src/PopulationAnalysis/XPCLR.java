@@ -45,7 +45,7 @@ public class XPCLR {
 //        this.getXPCLRscript("ab");
 //        this.testScript();
 //        this.XPCLR_Script(); //////************ 通用脚本
-        AoFile.subsetTxt_withoutHeaer_singleStream("/Users/Aoyue/Documents/chr021_vmap2.1_bi.subset.count_ori.txt","/Users/Aoyue/Documents/chr021_vmap2.1_bi.subset.count.txt","0.8");
+//        AoFile.subsetTxt_withoutHeaer_singleStream("/Users/Aoyue/Documents/chr040_vmap2.1_bi.subset.count_ori.txt","/Users/Aoyue/Documents/chr040_vmap2.1_bi.subset.count.txt","0.2");
 
         //对exon位点数进行计数
 //        CountSites.countSites_singleStream("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/002_snp_file");
@@ -74,6 +74,7 @@ public class XPCLR {
 //
 
 
+        this.geneDeal();
 
 
         /**
@@ -129,6 +130,131 @@ public class XPCLR {
 //        this.checkTopGeneDistribution();
 
 
+    }
+
+    public void geneDeal(){
+//        this.getGeneListFromNCBI();
+//        this.removeDuplicate();
+        this.addCNTtooriFasta();
+    }
+
+    public void removeDuplicate(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/GeneID.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/GeneID_removeDuplicate.txt";
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+//            String header = br.readLine();
+//            bw.write(header);bw.newLine();
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            Set<String> geneSet = new HashSet<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                String gene = l.get(1);
+                if (geneSet.add(gene)){
+                    bw.write(temp);
+                    bw.newLine();
+                }
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+    }
+
+    public void addCNTtooriFasta(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/01_ori/sequence.fasta.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/sequence_addCnt.fasta.txt";
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+//            String header = br.readLine();
+//            bw.write(header);bw.newLine();
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            StringBuilder sb = new StringBuilder();
+            while ((temp = br.readLine()) != null) {
+                sb.setLength(0);
+                if (temp.startsWith(">")){
+                    cnt++;
+                    sb.append(">Index ").append(String.valueOf(cnt)).append(" ");
+                    String head = sb.toString();
+                    bw.write(head);bw.write(temp.substring(1));
+                    bw.newLine();
+                }
+                else{
+                    bw.write(temp);
+                    bw.newLine();
+                }
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    /**
+     * extract gene name and find unique one for blast
+     */
+    public void getGeneListFromNCBI(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/01_ori/GeneFullID.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/GeneID.txt";
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+//            String header = br.readLine();
+//            bw.write(header);bw.newLine();
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+                if (temp.contains("(")){
+                    int start = temp.indexOf("(");
+                    int end = temp.indexOf(")");
+                    String sub1 = temp.substring(start+1,end);
+//                    System.out.println(sub1);
+                    bw.write("Index ");bw.write(String.valueOf(cnt));bw.write("\t");bw.write(sub1);
+                    bw.newLine();
+                    if (temp.contains("allele")){
+                        if (temp.contains("gene,")){
+                            int start2 = temp.indexOf("gene,");
+                            int end2 = temp.indexOf("allele");
+                            String sub2 = temp.substring(start2+5,end2);
+                            System.out.println(sub2);
+//                            bw.write(sub2);bw.write("\t");
+                        }
+                        if (temp.contains("mRNA,")){
+                            int start2 = temp.indexOf("mRNA,");
+                            int end2 = temp.indexOf("allele");
+                            String sub3 = temp.substring(start2+5,end2);
+                            System.out.println(sub3);
+//                            bw.write(sub3);bw.write("\t");
+                        }
+                    }
+                }
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
 
@@ -783,7 +909,13 @@ public class XPCLR {
 
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/012_tetraploid_WE_DE/007_indel/005_out";
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/011_hexaploid/007_indel/005_out";
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/013_tetraploid_DE_Durum/008_snp_sample/005_out";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/013_tetraploid_DE_Durum/008_snp_sample/005_out";
+
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/011_hexaploid/008_snp_sample/005_out_lrcu";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/012_tetraploid_WE_DE/008_snp_sample/005_out_wede";
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/013_tetraploid_DE_Durum/008_snp_sample/006_out_dedurum";
+
+
         String outfileDirS = AoString.autoOutfileDirS(infileDirS);
 
         new File(outfileDirS).mkdirs();

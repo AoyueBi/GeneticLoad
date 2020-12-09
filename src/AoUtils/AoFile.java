@@ -734,6 +734,8 @@ public class AoFile {
         }
         else if (infileS.endsWith(".fa")) {
             br = IOUtils.getTextReader(infileS);
+        }else if (infileS.endsWith(".fasta")) {
+            br = IOUtils.getTextReader(infileS);
         }
         return br;
     }
