@@ -74,7 +74,9 @@ public class XPCLR {
 
 
 //
-
+        /**
+         * 4: 获取小麦已克隆的基因 NCBI blast
+         */
 
         this.geneDeal();
 
@@ -140,6 +142,7 @@ public class XPCLR {
         String locusTitleS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/locusTitleDB.txt";
 
 //        this.getGeneListFromNCBI();
+//        this.getGeneListFromNCBI2();
 //        this.removeDuplicate();
 //        this.addCNTtooriFasta();
 //        this.getSubsetGeneFasta();
@@ -148,62 +151,142 @@ public class XPCLR {
 
     }
 
-    public void extractLocusTitle(String inGenebankS, String locusTitleS){
+    public void srcipt_balst(){
+        //nohup blastn -db /data4/home/aoyue/vmap2/daxing/software/blastdb/001_wheat/wheatIWGSCv1.0
+        // -query sequence_unique.fasta.txt
+        // -num_alignments 1
+        // -num_threads 90
+        // -outfmt "6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore qlen"
+        // -out sequence_unique.txt
+        // 2>./blast.log &
 
-        String infileS = "";
-        String outfileS = "";
+//        String db = "";
+//        String query = "";
+//        String num_alignments = "";
+//        String num_threads = "";
+//        String outfmt = "";
+//        String out = "";
+//        String log = "";
+        String evalue = "";
+        String reward = "";
+
+        String db = "";
+        String query = "";
+        String num_alignments = "";
+        String num_threads = "";
+        String outfmt = "";
+        String out = "";
+        String log = "";
+
+        String cmd = "nohup blastn -db " + db + " -query " + query + " -num_alignments " + num_alignments
+                + " -num_threads " + num_threads + " -outfmt " + outfmt + " -out " + out
+                + " " + log;
+
+        System.out.println(cmd);
+
+    }
+
+    public void extractLocusTitleOrganism(String infileS, String outfileS){
+
         try {
             BufferedReader br = AoFile.readFile(infileS);
             BufferedWriter bw = AoFile.writeFile(outfileS);
-            String header = br.readLine();
-            bw.write(header);bw.newLine();
             String temp = null;
             List<String> l = new ArrayList<>();
             int cnt = 0;
+            StringBuilder sb = new StringBuilder();
             while ((temp = br.readLine()) != null) {
-                l = PStringUtils.fastSplit(temp);
-                cnt++;
+
+                if (temp.startsWith("LOCUS")){
+                    cnt++;
+                    l = Arrays.asList(StringUtils.split(temp," "));
+                    String locus = l.get(1);
+                    while((temp = br.readLine()) != null){
+                        if (temp.startsWith("//")) {
+//                            cnt++;
+                            break; //意思是我要循环这一个locus 内的东西
+                        }
+
+                        if (temp.startsWith("  ORGANISM  ")){
+
+//                            Triticum aestivum
+
+                        }
+                        if (temp.startsWith("  TITLE")){
+                            l = PStringUtils.fastSplit(temp,"     ");
+                            sb.append(l.get(1)).append(" ");
+                            while ((temp = br.readLine()) != null){
+                                if (temp.startsWith("  JOURNAL")) break;
+                                sb.append(temp.substring(12)).append(" ");
+                            }
+                            sb.deleteCharAt(sb.length()-1);
+                            bw.write(locus + " \t"); bw.write(sb.toString()); bw.newLine();
+                            sb.setLength(0);
+                            break; //这条语句可以去除第二个或者第3个title， 直接跳出locus循环，直接读下一个locus
+                        } // title 后的循环
+
+                    } // locus 后的循环
+
+                }
 
             }
             br.close();
             bw.flush();
             bw.close();
-            System.out.println();
+            System.out.println( cnt + " genes in this db");
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
         }
+    }
 
+    public void extractLocusTitle(String infileS, String outfileS){
 
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            StringBuilder sb = new StringBuilder();
+            while ((temp = br.readLine()) != null) {
 
+                if (temp.startsWith("LOCUS")){
+                    cnt++;
 
-//        try (BufferedReader br = IOUtils.getTextReader(inGenebankS);
-//             BufferedWriter bw = IOUtils.getTextWriter(locusTitleS)) {
-//            String line;
-//            String[] temp;
-//            StringBuilder sb=new StringBuilder();
-//            StringBuilder stringBuilder=new StringBuilder();
-//            stringBuilder.setLength(0);
-//
-//            while ((line=br.readLine())!=null){
-//                temp= StringUtils.split(line, " ");
-//                sb.setLength(0);
-//                if (line.startsWith("LOCUS")){
-//                    sb.append(temp[1]).append("\t");
-//                    stringBuilder.setLength(0);
-//                    while ((line=br.readLine()).startsWith("  TITLE") ){
-//                        stringBuilder.append(line.substring(12)).append(" ");
-//                    }
-//                    stringBuilder.deleteCharAt(stringBuilder.length()-1);
-//                    sb.append(stringBuilder.toString());
-//                    bw.write(sb.toString());
-//                    bw.newLine();
-//                }
-//            }
-//            bw.flush();
-//        }catch (Exception e){
-//            e.printStackTrace();
-//        }
+                    l = Arrays.asList(StringUtils.split(temp," "));
+                    String locus = l.get(1);
+                    while((temp = br.readLine()) != null){
+                        if (temp.startsWith("//")) {
+//                            cnt++;
+                            break; //意思是我要循环这一个locus 内的东西
+                        }
+                        if (temp.startsWith("  TITLE")){
+                            l = PStringUtils.fastSplit(temp,"     ");
+                            sb.append(l.get(1)).append(" ");
+                            while ((temp = br.readLine()) != null){
+                                if (temp.startsWith("  JOURNAL")) break;
+                                sb.append(temp.substring(12)).append(" ");
+                            }
+                            sb.deleteCharAt(sb.length()-1);
+                            bw.write(locus + " \t"); bw.write(sb.toString()); bw.newLine();
+                            sb.setLength(0);
+                            break; //这条语句可以去除第二个或者第3个title， 直接跳出locus循环，直接读下一个locus
+                        } // title 后的循环
+
+                    } // locus 后的循环
+
+                }
+
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println( cnt + " genes in this db");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
 
@@ -229,7 +312,7 @@ public class XPCLR {
                     l = PStringUtils.fastSplit(temp," ");
                     String name = l.get(1);
                     while((temp = br.readLine()) != null){
-                        if (temp.isEmpty() || temp == "" || temp == null) break;
+                        if (temp.isEmpty() || temp == "" || temp == null) break; //由于最后一行是空
                         sb.append(temp).append("\n");
                     }
 
@@ -294,8 +377,12 @@ public class XPCLR {
 
 
     public void removeDuplicate(){
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/GeneID.txt";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/GeneID_removeDuplicate.txt";
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/GeneID.txt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/GeneID_removeDuplicate.txt";
+
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/005_GeneID_addIndex_addLOCUS.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/006_GeneID_removeDuplicate.txt";
+
         try {
             BufferedReader br = AoFile.readFile(infileS);
             BufferedWriter bw = AoFile.writeFile(outfileS);
@@ -307,7 +394,7 @@ public class XPCLR {
             int cnt = 0;
             while ((temp = br.readLine()) != null) {
                 l = PStringUtils.fastSplit(temp);
-                String gene = l.get(1);
+                String gene = l.get(2); //******************** need to change
                 if (geneSet.add(gene)){
                     bw.write(temp);
                     bw.newLine();
@@ -349,6 +436,60 @@ public class XPCLR {
                     bw.write(temp);
                     bw.newLine();
                 }
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    /**
+     * extract gene name and find unique one for blast
+     */
+    public void getGeneListFromNCBI2(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/01_ori/GeneFullID.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/GeneID_addIndex_addLOCUS.txt";
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+//            String header = br.readLine();
+//            bw.write(header);bw.newLine();
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+                if (temp.contains("(")){ // cycle1
+                    int start = temp.indexOf("(");
+                    int end = temp.indexOf(")");
+                    String sub1 = temp.substring(start+1,end);
+
+                    String locus = temp.substring(0,20).split("\\.")[0].replace(">","");
+//                    System.out.println(sub1);
+                    bw.write(locus + "\t" + "Index"); bw.write(String.valueOf(cnt));bw.write("\t");bw.write(sub1);
+                    bw.newLine();
+                    if (temp.contains("allele")){
+                        if (temp.contains("gene,")){
+                            int start2 = temp.indexOf("gene,");
+                            int end2 = temp.indexOf("allele");
+                            String sub2 = temp.substring(start2+5,end2);
+                            System.out.println(sub2);
+//                            bw.write(sub2);bw.write("\t");
+                        }
+                        if (temp.contains("mRNA,")){
+                            int start2 = temp.indexOf("mRNA,");
+                            int end2 = temp.indexOf("allele");
+                            String sub3 = temp.substring(start2+5,end2);
+                            System.out.println(sub3);
+//                            bw.write(sub3);bw.write("\t");
+                        }
+                    }
+                } // cycle1
             }
             br.close();
             bw.flush();
