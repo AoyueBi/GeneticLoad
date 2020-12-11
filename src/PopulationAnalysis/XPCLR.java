@@ -140,14 +140,15 @@ public class XPCLR {
 
         String inGenebankS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/01_ori/sequence.txt";
         String locusTitleS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/locusTitleDB.txt";
+        String locusTitleS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/004_locusTitleDB_keepTa.txt";
 
 //        this.getGeneListFromNCBI();
 //        this.getGeneListFromNCBI2();
 //        this.removeDuplicate();
 //        this.addCNTtooriFasta();
 //        this.getSubsetGeneFasta();
-        this.extractLocusTitle(inGenebankS,locusTitleS);
-
+//        this.extractLocusTitle(inGenebankS,locusTitleS);
+        this.extractLocusTitleOrganism(inGenebankS,locusTitleS2);
 
     }
 
@@ -207,11 +208,10 @@ public class XPCLR {
                             break; //意思是我要循环这一个locus 内的东西
                         }
 
-                        if (temp.startsWith("  ORGANISM  ")){
-
-//                            Triticum aestivum
-
+                        if (temp.startsWith("  ORGANISM  ")){ //每一行都要经过 物种的判断,如果不是小麦，就过滤掉。
+                            if (!temp.split("  ORGANISM  ")[1].equals("Triticum aestivum"))break;
                         }
+
                         if (temp.startsWith("  TITLE")){
                             l = PStringUtils.fastSplit(temp,"     ");
                             sb.append(l.get(1)).append(" ");
