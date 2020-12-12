@@ -146,9 +146,9 @@ public class XPCLR {
 //        this.getGeneListFromNCBI2();
 //        this.removeDuplicate();
 //        this.addCNTtooriFasta();
-//        this.getSubsetGeneFasta();
+        this.getSubsetGeneFasta();
 //        this.extractLocusTitle(inGenebankS,locusTitleS);
-        this.extractLocusTitleOrganism(inGenebankS,locusTitleS2);
+//        this.extractLocusTitleOrganism(inGenebankS,locusTitleS2);
 
     }
 
@@ -220,7 +220,7 @@ public class XPCLR {
                                 sb.append(temp.substring(12)).append(" ");
                             }
                             sb.deleteCharAt(sb.length()-1);
-                            bw.write(locus + " \t"); bw.write(sb.toString()); bw.newLine();
+                            bw.write(locus + "\t"); bw.write(sb.toString()); bw.newLine();
                             sb.setLength(0);
                             break; //这条语句可以去除第二个或者第3个title， 直接跳出locus循环，直接读下一个locus
                         } // title 后的循环
@@ -269,7 +269,7 @@ public class XPCLR {
                                 sb.append(temp.substring(12)).append(" ");
                             }
                             sb.deleteCharAt(sb.length()-1);
-                            bw.write(locus + " \t"); bw.write(sb.toString()); bw.newLine();
+                            bw.write(locus + "\t"); bw.write(sb.toString()); bw.newLine();
                             sb.setLength(0);
                             break; //这条语句可以去除第二个或者第3个title， 直接跳出locus循环，直接读下一个locus
                         } // title 后的循环
@@ -291,14 +291,17 @@ public class XPCLR {
 
 
     public void getSubsetGeneFasta(){
-        String genedbS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/GeneID_removeDuplicate.txt";
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/sequence_addCnt.fasta.txt";
+//        String genedbS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/GeneID_removeDuplicate.txt";
+        String genedbS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/006_GeneID_removeDuplicate.txt";
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/003_sequence_addCnt.fasta.txt";
         String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/003/sequence_unique.fasta.txt";
 
         List<String> geneNameList = new ArrayList<>();
         List<String> fastaList = new ArrayList<>();
         HashMap<String,String> hmIndexGene = new HashMap<>();
         List<String> indexList = new ArrayList<>();
+
+        List<String> locusList = AoFile.getStringListwithoutHeader("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/004_locusTitleDB_keepTa.txt",0);
 
         try {
             BufferedReader br = AoFile.readFile(infileS);
@@ -310,7 +313,8 @@ public class XPCLR {
                 sb.setLength(0);
                 if (temp.startsWith(">")){
                     l = PStringUtils.fastSplit(temp," ");
-                    String name = l.get(1);
+                    String name = l.get(0).replaceFirst(">","");
+                    String locus = l.get(1).split("\\.")[0];
                     while((temp = br.readLine()) != null){
                         if (temp.isEmpty() || temp == "" || temp == null) break; //由于最后一行是空
                         sb.append(temp).append("\n");
@@ -318,9 +322,12 @@ public class XPCLR {
 
                     String fasta = sb.toString();
                     /**
-                     * filter fasta length more than 30 kb
+                     * filter fasta length more than 30 kb;;;;;; also filter genes not in triticum
                      */
                     if (fasta.length() > 30000) continue;
+                    if (Collections.binarySearch(locusList,locus) < 0) continue; // 说明该基因不在小麦物种里
+
+
                     geneNameList.add(name);
                     fastaList.add(fasta);
                     cnt++;
@@ -344,10 +351,8 @@ public class XPCLR {
             List<String> l = new ArrayList<>();
             while ((temp = br.readLine()) != null) {
                 l = PStringUtils.fastSplit(temp);
-                String indexID = l.get(0).split(" ")[1];
-                String gene = l.get(0).split(" ")[0] + l.get(0).split(" ")[1]+ ":" + l.get(1);
-
-//                String gene = l.get(0) + "_" + l.get(1);
+                String indexID = l.get(1);
+                String gene = l.get(0) + ":" + l.get(1)+ ":" + l.get(2);
                 indexList.add(indexID);
                 hmIndexGene.put(indexID,gene);
             }
@@ -427,7 +432,7 @@ public class XPCLR {
                 sb.setLength(0);
                 if (temp.startsWith(">")){
                     cnt++;
-                    sb.append(">Index ").append(String.valueOf(cnt)).append(" ");
+                    sb.append(">Index").append(String.valueOf(cnt)).append(" ");
                     String head = sb.toString();
                     bw.write(head);bw.write(temp.substring(1));
                     bw.newLine();
