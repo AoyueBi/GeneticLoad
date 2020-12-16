@@ -66,7 +66,7 @@ public class Model {
         String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/Clutivar_VS_Landrace_EU_exonRegion_0.0001_100_500.xpclr.txt.gz";
         String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/004_hexaploid/006_output/Clutivar_VS_Landrace_EU_exonRegion_0.0001_100_500.xpclr_" + goalRows + "lines.txt.gz";
         //check 文件行数， 目的行数， 求出比率
-        int rows = AoFile.countFileRowNumber(infileS);
+        int rows = AoFile.countFileRowNumber_withHeader(infileS);
         System.out.println("Total\t" + rows + "\tin input file");
         RowTable<String> t = new RowTable<>(infileS);
         boolean[] ifOut = new boolean[rows]; //默认是false

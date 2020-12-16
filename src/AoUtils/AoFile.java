@@ -271,7 +271,7 @@ public class AoFile {
      * @param infileS
      * @return
      */
-    public static int countFileRowNumber(String infileS){
+    public static int countFileRowNumber_withHeader(String infileS){
         int out = 0;
         try{
             BufferedReader br = AoFile.readFile(infileS);

@@ -64,7 +64,7 @@ public class XPCLR {
         /**
          * 3: 获取TopK 的结果并进行后续分析
          */
-//        this.checkInfNum();  //检查一下XPCLR中的异常值
+        this.checkInfNum();  //检查一下XPCLR中的异常值
 //        this.pipeTopK();
 
 //        this.splitTxt();
@@ -78,7 +78,7 @@ public class XPCLR {
          * 4: 获取小麦已克隆的基因 NCBI blast
          */
 
-        this.geneDeal();
+//        this.geneDeal();
 
 
         /**
@@ -141,16 +141,171 @@ public class XPCLR {
         String inGenebankS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/01_ori/sequence.txt";
         String locusTitleS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/locusTitleDB.txt";
         String locusTitleS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/004_locusTitleDB_keepTa.txt";
-
+        String geneCategory = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/007_geneCategory.txt";
+        String locusTitleS3 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/004_locusTitleDB_keepTa_unique.txt";
 //        this.getGeneListFromNCBI();
 //        this.getGeneListFromNCBI2();
 //        this.removeDuplicate();
 //        this.addCNTtooriFasta();
-        this.getSubsetGeneFasta();
+//        this.getSubsetGeneFasta();
 //        this.extractLocusTitle(inGenebankS,locusTitleS);
 //        this.extractLocusTitleOrganism(inGenebankS,locusTitleS2);
+//        this.mkgeneCategory(locusTitleS2,geneCategory);
+        AoMath.countCaseInGroup("/Users/Aoyue/Documents/007_geneCategory.txt",1);
 
     }
+
+//    enum GeneType{
+//        Domestication, Yield, Flowering, Biotic, Abiotic, Other;
+//
+//        static GeneType newInstance(String geneTitle){
+//            if (geneTitle.contains())
+//        }
+//    }
+
+    /**
+     *
+     * @return
+     */
+    private String getGeneCatogreybyTitle(String title){
+        String out = null;
+
+        String[] key1Array = {"powdery mildew","stem rust","brown rust","stripe rust","yellow rust","leaf rust",
+        "fusarium head blight","nucleotide-binding site-leucine-rich repeat resistance","fusarium","fungal pathogen",
+        "puccinia","hessian fly","nematode","broad-spectrum","disease resistance","pathogen"};
+
+        // Al 按照拆分字符串来判断
+        String[] key2Array = {"salt","host","salinity","aluminum","cold","na-cl","drought","temperature",
+        "abiotic stress","heat stress","water-stress","ionic stress","osmotic stress","light-stressed",
+                "cupric","salinity","osmotic","waterlogging","water","CBF gene"};
+
+        Arrays.sort(key1Array);
+        Arrays.sort(key2Array);
+
+        for (int i = 0; i < key1Array.length; i++) {
+            if (title.toLowerCase().contains(key1Array[i])){
+                out = "Biotic";
+                break;
+            }else {
+                out = "NA";
+            }
+        }
+
+        if (out.equals("NA")){
+            for (int i = 0; i < key2Array.length; i++) {
+                if (title.toLowerCase().contains(key2Array[i])){
+                    out = "Abiotic";
+                    break;
+                }else{
+                    out = "NA";
+                }
+            }
+        }
+
+        return out;
+    }
+
+    private String getGeneCategorybyGene(String element){
+        String out = null;
+        String genes[] = {"pm","sr","yr","lr","fhb","nbs-lrr","nbs","lrr","nb-arc-lrr","msp"};
+        Arrays.sort(genes);
+        for (int i = 0; i < genes.length; i++) {
+            String gene = genes[i];
+            String genetype1 = "(" + genes[i];
+            String genetype2 = genes[i] + "-";
+            if (element.toLowerCase().startsWith(gene) || element.toLowerCase().startsWith(genetype1)
+                    || element.toLowerCase().contains(genetype2)){
+                out = "Biotic";
+                System.out.println(element);
+                break;
+            }else {
+                out="NA";
+            }
+        }
+        return out;
+    }
+
+    public void mkgeneCategory(String infileS, String outfileS){
+
+        HashMap<String,String> hm = new HashMap<>(AoFile.countFileRowNumber_withHeader(infileS)+1);
+        String[] geneCategory = {"Domestication", "Yield", "Flowering", "Biotic", "Abiotic", "Other"};
+
+        HashMap<String,String> hmLocusTitle = new HashMap<>(AoFile.countFileRowNumber_withHeader(infileS)+1);
+
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            bw.write("Locus\tTitle\tGeneCategory");bw.newLine();
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            List<String> titleList = new ArrayList<>();
+
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+                String locus = l.get(0);
+                String title = l.get(1);
+                hmLocusTitle.put(locus,title);
+                titleList = PStringUtils.fastSplit(title," ");
+                String category = null;
+
+
+                if (title.contains(" Al ")){
+                    hm.put(locus,geneCategory[4]);
+                    System.out.println(title);
+                }
+                else if (title.toLowerCase().contains("pmm")){
+                    hm.put(locus,geneCategory[4]);
+                    System.out.println(title);
+                }
+                else{
+                    // based title
+                    category = this.getGeneCatogreybyTitle(title);
+                    hm.put(locus,category);
+                    if (category.equals("NA")){
+                        for (int i = 0; i < titleList.size(); i++) {
+                            String element = titleList.get(i);
+                            //1
+//                    if (element.toLowerCase().contains("btr-") ||element.equalsIgnoreCase("q")){
+//                        hm.put(locus,geneCategory[0]);
+//                        break;
+//                    }
+                            //2
+                            if (element.toLowerCase().contains("vrn") || element.toLowerCase().contains("vernalization") ||
+                                    element.toLowerCase().contains("ppd") || element.toLowerCase().contains("photoperiod")){
+                                hm.put(locus,geneCategory[2]);
+                                break;
+                            } else{
+                                //Biotic
+                                String geneCa = this.getGeneCategorybyGene(element);
+                                hm.put(locus,geneCa);
+                            }
+                        }
+                    }
+                }
+            }
+
+            StringBuilder sb = new StringBuilder();
+            for (Map.Entry<String,String> entry: hm.entrySet()){
+                String titleS = hmLocusTitle.get(entry.getKey());
+                sb.setLength(0);
+                sb.append(entry.getKey()).append("\t").append(titleS).append("\t").append(entry.getValue());
+                bw.write(sb.toString());
+                bw.newLine();
+            }
+
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+
 
     public void srcipt_balst(){
         //nohup blastn -db /data4/home/aoyue/vmap2/daxing/software/blastdb/001_wheat/wheatIWGSCv1.0
@@ -764,7 +919,7 @@ public class XPCLR {
 
             String[] outfileSArray = new String[numfile];
             //先查看文件有几行
-            int row = AoFile.countFileRowNumber(infileS);
+            int row = AoFile.countFileRowNumber_withHeader(infileS);
             if (row%numfile == 0){
                 lines = (double) row/numfile ;
             }else {
@@ -800,8 +955,12 @@ public class XPCLR {
      * 检查一下XPCLR中的异常值
      */
     public void checkInfNum(){
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid/006_output/Domesticated_emmer_VS_Wild_emmer_exonRegion_0.0001_100_500.xpclr_100000lines.txt.gz";
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid/006_output/Domesticated_emmer_VS_Wild_emmer_exonRegion_0.0001_100_500.xpclr_100000lines.txt.gz";
+//        String outfileS = "/Users/Aoyue/Documents/out.txt";
+
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/011_hexaploid/008_snp_sample/abd_log2_0.0001_200_100000.clrgs.txt.gz";
         String outfileS = "/Users/Aoyue/Documents/out.txt";
+
         try {
             BufferedReader br = AoFile.readFile(infileS);
             BufferedWriter bw = AoFile.writeFile(outfileS);
@@ -1096,7 +1255,7 @@ public class XPCLR {
         String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE/006_output/Durum_VS_Domesticated_emmer_exonRegion_0.0001_100_500.xpclr" + goalRows + "lines.txt.gz";
 
         //check 文件行数， 目的行数， 求出比率
-        int rows = AoFile.countFileRowNumber(infileS); System.out.println("Total\t" + rows + "\tin input file");
+        int rows = AoFile.countFileRowNumber_withHeader(infileS); System.out.println("Total\t" + rows + "\tin input file");
         double ratio = (double) goalRows / rows; //注意一定要在5000千加上 强制类型转换，不然不能得出小数
 
         try {
@@ -2626,7 +2785,7 @@ public class XPCLR {
 //        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/019_popGen/104_XPCLR/005_out/001_CLvsLR/004_merge/001_CLvsEU_exonRegion_0.0001_200_50000_addHeader_sortbyXPCLR_top0.05.xpclr.txt";
         String outfileS = new File(infileS).getAbsolutePath().replaceFirst(".txt","_top" + k + ".txt");
         try{
-            int n = AoFile.countFileRowNumber(infileS);
+            int n = AoFile.countFileRowNumber_withHeader(infileS);
             double line = k*n;
             BufferedReader br = AoFile.readFile(infileS);
             BufferedWriter bw = AoFile.writeFile(outfileS);
