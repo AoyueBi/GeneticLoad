@@ -29,6 +29,7 @@ public class AoGene {
         String geneHCFileS = "/Users/Aoyue/Documents/Data/wheat/gene/001_geneHC/geneHC.txt";
         RowTable<String> t = new RowTable<>(geneHCFileS);
 
+        //// build list array and initialize it
         int chrNum = 42;
         List<String>[] geneList = new ArrayList[chrNum];
         List<String>[] tranList = new ArrayList[chrNum];
@@ -42,6 +43,7 @@ public class AoGene {
             endLists[i] = new TIntArrayList();
         }
 
+        //// add value to the list and finish the database building
         int chrIndex = -1;
         for (int i = 0; i < t.getRowNumber(); i++) {
             int currentChr = Integer.parseInt(t.getCell(i, 2));
@@ -60,6 +62,7 @@ public class AoGene {
         System.out.println("Finished building the gene repositry list");
 
 
+        //// start to analysis the gene name of a query pos
         for (int i = 0; i < chrIDArray.length; i++) {
             int index = chrIDArray[i] - 1; //染色体号的索引
             int pos = posArray[i];

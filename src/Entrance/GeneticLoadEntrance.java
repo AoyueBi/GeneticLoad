@@ -66,14 +66,15 @@ public class GeneticLoadEntrance {
 //        new  FilterVCF2();
 
 //        new AoWheatTriads();
-        new XPCLR();
+//        new XPCLR();
+        new DeleteriousXPCLR2();
+
 //        new Fst();
 //        new Pi();
 //        new TajimaD();
 //        new AoP();
 //        new FdVSdel();
 //        new AoMap();
-//        new DeleteriousXPCLR2();
 //        new DBgene();
 
     }

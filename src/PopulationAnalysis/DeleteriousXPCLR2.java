@@ -154,6 +154,59 @@ public class DeleteriousXPCLR2 {
 //                }
 //            }
 //        }
+
+
+
+
+        //************************************** new result after asking the help of HuaChen  **************************************
+        //************************************** new result after asking the help of HuaChen  **************************************
+        //************************************** new result after asking the help of HuaChen  **************************************
+
+
+        //四倍体 WE-DE
+        ///////先单个运行测试，后写成循环进行一次性跑完
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid/008_topK/top0.01_ChrPosTrans.txt.gz"; //受选择的变异位点
+//        String parentFileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid";
+//        String addCountFileAddGroupS2 = new File(parentFileS1,"009_deleteriousXPCLR").getAbsolutePath(); new File(addCountFileAddGroupS2).mkdirs();
+//        variantType = variantType3;
+//        String ifselected = "0";
+//        addCountFileAddGroupS2 = new File(addCountFileAddGroupS2,variantType + "_ifselected" + ifselected + "_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr.txt").getAbsolutePath();
+//        this.countDeleteriousVMapII_byChr(infileS,ifselected,variantType,addCountFileAddGroupS2);
+
+        for (int i = 0; i < choice2.length; i++) { //合计2*3=6次循环  //String[] choice2 = {ifselected1,ifselected2};
+            ifselected = choice2[i];
+            for (int j = 0; j < choice1.length; j++) { //// String[] choice1 = {variantType1,variantType2,variantType3}; that is 001_synon 002_nonsyn 003_deleterios
+                String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid/008_topK/top0.01_ChrPosTrans.txt.gz"; //受选择的变异位点
+                String parentFileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid";
+                String addCountFileAddGroupS2 = new File(parentFileS1,"009_deleteriousXPCLR").getAbsolutePath(); new File(addCountFileAddGroupS2).mkdirs();
+                variantType = choice1[j];
+                addCountFileAddGroupS2 = new File(addCountFileAddGroupS2,variantType + "_ifselected" + ifselected + "_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr.txt").getAbsolutePath();
+                this.countDeleteriousVMapII_byChr(infileS,ifselected,variantType,addCountFileAddGroupS2);
+            }
+        }
+
+
+        //求四倍体ratio non/syn  del/syn
+
+        int cnt=0;
+        for (int i = 0; i < choice2.length; i++) { //合计2*2*2=8次循环
+            ifselected = choice2[i];
+            for (int j = 1; j < choice1.length; j++) {
+                variantType = choice1[j];
+                for (int k = 0; k < choice3.length; k++) {
+                    ratioType=choice3[k];
+                    String parentFileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid/009_deleteriousXPCLR";
+                    String infileS1 = new File(parentFileS1,variantType + "_ifselected" + ifselected + "_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr_" + ratioType + ".txt").getAbsolutePath();
+                    String infileS2 = new File(parentFileS1, "001_synonymous" + "_ifselected" + ifselected + "_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr_" + ratioType + ".txt").getAbsolutePath();
+                    this.DeltoSynonymousRatio(infileS1,ratioType,infileS2);
+                    cnt++;
+                    System.out.println("********" + cnt + " " + "ifselected" + ifselected + " " + variantType + " " + ratioType);
+                }
+            }
+        }
+
+
+
     }
 
 
