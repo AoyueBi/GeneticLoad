@@ -2,14 +2,9 @@ package Plot;
 
 import AoUtils.AoFile;
 import AoUtils.AoMath;
-import pgl.infra.utils.PStringUtils;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author AoyueBi
@@ -20,7 +15,7 @@ public class AoMap {
         //        new AoMath().getnlevelsforEachGroup("/Users/Aoyue/Documents/wheatVMapII_germplasmInfo.txt",27,12);
 //        this.checkMap();
 //        this.mkLRmp();
-        this.getAllcounrtNum();
+        this.getAllcountryNum();
 
 
     }
@@ -28,11 +23,10 @@ public class AoMap {
     /**
      * 获取整个VMAP2在每个国家的取样数量，画一个整体的分布图
      */
-    public void getAllcounrtNum(){
+    public void getAllcountryNum(){
         String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/taxa_InfoDB.txt";
         List<String> l = AoFile.getStringList(infileS,7);
         AoMath.countCase_fromList_outFile(l);
-
 
     }
 

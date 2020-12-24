@@ -7,7 +7,6 @@ import org.apache.commons.lang.ArrayUtils;
 import pgl.infra.anno.gene.GeneFeature;
 import pgl.infra.utils.PStringUtils;
 import pgl.infra.utils.wheat.RefV1Utils;
-import xiaohan.wheatRNAseq.test;
 
 
 import java.io.BufferedReader;

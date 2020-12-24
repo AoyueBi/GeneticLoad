@@ -64,11 +64,11 @@ public class XPCLR {
         /**
          * 3: 获取TopK 的结果并进行后续分析
          */
-//        this.checkInfNum();  //检查一下XPCLR中的异常值
-        this.pipeTopK();
+        this.checkInfNum();  //检查一下XPCLR中的异常值
+//        this.pipeTopK();
 
-        this.splitTxt(); //split the chr019 into 2 sections and check if it run successfully
-        this.getExonDensity(); //check the exon density of chr019, and study if the failure is associated with exon density. Finally, we conclude that is the genetic pos contribute the failure
+//        this.splitTxt(); //split the chr019 into 2 sections and check if it run successfully
+//        this.getExonDensity(); //check the exon density of chr019, and study if the failure is associated with exon density. Finally, we conclude that is the genetic pos contribute the failure
 
 //        AoFile.mergeTxt("/Users/Aoyue/Documents/IGDB/01_415Lab/007_LabHDD_management/001_HDDstorageList/VMapII_fastq","/Users/Aoyue/Documents/IGDB/01_415Lab/007_LabHDD_management/001_HDDstorageList/fq.vmap2.txt");
 

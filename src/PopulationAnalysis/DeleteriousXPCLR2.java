@@ -21,8 +21,8 @@ import java.util.*;
 public class DeleteriousXPCLR2 {
 
     public DeleteriousXPCLR2(){
-        this.pipeDeleteriousXPCLR();
-//        this.pipeFilterTaxa();
+//        this.pipeDeleteriousXPCLR();
+        this.pipeFilterTaxa();
 
     }
 
@@ -358,6 +358,7 @@ public class DeleteriousXPCLR2 {
          * ################################### step0: 建立受选择区域的集合，并在下文进行 posList 和 ancestral charList 构建时进行适当的过滤。
          */
 
+        // I only need to know the chr pos information about the selected region
         TIntArrayList[] selectedPosList = new TIntArrayList[42];
         for (int i = 0; i < selectedPosList.length; i++) {
             selectedPosList[i] = new TIntArrayList();

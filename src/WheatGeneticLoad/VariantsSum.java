@@ -13,6 +13,7 @@ import gnu.trove.list.TIntList;
 import gnu.trove.list.array.*;
 import gnu.trove.set.hash.TIntHashSet;
 import nonapi.io.github.classgraph.utils.FileUtils;
+import org.apache.commons.math3.stat.inference.TestUtils;
 import pgl.graph.tSaw.TablesawUtils;
 import pgl.infra.anno.gene.GeneFeature;
 import pgl.infra.range.Range;
@@ -100,8 +101,8 @@ public class VariantsSum {
 //        this.sortAndFilter();
 
         //*********** ratio of del/syn and nonsyn/syn on genome landscape ********************//
-        this.WindowDelvsSyn_fromExonAnnotation();
-//        this.WindowDel_Nonsyn_vsSyn_fromExonAnnotation();
+//        this.WindowDelvsSyn_fromExonAnnotation();
+        this.WindowDel_Nonsyn_vsSyn_fromExonAnnotation();
 //        this.addRecombinationfromScience(); //该方法凑效！思路：将 del nonysn syn 数据的滑窗设置成和science一致，然后再将重组率文件合并，后续进行其他处理。本次数据分析采用此方法。
 
 //        this.getPosfromOneindivi();
@@ -201,6 +202,7 @@ public class VariantsSum {
             }
             cdsWindowList.add(sw.getWindowValuesInt());
         }
+
 
         try {
             BufferedReader br = AoFile.readFile(dbFileS);

@@ -75,7 +75,7 @@ public class SIFT {
 //        this.mkdis();
 //        this.annotatorVCF3();
 //        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/034_sift/002_script/Annotator_20200719.sh",6,7);
-        this.move();
+//        this.move();
 //        this.reverseRefAltallelebyExonVCF();
 
     }

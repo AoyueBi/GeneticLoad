@@ -28,7 +28,7 @@ public class DeleteriousCountbyIndi {
 
 //        this.countDeleteriousVMapII_byChr();
 //        this.DeltoSynonymousRatio();
-        this.filterLandrace();
+//        this.filterLandrace();
 
         //************* residual analysis ************//
 //        this.addIBSdistancetoCS2017();

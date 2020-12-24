@@ -66,8 +66,8 @@ public class GeneticLoadEntrance {
 //        new  FilterVCF2();
 
 //        new AoWheatTriads();
-//        new XPCLR();
-        new DeleteriousXPCLR2();
+        new XPCLR();
+//        new DeleteriousXPCLR2();
 
 //        new Fst();
 //        new Pi();
