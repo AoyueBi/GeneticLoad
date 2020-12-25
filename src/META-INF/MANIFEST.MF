@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Main-Class: Entrance.GeneticLoadEntrance
 Class-Path: ./lib/jxl-2.6.12.jar ./lib/koloboke-impl-jdk8-1.0.0.jar ./
  lib/annotations-3.0.1u2.jar ./lib/biojava-core-4.2.0.jar ./lib/RCalle
  r-3.1-SNAPSHOT-jar-with-dependencies.jar ./lib/biojava-alignment-4.2.
@@ -21,5 +22,4 @@ Class-Path: ./lib/jxl-2.6.12.jar ./lib/koloboke-impl-jdk8-1.0.0.jar ./
  r ./lib/classgraph-4.8.54.jar ./lib/icu4j-65.1.jar ./lib/pebble-3.1.1
  .jar ./lib/unbescape-1.1.6.RELEASE.jar ./lib/jxl-2.6.12.jar ./lib/jso
  up-1.12.1.jar
-Main-Class: Entrance.GeneticLoadEntrance
 

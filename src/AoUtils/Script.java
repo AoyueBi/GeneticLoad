@@ -28,7 +28,7 @@ public class Script {
 //        this.bgzip_AB();
 //        this.bgzip_ABD();
 
-        this.script_ABD();
+//        this.script_ABD();
 //        this.script_AB();
 //        this.script_D();
 
@@ -37,7 +37,7 @@ public class Script {
 //        this.splitScript();
 //
 //        this.script_bw();
-//        this.script_sout();
+        this.script_sout();
 
 //        this.window_single();
 //
@@ -119,7 +119,8 @@ public class Script {
         for (int i = 0; i < chrArr.length; i++) {
             String chr = chrArr[i];
 //            System.out.println("rm -f chr" + chr + "_vmap2.0.vcf.gz");
-            System.out.println("rm -fr output" + chr);
+//            System.out.println("rm -fr output" + chr);
+            System.out.print( "\""  + chrArr[i] + "\"" + " " );
         }
 
     }

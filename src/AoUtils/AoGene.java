@@ -19,7 +19,7 @@ public class AoGene {
     }
 
     /**
-     * 根据染色体的位置来返回对应的
+     * 根据染色体的位置来返回对应的基因
      * @param chrIDArray
      * @param posArray
      */

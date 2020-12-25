@@ -1,32 +1,27 @@
 package PopulationAnalysis;
 
 import AoUtils.*;
-
 import analysis.wheat.VMap2.VMapDBUtils;
-import daxing.common.IOTool;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TFloatArrayList;
 import gnu.trove.list.array.TIntArrayList;
-
 import org.apache.commons.lang3.StringUtils;
+import pgl.graph.tSaw.TablesawUtils;
 import pgl.infra.table.ColumnTable;
 import pgl.infra.table.RowTable;
 import pgl.infra.utils.Dyad;
-import pgl.infra.utils.IOFileFormat;
 import pgl.infra.utils.IOUtils;
 import pgl.infra.utils.PStringUtils;
 import pgl.infra.utils.wheat.RefV1Utils;
-import smile.stat.Stat;
 import tech.tablesaw.api.IntColumn;
 import tech.tablesaw.api.Table;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.*;
-import pgl.graph.tSaw.TablesawUtils;
+
 
 public class XPCLR {
     public XPCLR(){
@@ -64,8 +59,9 @@ public class XPCLR {
         /**
          * 3: 获取TopK 的结果并进行后续分析
          */
-        this.checkInfNum();  //检查一下XPCLR中的异常值
-//        this.pipeTopK();
+//        this.checkInfNum();  //检查一下XPCLR中的异常值
+//        this.pipeTopK(); // old method
+        this.getTopKfromSampleSNP(); // new method
 
 //        this.splitTxt(); //split the chr019 into 2 sections and check if it run successfully
 //        this.getExonDensity(); //check the exon density of chr019, and study if the failure is associated with exon density. Finally, we conclude that is the genetic pos contribute the failure
@@ -135,6 +131,61 @@ public class XPCLR {
 
 
     }
+
+
+    public void getTopKfromSampleSNP(){
+        //////////////////////// ************************************************ method update ***************************************************
+        // // we-de
+//        String parentFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/012_tetraploid_WE_DE/008_snp_sample";
+//        String outfileDirS1 = new File(parentFileS,"008_topK").getAbsolutePath(); new File(outfileDirS1).mkdirs();
+//
+//        double topK = 0.05;
+//        int bin = 100000;
+//
+//        String xpclrFileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/012_tetraploid_WE_DE/008_snp_sample/ab_WE_DE_log2_0.0001_200_100000.clrgs.txt.gz";
+//        String topKfileS3 = new File(outfileDirS1,"top" + topK + ".txt.gz").getAbsolutePath();
+//        String snpfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/012_tetraploid_WE_DE/008_snp_sample/004_z1_merge/vmap2.1_bi.subset.count.txt.gz";
+//        String outfileS = new File(topKfileS3).getAbsolutePath().replaceFirst(".txt","_ChrPosTrans.txt");
+//        this.getThreshodFile(xpclrFileS2,topK,xpclrFileS2,topKfileS3); // from the sample file, we can get the threshold, and extract the top rows
+//        this.getGeneListfromTopK2(topKfileS3,bin,snpfileS,outfileS); //根据输入的文件，找寻受选择区域的位点
+
+
+        double topK = 0.05;
+        int bin = 100000;
+
+        String xpclroutS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/014_summary_XPCLR/001_finalResult/ab_WE_DE_log2_0.0001_200_100000.clrgs.txt.gz";
+        String xpclroutS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/014_summary_XPCLR/001_finalResult/ab_DE_Durum_log2_0.0001_200_100000.clrgs.txt.gz";
+        String xpclroutS3 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/014_summary_XPCLR/001_finalResult/abd_log2_0.0001_200_100000.clrgs.txt.gz";
+
+        String chrposS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/014_summary_XPCLR/000_chrpos/ab_wede_vmap2.1_bi.subset.chrpos.txt.gz";
+        String chrposS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/014_summary_XPCLR/000_chrpos/ab_dedurum_vmap2.1_bi.subset.chrpos.txt.gz";
+        String chrposS3 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/014_summary_XPCLR/000_chrpos/abd_vmap2.1_bi.subset.chrpos.txt.gz";
+
+        String group1 = "wede";
+        String group2 = "dedurum";
+        String group3 = "lrcul";
+
+        String topKDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/014_summary_XPCLR/002_topK";
+        new File(topKDirS).mkdirs();
+        String[] xpclroutArray = {xpclroutS1,xpclroutS2,xpclroutS3};
+        String[] chrposArray = {chrposS1,chrposS2,chrposS3};
+        String[] groupArray = {group1,group2,group3};
+
+        for (int i = 0; i < groupArray.length; i++) {
+            String xpclrS = xpclroutArray[i];
+            String chrposS = chrposArray[i];
+            String group = groupArray[i];
+            String topKfileS = new File(topKDirS,"top" + topK + "_" + group + ".txt").getAbsolutePath();
+            String outfileS = "";
+
+            this.getThreshodFile(xpclrS,topK,xpclrS,topKfileS); // from the sample file, we can get the threshold, and extract the top rows
+            this.getGeneListfromTopK2(topKfileS,bin,chrposS,outfileS); //根据输入的文件，找寻受选择区域的位点
+
+        }
+
+    }
+
+
 
     public void geneDeal(){
 
@@ -1044,38 +1095,24 @@ public class XPCLR {
 
 
 //        //model
-//        String parentFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE";
-//        String outfileDirS1 = new File(parentFileS,"008_topK").getAbsolutePath(); new File(outfileDirS1).mkdirs();
-//        double topK = 0.01;
-//        String samplefileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE/006_output/Durum_VS_Domesticated_emmer_exonRegion_0.0001_100_500.xpclr100000lines.txt.gz";
-//        String xpclrFileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE/006_output/Durum_VS_Domesticated_emmer_exonRegion_0.0001_100_500.xpclr.txt.gz";
-//        String topKfileS3 = new File(outfileDirS1,"top" + topK + ".txt.gz").getAbsolutePath();
-//
-//        int bin = 500;
-//        String snpfileS = new File(parentFileS,"002_snp_file2_merge/vmap2.1.snp.txt.gz").getAbsolutePath();
-//        String outfileS = new File(topKfileS3).getAbsolutePath().replaceFirst(".txt","_ChrPosTrans.txt");
-
-//        this.getThreshodFile(samplefileS1,topK,xpclrFileS2,topKfileS3);
-//        this.getGeneListfromTopK(topKfileS3,bin,snpfileS,outfileS);
-
-//////////////////////// ************************************************ method update ***************************************************
-        // // we-de
-        String parentFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/012_tetraploid_WE_DE/008_snp_sample";
+        String parentFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE";
         String outfileDirS1 = new File(parentFileS,"008_topK").getAbsolutePath(); new File(outfileDirS1).mkdirs();
-        double topK = 0.05;
-        String xpclrFileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/012_tetraploid_WE_DE/008_snp_sample/ab_WE_DE_log2_0.0001_200_100000.clrgs.txt.gz";
+        double topK = 0.01;
+        String samplefileS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE/006_output/Durum_VS_Domesticated_emmer_exonRegion_0.0001_100_500.xpclr100000lines.txt.gz";
+        String xpclrFileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/007_tetraploid_Dm_DE/006_output/Durum_VS_Domesticated_emmer_exonRegion_0.0001_100_500.xpclr.txt.gz";
         String topKfileS3 = new File(outfileDirS1,"top" + topK + ".txt.gz").getAbsolutePath();
-        int bin = 100000;
-        String snpfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/012_tetraploid_WE_DE/008_snp_sample/004_z1_merge/vmap2.1_bi.subset.count.txt.gz";
+
+        int bin = 500;
+        String snpfileS = new File(parentFileS,"002_snp_file2_merge/vmap2.1.snp.txt.gz").getAbsolutePath();
         String outfileS = new File(topKfileS3).getAbsolutePath().replaceFirst(".txt","_ChrPosTrans.txt");
 
-//        AoFile.mergeTxt("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/012_tetraploid_WE_DE/008_snp_sample/004_in","/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/012_tetraploid_WE_DE/008_snp_sample/004_z1_merge/vmap2.1_bi.subset.count.txt.gz");
-
-        this.getThreshodFile(xpclrFileS2,topK,xpclrFileS2,topKfileS3); // from the sample file, we can get the threshold, and extract the top rows
-        this.getGeneListfromTopK2(topKfileS3,bin,snpfileS,outfileS);
-
+      //// ## ********************************************************************
+        this.getThreshodFile(samplefileS1,topK,xpclrFileS2,topKfileS3);
+        this.getGeneListfromTopK(topKfileS3,bin,snpfileS,outfileS);
+// // ## ********************************************************************
 
     }
+
 
     /**
      * 根据得到的topK的XPCLR结果
@@ -1166,7 +1203,7 @@ public class XPCLR {
         TIntArrayList posList = AoFile.getTIntList(outfileS,1);
         int[] chrArray = chrIDList.toArray(new int[chrIDList.size()]);
         int[] posArray = posList.toArray(new int[posList.size()]);
-        String[] transArrayt = AoGene.getTranscriptName(chrArray,posArray);
+        String[] transArrayt = AoGene.getTranscriptName(chrArray,posArray); //根据染色体的位置来返回对应的基因
 
 
         try{

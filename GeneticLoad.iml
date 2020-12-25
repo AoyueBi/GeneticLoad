@@ -7,11 +7,8 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="GroupPlantGenetics" />
-    <orderEntry type="module" module-name="TIGER" />
-    <orderEntry type="module" module-name="PrivatePlantGenetics" />
-    <orderEntry type="library" name="R User Library" level="project" />
-    <orderEntry type="library" name="R Skeletons" level="application" />
-    <orderEntry type="library" name="lib" level="project" />
+    <orderEntry type="library" exported="" name="lib" level="project" />
+    <orderEntry type="module" module-name="TIGER" exported="" />
+    <orderEntry type="module" module-name="PrivatePlantGenetics" exported="" />
   </component>
 </module>
