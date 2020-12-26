@@ -263,13 +263,18 @@ public class DeleteriousXPCLR2 {
                 ifselected = choice2[j];
                 for (int k = 0; k < choice1.length; k++) {
                     variantType = choice1[k];
-                    String infileS1 = new File(parentDirS,variantType + "_ifselected" + ifselected + "_" + group + "_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr.txt").getAbsolutePath();
                     for (int l = 0; l < choice3.length; l++) {
                         ratioType = choice3[l];
-                        String infileS2 = new File(parentDirS,"001_synonymous" + "_ifselected" + ifselected + "_" + group + "_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr.txt").getAbsolutePath();
+                        String infileS1 = new File(parentDirS,variantType + "_ifselected" + ifselected + "_" + group + "_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr_" + ratioType + ".txt").getAbsolutePath();
+                        String infileS2 = new File(parentDirS,"001_synonymous" + "_ifselected" + ifselected + "_" + group + "_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr_" + ratioType +".txt").getAbsolutePath();
                         this.DeltoSynonymousRatio(infileS1,ratioType,infileS2);
                         cnt++;
                         System.out.println("********" + cnt + " " + "ifselected" + ifselected + " " + variantType + " " + ratioType + " " + group);
+
+//addCountFileAddGroupS2 = new File(addCountFileAddGroupS2,variantType + "_ifselected" + ifselected + "_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr.txt").getAbsolutePath();
+//String infileS1 = new File(parentFileS1,variantType + "_ifselected" + ifselected + "_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr_" + ratioType + ".txt").getAbsolutePath();
+//String infileS2 = new File(parentFileS1, "001_synonymous" + "_ifselected" + ifselected + "_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr_" + ratioType + ".txt").getAbsolutePath();
+
                     }
                 }
             }
