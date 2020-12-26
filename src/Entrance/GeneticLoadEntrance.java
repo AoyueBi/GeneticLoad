@@ -53,6 +53,8 @@ public class GeneticLoadEntrance {
         for (int i = 0; i < 3; i++) {
             System.out.println("Happy a good day");
         }
+
+        System.out.println("OK");
         //ternary plot analysis
 //        this.geneExpression();
 //        this.rebuildVCF();
