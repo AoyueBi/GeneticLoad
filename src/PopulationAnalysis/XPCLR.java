@@ -61,20 +61,16 @@ public class XPCLR {
          */
 //        this.checkInfNum();  //检查一下XPCLR中的异常值
 //        this.pipeTopK(); // old method
-        this.getTopKfromSampleSNP(); // new method
+//        this.getTopKfromSampleSNP(); // new method
 
+        /**
+         * 4: check chr19
+         */
 //        this.splitTxt(); //split the chr019 into 2 sections and check if it run successfully
 //        this.getExonDensity(); //check the exon density of chr019, and study if the failure is associated with exon density. Finally, we conclude that is the genetic pos contribute the failure
 
-//        AoFile.mergeTxt("/Users/Aoyue/Documents/IGDB/01_415Lab/007_LabHDD_management/001_HDDstorageList/VMapII_fastq","/Users/Aoyue/Documents/IGDB/01_415Lab/007_LabHDD_management/001_HDDstorageList/fq.vmap2.txt");
-
-
 //
-        /**
-         * 4: 获取小麦已克隆的基因 NCBI blast
-         */
 
-//        this.geneDeal();
 
 
         /**
@@ -132,647 +128,10 @@ public class XPCLR {
 
     }
 
-
-    public void getTopKfromSampleSNP(){
-        //////////////////////// ************************************************ method update ***************************************************
-        // // we-de
-//        String parentFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/012_tetraploid_WE_DE/008_snp_sample";
-//        String outfileDirS1 = new File(parentFileS,"008_topK").getAbsolutePath(); new File(outfileDirS1).mkdirs();
-//
-//        double topK = 0.05;
-//        int bin = 100000;
-//
-//        String xpclrFileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/012_tetraploid_WE_DE/008_snp_sample/ab_WE_DE_log2_0.0001_200_100000.clrgs.txt.gz";
-//        String topKfileS3 = new File(outfileDirS1,"top" + topK + ".txt.gz").getAbsolutePath();
-//        String snpfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/012_tetraploid_WE_DE/008_snp_sample/004_z1_merge/vmap2.1_bi.subset.count.txt.gz";
-//        String outfileS = new File(topKfileS3).getAbsolutePath().replaceFirst(".txt","_ChrPosTrans.txt");
-//        this.getThreshodFile(xpclrFileS2,topK,xpclrFileS2,topKfileS3); // from the sample file, we can get the threshold, and extract the top rows
-//        this.getGeneListfromTopK2(topKfileS3,bin,snpfileS,outfileS); //根据输入的文件，找寻受选择区域的位点
-
-
-        double topK = 0.05;
-        int bin = 100000;
-
-        String xpclroutS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/014_summary_XPCLR/001_finalResult/ab_WE_DE_log2_0.0001_200_100000.clrgs.txt.gz";
-        String xpclroutS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/014_summary_XPCLR/001_finalResult/ab_DE_Durum_log2_0.0001_200_100000.clrgs.txt.gz";
-        String xpclroutS3 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/014_summary_XPCLR/001_finalResult/abd_log2_0.0001_200_100000.clrgs.txt.gz";
-
-        String chrposS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/014_summary_XPCLR/000_chrpos/ab_wede_vmap2.1_bi.subset.chrpos.txt.gz";
-        String chrposS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/014_summary_XPCLR/000_chrpos/ab_dedurum_vmap2.1_bi.subset.chrpos.txt.gz";
-        String chrposS3 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/014_summary_XPCLR/000_chrpos/abd_vmap2.1_bi.subset.chrpos.txt.gz";
-
-        String group1 = "wede";
-        String group2 = "dedurum";
-        String group3 = "lrcul";
-
-        String topKDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/014_summary_XPCLR/002_topK";
-        new File(topKDirS).mkdirs();
-        String[] xpclroutArray = {xpclroutS1,xpclroutS2,xpclroutS3};
-        String[] chrposArray = {chrposS1,chrposS2,chrposS3};
-        String[] groupArray = {group1,group2,group3};
-
-        for (int i = 0; i < groupArray.length; i++) {
-            String xpclrS = xpclroutArray[i];
-            String chrposS = chrposArray[i];
-            String group = groupArray[i];
-            String topKfileS = new File(topKDirS,"top" + topK + "_" + group + ".txt").getAbsolutePath();
-            String outfileS = "";
-
-            this.getThreshodFile(xpclrS,topK,xpclrS,topKfileS); // from the sample file, we can get the threshold, and extract the top rows
-            this.getGeneListfromTopK2(topKfileS,bin,chrposS,outfileS); //根据输入的文件，找寻受选择区域的位点
-
-        }
-
-    }
-
-
-
-    public void geneDeal(){
-
-        String inGenebankS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/01_ori/sequence.txt";
-        String locusTitleS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/locusTitleDB.txt";
-        String locusTitleS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/004_locusTitleDB_keepTa.txt";
-        String geneCategory = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/007_geneCategory.txt";
-        String locusTitleS3 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/004_locusTitleDB_keepTa_unique.txt";
-//        this.getGeneListFromNCBI();
-//        this.getGeneListFromNCBI2();
-//        this.removeDuplicate();
-//        this.addCNTtooriFasta();
-//        this.getSubsetGeneFasta();
-//        this.extractLocusTitle(inGenebankS,locusTitleS);
-//        this.extractLocusTitleOrganism(inGenebankS,locusTitleS2);
-//        this.mkgeneCategory(locusTitleS2,geneCategory);
-        AoMath.countCaseInGroup("/Users/Aoyue/Documents/007_geneCategory.txt",1);
-
-    }
-
-//    enum GeneType{
-//        Domestication, Yield, Flowering, Biotic, Abiotic, Other;
-//
-//        static GeneType newInstance(String geneTitle){
-//            if (geneTitle.contains())
-//        }
-//    }
-
-    /**
-     *
-     * @return
-     */
-    private String getGeneCatogreybyTitle(String title){
-        String out = null;
-
-        String[] key1Array = {"powdery mildew","stem rust","brown rust","stripe rust","yellow rust","leaf rust",
-        "fusarium head blight","nucleotide-binding site-leucine-rich repeat resistance","fusarium","fungal pathogen",
-        "puccinia","hessian fly","nematode","broad-spectrum","disease resistance","pathogen"};
-
-        // Al 按照拆分字符串来判断
-        String[] key2Array = {"salt","host","salinity","aluminum","cold","na-cl","drought","temperature",
-        "abiotic stress","heat stress","water-stress","ionic stress","osmotic stress","light-stressed",
-                "cupric","salinity","osmotic","waterlogging","water","CBF gene"};
-
-        Arrays.sort(key1Array);
-        Arrays.sort(key2Array);
-
-        for (int i = 0; i < key1Array.length; i++) {
-            if (title.toLowerCase().contains(key1Array[i])){
-                out = "Biotic";
-                break;
-            }else {
-                out = "NA";
-            }
-        }
-
-        if (out.equals("NA")){
-            for (int i = 0; i < key2Array.length; i++) {
-                if (title.toLowerCase().contains(key2Array[i])){
-                    out = "Abiotic";
-                    break;
-                }else{
-                    out = "NA";
-                }
-            }
-        }
-
-        return out;
-    }
-
-    private String getGeneCategorybyGene(String element){
-        String out = null;
-        String genes[] = {"pm","sr","yr","lr","fhb","nbs-lrr","nbs","lrr","nb-arc-lrr","msp"};
-        Arrays.sort(genes);
-        for (int i = 0; i < genes.length; i++) {
-            String gene = genes[i];
-            String genetype1 = "(" + genes[i];
-            String genetype2 = genes[i] + "-";
-            if (element.toLowerCase().startsWith(gene) || element.toLowerCase().startsWith(genetype1)
-                    || element.toLowerCase().contains(genetype2)){
-                out = "Biotic";
-                System.out.println(element);
-                break;
-            }else {
-                out="NA";
-            }
-        }
-        return out;
-    }
-
-    public void mkgeneCategory(String infileS, String outfileS){
-
-        HashMap<String,String> hm = new HashMap<>(AoFile.countFileRowNumber_withHeader(infileS)+1);
-        String[] geneCategory = {"Domestication", "Yield", "Flowering", "Biotic", "Abiotic", "Other"};
-
-        HashMap<String,String> hmLocusTitle = new HashMap<>(AoFile.countFileRowNumber_withHeader(infileS)+1);
-
-        try {
-            BufferedReader br = AoFile.readFile(infileS);
-            BufferedWriter bw = AoFile.writeFile(outfileS);
-            bw.write("Locus\tTitle\tGeneCategory");bw.newLine();
-            String temp = null;
-            List<String> l = new ArrayList<>();
-            List<String> titleList = new ArrayList<>();
-
-            int cnt = 0;
-            while ((temp = br.readLine()) != null) {
-                l = PStringUtils.fastSplit(temp);
-                cnt++;
-                String locus = l.get(0);
-                String title = l.get(1);
-                hmLocusTitle.put(locus,title);
-                titleList = PStringUtils.fastSplit(title," ");
-                String category = null;
-
-
-                if (title.contains(" Al ")){
-                    hm.put(locus,geneCategory[4]);
-                    System.out.println(title);
-                }
-                else if (title.toLowerCase().contains("pmm")){
-                    hm.put(locus,geneCategory[4]);
-                    System.out.println(title);
-                }
-                else{
-                    // based title
-                    category = this.getGeneCatogreybyTitle(title);
-                    hm.put(locus,category);
-                    if (category.equals("NA")){
-                        for (int i = 0; i < titleList.size(); i++) {
-                            String element = titleList.get(i);
-                            //1
-//                    if (element.toLowerCase().contains("btr-") ||element.equalsIgnoreCase("q")){
-//                        hm.put(locus,geneCategory[0]);
-//                        break;
-//                    }
-                            //2
-                            if (element.toLowerCase().contains("vrn") || element.toLowerCase().contains("vernalization") ||
-                                    element.toLowerCase().contains("ppd") || element.toLowerCase().contains("photoperiod")){
-                                hm.put(locus,geneCategory[2]);
-                                break;
-                            } else{
-                                //Biotic
-                                String geneCa = this.getGeneCategorybyGene(element);
-                                hm.put(locus,geneCa);
-                            }
-                        }
-                    }
-                }
-            }
-
-            StringBuilder sb = new StringBuilder();
-            for (Map.Entry<String,String> entry: hm.entrySet()){
-                String titleS = hmLocusTitle.get(entry.getKey());
-                sb.setLength(0);
-                sb.append(entry.getKey()).append("\t").append(titleS).append("\t").append(entry.getValue());
-                bw.write(sb.toString());
-                bw.newLine();
-            }
-
-            br.close();
-            bw.flush();
-            bw.close();
-            System.out.println();
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-    }
-
-
-
-    public void srcipt_balst(){
-        //nohup blastn -db /data4/home/aoyue/vmap2/daxing/software/blastdb/001_wheat/wheatIWGSCv1.0
-        // -query sequence_unique.fasta.txt
-        // -num_alignments 1
-        // -num_threads 90
-        // -outfmt "6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore qlen"
-        // -out sequence_unique.txt
-        // 2>./blast.log &
-
-//        String db = "";
-//        String query = "";
-//        String num_alignments = "";
-//        String num_threads = "";
-//        String outfmt = "";
-//        String out = "";
-//        String log = "";
-        String evalue = "";
-        String reward = "";
-
-        String db = "";
-        String query = "";
-        String num_alignments = "";
-        String num_threads = "";
-        String outfmt = "";
-        String out = "";
-        String log = "";
-
-        String cmd = "nohup blastn -db " + db + " -query " + query + " -num_alignments " + num_alignments
-                + " -num_threads " + num_threads + " -outfmt " + outfmt + " -out " + out
-                + " " + log;
-
-        System.out.println(cmd);
-
-    }
-
-    public void extractLocusTitleOrganism(String infileS, String outfileS){
-
-        try {
-            BufferedReader br = AoFile.readFile(infileS);
-            BufferedWriter bw = AoFile.writeFile(outfileS);
-            String temp = null;
-            List<String> l = new ArrayList<>();
-            int cnt = 0;
-            StringBuilder sb = new StringBuilder();
-            while ((temp = br.readLine()) != null) {
-
-                if (temp.startsWith("LOCUS")){
-                    cnt++;
-                    l = Arrays.asList(StringUtils.split(temp," "));
-                    String locus = l.get(1);
-                    while((temp = br.readLine()) != null){
-                        if (temp.startsWith("//")) {
-//                            cnt++;
-                            break; //意思是我要循环这一个locus 内的东西
-                        }
-
-                        if (temp.startsWith("  ORGANISM  ")){ //每一行都要经过 物种的判断,如果不是小麦，就过滤掉。
-                            if (!temp.split("  ORGANISM  ")[1].equals("Triticum aestivum"))break;
-                        }
-
-                        if (temp.startsWith("  TITLE")){
-                            l = PStringUtils.fastSplit(temp,"     ");
-                            sb.append(l.get(1)).append(" ");
-                            while ((temp = br.readLine()) != null){
-                                if (temp.startsWith("  JOURNAL")) break;
-                                sb.append(temp.substring(12)).append(" ");
-                            }
-                            sb.deleteCharAt(sb.length()-1);
-                            bw.write(locus + "\t"); bw.write(sb.toString()); bw.newLine();
-                            sb.setLength(0);
-                            break; //这条语句可以去除第二个或者第3个title， 直接跳出locus循环，直接读下一个locus
-                        } // title 后的循环
-
-                    } // locus 后的循环
-
-                }
-
-            }
-            br.close();
-            bw.flush();
-            bw.close();
-            System.out.println( cnt + " genes in this db");
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-    }
-
-    public void extractLocusTitle(String infileS, String outfileS){
-
-        try {
-            BufferedReader br = AoFile.readFile(infileS);
-            BufferedWriter bw = AoFile.writeFile(outfileS);
-            String temp = null;
-            List<String> l = new ArrayList<>();
-            int cnt = 0;
-            StringBuilder sb = new StringBuilder();
-            while ((temp = br.readLine()) != null) {
-
-                if (temp.startsWith("LOCUS")){
-                    cnt++;
-
-                    l = Arrays.asList(StringUtils.split(temp," "));
-                    String locus = l.get(1);
-                    while((temp = br.readLine()) != null){
-                        if (temp.startsWith("//")) {
-//                            cnt++;
-                            break; //意思是我要循环这一个locus 内的东西
-                        }
-                        if (temp.startsWith("  TITLE")){
-                            l = PStringUtils.fastSplit(temp,"     ");
-                            sb.append(l.get(1)).append(" ");
-                            while ((temp = br.readLine()) != null){
-                                if (temp.startsWith("  JOURNAL")) break;
-                                sb.append(temp.substring(12)).append(" ");
-                            }
-                            sb.deleteCharAt(sb.length()-1);
-                            bw.write(locus + "\t"); bw.write(sb.toString()); bw.newLine();
-                            sb.setLength(0);
-                            break; //这条语句可以去除第二个或者第3个title， 直接跳出locus循环，直接读下一个locus
-                        } // title 后的循环
-
-                    } // locus 后的循环
-
-                }
-
-            }
-            br.close();
-            bw.flush();
-            bw.close();
-            System.out.println( cnt + " genes in this db");
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-    }
-
-
-    public void getSubsetGeneFasta(){
-//        String genedbS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/GeneID_removeDuplicate.txt";
-        String genedbS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/006_GeneID_removeDuplicate.txt";
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/003_sequence_addCnt.fasta.txt";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/003/sequence_unique.fasta.txt";
-
-        List<String> geneNameList = new ArrayList<>();
-        List<String> fastaList = new ArrayList<>();
-        HashMap<String,String> hmIndexGene = new HashMap<>();
-        List<String> indexList = new ArrayList<>();
-
-        List<String> locusList = AoFile.getStringListwithoutHeader("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/004_locusTitleDB_keepTa.txt",0);
-
-        try {
-            BufferedReader br = AoFile.readFile(infileS);
-            String temp = null;
-            List<String> l = new ArrayList<>();
-            int cnt = 0;
-            StringBuilder sb = new StringBuilder();
-            while ((temp = br.readLine()) != null) {
-                sb.setLength(0);
-                if (temp.startsWith(">")){
-                    l = PStringUtils.fastSplit(temp," ");
-                    String name = l.get(0).replaceFirst(">","");
-                    String locus = l.get(1).split("\\.")[0];
-                    while((temp = br.readLine()) != null){
-                        if (temp.isEmpty() || temp == "" || temp == null) break; //由于最后一行是空
-                        sb.append(temp).append("\n");
-                    }
-
-                    String fasta = sb.toString();
-                    /**
-                     * filter fasta length more than 30 kb;;;;;; also filter genes not in triticum
-                     */
-                    if (fasta.length() > 30000) continue;
-                    if (Collections.binarySearch(locusList,locus) < 0) continue; // 说明该基因不在小麦物种里
-
-
-                    geneNameList.add(name);
-                    fastaList.add(fasta);
-                    cnt++;
-//                    System.out.println(name);
-                }
-            }
-            br.close();
-
-            System.out.println(cnt + " genes ************************************************************************ in the inatial db");
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-
-        try {
-            BufferedReader br = AoFile.readFile(genedbS);
-            BufferedWriter bw = AoFile.writeFile(outfileS);
-            String temp = null;
-            List<String> l = new ArrayList<>();
-            while ((temp = br.readLine()) != null) {
-                l = PStringUtils.fastSplit(temp);
-                String indexID = l.get(1);
-                String gene = l.get(0) + ":" + l.get(1)+ ":" + l.get(2);
-                indexList.add(indexID);
-                hmIndexGene.put(indexID,gene);
-            }
-            System.out.println("total " + indexList.size() + " unique genes finally");
-
-            Collections.sort(indexList);
-            int cnt = 0;
-            for (int i = 0; i < geneNameList.size(); i++) {
-                int index = Collections.binarySearch(indexList,geneNameList.get(i)); //在库中是第几个 index
-                if (index > -1){
-                    cnt++;
-                    bw.write(">" + hmIndexGene.get(indexList.get(index))); bw.newLine();
-                    bw.write(fastaList.get(i)); bw.newLine();
-                }
-            }
-
-            System.out.println(cnt + " genes remain in the final fasta beacuse remove duplicates and 30 kb longer bases");
-            bw.flush();
-            bw.close();
-
-        }catch (Exception e){
-            e.printStackTrace();
-            System.exit(1);
-        }
-
-    }
-
-
-    public void removeDuplicate(){
-//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/GeneID.txt";
-//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/GeneID_removeDuplicate.txt";
-
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/005_GeneID_addIndex_addLOCUS.txt";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/006_GeneID_removeDuplicate.txt";
-
-        try {
-            BufferedReader br = AoFile.readFile(infileS);
-            BufferedWriter bw = AoFile.writeFile(outfileS);
-//            String header = br.readLine();
-//            bw.write(header);bw.newLine();
-            String temp = null;
-            List<String> l = new ArrayList<>();
-            Set<String> geneSet = new HashSet<>();
-            int cnt = 0;
-            while ((temp = br.readLine()) != null) {
-                l = PStringUtils.fastSplit(temp);
-                String gene = l.get(2); //******************** need to change
-                if (geneSet.add(gene)){
-                    bw.write(temp);
-                    bw.newLine();
-                }
-            }
-            br.close();
-            bw.flush();
-            bw.close();
-            System.out.println();
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-
-    }
-
-    public void addCNTtooriFasta(){
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/01_ori/sequence.fasta.txt";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/sequence_addCnt.fasta.txt";
-        try {
-            BufferedReader br = AoFile.readFile(infileS);
-            BufferedWriter bw = AoFile.writeFile(outfileS);
-//            String header = br.readLine();
-//            bw.write(header);bw.newLine();
-            String temp = null;
-            List<String> l = new ArrayList<>();
-            int cnt = 0;
-            StringBuilder sb = new StringBuilder();
-            while ((temp = br.readLine()) != null) {
-                sb.setLength(0);
-                if (temp.startsWith(">")){
-                    cnt++;
-                    sb.append(">Index").append(String.valueOf(cnt)).append(" ");
-                    String head = sb.toString();
-                    bw.write(head);bw.write(temp.substring(1));
-                    bw.newLine();
-                }
-                else{
-                    bw.write(temp);
-                    bw.newLine();
-                }
-            }
-            br.close();
-            bw.flush();
-            bw.close();
-            System.out.println();
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-    }
-
-    /**
-     * extract gene name and find unique one for blast
-     */
-    public void getGeneListFromNCBI2(){
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/01_ori/GeneFullID.txt";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/GeneID_addIndex_addLOCUS.txt";
-        try {
-            BufferedReader br = AoFile.readFile(infileS);
-            BufferedWriter bw = AoFile.writeFile(outfileS);
-//            String header = br.readLine();
-//            bw.write(header);bw.newLine();
-            String temp = null;
-            List<String> l = new ArrayList<>();
-            int cnt = 0;
-            while ((temp = br.readLine()) != null) {
-                l = PStringUtils.fastSplit(temp);
-                cnt++;
-                if (temp.contains("(")){ // cycle1
-                    int start = temp.indexOf("(");
-                    int end = temp.indexOf(")");
-                    String sub1 = temp.substring(start+1,end);
-
-                    String locus = temp.substring(0,20).split("\\.")[0].replace(">","");
-//                    System.out.println(sub1);
-                    bw.write(locus + "\t" + "Index"); bw.write(String.valueOf(cnt));bw.write("\t");bw.write(sub1);
-                    bw.newLine();
-                    if (temp.contains("allele")){
-                        if (temp.contains("gene,")){
-                            int start2 = temp.indexOf("gene,");
-                            int end2 = temp.indexOf("allele");
-                            String sub2 = temp.substring(start2+5,end2);
-                            System.out.println(sub2);
-//                            bw.write(sub2);bw.write("\t");
-                        }
-                        if (temp.contains("mRNA,")){
-                            int start2 = temp.indexOf("mRNA,");
-                            int end2 = temp.indexOf("allele");
-                            String sub3 = temp.substring(start2+5,end2);
-                            System.out.println(sub3);
-//                            bw.write(sub3);bw.write("\t");
-                        }
-                    }
-                } // cycle1
-            }
-            br.close();
-            bw.flush();
-            bw.close();
-            System.out.println();
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-    }
-
-    /**
-     * extract gene name and find unique one for blast
-     */
-    public void getGeneListFromNCBI(){
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/01_ori/GeneFullID.txt";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/GeneID.txt";
-        try {
-            BufferedReader br = AoFile.readFile(infileS);
-            BufferedWriter bw = AoFile.writeFile(outfileS);
-//            String header = br.readLine();
-//            bw.write(header);bw.newLine();
-            String temp = null;
-            List<String> l = new ArrayList<>();
-            int cnt = 0;
-            while ((temp = br.readLine()) != null) {
-                l = PStringUtils.fastSplit(temp);
-                cnt++;
-                if (temp.contains("(")){
-                    int start = temp.indexOf("(");
-                    int end = temp.indexOf(")");
-                    String sub1 = temp.substring(start+1,end);
-//                    System.out.println(sub1);
-                    bw.write("Index ");bw.write(String.valueOf(cnt));bw.write("\t");bw.write(sub1);
-                    bw.newLine();
-                    if (temp.contains("allele")){
-                        if (temp.contains("gene,")){
-                            int start2 = temp.indexOf("gene,");
-                            int end2 = temp.indexOf("allele");
-                            String sub2 = temp.substring(start2+5,end2);
-                            System.out.println(sub2);
-//                            bw.write(sub2);bw.write("\t");
-                        }
-                        if (temp.contains("mRNA,")){
-                            int start2 = temp.indexOf("mRNA,");
-                            int end2 = temp.indexOf("allele");
-                            String sub3 = temp.substring(start2+5,end2);
-                            System.out.println(sub3);
-//                            bw.write(sub3);bw.write("\t");
-                        }
-                    }
-                }
-            }
-            br.close();
-            bw.flush();
-            bw.close();
-            System.out.println();
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-    }
-
-
-
-
     /**
      * 测试单条染色体的小脚本
      */
     public void XPCLR_Script(){
-
-
 
 //        String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
         String[] chrArr ={"001","002","003","004","007","008","009","010","013","014","015","016","019","020","021","022","025","026","027","028","031","032","033","034","037","038","039","040"};
@@ -1039,6 +398,61 @@ public class XPCLR {
 
     }
 
+    public void getTopKfromSampleSNP(){
+        //////////////////////// ************************************************ method update ***************************************************
+        // // we-de
+//        String parentFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/012_tetraploid_WE_DE/008_snp_sample";
+//        String outfileDirS1 = new File(parentFileS,"008_topK").getAbsolutePath(); new File(outfileDirS1).mkdirs();
+//
+//        double topK = 0.05;
+//        int bin = 100000;
+//
+//        String xpclrFileS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/012_tetraploid_WE_DE/008_snp_sample/ab_WE_DE_log2_0.0001_200_100000.clrgs.txt.gz";
+//        String topKfileS3 = new File(outfileDirS1,"top" + topK + ".txt.gz").getAbsolutePath();
+//        String snpfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/012_tetraploid_WE_DE/008_snp_sample/004_z1_merge/vmap2.1_bi.subset.count.txt.gz";
+//        String outfileS = new File(topKfileS3).getAbsolutePath().replaceFirst(".txt","_ChrPosTrans.txt");
+//        this.getThreshodFile(xpclrFileS2,topK,xpclrFileS2,topKfileS3); // from the sample file, we can get the threshold, and extract the top rows
+//        this.getGeneListfromTopK2(topKfileS3,bin,snpfileS,outfileS); //根据输入的文件，找寻受选择区域的位点
+
+
+        double topK = 0.05;
+        int bin = 100000;
+        String exonAnnotationS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/019_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
+
+        String xpclroutS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/014_summary_XPCLR/001_finalResult/ab_WE_DE_log2_0.0001_200_100000.clrgs.txt.gz";
+        String xpclroutS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/014_summary_XPCLR/001_finalResult/ab_DE_Durum_log2_0.0001_200_100000.clrgs.txt.gz";
+        String xpclroutS3 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/014_summary_XPCLR/001_finalResult/abd_log2_0.0001_200_100000.clrgs.txt.gz";
+
+        String chrposS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/014_summary_XPCLR/000_chrpos/ab_wede_vmap2.1_bi.subset.chrpos.txt.gz";
+        String chrposS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/014_summary_XPCLR/000_chrpos/ab_dedurum_vmap2.1_bi.subset.chrpos.txt.gz";
+        String chrposS3 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/014_summary_XPCLR/000_chrpos/abd_vmap2.1_bi.subset.chrpos.txt.gz";
+
+        String group1 = "wede";
+        String group2 = "dedurum";
+        String group3 = "lrcul";
+
+        String topKDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/014_summary_XPCLR/002_topK";
+        new File(topKDirS).mkdirs();
+        String[] xpclroutArray = {xpclroutS1,xpclroutS2,xpclroutS3};
+        String[] chrposArray = {chrposS1,chrposS2,chrposS3};
+        String[] groupArray = {group1,group2,group3};
+
+        for (int i = 0; i < groupArray.length; i++) {
+            String xpclrS = xpclroutArray[i];
+            String chrposS = chrposArray[i];
+            String group = groupArray[i];
+            String topKfileS = new File(topKDirS,"top" + topK + "_" + group + ".txt.gz").getAbsolutePath();
+            String outfileS = new File(topKDirS,"top" + topK + "_" + group + "_ChrPosTrans.txt.gz").getAbsolutePath();
+            String outfileS2 = new File(topKDirS,"top" + topK + "_" + group + "_ChrPos_fromExonAnnotation.txt.gz").getAbsolutePath();
+//            this.getThreshodFile(xpclrS,topK,xpclrS,topKfileS); // from the sample file, we can get the threshold, and extract the top rows
+//            this.getGeneListfromTopK2(topKfileS,bin,chrposS,outfileS); //根据输入的文件，找寻受选择区域的位点
+            this.getExonPosListfromTopK(topKfileS,bin,exonAnnotationS,outfileS2);
+
+
+        }
+
+    }
+
 
     /**
      * 通过值域，进行topk以上的位点的筛选，并查看其所在基因
@@ -1113,9 +527,122 @@ public class XPCLR {
 
     }
 
+    public void getExonPosListfromTopK(String infileS, int bin, String snpfileS, String outfileS){
+        //model
+        //int bin = 500;
+        // String infileS = ""; //topK的原始结果文件  //CHROM	Grid	N_SNPs	POS	Genetic_pos	ChrRef	PosRef	XPCLR_100score
+        // String snpfileS = ""; //xclr输入snp位置信息文件  SNPName	chr	GeneticDistance(Morgan)	PhysicalDistance(bp)	RefAllele	TheOtherAllele
+        // String outfileS = ""; //输出受选择位点文件 chr pos transcript
+        //
+
+//        int bin = 500;
+        //////
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid/008_TopK/test.txt";
+//        String snpfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid/002_snp_file2_merge/vmap2.1.snp.txt.gz";
+//        String outfileS = new File(infileS).getAbsolutePath().replaceFirst(".txt","_ChrPosTrans.txt");
+
+        /*==================================== step 1: 根据 topK 结果文件，建立受选择区域的起始集合和终止集合  =============================================*/
+
+        int chrNum = 42;
+        int currentPos = -1;
+        int chrIndex = -1;
+        RowTable<String> t = new RowTable<>(infileS); //读入topK的结果文件，进行集合建立
+        //CHROM	Grid	N_SNPs	POS	Genetic_pos	ChrRef	PosRef	XPCLR_100score
+        //1	129049	100	65669882.000000	0.481550	1A	65669882	30.09687623685646
+        //1	129164	100	65727382.000000	0.481550	1A	65727382	29.974682136651904
+        //步骤：1.建立数组类集合； 2.初始化集合； 3.循环，对集合进行填充; 4.转化为数组，进行下文的搜索
+        TIntList[] startLists = new TIntList[chrNum]; //所有的起始位点建立一个集合
+        TIntList[] endLists = new TIntList[chrNum]; //所有的终止位点建立一个集合
+        for (int i = 0; i < chrNum; i++) { //对list数组进行初始化
+            startLists[i] = new TIntArrayList();
+            endLists[i] = new TIntArrayList();
+        }
+        for (int i = 0; i < t.getRowNumber(); i++) {
+            chrIndex = t.getCellAsInteger(i,0) -1;
+            currentPos = (int)Double.parseDouble(t.getCell(i,3));
+            startLists[chrIndex].add(currentPos);
+            endLists[chrIndex].add(currentPos+bin);
+        }
+        for (int i = 0; i < startLists.length; i++) {
+            startLists[i].sort();
+            endLists[i].sort();
+        }
+        System.out.println("$$$======== Finished building the region list");
+
+        /*==================================== step 2: 根据 xpclr输入文件SNP.file，判断每个位点是否受选择，以及该位点所在的基因（最长转录本）=============================================*/
+
+        System.out.println("###======== start to identify the selected pos");
+//        new AoFile().readheader(snpfileS);
+
+        try{
+            BufferedReader br = AoFile.readFile(snpfileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            bw.write("CHROM\tPOS");
+            bw.newLine();
+            String header = br.readLine();
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+                int index = Integer.parseInt(l.get(1))-1; //染色体号的索引
+                int pos = Integer.parseInt(l.get(2));
+
+                /**
+                 * 对该位点进行判断，看是否在选择区域,不在选择区域就忽略不计
+                 */
+                int posIndex = -1;
+                posIndex = startLists[index].binarySearch(pos);
+                if (posIndex < 0) {
+                    posIndex = -posIndex-2; //确保该位点在起始位点的右边
+                }
+                if (posIndex < 0) continue; //如果不在起始位点的右边，那么就不在范围内，跳过该位点
+                if (pos >= endLists[index].get(posIndex)) continue; //确保在末端位点的前面，若不在，也舍去
+//                bw.write(index+1 + "\t" + pos + "\t" + trans);
+                bw.write(index+1 + "\t" + pos);
+                bw.newLine();
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+
+        }catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        System.out.println("$$$======================================================== finish keep the pos at the selection region");
+        TIntArrayList chrIDList = AoFile.getTIntList(outfileS,0);
+        TIntArrayList posList = AoFile.getTIntList(outfileS,1);
+        int[] chrArray = chrIDList.toArray(new int[chrIDList.size()]);
+        int[] posArray = posList.toArray(new int[posList.size()]);
+        String[] transArrayt = AoGene.getTranscriptName(chrArray,posArray); //根据染色体的位置来返回对应的基因
+
+
+        try{
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            bw.write("CHROM\tPOS\tTRANSCRIPT");
+            bw.newLine();
+            for (int i = 0; i < chrArray.length; i++) {
+                bw.write(chrArray[i] + "\t" + posArray[i] + "\t" + transArrayt[i]);
+                bw.newLine();
+            }
+            bw.flush();
+            bw.close();
+
+        }catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        System.out.println("Finished in getting the selected region at " + outfileS);
+    }
+
 
     /**
-     * 根据得到的topK的XPCLR结果
+     * 根据得到的topK的XPCLR结果,获取计算xpclr时的受选择的位点，以及获取受选择位点所在的基因转录本文件
      */
     public void getGeneListfromTopK2(String infileS, int bin, String snpfileS, String outfileS){
         //model
@@ -1165,16 +692,19 @@ public class XPCLR {
 //        new AoFile().readheader(snpfileS);
 
         try{
-            t = new RowTable(snpfileS);
-////1-1146726	0.0548508545727009	1146726	104	3	130	27
-//1-1147953	0.0548508545727009	1147953	94	12	128	8
+            BufferedReader br = AoFile.readFile(snpfileS);
             BufferedWriter bw = AoFile.writeFile(outfileS);
             bw.write("CHROM\tPOS");
             bw.newLine();
-            for (int i = 0; i < t.getRowNumber(); i++) {
-                int index = t.getCellAsInteger(i, 1) - 1; //染色体号的索引
-                int pos = t.getCellAsInteger(i,3);
-//                String trans = t.getCell(i,10); //根据chr pos 得到转录本的名字
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp,"-");
+                cnt++;
+                int index = Integer.parseInt(l.get(0))-1; //染色体号的索引
+                int pos = Integer.parseInt(l.get(1));
+
                 /**
                  * 对该位点进行判断，看是否在选择区域,不在选择区域就忽略不计
                  */
@@ -1188,17 +718,18 @@ public class XPCLR {
 //                bw.write(index+1 + "\t" + pos + "\t" + trans);
                 bw.write(index+1 + "\t" + pos);
                 bw.newLine();
-//                geneSet.add(trans);
             }
+            br.close();
             bw.flush();
             bw.close();
+            System.out.println();
 
         }catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
         }
 
-        System.out.println("$$$======================================================== pos at the selection region");
+        System.out.println("$$$======================================================== finish keep the pos at the selection region");
         TIntArrayList chrIDList = AoFile.getTIntList(outfileS,0);
         TIntArrayList posList = AoFile.getTIntList(outfileS,1);
         int[] chrArray = chrIDList.toArray(new int[chrIDList.size()]);

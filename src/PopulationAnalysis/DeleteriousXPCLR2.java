@@ -27,7 +27,13 @@ public class DeleteriousXPCLR2 {
     }
 
     public void pipeDeleteriousXPCLR(){
+//        this.step0();
+        this.step1();
 
+
+    }
+
+    public void step0(){
         //**************************** 不必修改 **************************//
         String variantType = null;
         String variantType1 = "001_synonymous";
@@ -39,12 +45,17 @@ public class DeleteriousXPCLR2 {
         String ratioType = null;
         String ratioType1 = "bySub";
         String ratioType2 = "bysub_mergeByTaxa";
+        String group = null;
+        String group1 = "wede";
+        String group2 = "dedurum";
+        String group3 = "lrcul";
+
         String[] choice1 = {variantType1,variantType2,variantType3};
         String[] choice2 = {ifselected1,ifselected2};
         String[] choice3 = {ratioType1,ratioType2};
+        String[] choice4 = {group1,group2,group3};
 
-
-        //**************************** 不必修改 **************************//
+        //**************************** up 不必修改 **************************//
 
 
         //六倍体 LR-CL ，合计运行6次
@@ -185,7 +196,6 @@ public class DeleteriousXPCLR2 {
             }
         }
 
-
         //求四倍体ratio non/syn  del/syn
 
         int cnt=0;
@@ -204,9 +214,65 @@ public class DeleteriousXPCLR2 {
                 }
             }
         }
+    }
 
+    public void step1(){
+        //************************************** new  2020-12-26 **************************************
+//**************************** 不必修改 **************************//
+        String variantType = null;
+        String variantType1 = "001_synonymous";
+        String variantType2 = "002_nonsynonymous";
+        String variantType3 = "003_nonsynGERPandDerivedSIFT";
+        String ifselected = null;
+        String ifselected1 = "1";
+        String ifselected2 = "0";
+        String ratioType = null;
+        String ratioType1 = "bySub";
+        String ratioType2 = "bysub_mergeByTaxa";
+        String group = null;
+        String group1 = "wede";
+        String group2 = "dedurum";
+        String group3 = "lrcul";
 
+        String[] choice1 = {variantType1,variantType2,variantType3};
+        String[] choice2 = {ifselected1,ifselected2};
+        String[] choice3 = {ratioType1,ratioType2};
+        String[] choice4 = {group1,group2,group3};
 
+        //**************************** up 不必修改 **************************//
+        String parentDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/014_summary_XPCLR/003_deleteriousXPCLR";
+//        new File(parentDirS).mkdirs();
+//        for (int i = 0; i < choice4.length; i++) {
+//            group = choice4[i];
+//            String infileS = new File("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/014_summary_XPCLR/002_topK","top0.05_" + group + "_ChrPos_fromExonAnnotation.txt.gz").getAbsolutePath();
+//            for (int j = 0; j < choice2.length; j++) {
+//                ifselected = choice2[j];
+//                for (int k = 0; k < choice1.length; k++) {
+//                    variantType = choice1[k];
+//                    String addCountFileS = new File(parentDirS,variantType + "_ifselected" + ifselected + "_" + group + "_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr.txt").getAbsolutePath();
+//                    this.countDeleteriousVMapII_byChr(infileS,ifselected,variantType,addCountFileS);
+//                }
+//            }
+//        }
+
+        int cnt = 0;
+        for (int i = 0; i < choice4.length; i++) {
+            group = choice4[i];
+            for (int j = 0; j < choice2.length; j++) {
+                ifselected = choice2[j];
+                for (int k = 0; k < choice1.length; k++) {
+                    variantType = choice1[k];
+                    String infileS1 = new File(parentDirS,variantType + "_ifselected" + ifselected + "_" + group + "_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr.txt").getAbsolutePath();
+                    for (int l = 0; l < choice3.length; l++) {
+                        ratioType = choice3[l];
+                        String infileS2 = new File(parentDirS,"001_synonymous" + "_ifselected" + ifselected + "_" + group + "_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr.txt").getAbsolutePath();
+                        this.DeltoSynonymousRatio(infileS1,ratioType,infileS2);
+                        cnt++;
+                        System.out.println("********" + cnt + " " + "ifselected" + ifselected + " " + variantType + " " + ratioType + " " + group);
+                    }
+                }
+            }
+        }
     }
 
 

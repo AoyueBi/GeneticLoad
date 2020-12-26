@@ -44,51 +44,11 @@ public class GeneticLoadEntrance {
 //        this.infoDB(); // 种质信息库
 //        this.DBdeleterious();
 
-        double[] a={1,2,3,4,56,7,7,8,5,19};
-        double mean=StatUtils.mean(a);
-        TIntArrayList tIntArrayList=new TIntArrayList();
-        tIntArrayList.add(1);
-        System.out.println("mean: "+mean);
-        System.out.println("OK");
-        for (int i = 0; i < 3; i++) {
-            System.out.println("Happy a good day");
-        }
-
-        System.out.println("OK");
         //ternary plot analysis
 //        this.geneExpression();
-//        this.rebuildVCF();
-//
-//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/011_hexaploid/003_input/chr001_exon_vmap2.1.count.txt";
-//        String outfileS = "/Users/Aoyue/Documents/test.txt";
-//
-//        try {
-//            BufferedReader br = AoFile.readFile(infileS);
-//            BufferedWriter bw = AoFile.writeFile(outfileS);
-//            String temp = null;
-//            List<String> l = new ArrayList<>();
-//            TDoubleArrayList value = new TDoubleArrayList();
-//            int cnt = 0;
-//            while ((temp = br.readLine()) != null) {
-//                l = PStringUtils.fastSplit(temp);
-//                cnt++;
-//                double tt = Double.parseDouble(l.get(2));
-//                value.add(tt);
-//            }
-//            br.close();
-//
-//            double[] out = AoMath.ZScore(value.toArray());
-//            for (int i = 0; i < out.length; i++) {
-//                bw.write(String.valueOf(out[i]));
-//                bw.newLine();
-//            }
-//            bw.flush();
-//            bw.close();
-//            System.out.println();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            System.exit(1);
-//        }
+        this.rebuildVCF();
+
+
     }
 
     public void rebuildVCF(){
@@ -108,7 +68,7 @@ public class GeneticLoadEntrance {
 
 //        new AoWheatTriads();
 //        new XPCLR();
-//        new DeleteriousXPCLR2();
+        new DeleteriousXPCLR2();
 
 //        new Fst();
 //        new Pi();
