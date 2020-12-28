@@ -21,8 +21,8 @@ import java.util.*;
 public class DeleteriousXPCLR2 {
 
     public DeleteriousXPCLR2(){
-        this.pipeDeleteriousXPCLR();
-//        this.pipeFilterTaxa();
+//        this.pipeDeleteriousXPCLR();
+        this.pipeFilterTaxa();
 
     }
 
@@ -30,6 +30,36 @@ public class DeleteriousXPCLR2 {
 //        this.step0();
         this.step1();
 
+
+    }
+
+    /**
+     * 获取不同ref-obj对测试下的，100kb 有效cds长度，和非选择区域的cdslength
+     */
+    public void getCDSlength(){
+        String infileS = "";
+        String outfileS = "";
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String header = br.readLine();
+            bw.write(header);bw.newLine();
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
 
     }
 
@@ -261,7 +291,7 @@ public class DeleteriousXPCLR2 {
             group = choice4[i];
             for (int j = 0; j < choice2.length; j++) {
                 ifselected = choice2[j];
-                for (int k = 0; k < choice1.length; k++) {
+                for (int k = 1; k < choice1.length; k++) {
                     variantType = choice1[k];
                     for (int l = 0; l < choice3.length; l++) {
                         ratioType = choice3[l];
@@ -282,6 +312,10 @@ public class DeleteriousXPCLR2 {
     }
 
 
+    /**
+     * @deprecated
+     * this step is done by R language
+     */
     public void pipeFilterTaxa(){
 
         String[] choice1 = {"WE_DE","DE_FTT","LR_CL"};

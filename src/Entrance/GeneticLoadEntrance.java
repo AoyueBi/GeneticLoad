@@ -57,7 +57,7 @@ public class GeneticLoadEntrance {
 //        new AoHeterozygosity();
 //        new  FilterVCF2();
 //        new GermplasmInfo();
-//        new VariantsSum();
+        new VariantsSum();
 //        new SIFT();
 //        new DeleteriousCountbyIndi(); //根据数据库进行个体Load计算
 //        new TaxaDB();  //taxa 类
@@ -68,7 +68,7 @@ public class GeneticLoadEntrance {
 
 //        new AoWheatTriads();
 //        new XPCLR();
-        new DeleteriousXPCLR2();
+//        new DeleteriousXPCLR2();
 
 //        new Fst();
 //        new Pi();

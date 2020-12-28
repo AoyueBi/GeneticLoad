@@ -102,30 +102,11 @@ public class VariantsSum {
 
         //*********** ratio of del/syn and nonsyn/syn on genome landscape ********************//
 //        this.WindowDelvsSyn_fromExonAnnotation();
-        this.WindowDel_Nonsyn_vsSyn_fromExonAnnotation();
+//        this.WindowDel_Nonsyn_vsSyn_fromExonAnnotation();
 //        this.addRecombinationfromScience(); //该方法凑效！思路：将 del nonysn syn 数据的滑窗设置成和science一致，然后再将重组率文件合并，后续进行其他处理。本次数据分析采用此方法。
 
-//        this.getPosfromOneindivi();
-
-
-
     }
 
-
-
-
-    public void getPosfromOneindivi(){
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/016_exonVCF/chr001_exon_vmap2.1.vcf.gz";
-        String taxafileS ="/Users/Aoyue/Documents/taxa_test.txt";
-        String outfileS = "/Users/Aoyue/Documents/taxa_pos.vcf";
-
-//        this.extractVCF(infileS,outfileS,taxafileS);
-
-        TIntArrayList posList = CalVCF.extractVCFchrPos(infileS,taxafileS);
-
-
-
-    }
 
 
     public void addRecombinationfromScience(){
@@ -158,6 +139,13 @@ public class VariantsSum {
         }
     }
 
+    /**
+     * 将 del nonsyn syn 的结果写在同一个文件中，不进行分开， 和addCDSLengthInWindow方法的区别在于，前者只计算了del 和 syn 的count 和cds
+     * @param dbFileS
+     * @param windowSize
+     * @param windowStep
+     * @param outfile2S
+     */
     public void addCDSLengthInWindow2 (String dbFileS, int windowSize, int windowStep, String outfile2S) {
 //        int windowSize = 2000000;
 //        int windowStep = 1000000;
@@ -168,44 +156,45 @@ public class VariantsSum {
         RowTable<String> gt = new RowTable<>(hcGeneFileS);
         GeneFeature gf = new GeneFeature(geneFeatureFileS);
         gf.sortGeneByName(); //通过名字排序
-        List<String> chromosomeList = RefV1Utils.getChromosomeList();
-        TIntArrayList cdsWindowList = new TIntArrayList();
+        List<String> chromosomeList = RefV1Utils.getChromosomeList(); //返回1A 2A - 7D
+        TIntArrayList cdsWindowList = new TIntArrayList(); //
 
         for (int i = 0; i < chromosomeList.size(); i++) {
             int chrlength = RefV1Utils.getChromosomeLength(chromosomeList.get(i));
-            SimpleWindow sw = new SimpleWindow(chrlength, windowSize, windowStep);
-            int chrID = RefV1Utils.getChrID(chromosomeList.get(i), 1);
+            SimpleWindow sw = new SimpleWindow(chrlength, windowSize, windowStep); //new 一个 SimpleWindow 类
+            int chrID = RefV1Utils.getChrID(chromosomeList.get(i), 1); //根据chromosomeList中的1A等，获取chrID
             int geneIndex = -1;
             int tranIndex = -1;
             int cdsStart = -1;
             int cdsEnd = -1;
-            for (int j = 0; j < gt.getRowNumber(); j++) {
+            for (int j = 0; j < gt.getRowNumber(); j++) { //gt已通过名字进行了排序
                 int currentChrID = Integer.parseInt(gt.getCell(j, 2));
-                if (currentChrID < chrID) continue;
-                else if (currentChrID > (chrID +1)) break;
-                geneIndex = gf.getGeneIndex(gt.getCell(j, 0)); //根据基因名字获取索引
+                if (currentChrID < chrID) continue; //如果，gt文件中的chrID小于循环内的chromosomeList.get(i)，则跳出循环，一直到gt列表里的chrID等于此时正在循环的染色体号
+                else if (currentChrID > (chrID +1)) break; //如果，gt文件中的currentChrID 等于chrID+1，说明还是在1A内，其他情况都终止循环
+                geneIndex = gf.getGeneIndex(gt.getCell(j, 0)); //根据基因名字（不是转录本的名字，没有.后缀12）获取索引
                 for (int k = 0; k < gf.getTranscriptNumber(geneIndex); k++) { //获取最长转录本的index
-                    if (!gt.getCell(j,1).equals(gf.getTranscriptName(geneIndex, k)))continue;
-                    tranIndex = k;
+                    if (!gt.getCell(j,1).equals(gf.getTranscriptName(geneIndex, k)))continue; //如果 gt.getCell(j,1) 是该基因的最长转录本，已经提前总结出
+                    tranIndex = k; //该循环的意思是：如果最长转录本不等于k，那么就跳出循环，一直到等于k为止，最后终止循环。
                     break;
                 }
-                List<Range> cdsList = gf.getCDSList(geneIndex, tranIndex);
+                List<Range> cdsList = gf.getCDSList(geneIndex, tranIndex); //根据 gene index 和 tranIndex 获取该转录本的 cdsList
                 for (int k = 0; k < cdsList.size(); k++) {
                     cdsStart = cdsList.get(k).start;
                     cdsEnd = cdsList.get(k).end;
-                    if (currentChrID == chrID + 1) {
+                    if (currentChrID == chrID + 1) { //chrID 是根据chromosomeList求出来的1A的第一个染色体chr001,同时chr002也属于1A。 这里如果是在2号的话，则需要改变位置。
                         cdsStart = RefV1Utils.getPosOnChromosome(currentChrID, cdsStart);
                         cdsEnd = RefV1Utils.getPosOnChromosome(currentChrID, cdsEnd);
                     }
-                    sw.addPositionCountFromRange(cdsStart, cdsEnd);
+                    sw.addPositionCountFromRange(cdsStart, cdsEnd); //每个基因的每个cds的起始和终止段，都加入了 sw类中
                 }
-            }
-            cdsWindowList.add(sw.getWindowValuesInt());
+            } //所有的基因都进行了cds的起始和终止的计数，并且加入了 sw类中
+            cdsWindowList.add(sw.getWindowValuesInt()); //将每个window的值装入cdsWindowList中
         }
 
 
         try {
             BufferedReader br = AoFile.readFile(dbFileS);
+            //dbFileS include: CHROM	BIN_START	BIN_END	BIN_START_scale	DelCount	NonsynCount	SynCount	DelSynRatio	NonsynSynRatio
             BufferedWriter bw = AoFile.writeFile(outfile2S);
             String header = br.readLine();
             bw.write(header + "\tCDSLength\tDelCountPerSite\tNonsynCountPerSite\tSynCountPerSite");bw.newLine();
@@ -345,7 +334,7 @@ public class VariantsSum {
                 System.out.println("======== " + chromosome + " is completed.");
             }
             bw.flush();bw.close();
-//*********************************** add recombination *******************************************
+//*********************************** add cds length *******************************************
             this.addCDSLengthInWindow2(outfileS, windowSize, windowStep,outfile2S);
             System.out.println("======== " + "add effective CDS length.");
 
@@ -669,7 +658,7 @@ public class VariantsSum {
                 System.out.println("======== " + chromosome + " is completed.");
             }
             bw.flush();bw.close();
-//*********************************** add recombination *******************************************
+//*********************************** add cds length *******************************************
             this.addCDSLengthInWindow(outfileS, windowSize, windowStep,outfile2S);
             System.out.println("======== " + "add effective CDS length.");
 
