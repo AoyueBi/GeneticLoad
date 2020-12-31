@@ -5,9 +5,13 @@ import gnu.trove.list.array.TCharArrayList;
 import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TIntArrayList;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import pgl.infra.anno.gene.GeneFeature;
+import pgl.infra.range.Range;
 import pgl.infra.table.RowTable;
 import pgl.infra.utils.IOUtils;
 import pgl.infra.utils.PStringUtils;
+import pgl.infra.utils.wheat.RefV1Utils;
+import pgl.infra.window.SimpleWindow;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -21,8 +25,9 @@ import java.util.*;
 public class DeleteriousXPCLR2 {
 
     public DeleteriousXPCLR2(){
-//        this.pipeDeleteriousXPCLR();
-        this.pipeFilterTaxa();
+        this.pipeDeleteriousXPCLR();
+//        this.pipeFilterTaxa();
+//        this.getCDSlength();
 
     }
 
@@ -37,30 +42,52 @@ public class DeleteriousXPCLR2 {
      * 获取不同ref-obj对测试下的，100kb 有效cds长度，和非选择区域的cdslength
      */
     public void getCDSlength(){
-        String infileS = "";
-        String outfileS = "";
-        try {
-            BufferedReader br = AoFile.readFile(infileS);
+        String outfileS = "/Users/Aoyue/Documents/cds.txt"; //写出所有CDS list 的 bed 格式，为下文计算 overlap 打基础
+        String outfileS2 = "/Users/Aoyue/Documents/gene_cdsLength.txt"; //写出每个基因的cds 长度
+        String geneFeatureFileS = "/Users/Aoyue/Documents/Data/wheat/gene/v1.1/wheat_v1.1_Lulab.pgf";
+        String hcGeneFileS = "/Users/Aoyue/Documents/Data/wheat/gene/001_geneHC/geneHC.txt";
+        RowTable<String> gt = new RowTable<>(hcGeneFileS);
+        GeneFeature gf = new GeneFeature(geneFeatureFileS);
+        gf.sortGeneByName(); //通过名字排序
+
+        try{
             BufferedWriter bw = AoFile.writeFile(outfileS);
-            String header = br.readLine();
-            bw.write(header);bw.newLine();
-            String temp = null;
-            List<String> l = new ArrayList<>();
-            int cnt = 0;
-            while ((temp = br.readLine()) != null) {
-                l = PStringUtils.fastSplit(temp);
-                cnt++;
+            BufferedWriter bw2 = AoFile.writeFile(outfileS2);
+
+            int geneIndex = -1;
+            int tranIndex = -1;
+            int cdsStart = -1;
+            int cdsEnd = -1;
+            for (int j = 0; j < gt.getRowNumber(); j++) { //gt已通过名字进行了排序
+                geneIndex = gf.getGeneIndex(gt.getCell(j, 0)); //根据基因名字（不是转录本的名字，没有.后缀12）获取索引
+                int chr = gf.getGeneChromosome(geneIndex);
+                int geneCDSlength = 0;
+                for (int k = 0; k < gf.getTranscriptNumber(geneIndex); k++) { //获取最长转录本的index
+                    if (!gt.getCell(j,1).equals(gf.getTranscriptName(geneIndex, k)))continue; //如果 gt.getCell(j,1) 是该基因的最长转录本，已经提前总结出
+                    tranIndex = k; //该循环的意思是：如果最长转录本不等于k，那么就跳出循环，一直到等于k为止，最后终止循环。
+                    break;
+                }
+                List<Range> cdsList = gf.getCDSList(geneIndex, tranIndex); //根据 gene index 和 tranIndex 获取该转录本的 cdsList
+                for (int k = 0; k < cdsList.size(); k++) {
+                    cdsStart = cdsList.get(k).start;
+                    cdsEnd = cdsList.get(k).end;
+                    geneCDSlength = geneCDSlength + cdsEnd-cdsStart;
+                    if (0<chr && chr <43){
+                        bw.write(String.valueOf(chr) + "\t" + String.valueOf(cdsStart -1) + "\t" + String.valueOf(cdsEnd -1) + "\t" + String.valueOf( cdsEnd-cdsStart));
+                        bw.newLine();
+                    }
+                }
+                bw2.write(chr  + "\t" + gf.getGeneName(geneIndex)+ "\t" + geneCDSlength);
+                bw2.newLine();
 
             }
-            br.close();
-            bw.flush();
-            bw.close();
-            System.out.println();
-        } catch (Exception e) {
+            bw.flush();bw.close();
+            bw2.flush();bw2.close();
+
+        }catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
         }
-
     }
 
     public void step0(){

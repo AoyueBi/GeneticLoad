@@ -105,6 +105,117 @@ public class VariantsSum {
 //        this.WindowDel_Nonsyn_vsSyn_fromExonAnnotation();
 //        this.addRecombinationfromScience(); //该方法凑效！思路：将 del nonysn syn 数据的滑窗设置成和science一致，然后再将重组率文件合并，后续进行其他处理。本次数据分析采用此方法。
 
+        this.addDAF222222222();
+
+
+
+    }
+
+
+
+    /**
+     * 老师的方法,copy 一遍
+     * 该方法的输入文件是 popdepth 过滤前（2020年5月份之前的结果），chr001有45113sites的exonAnnotation文件，
+     * 今日2020年12月30日，重新计算DAF值
+     * 为验证popDepth过滤后，Ref bias 有所减轻
+     */
+    public void addDAF222222222 () {
+        String dirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/001";
+        List<File> fList = AoFile.getFileListInDir(dirS);
+        fList.parallelStream().forEach(f -> {
+            String header = null;
+            List<String> recordList = new ArrayList();
+            String tem = null;
+            try {
+                BufferedReader br = AoFile.readFile(f.getAbsolutePath());
+                header = br.readLine();
+                List<String> l = PStringUtils.fastSplit(header);
+                StringBuilder sb = new StringBuilder(header);
+                sb.append("\tDAF\tDAF_ABD\t").append(l.get(9).replaceFirst("AAF", "DAF"));
+                header = sb.toString();
+                String temp = null;
+                while ((temp = br.readLine()) != null) {
+                    recordList.add(temp);
+                }
+                br.close();
+                BufferedWriter bw = AoFile.writeFile(f.getAbsolutePath());
+                bw.write(header);
+                bw.newLine();
+                float daf = -1;
+                float dafABD = -1;
+                float dafOther = -1;
+                String subMajor = null;
+                String subMinor = null;
+                String ancestral = null;
+                String derivedSIFT = null;
+                double subMaf = -1;
+                for (int i = 0; i < recordList.size(); i++) {
+                    sb.setLength(0);
+                    sb.append(recordList.get(i)).append("\t");
+                    l = PStringUtils.fastSplit(recordList.get(i));
+                    ancestral = l.get(15);
+
+                    if (l.get(5).equals(ancestral)) { //major
+                        sb.append((float)Double.parseDouble(l.get(7))).append("\t");
+                    }
+                    else if (l.get(6).equals(ancestral)) { //minor
+                        sb.append((float)(1- Double.parseDouble(l.get(7)))).append("\t");
+                    }
+                    else sb.append("NA\t");
+
+                    if (!l.get(8).equals("NA")){
+
+
+                    }
+                    if (Double.parseDouble(l.get(8)) < 0.5) { //AAF_ABD 小于0.5， alt是minor  //******** 总结：要看在亚群体内，谁是major,谁是minor. 与大群体没有关系。
+                        subMajor = l.get(3);
+                        subMinor = l.get(4);
+                        subMaf = Double.parseDouble(l.get(8));
+                    }
+                    else { //AAF_ABD 大于0.5， alt是major
+                        subMajor = l.get(4);
+                        subMinor = l.get(3);
+                        subMaf = 1 - Double.parseDouble(l.get(8));
+                    }
+                    if (ancestral.equals(subMajor)) { //alt是minor，ref是major, derived 是 aaf;   alt 是major,ref 是minor, derived是 1-aaf
+                        sb.append((float)subMaf).append("\t");
+                    }
+                    else if (ancestral.equals(subMinor)) { //alt是minor,ref是major,derived是1-aaf; alt是major,ref是mionr,derived是aaf
+                        sb.append((float)(1-subMaf)).append("\t");
+                    }
+                    else sb.append("NA\t");
+
+                    tem = recordList.get(i);
+                    if (Double.parseDouble(l.get(9)) < 0.5) {
+                        subMajor = l.get(3);
+                        subMinor = l.get(4);
+                        subMaf = Double.parseDouble(l.get(9));
+                    }
+                    else {
+                        subMajor = l.get(4);
+                        subMinor = l.get(3);
+                        subMaf = 1 - Double.parseDouble(l.get(9));
+                    }
+                    if (ancestral.equals(subMajor)) {
+                        sb.append((float)subMaf);
+                    }
+                    else if (ancestral.equals(subMinor)) {
+                        sb.append((float)(1-subMaf));
+                    }
+                    else sb.append("NA");
+                    bw.write(sb.toString());
+                    bw.newLine();
+                }
+                bw.flush();
+                bw.close();
+                System.out.println(f.getName());
+            }
+            catch (Exception e) {
+                System.out.println(tem);
+                e.printStackTrace();
+            }
+        });
+        // java -Xms50g -Xmx200g -jar PlantGenetics.jar > log_addDAFbyFeisMethod_20200720.txt 2>&1 &
     }
 
 
