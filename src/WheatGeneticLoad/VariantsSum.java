@@ -105,7 +105,7 @@ public class VariantsSum {
 //        this.WindowDel_Nonsyn_vsSyn_fromExonAnnotation();
 //        this.addRecombinationfromScience(); //该方法凑效！思路：将 del nonysn syn 数据的滑窗设置成和science一致，然后再将重组率文件合并，后续进行其他处理。本次数据分析采用此方法。
 
-        this.addDAF222222222();
+//        this.addDAF222222222();
 
 
 
@@ -163,46 +163,56 @@ public class VariantsSum {
                     }
                     else sb.append("NA\t");
 
+
                     if (!l.get(8).equals("NA")){
+                        if (Double.parseDouble(l.get(8)) < 0.5) { //AAF_ABD 小于0.5， alt是minor  //******** 总结：要看在亚群体内，谁是major,谁是minor. 与大群体没有关系。
+                            subMajor = l.get(3);
+                            subMinor = l.get(4);
+                            subMaf = Double.parseDouble(l.get(8));
+                        }
+                        else { //AAF_ABD 大于0.5， alt是major
+                            subMajor = l.get(4);
+                            subMinor = l.get(3);
+                            subMaf = 1 - Double.parseDouble(l.get(8));
+                        }
+                        if (ancestral.equals(subMajor)) { //alt是minor，ref是major, derived 是 aaf;   alt 是major,ref 是minor, derived是 1-aaf
+                            sb.append((float)subMaf).append("\t");
+                        }
+                        else if (ancestral.equals(subMinor)) { //alt是minor,ref是major,derived是1-aaf; alt是major,ref是mionr,derived是aaf
+                            sb.append((float)(1-subMaf)).append("\t");
+                        }
+                        else sb.append("NA\t");
 
+                    }else{
+                        sb.append("NA\t");
+                    }
 
-                    }
-                    if (Double.parseDouble(l.get(8)) < 0.5) { //AAF_ABD 小于0.5， alt是minor  //******** 总结：要看在亚群体内，谁是major,谁是minor. 与大群体没有关系。
-                        subMajor = l.get(3);
-                        subMinor = l.get(4);
-                        subMaf = Double.parseDouble(l.get(8));
-                    }
-                    else { //AAF_ABD 大于0.5， alt是major
-                        subMajor = l.get(4);
-                        subMinor = l.get(3);
-                        subMaf = 1 - Double.parseDouble(l.get(8));
-                    }
-                    if (ancestral.equals(subMajor)) { //alt是minor，ref是major, derived 是 aaf;   alt 是major,ref 是minor, derived是 1-aaf
-                        sb.append((float)subMaf).append("\t");
-                    }
-                    else if (ancestral.equals(subMinor)) { //alt是minor,ref是major,derived是1-aaf; alt是major,ref是mionr,derived是aaf
-                        sb.append((float)(1-subMaf)).append("\t");
-                    }
-                    else sb.append("NA\t");
 
                     tem = recordList.get(i);
-                    if (Double.parseDouble(l.get(9)) < 0.5) {
-                        subMajor = l.get(3);
-                        subMinor = l.get(4);
-                        subMaf = Double.parseDouble(l.get(9));
+                    if (!l.get(9).equals("NA")){
+                        if (Double.parseDouble(l.get(9)) < 0.5) {
+                            subMajor = l.get(3);
+                            subMinor = l.get(4);
+                            subMaf = Double.parseDouble(l.get(9));
+                        }
+                        else {
+                            subMajor = l.get(4);
+                            subMinor = l.get(3);
+                            subMaf = 1 - Double.parseDouble(l.get(9));
+                        }
+                        if (ancestral.equals(subMajor)) {
+                            sb.append((float)subMaf);
+                        }
+                        else if (ancestral.equals(subMinor)) {
+                            sb.append((float)(1-subMaf));
+                        }
+                        else sb.append("NA");
+
+                    }else{
+                        sb.append("NA");
                     }
-                    else {
-                        subMajor = l.get(4);
-                        subMinor = l.get(3);
-                        subMaf = 1 - Double.parseDouble(l.get(9));
-                    }
-                    if (ancestral.equals(subMajor)) {
-                        sb.append((float)subMaf);
-                    }
-                    else if (ancestral.equals(subMinor)) {
-                        sb.append((float)(1-subMaf));
-                    }
-                    else sb.append("NA");
+
+
                     bw.write(sb.toString());
                     bw.newLine();
                 }
@@ -1968,9 +1978,14 @@ public class VariantsSum {
 //        String outfileS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/004_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
 //        AoFile.mergeTxt(infileDirS,outfileS);
 
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/018_exonSNPAnnotation";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/019_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/018_exonSNPAnnotation";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/019_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
+//        AoFile.mergeTxt(infileDirS,outfileS);
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/003";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/002_exonSNP_anno_beforePopDepth.txt.gz";
         AoFile.mergeTxt(infileDirS,outfileS);
+
 
         //java -Xms50g -Xmx200g -jar PlantGenetics.jar > log_mergeExonSNPAnnotation_20200609.txt 2>&1 &
     }
@@ -2052,7 +2067,9 @@ public class VariantsSum {
 
 //        String dirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/003_exonSNPAnnotation";
 
-        String dirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/003_exonSNPAnnotation";
+//        String dirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/003_exonSNPAnnotation";
+
+        String dirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/004_exonAnnotation_beforeDepthFilter/002";
         List<File> fList = AoFile.getFileListInDir(dirS);
         fList.parallelStream().forEach(f -> {
             String gerpFileS = f.getName().split("_")[0]+"_gerp.txt.gz";
@@ -2114,9 +2131,13 @@ public class VariantsSum {
      * 在上文fei计算的DAF基础上，将DAF中等于1或者0的值都替换成NA，不做分析。
      */
     public void remove01(){
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/012/001_exonAnnotation";
-        String outfileDirS ="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/012/002_remove01";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/012/001_exonAnnotation";
+//        String outfileDirS ="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/012/002_remove01";
 //        AoFile.readheader("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/012/001_exonAnnotation/chr001_SNP_anno.txt.gz");
+
+        AoFile.readheader("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/001/chr006_SNP_anno.txt");
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/001";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/002";
         List<File> fsList = AoFile.getFileListInDir(infileDirS);
 
         fsList.parallelStream().forEach(f ->{
