@@ -139,6 +139,68 @@ public class CalVCF {
 
     }
 
+    /**
+     *
+     * @param infileS
+     * @param taxaArray
+     * @return
+     */
+    public static List<String> extractGenotable(String infileS, List<String> taxaArray){
+        List<String> out = new ArrayList<>();
+        List<Integer> indexTaxa = new ArrayList<>();
+        Collections.sort(taxaArray);
+
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            while ((temp = br.readLine()) != null) {
+
+                //***********************************************************//
+                //开始处理taxa的问题，先把所有taxa放入array中，记住在temp中的index
+                if (temp.startsWith("CHROM")) {
+                    l = PStringUtils.fastSplit(temp);
+                    String element = "CHROM" + "\t" + l.get(1);
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 2; i < l.size(); i++) { //需要修改需要修改需要修改需要修改需要修改需要修改需要修改
+                        String taxon = l.get(i);
+                        int index1 = Collections.binarySearch(taxaArray, taxon);
+
+                        if (index1 > -1) { //当找到列表中的taxa时，写列表中的taxa信息
+                            indexTaxa.add(i);
+                            sb.append("\t").append(l.get(i));
+                        }
+                    }
+                    String line = element + sb.toString();
+                    out.add(line);
+                    Collections.sort(indexTaxa);
+                }
+                if (!temp.startsWith("CHROM")) {
+                    l = PStringUtils.fastSplit(temp);
+
+                    String chr = l.get(0);
+                    String pos = l.get(1);
+                    String element = chr + "\t" + pos;
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 0; i < indexTaxa.size(); i++) { //无论有无基因型，都加进去了
+                        String geno = l.get(indexTaxa.get(i));
+                        sb.append("\t").append(geno);
+                    }
+                    String line = element + sb.toString();
+                    out.add(line);
+                }
+            }
+            br.close();
+
+            System.out.println(infileS + " is completed with line number (with header)" + out.size() + "\tActual taxa size: " + indexTaxa.size() + "\tTotal sites : " );
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        return out;
+    }
+
     public static void extractGenotable(String infileS, List<String> taxaArray, String outfileS){
 
         List<Integer> indexTaxa = new ArrayList<>();

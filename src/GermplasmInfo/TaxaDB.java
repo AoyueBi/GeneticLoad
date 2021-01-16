@@ -164,6 +164,9 @@ public class TaxaDB {
         return out;
     }
 
+    /**
+     * 上述重复代码的循环
+     */
     public void mkcycle(){
         List<String> l = AoFile.getheader("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/taxa_InfoDB.txt");
         for (int i = 1; i < l.size(); i++) {

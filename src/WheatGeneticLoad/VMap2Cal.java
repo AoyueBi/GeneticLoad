@@ -30,13 +30,86 @@ public class VMap2Cal {
     public void sampleSize2variantsDiscovery(){
 //        this.mergeExonVCF();
 //        this.convert2GenoTable();
-        this.randomTaxa();
+//        this.randomTaxa();
+        this.getCount();
 
 
     }
 
+    /**
+     * 根据genotypetable，输出每种分类在每个亚基因组中的个数
+     */
+    public void getCount(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/021_exon_genoTable/test.txt";
+//        List<String> l = Arrays.asList("2", "9", "0","2","2","9");
+//        String test = this.genotypeCount(l);
+//        System.out.println(test);
+
+
+
+    }
+
+
+
+    public boolean ifSegragation_ignoreIfRefisAnc(String genoClassCount){
+        boolean out = false;
+        List<String> l = PStringUtils.fastSplit(genoClassCount,";");
+        int geno0 = Integer.parseInt(l.get(0).split("=")[1]);
+        int geno1 = Integer.parseInt(l.get(1).split("=")[1]);
+        int geno2 = Integer.parseInt(l.get(2).split("=")[1]);
+        int geno9 = Integer.parseInt(l.get(3).split("=")[1]);
+        if (geno1 >0 || geno2 >0){
+            out = true;
+        }else out = false;
+
+        return out;
+    }
+
+    public boolean ifSegragationbyIfRefisAnc(String genoClassCount,String IfrefisAnc){
+        boolean out = false;
+        List<String> l = PStringUtils.fastSplit(genoClassCount,";");
+        int geno0 = Integer.parseInt(l.get(0).split("=")[1]);
+        int geno1 = Integer.parseInt(l.get(1).split("=")[1]);
+        int geno2 = Integer.parseInt(l.get(2).split("=")[1]);
+        int geno9 = Integer.parseInt(l.get(3).split("=")[1]);
+        if (IfrefisAnc.equals("Anc")){
+            if (geno1 >0 || geno2 >0){
+                out = true;
+            }else out = false;
+        }
+        if (IfrefisAnc.equals("Der")){
+            if (geno0 >0 || geno1 >0){
+                out = true;
+            }else out = false;
+        }
+        return out;
+    }
+
+    /**
+     * 判断一堆基因型中的 0/0 1/1 0/1 ./.个数
+     * @return
+     */
+    public String genotypeCount (List<String> geno){
+        String out = null;
+        String[] genoClass = {"0","1","2","9"};
+        int[] genoClassCount = new int[genoClass.length];
+        Arrays.sort(genoClass);
+        for (int i = 0; i < geno.size(); i++) {
+            String query = geno.get(i);
+            int index = Arrays.binarySearch(genoClass,query);
+            if (index <0) System.out.println("There is some error about the genotype, please check your genotype.");
+            genoClassCount[index]++;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("0=").append(genoClassCount[0]).append(";").append("1=").append(genoClassCount[1]).append(";").
+                append("2=").append(genoClassCount[2]).append(";").append("9=").append(genoClassCount[3]);
+        out = sb.toString();
+        return out;
+    }
+
     public void randomTaxa(){
-        //第一阶段： 抽样taxa，非连续抽样
+        //第一阶段： 抽样taxa，非连  续抽样
         String taxaListFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/000_Dsub.txt";
         String[] taxaArray = AoFile.getStringArraybyList(taxaListFileS,0);
 //        int[] sampleArray = {4,9};
@@ -51,16 +124,22 @@ public class VMap2Cal {
                 break;
             }
         }
-
         List<String>[] taxaListArray =  AoMath.continuousRandom(taxaArray,sampleCountList);
-//        System.out.println();
+
 
         //第二阶段：根据第一阶段抽样的taxa,进行genotype table 的提取，并返回数组类型的List
-
         String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/021_exon_genoTable/001_exon_Dsubgenome_genoTable.txt.gz";
         String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/021_exon_genoTable/test.txt";
 //        String[] taxaArray = {"BaiMaZha","BaiQiuMai"};
-        CalVCF.extractGenotable(infileS,taxaArray,outfileS);
+//        CalVCF.extractGenotable(infileS,taxaArray,outfileS);
+
+        List<String> taxaList = new ArrayList<>(); taxaList.add("BaiMaZha");taxaList.add("BaiQiuMai");
+        CalVCF.extractGenotable(infileS,taxaList,outfileS);
+
+
+        //第三阶段：根据geontypeList,进行各种类型的计数
+
+
 
 
 
