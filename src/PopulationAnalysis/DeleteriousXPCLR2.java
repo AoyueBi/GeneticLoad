@@ -32,8 +32,8 @@ public class DeleteriousXPCLR2 {
     }
 
     public void pipeDeleteriousXPCLR(){
-//        this.step0();
-        this.step1();
+        this.step0();
+//        this.step1();
 
 
     }

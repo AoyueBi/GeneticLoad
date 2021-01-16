@@ -81,6 +81,7 @@ public class VariantsSum {
 //        this.addDerived_SIFT();
 //        this.addDAF_parallel(); //********* 方法有误，不做分析。**********
 //        this.addDAF();
+//        this.addDAF222222222();  //
 //        this.remove01();
 //        this.addGerp();
 //        this.addRecombination();
@@ -105,7 +106,8 @@ public class VariantsSum {
 //        this.WindowDel_Nonsyn_vsSyn_fromExonAnnotation();
 //        this.addRecombinationfromScience(); //该方法凑效！思路：将 del nonysn syn 数据的滑窗设置成和science一致，然后再将重组率文件合并，后续进行其他处理。本次数据分析采用此方法。
 
-//        this.addDAF222222222();
+
+//        AoFile.readheader("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/003/chr006_SNP_anno.txt");
 
 
 
@@ -120,7 +122,12 @@ public class VariantsSum {
      * 为验证popDepth过滤后，Ref bias 有所减轻
      */
     public void addDAF222222222 () {
-        String dirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/001";
+//        String dirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/001";
+//        String dirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/003_popDepthBP_addDAF";
+
+        String dirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/002_popDepthBP_addDerivedSIFT_updateAAF";
+
+
         List<File> fList = AoFile.getFileListInDir(dirS);
         fList.parallelStream().forEach(f -> {
             String header = null;
@@ -1982,8 +1989,15 @@ public class VariantsSum {
 //        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/019_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
 //        AoFile.mergeTxt(infileDirS,outfileS);
 
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/003";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/003";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/002_exonSNP_anno_beforePopDepth.txt.gz";
+
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/004_popDepthBP_remove01";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/002_exonSNP_anno_beforePopDepth.txt.gz";
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/004_popDepthBP_addDerivedSIFT_updateAAF_addDAF_remove01";
         String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/002_exonSNP_anno_beforePopDepth.txt.gz";
+
         AoFile.mergeTxt(infileDirS,outfileS);
 
 
@@ -2135,9 +2149,17 @@ public class VariantsSum {
 //        String outfileDirS ="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/012/002_remove01";
 //        AoFile.readheader("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/012/001_exonAnnotation/chr001_SNP_anno.txt.gz");
 
-        AoFile.readheader("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/001/chr006_SNP_anno.txt");
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/001";
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/002";
+        AoFile.readheader("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/003_popDepthBP_addDerivedSIFT_updateAAF_addDAF/chr001_SNP_anno_updateAAF.txt");
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/001";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/002";
+
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/003_popDepthBP_addDAF";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/004_popDepthBP_remove01";
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/003_popDepthBP_addDerivedSIFT_updateAAF_addDAF";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/004_popDepthBP_addDerivedSIFT_updateAAF_addDAF_remove01";
+
+
         List<File> fsList = AoFile.getFileListInDir(infileDirS);
 
         fsList.parallelStream().forEach(f ->{
@@ -2152,14 +2174,18 @@ public class VariantsSum {
                 List<String> l = new ArrayList<>();
                 while((temp=br.readLine()) != null){
                     l = PStringUtils.fastSplit(temp);
-                    String DAF = l.get(17);
-                    String DAF_ABD = l.get(18);
-                    String DAF_AB = l.get(19);
+//                    String DAF = l.get(17);
+//                    String DAF_ABD = l.get(18);
+//                    String DAF_AB = l.get(19);
+
+                    String DAF = l.get(18);
+                    String DAF_ABD = l.get(19);
+                    String DAF_AB = l.get(20);
                     String daf = AoMath.replace10toNA(DAF);
                     String dafABD = AoMath.replace10toNA(DAF_ABD);
                     String dafAB = AoMath.replace10toNA(DAF_AB);
                     //####### 是NA的保持不变，是 1 或者 0 的统统替换成 NA 写个方法把~
-                    for (int i = 0; i < 17; i++) {
+                    for (int i = 0; i < 18; i++) {
                         bw.write(l.get(i) + "\t");
                     }
                     bw.write(daf + "\t" + dafABD + "\t" + dafAB);
@@ -2429,8 +2455,14 @@ public class VariantsSum {
      * 根据alt sift score 和 ref sift score 和 ancestral allele 的状态， 判断 derived allele 的得分， 可能是 alt 也可能是 ref
      */
     public void addDerived_SIFT(){
-        String infileDirS = "/Users/Aoyue/Downloads/003_exonSNPAnnotation";
-        String outfileDirS = "/Users/Aoyue/Downloads/003";
+//        String infileDirS = "/Users/Aoyue/Downloads/003_exonSNPAnnotation";
+//        String outfileDirS = "/Users/Aoyue/Downloads/003";
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/001_popDepthBP";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/002_popDepthBP_addDerivedSIFT";
+
+        AoFile.readheader("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/001_popDepthBP/chr006_SNP_anno.txt");
+        System.out.println();
         List<File> fsList = AoFile.getFileListInDir(infileDirS);
         fsList.forEach(f ->{
             String infileS = f.getAbsolutePath();
@@ -3015,6 +3047,7 @@ public class VariantsSum {
         });
         //java -Xms50g -Xmx200g -jar PlantGenetics.jar > log_mkExonVCF_20200606.txt 2>&1 &
     }
+
 
     /**
      * 提取VMap2的基因区间的基本信息

@@ -41,6 +41,60 @@ public class CalVCF {
 
     }
 
+    /**
+     * chr001.ABDgenome.filterMiss_subset.vcf.gz
+     *
+     * @param infileDirS
+     * @param outfileS
+     */
+    public static void mergeVCF(String infileDirS, String outfileS) {
+        File[] fs = AoFile.getFileArrayInDir(infileDirS);
+        Arrays.sort(fs);
+        try {
+            long startTime = System.nanoTime();
+            BufferedReader br = AoFile.readFile(fs[0].getAbsolutePath());
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp;
+            while ((temp = br.readLine()) != null) {
+                if (temp.startsWith("#")) {
+                    bw.write(temp);
+                    bw.newLine();
+                }
+            }
+            br.close();
+            int total = 0;
+            for (int i = 0; i < fs.length; i++) {
+                br = IOUtils.getTextGzipReader(fs[i].getAbsolutePath());
+                int cnt = 0;
+                while ((temp = br.readLine()) != null) {
+                    if (temp.startsWith("#")) {
+
+                    } else {
+                        cnt++;
+                        StringBuilder sb = new StringBuilder();
+                        sb.append(temp);
+                        bw.write(sb.toString());
+                        bw.newLine();
+
+                    }
+                }
+                total = total + cnt;
+                System.out.println(cnt + "\tsnps in " + fs[i].getName());
+            }
+            System.out.println(total + "\tsnps totally, mergevcf pipeline is completed at\t" + outfileS);
+            br.close();
+            bw.flush();
+            bw.close();
+
+            long endTime = System.nanoTime();
+            float excTime = (float) (endTime - startTime) / 1000000000;
+            System.out.println("Execution time: " + String.format("%.2f", excTime) + "s");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
 
     /**
      *
@@ -83,6 +137,206 @@ public class CalVCF {
 //        String siteQCfileS = new File(outDirS,genomeType + "_site_QC.txt.gz").getAbsolutePath();
 //        String taxaQCFileS = new File (outDirS, genomeType+"_taxa_QC.txt.gz").getAbsolutePath();
 
+    }
+
+    public static void extractGenotable(String infileS, List<String> taxaArray, String outfileS){
+
+        List<Integer> indexTaxa = new ArrayList<>();
+        Collections.sort(taxaArray);
+
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+
+                //***********************************************************//
+                //开始处理taxa的问题，先把所有taxa放入array中，记住在temp中的index
+                if (temp.startsWith("CHROM")) {
+                    l = PStringUtils.fastSplit(temp);
+                    bw.write("CHROM" + "\t" + l.get(1));
+                    for (int i = 2; i < l.size(); i++) { //需要修改需要修改需要修改需要修改需要修改需要修改需要修改
+                        String taxon = l.get(i);
+                        int index1 = Collections.binarySearch(taxaArray, taxon);
+
+                        if (index1 > -1) { //当找到列表中的taxa时，写列表中的taxa信息
+                            indexTaxa.add(i);
+                            bw.write("\t" + l.get(i));
+                        }
+                    }
+                    bw.newLine(); //写完之后记得换行
+                    Collections.sort(indexTaxa);
+                }
+                if (!temp.startsWith("CHROM")) {
+                    l = PStringUtils.fastSplit(temp);
+
+                    String chr = l.get(0);
+                    String pos = l.get(1);
+                    bw.write(chr + "\t" + pos);
+
+                    for (int i = 0; i < indexTaxa.size(); i++) { //无论有无基因型，都加进去了
+                        String geno = l.get(indexTaxa.get(i));
+                        bw.write("\t" + geno);
+                    }
+                    bw.newLine();
+                } //
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println(infileS + " is completed at " + outfileS + "\tActual taxa size: " + indexTaxa.size() + "\tTotal sites : " + cnt);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+
+    /**
+     *
+     * subset genotype table from total genotype table
+     *
+     * @param infileS VCF file
+     * @param taxaArray taxalist without header
+     * @param outfileS TXT file
+     */
+    public static void extractGenotable(String infileS, String[] taxaArray, String outfileS){
+
+        List<Integer> indexTaxa = new ArrayList<>();
+        Arrays.sort(taxaArray);
+
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+
+                //***********************************************************//
+                //开始处理taxa的问题，先把所有taxa放入array中，记住在temp中的index
+                if (temp.startsWith("CHROM")) {
+                    l = PStringUtils.fastSplit(temp);
+                    bw.write("CHROM" + "\t" + l.get(1));
+                    for (int i = 2; i < l.size(); i++) { //需要修改需要修改需要修改需要修改需要修改需要修改需要修改
+                        String taxon = l.get(i);
+                        int index1 = Arrays.binarySearch(taxaArray, taxon);
+
+                        if (index1 > -1) { //当找到列表中的taxa时，写列表中的taxa信息
+                            indexTaxa.add(i);
+                            bw.write("\t" + l.get(i));
+                        }
+                    }
+                    bw.newLine(); //写完之后记得换行
+                    Collections.sort(indexTaxa);
+                }
+                if (!temp.startsWith("CHROM")) {
+                    l = PStringUtils.fastSplit(temp);
+
+                    String chr = l.get(0);
+                    String pos = l.get(1);
+                    bw.write(chr + "\t" + pos);
+
+                    for (int i = 0; i < indexTaxa.size(); i++) { //无论有无基因型，都加进去了
+                        String geno = l.get(indexTaxa.get(i));
+                        bw.write("\t" + geno);
+                    }
+                    bw.newLine();
+                } //
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println(infileS + " is completed at " + outfileS + "\tActual taxa size: " + indexTaxa.size() + "\tTotal sites : " + cnt);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+
+    /**
+     * convert specific taxa in taxaListFileS(without header) into genotype table,
+     * aims to calculate the heterozygous genotype proportion along chromosome later or for other pipeline.
+     * Here, I define 0/0 -> 0, 0/1 -> 1, 1/1 -> 2, ./. -> NA
+     * @param infileS VCF file
+     * @param taxaArray taxalist without header
+     * @param outfileS TXT file
+     */
+    public static void extractVCFtable(String infileS, String[] taxaArray, String outfileS){
+
+        List<Integer> indexTaxa = new ArrayList<>();
+        Arrays.sort(taxaArray);
+
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                //***********************************************************//
+                if (temp.startsWith("##")) {//将注释信息写入表格中
+
+                }
+                //***********************************************************//
+                //开始处理taxa的问题，先把所有taxa放入array中，记住在temp中的index
+                if (temp.startsWith("#CHROM")) {
+                    l = PStringUtils.fastSplit(temp);
+                    bw.write("CHROM" + "\t" + l.get(1));
+                    for (int i = 9; i < l.size(); i++) {
+                        String taxon = l.get(i);
+                        int index1 = Arrays.binarySearch(taxaArray, taxon);
+
+                        if (index1 > -1) { //当找到列表中的taxa时，写列表中的taxa信息
+                            indexTaxa.add(i);
+                            bw.write("\t" + l.get(i));
+                        }
+                    }
+                    bw.newLine(); //写完之后记得换行
+                    Collections.sort(indexTaxa);
+                }
+                if (!temp.startsWith("#")) {
+                    l = PStringUtils.fastSplit(temp);
+                    String altList = l.get(4);
+                    int nAlt = PStringUtils.fastSplit(altList, ",").size();
+                    if (nAlt > 1) continue; //filter alt num with 2 or more
+                    if (altList.equals("D") || altList.equals("I")) continue; //filter D I
+
+                    String chr = l.get(0);
+                    String pos = l.get(1);
+                    bw.write(chr + "\t" + pos);
+
+                    for (int i = 0; i < indexTaxa.size(); i++) { //无论有无基因型，都加进去了
+                        String geno = l.get(indexTaxa.get(i));
+                        geno = PStringUtils.fastSplit(geno,":").get(0);
+//                        System.out.println(geno);
+                        if(geno.equals("0/0")){
+                            bw.write( "\t0");
+                        }
+                        if(geno.equals("0/1") || geno.equals("1/0")){
+                            bw.write(  "\t1");
+                        }
+                        if(geno.equals("1/1")){
+                            bw.write( "\t2");
+                        }
+                        if(geno.equals("./.")){
+                            bw.write("\t9");
+                        }
+                    }
+                    bw.newLine();
+                } //
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println(infileS + " is completed at " + outfileS + "\tActual taxa size: " + indexTaxa.size() + "\tTotal sites : " + cnt);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
     /**

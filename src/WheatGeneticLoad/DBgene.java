@@ -30,7 +30,7 @@ import pgl.infra.range.Range;
 public class DBgene {
 
     public DBgene(){
-//        this.getHexaploidAnnotation();
+        this.getHexaploidAnnotation();
 //        this.getTranscriptSum(); //多线程运行造成内存不足，故使用单个染色体进行运行
 //        this.getTranscriptSum_bychr();
 //        this.script_getTranscriptSum();
@@ -61,7 +61,7 @@ public class DBgene {
 //        this.getHexaploidAnnotation_();
 //        this.script_getTranscriptSum();
 //        this.mergeTxt();
-                this.mkSpreadFormat_hexaploid();
+//                this.mkSpreadFormat_hexaploid();
 //                this.addTriadIDforEpigenomicMap();
 
 

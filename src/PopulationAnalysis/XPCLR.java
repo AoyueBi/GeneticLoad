@@ -33,7 +33,7 @@ public class XPCLR {
         /**
          * 1： XPCLR 程序文件准备和脚本运行
          */
-//        this.checkAnnotationDBisinExonVCF(); //确定annotation的位点都在exonVCF中!！！ 只运行一次即可
+        this.checkAnnotationDBisinExonVCF(); //确定annotation的位点都在exonVCF中!！！ 只运行一次即可
 //        this.getExonVCFbyPloidy(); //在提取基因型之前，先把没有分离的位点去除掉，因此要提取基因型，每次都需运行
 //        this.mkSNPfile_hexaploid(); //重要重要！！！分很多步骤
 //        this.mkSNPfile_tetraploid(); //
@@ -2101,9 +2101,15 @@ public class XPCLR {
      */
     public void checkAnnotationDBisinExonVCF(){
 
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/018_exonSNPAnnotation";
-        String vcffileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/016_exonVCF";
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/001_ifAnnotationExonVCF";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/018_exonSNPAnnotation";
+//        String vcffileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/016_exonVCF";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/001_ifAnnotationExonVCF";
+
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/009_exonSNPAnnotation_addAnc_addDAF_barley_secalePasimony";
+        String vcffileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/002_exonSNPVCF";
+        String outfileDirS = "/Users/Aoyue/Documents/test";
+
         List<File> fsList = AoFile.getFileListInDir(infileDirS);
         fsList.stream().forEach(f -> {
             try {
