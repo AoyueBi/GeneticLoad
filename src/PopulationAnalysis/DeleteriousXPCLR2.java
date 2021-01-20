@@ -32,11 +32,132 @@ public class DeleteriousXPCLR2 {
     }
 
     public void pipeDeleteriousXPCLR(){
-        this.step0();
-//        this.step1();
+//        this.step0(); //第一次计算
+//        this.step1(); //第二次计算
+        this.step3(); //第三次计算:ref bias evaluation 后，load 变化
+
 
 
     }
+
+    public void step3(){
+        //************************************** new  2020-12-26 **************************************
+//**************************** 不必修改 **************************//
+        String variantType = null;
+        String variantType1 = "001_synonymous";
+        String variantType2 = "002_nonsynonymous";
+        String variantType3 = "003_nonsynGERPandDerivedSIFT";
+        String variantType4 = "004_nonsynDerivedSIFT";
+        String variantType5 = "005_GERP";
+        String variantType6 = "006_nonsynGERPandDerivedSIFT_correction";
+        String variantType7 = "007_nonsynDerivedSIFT_correction";
+        String variantType8 = "008_GERP_correction";
+
+        String ratioType = null;
+        String ratioType1 = "bySub";
+        String ratioType2 = "bysub_mergeByTaxa";
+        String group = null;
+
+        String[] choice1 = {variantType1,variantType2,variantType3,variantType4,variantType5,variantType6,variantType7,variantType8};
+        String[] choice3 = {ratioType1,ratioType2};
+
+        //**************************** up 不必修改 **************************//
+        String parentDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/001_delCount";
+        new File(parentDirS).mkdirs();
+        for (int k = 0; k < choice1.length; k++) {
+            variantType = choice1[k];
+            String addCountFileS = new File(parentDirS,variantType + "_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr.txt").getAbsolutePath();
+            this.countDeleteriousVMapII_byChr_refBiasEvaluation(variantType,addCountFileS);
+        }
+
+//        int cnt = 0;
+//        for (int k = 1; k < choice1.length; k++) {
+//            variantType = choice1[k];
+//            for (int l = 0; l < choice3.length; l++) {
+//                ratioType = choice3[l];
+//                String infileS1 = new File(parentDirS,variantType + "_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr_" + ratioType + ".txt").getAbsolutePath();
+//                String infileS2 = new File(parentDirS,"001_synonymous" + "_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr_" + ratioType +".txt").getAbsolutePath();
+//                this.DeltoSynonymousRatio(infileS1,ratioType,infileS2);
+//                cnt++;
+//                System.out.println("********" + cnt + " " + variantType + " " + ratioType);
+//            }
+//        }
+
+//        this.filterLandrace();
+    }
+
+
+    /**
+     * 将按照sub和taxa产生的有害突变的结果，进行过滤，使六倍体栽培品种都为欧洲的栽培品种，六倍体的农家种都为欧洲的农家种
+     * 然后进行个体Load的判断
+     */
+    public void filterLandrace(){
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/001_delCount";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/001_delCount_filterLR_CL";
+        new File(outfileDirS).mkdirs();
+
+        String taxaSummaryFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/taxa_InfoDB.txt";
+        AoFile.readheader(taxaSummaryFileS);
+        HashMap<String, String> taxaGenomeTypeMap = new HashMap();
+        HashMap<String, String> taxaContinentMap = new HashMap();
+        HashMap<String, String> taxaSubspeciesMap = new HashMap();
+        RowTable<String> t = new RowTable (taxaSummaryFileS);
+        for (int i = 0; i < t.getRowNumber(); i++) {
+            taxaGenomeTypeMap.put(t.getCellAsString(i, 0), t.getCellAsString(i, 3));
+            taxaContinentMap.put(t.getCellAsString(i, 0), t.getCellAsString(i, 9));
+            taxaSubspeciesMap.put(t.getCellAsString(i, 0), t.getCellAsString(i, 15));
+        }
+
+        File[] fs = AoFile.getFileArrayInDir(infileDirS);
+        for (int i = 0; i < fs.length; i++) {
+            File f = fs[i];
+            String infileS = f.getAbsolutePath();
+            String outfileS = new File(outfileDirS, f.getName()).getAbsolutePath();
+            try {
+                BufferedReader br = AoFile.readFile(infileS);
+                BufferedWriter bw = AoFile.writeFile(outfileS);
+                String header = br.readLine();
+                bw.write(header);bw.newLine();
+                String temp = null;
+                List<String> l = new ArrayList<>();
+                int cnt = 0;
+                while ((temp = br.readLine()) != null) {
+                    l = PStringUtils.fastSplit(temp);
+                    cnt++;
+                    String taxa = l.get(0);
+                    //过滤条件，如果是六倍体，如果是landrace，如果是欧洲的，就写出来；如果是cultivar,如果是欧洲的，也写出来； 如果不是六倍体，全都写出来。
+                    //故，我需要知道倍性，大洲，树上的亚群信息
+                    String genomeType = taxaGenomeTypeMap.get(taxa);
+                    String continent = taxaContinentMap.get(taxa);
+                    String subspecies = taxaSubspeciesMap.get(taxa);
+                    if (genomeType.equals("AABBDD")){
+                        if (subspecies.equals("Landrace")){
+                            if (continent.equals("Europe")){
+                                bw.write(temp);
+                                bw.newLine();
+                            }
+                        }
+                        if (subspecies.equals("Cultivar")){
+                            bw.write(temp);
+                            bw.newLine();
+                        }
+                    }
+                    else {
+                        bw.write(temp);
+                        bw.newLine();
+                    }
+                }
+                br.close();
+                bw.flush();
+                bw.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
+        }
+    }
+
+
 
     /**
      * 获取不同ref-obj对测试下的，100kb 有效cds长度，和非选择区域的cdslength
@@ -400,6 +521,405 @@ public class DeleteriousXPCLR2 {
             }
         }
     }
+
+
+
+    public void countDeleteriousVMapII_byChr_refBiasEvaluation(String type, String addCountFileAddGroupS) {
+
+        //model
+
+        //######## 需要修改 ########//
+//        String exonVCFDirS = ""; //外显子变异数据
+//        String SNPAnnoFileS = ""; //注释信息库合并后的总文件
+//        AoFile.readheader(SNPAnnoFileS);
+
+        int cntNONSY = 0; //非同义突变的个数
+
+        //########### 大麦和黑麦简约法 ******* VMap2.0-2020 *********** 加上Derived SIFT的数据库 2020-07-21 ################w
+        String exonVCFDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/016_exonVCF"; //外显子变异数据
+        String SNPAnnoFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/019_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz"; //注释信息库合并后的总文件
+        AoFile.readheader(SNPAnnoFileS);
+        //************* 无需修改的路径 ****************** //
+        String addCountFileS = new File(addCountFileAddGroupS).getAbsolutePath().replaceFirst(".txt",".temp.txt"); //有害变异加性模型输出文件
+
+        /**
+         *  ################################### step1: 初始化染色体集合
+         */
+        int minDepth = 2;//inclusive
+        int chrNum = 42;
+        ArrayList<Integer> chrList = new ArrayList();
+        for (int i = 0; i < chrNum; i++) {
+            chrList.add(i + 1);
+        }
+        System.out.println("Finished step1: completing the initialization of chromosome.");
+
+        /**
+         *  ################################### step2: posList  charList 补充完整
+         */
+
+        int[][] delePos = new int[chrNum][];
+        char[][] deleChar = new char[chrNum][];
+
+        TIntArrayList[] posList = new TIntArrayList[chrNum];
+        TCharArrayList[] charList = new TCharArrayList[chrNum];
+        for (int i = 0; i < chrNum; i++) { //集合类数组，要初始化每一个list
+            posList[i] = new TIntArrayList();
+            charList[i] = new TCharArrayList();
+        }
+
+        String derivedAllele = null;
+
+        try {
+            BufferedReader br = AoFile.readFile(SNPAnnoFileS);
+            String temp = null;
+            String header = br.readLine();
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                int index = Integer.parseInt(l.get(1)) - 1; //染色体号的索引 ################ 需要修改 需要修改 需要修改 ################
+                int pos = Integer.parseInt(l.get(2)); //################ 需要修改 需要修改 需要修改 ################
+                String variantType = l.get(12); //################ 需要修改 需要修改 需要修改 ################
+                String sift = l.get(16); //################ 需要修改 需要修改 需要修改 ################
+                String gerp = l.get(20); //################ 需要修改 需要修改 需要修改 ################
+
+                //********************* 过滤没有 ancestral allele 信息的位点
+                //################### 需要修改 //###################//###################//###################//###################
+                ////不同的数据库，这一列的信息不一样，千万要注意!!!!!!!!!!!!!!!!! 祖先基因的数据库
+                String ancestralAllele = l.get(15);
+                //################### 需要修改 //###################//###################//###################//###################
+                String ref = l.get(3);
+                String alt = l.get(4);
+                String majorAllele = l.get(5);
+                String minorAllele = l.get(6);
+                if(!(ancestralAllele.equals(ref)||ancestralAllele.equals(alt)))continue;
+
+
+                /**
+                 ******** 定义有害突变，不是有害突变，就忽略不计 ################ 需要修改 需要修改 需要修改 ################
+                 */
+
+                if (type.equals("001_synonymous")){
+                    if (!variantType.equals("SYNONYMOUS"))continue;
+                }
+                if (type.equals("002_nonsynonymous")){
+                    if (!variantType.equals("NONSYNONYMOUS"))continue;
+                }
+                if (type.equals("003_nonsynGERPandDerivedSIFT")){
+                    if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
+                    if(gerp.startsWith("N")) continue; //说明必须满足GERP有值
+                    if (sift.startsWith("N"))continue; //说明必须满足有sift值
+                    double gerpd = Double.parseDouble(gerp);
+                    double siftd = Double.parseDouble(sift);
+                    if (gerpd < 1) continue; //说明必须满足gerp大于1
+                    if (siftd > 0.05) continue; //说明必须满足sift小于等于0.05
+                }
+
+                if (type.equals("004_nonsynDerivedSIFT")){
+                    if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
+                    if (sift.startsWith("N"))continue; //说明必须满足有sift值
+                    double siftd = Double.parseDouble(sift);
+                    if (siftd > 0.04) continue; //说明必须满足sift小于等于0.05
+                }
+
+                if (type.equals("005_GERP")){
+                    if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
+                    if(gerp.startsWith("N")) continue; //说明必须满足GERP有值
+                    double gerpd = Double.parseDouble(gerp);
+                    if (gerpd < 1) continue; //说明必须满足gerp大于1
+                }
+
+                if (type.equals("006_nonsynGERPandDerivedSIFT_correction")){
+                    if (ancestralAllele.equals(ref)){ //
+                        if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
+                        if(gerp.startsWith("N")) continue; //说明必须满足GERP有值
+                        if (sift.startsWith("N"))continue; //说明必须满足有sift值
+                        double gerpd = Double.parseDouble(gerp);
+                        double siftd = Double.parseDouble(sift);
+                        if (gerpd < 1.61) continue; //说明必须满足gerp大于1
+                        if (siftd > 0.04) continue; //说明必须满足sift小于等于0.05
+                    }
+                    if (ancestralAllele.equals(alt)){
+                        if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
+                        if(gerp.startsWith("N")) continue; //说明必须满足GERP有值
+                        if (sift.startsWith("N"))continue; //说明必须满足有sift值
+                        double gerpd = Double.parseDouble(gerp);
+                        double siftd = Double.parseDouble(sift);
+                        if (gerpd < 0.0139) continue; //说明必须满足gerp大于1
+                        if (siftd > 0.3) continue; //说明必须满足sift小于等于0.05
+                    }
+                }
+
+                if (type.equals("007_nonsynDerivedSIFT_correction")){
+                    if (ancestralAllele.equals(ref)){ //
+                        if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
+                        if (sift.startsWith("N"))continue; //说明必须满足有sift值
+                        double siftd = Double.parseDouble(sift);
+                        if (siftd > 0.04) continue; //说明必须满足sift小于等于0.05
+                    }
+                    if (ancestralAllele.equals(alt)){
+                        if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
+                        if (sift.startsWith("N"))continue; //说明必须满足有sift值
+                        double siftd = Double.parseDouble(sift);
+                        if (siftd > 0.3) continue; //说明必须满足sift小于等于0.05
+                    }
+                }
+
+                if (type.equals("008_GERP_correction")){
+                    if (ancestralAllele.equals(ref)){ //
+                        if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
+                        if(gerp.startsWith("N")) continue; //说明必须满足GERP有值
+                        double gerpd = Double.parseDouble(gerp);
+                        if (gerpd < 1.61) continue; //说明必须满足gerp大于1
+                    }
+                    if (ancestralAllele.equals(alt)){
+                        if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
+                        if(gerp.startsWith("N")) continue; //说明必须满足GERP有值
+                        double gerpd = Double.parseDouble(gerp);
+                        if (gerpd < 0.0139) continue; //说明必须满足gerp大于1
+                    }
+                }
+
+
+                if (ancestralAllele.equals(majorAllele)) {
+                    derivedAllele = minorAllele;
+                    posList[index].add(pos); //将包含有derived allele的位点添加到Poslist
+                    charList[index].add(derivedAllele.charAt(0)); //返回的是char类型的字符
+                }
+                if (ancestralAllele.equals(minorAllele)) {
+                    derivedAllele = majorAllele;
+                    posList[index].add(pos);
+                    charList[index].add(derivedAllele.charAt(0));
+                }
+                else if (!(ancestralAllele.equals(majorAllele) || ancestralAllele.equals(minorAllele))){
+                }
+                cnt++;
+                if (cnt%100000==0) System.out.println("cnt is " + cnt +" going on at step2");
+
+            }
+            br.close();
+            System.out.println(cntNONSY + " nonsynonymous SNP num");
+
+            for (int i = 0; i < chrNum; i++) { //将每一个list转化为数组
+                delePos[i] = posList[i].toArray();
+                deleChar[i] = charList[i].toArray();
+                Arrays.sort(delePos[i]);
+            }
+            System.out.println("Finished step2: completing the posList  charList.");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        /**
+         *  ################################### step3: taxa 集合 642个taxa
+         */
+        String vmap2TaxaList = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/taxa_InfoDB.txt";
+
+        String[] taxa = AoFile.getStringArraybyList(vmap2TaxaList,0);
+
+        double[][] addCount = new double[chrNum][taxa.length];
+        int[][] recCount = new int[chrNum][taxa.length];
+        int[][] siteWithMinDepthCount = new int[chrNum][taxa.length]; //每个taxa在每条染色体中的有害突变位点
+
+        chrList.parallelStream().forEach(chr -> {
+            String delVmapFileS = "chr" + PStringUtils.getNDigitNumber(3, chr) + "_exon_vmap2.1.vcf.gz";
+            //开始读写VCF文件
+            delVmapFileS = new File(exonVCFDirS, delVmapFileS).getAbsolutePath();
+            BufferedReader br = AoFile.readFile(delVmapFileS);
+            int chrIndex = chr - 1;
+            try {
+                String temp = null;
+                int cnt = 0;
+                HashMap<String, Integer> hmtaxainVCFindex = new HashMap<>();
+                HashMap<String, Integer> hmtaxainTaxaindex = new HashMap<>();
+                //这里涉及2个数组概念， taxa and taxainVCFfile,即总的taxa和在VCF文件中的taxa
+                String[] taxainVCFfile = null;
+                List<String> taxainVCFlist = new ArrayList();
+                while ((temp = br.readLine()) != null) {
+                    if (temp.startsWith("##")) {
+                        continue;
+                    }
+                    if (temp.startsWith("#CHROM")) {//说明进入taxa信息列
+                        List<String> l = PStringUtils.fastSplit(temp, "\t");
+                        taxainVCFfile = new String[l.size() - 9];
+                        for (int i = 9; i < l.size(); i++) {
+                            taxainVCFfile[i - 9] = l.get(i);
+                            hmtaxainVCFindex.put(taxainVCFfile[i - 9], i); //第0个taxa的genotype在第9行，第一个taxa的genotype在第10行，依次类推；
+                        }
+                        // ************** 在总的taxa中，搜索VCF文件中的taxa的index
+                        for (int i = 0; i < taxainVCFfile.length; i++) { //找到taxa
+                            int index = Arrays.binarySearch(taxa, taxainVCFfile[i]);
+                            if (index > -1) {
+                                hmtaxainTaxaindex.put(taxainVCFfile[i], index);
+                            }
+                        }
+                        taxainVCFlist = Arrays.asList(taxainVCFfile);
+                    }
+
+                    if (!temp.startsWith("#")) {
+                        cnt++;
+                        if (cnt % 10000 == 0) {
+                            System.out.println(String.valueOf(cnt/1000) + " kb lines on chr " + String.valueOf(chr));
+                        }
+                        List<String> l = PStringUtils.fastSplit(temp.substring(0, 100), "\t");
+                        int pos = Integer.valueOf(l.get(1)); //根据pos找到index
+                        int index = Arrays.binarySearch(delePos[chrIndex], pos);
+                        if (index < 0) {
+                            continue; //前面建立的 delePos[][] 和deleChar[][] 都是为现在在vcf文件中找位置贡献的，不是有害突变的位点，都过滤。*************************************************************
+                        } //重要：假如该位点有基因型，也是非同义突变位点，但是没有祖先位点状态，于是就过滤。
+                        l = PStringUtils.fastSplit(temp, "\t");
+                        int[] idx = new int[2];
+                        if (l.get(3).charAt(0) == deleChar[chrIndex][index]) { //如果ref allele = deleChar allele
+                            idx[0] = 0; //等于0则代表是 derived allele
+                            idx[1] = 1;
+                        } else {
+                            idx[0] = 1;
+                            idx[1] = 0;
+                        }
+
+
+                        //合计642个taxa，在A Bgenome中只有606（419+187）个，在Dgenome中只有455（419+36）个，我们要找到每个VCF文件中的genotype所对应的taxa的index
+                        //code:本段代码是每行SNP位点，每个taxa的有害位点的统计
+                        for (int i = 0; i < taxainVCFlist.size(); i++) {
+                            int genotypeIndex = hmtaxainVCFindex.get(taxainVCFlist.get(i)); //获取该taxa的基因型所在的列的索引
+                            int taxaIndex = hmtaxainTaxaindex.get(taxainVCFlist.get(i)); //获取该taxa所在总的642个数组中的索引，为后续写文件进行统计
+                            String genoS = l.get(genotypeIndex); //指的是 GT:AD:GL 信息
+                            if (genoS.startsWith(".")) {
+                                continue; //如果以.开头，说明没有基因型信息，此位点没有测到。
+                            }
+                            List<String> ll = PStringUtils.fastSplit(genoS, ":"); //分开为GT   AD   GL三类
+
+                            List<String> lll = PStringUtils.fastSplit(ll.get(1), ","); //lll指将AD提取出来，并以"，"号分割。如 0/0:1,0:0,3,28中 ，1，0分别代表ref和alt的测序深度
+                            int depth = Integer.valueOf(lll.get(0)) + Integer.valueOf(lll.get(1)); //总得测序深度等于 ref + alt
+                            if (depth < minDepth) {
+                                continue; //最小测序深度是2，如果小于2，则弃用
+                            }
+                            lll = PStringUtils.fastSplit(ll.get(0), "/"); //这里lll指的是基因型GT，lll被重新赋值，之前代表的是AD
+                            int v1 = Integer.valueOf(lll.get(0)); //v1等于 ref
+                            int v2 = Integer.valueOf(lll.get(1)); // v2 等于 alt
+                            int sum = 0;
+                            //如果ref是derived allele，那么idx[0]=0;idx[1]=1. 当是0/0时，sum=2; 0/1时，sum=1; 1/1时， sum=0.
+                            //如果alt是derived allele，那么idx[0]=1;idx[1]=0. 当是0/0时，sum=0; 0/1时，sum=1; 1/1时， sum=2.
+                            //
+                            //
+                            if (v1 == idx[0]) { //
+                                sum++;
+                            }
+                            if (v2 == idx[0]) {
+                                sum++;
+                            }
+                            if (sum == 0) {
+                            } else if (sum == 1) {
+                                addCount[chrIndex][taxaIndex] += 0.5;
+                            } else {
+                                addCount[chrIndex][taxaIndex] += 1;
+                                recCount[chrIndex][taxaIndex] += 1;
+                            }
+                            siteWithMinDepthCount[chrIndex][taxaIndex]++; //taxa有多少个有害突变位点
+                        }
+                    }
+                }
+                br.close();
+                System.out.println("Finished step3: calculating each taxa for each chromosome.");
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            /**
+             * 进行每个样品每条染色体的计算
+             */
+        });
+
+        /**
+         *  ################################### step4: 输出每个样品每条染色体的结果
+         */
+
+        try {
+            BufferedWriter bw = AoFile.writeFile(addCountFileS);
+            bw.write("Taxa\tChr\tDeleteriousCountPerHaplotype\tSiteCountWithMinDepth"); //每个taxa有多少个加性效应的derivedAllele 每个taxa在del库中含有基因型的个数
+            bw.newLine();
+            for (int i = 0; i < addCount.length; i++) { //第一层是染色体号
+                String chr = String.valueOf(i + 1);
+                for (int j = 0; j < addCount[0].length; j++) { //第二层是该号染色体的有害变异个数
+                    bw.write(taxa[j] + "\t" + chr + "\t" + String.valueOf(addCount[i][j]) + "\t" + String.valueOf(siteWithMinDepthCount[i][j]));
+                    bw.newLine();
+                }
+            }
+            bw.flush();
+            bw.close();
+
+            System.out.println("Finished step4: writing taxa table.");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        /**
+         *  ################################### step5: 将输出的文件添加分组信息：每个taxa的倍性，亚群分布，mutation burden Index
+         */
+        try{
+            String taxaSummaryFileS = vmap2TaxaList;
+//            String taxaSummaryFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/002_groupbyPloidy_removeBadTaxa/taxaList.txt";
+            AoFile.readheader(taxaSummaryFileS);
+            double depthCut = 1; //只保留深度大于3的taxa样本
+            HashMap<String, String> taxaGroupMap = new HashMap(); //TreeValidatedGroupbyPloidy
+            HashMap<String, String> taxaSubMap = new HashMap(); //TreeValidatedGroupbySubspecies
+            HashMap<String, String> taxaGroupIDMap = new HashMap(); //IndexforMutationBurden
+            RowTable t = new RowTable (taxaSummaryFileS);
+            ArrayList<String> taxaList = new ArrayList();
+            for (int i = 0; i < t.getRowNumber(); i++) {
+                taxaGroupMap.put(t.getCellAsString(i, 0), t.getCellAsString(i, 14));
+                taxaSubMap.put(t.getCellAsString(i, 0), t.getCellAsString(i, 15));
+                taxaGroupIDMap.put(t.getCellAsString(i, 0), t.getCellAsString(i, 12));
+                if (t.getCellAsDouble(i, 2) < depthCut) continue;
+                taxaList.add(t.getCellAsString(i, 0));
+            }
+            String[] taxaWithHighDepth = taxaList.toArray(new String[taxaList.size()]); //taxa是具有高深度的taxa列表
+            Arrays.sort(taxaWithHighDepth);
+
+            BufferedWriter bw = AoFile.writeFile(addCountFileAddGroupS);
+            t=new RowTable(addCountFileS);
+            List<String> headerl = t.getHeader();
+            for (int i = 0; i < headerl.size(); i++) {
+                bw.write(headerl.get(i) + "\t");
+            }
+            bw.write("Group\tSubspecies\tGroupID\tRatio");
+            bw.newLine();
+            for (int i = 0; i < t.getRowNumber(); i++) { //这里的t是 addCountFileS
+                int index = Arrays.binarySearch(taxa, t.getCellAsString(i, 0));
+                if (index < 0) continue;
+//                if(taxaGroupMap.get(taxa[index]).equals("ExclusionHexaploid") || taxaGroupMap.get(taxa[index]).equals("ExclusionTetraploid")) continue; //这里不去除其他 四倍体 六倍体
+                double genotypesite = Double.valueOf(t.getCellAsDouble(i, 2)); //本列指的是在该条染色体中含有有害突变的计数，如果物种不含本条染色体，那么数值为0，过滤掉。
+                if(genotypesite == 0) continue; //如山羊草在A B亚基因组没有值，故这里删去
+                double ratio = Double.valueOf(t.getCellAsDouble(i, 2))/Double.valueOf(t.getCellAsDouble(i, 3));
+                for (int j = 0; j < t.getColumnNumber(); j++) { //按列书写
+                    bw.write(t.getCellAsString(i,j) + "\t");
+                }
+                bw.write(taxaGroupMap.get(taxa[index])
+                        +"\t"+taxaSubMap.get(taxa[index])
+                        +"\t"+taxaGroupIDMap.get(taxa[index])
+                        +"\t"+String.format("%.4f",ratio));
+                bw.newLine();
+            }
+            bw.close();
+            System.out.println("Finished step5: adding group info for taxa table.");
+            System.out.println("Finished in making the del count table for each taxa in each single chromsome");
+            System.out.println("-----------------------------------------------------------------------------");
+            System.out.println("Now begin to merge final file by subgenome.");
+            this.mergeFinalfilebySub(addCountFileAddGroupS); //##################### 重点！！！！！！合并文件！！！！！
+            new File(addCountFileS).delete();
+
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+
 
 
     public void DeltoSynonymousRatio(String infileS1, String ratioType, String infileS2){

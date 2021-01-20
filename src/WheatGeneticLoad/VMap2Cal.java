@@ -4,6 +4,7 @@ import AoUtils.AoFile;
 import AoUtils.AoMath;
 import AoUtils.CalVCF;
 import AoUtils.CountSites;
+import ExonAnnotation.ExonAnnotation;
 import gnu.trove.list.array.TIntArrayList;
 import pgl.infra.table.RowTable;
 import pgl.infra.utils.PStringUtils;
@@ -30,23 +31,105 @@ public class VMap2Cal {
     public void sampleSize2variantsDiscovery(){
 //        this.mergeExonVCF();
 //        this.convert2GenoTable();
-//        this.randomTaxa();
-        this.getCount();
-
+        this.mainPipe();
+//        AoFile.readheader("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/001_exonSNP_anno_addGroup.txt.gz");
 
     }
 
     /**
      * 根据genotypetable，输出每种分类在每个亚基因组中的个数
      */
-    public void getCount(){
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/021_exon_genoTable/test.txt";
+    public File getCountinEachCategory(List<String> genoTable,int taxanum,String outfileS,ExonAnnotation exonanno){
+        //test
 //        List<String> l = Arrays.asList("2", "9", "0","2","2","9");
 //        String test = this.genotypeCount(l);
 //        System.out.println(test);
 
+        //根据类获取分类信息，建立数组
+        String[] variantsGroupArray = exonanno.variantsGroupArray();
+        Arrays.sort(variantsGroupArray);
+        int[] variantsGroupCount = new int[variantsGroupArray.length];
+        //根据是否有ancestral allele,获取derive的 分类信息。建立数组
+        String[] loadGroupArray = exonanno.loadGroupArray();
+        Arrays.sort(loadGroupArray);
+        int[] loadGroupCount = new int[loadGroupArray.length];
 
 
+        try {
+            //根据genoTable 获取 geno 和 chr pos
+            String header = genoTable.get(0);
+            List<String> l = new ArrayList<>();
+            //对每一行进行一个处理
+            for (int i = 1; i < genoTable.size(); i++) { //对每行位点进行处理
+                String temp = genoTable.get(i); //第一行的内容
+                l = PStringUtils.fastSplit(temp);
+                String chr = l.get(0);
+                String pos = l.get(1);
+                List<String> geno = new ArrayList<>();
+                for (int j = 2; j < l.size(); j++) { //从第3个元素开始有基因型输出 index2
+                    geno.add(l.get(j));
+                }
+                String id = chr + "-" + pos;
+                boolean ifinExonAnnotation = exonanno.ifinExonAnnotation(id);
+                if (!ifinExonAnnotation){ //ifinExonAnnotation 为 true, 不执行；
+                    continue;
+                }
+                String genotypeCount = this.genotypeCount(geno); //输出形如：0=3；1=2；2=4；9=0 统计各种基因型的个数
+                String ifRefisAnc = exonanno.getIfRefisAnc(id);
+
+                /**
+                 * 忽略 ancestral 是否存在，判断和参考基因组0/0相比是否有分离；
+                 */
+                boolean ifSegration = this.ifSegragation_ignoreIfRefisAnc(genotypeCount);
+                if (ifSegration){ //代表有分离，说明检测到了变异的存在
+                    String variantsGroup = exonanno.getVariantsGroup(id);
+                    int index = Arrays.binarySearch(variantsGroupArray,variantsGroup);
+                    variantsGroupCount[index]++;
+                }
+
+                /**
+                 * 如果该位点含有祖先等位基因，并且等于ref或者alt，那么就考虑是否有loadGroup的计数
+                 */
+                if (!ifRefisAnc.equals("NA")){
+                    boolean ifSegragationbyIfRefisAnc = this.ifSegragationbyIfRefisAnc(genotypeCount,ifRefisAnc);
+                    if (ifSegragationbyIfRefisAnc){ //代表有分离，说明该位点检测到了derived allele的出现
+                        String loadGroup = exonanno.getLoadGroup(id);
+                        int index = Arrays.binarySearch(loadGroupArray,loadGroup);
+                        loadGroupCount[index]++;
+                    }
+                }
+            } //所有位点处理完毕
+
+            //开始写文件
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            bw.write( "TaxaNum\tGroup\tObservedCount");bw.newLine();
+
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < variantsGroupArray.length; i++) {
+                sb.setLength(0);
+                sb.append(String.valueOf(taxanum)).append("\t").append(variantsGroupArray[i]).append("\t").append(variantsGroupCount[i]);
+                bw.write(sb.toString());
+                bw.newLine();
+            }
+
+            for (int i = 0; i < loadGroupArray.length; i++) {
+                sb.setLength(0);
+                sb.append(String.valueOf(taxanum)).append("\t").append(loadGroupArray[i]).append("\t").append(loadGroupCount[i]);
+                bw.write(sb.toString());
+                bw.newLine();
+            }
+
+            bw.flush();
+            bw.close();
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        File out = new File(outfileS);
+        return out;
     }
 
 
@@ -58,7 +141,7 @@ public class VMap2Cal {
         int geno1 = Integer.parseInt(l.get(1).split("=")[1]);
         int geno2 = Integer.parseInt(l.get(2).split("=")[1]);
         int geno9 = Integer.parseInt(l.get(3).split("=")[1]);
-        if (geno1 >0 || geno2 >0){
+        if (geno1 >0 || geno2 >0){ //都是1/1，或者有 0/1 代表有分离
             out = true;
         }else out = false;
 
@@ -72,21 +155,40 @@ public class VMap2Cal {
         int geno1 = Integer.parseInt(l.get(1).split("=")[1]);
         int geno2 = Integer.parseInt(l.get(2).split("=")[1]);
         int geno9 = Integer.parseInt(l.get(3).split("=")[1]);
-        if (IfrefisAnc.equals("Anc")){
+        if (IfrefisAnc.equals("Anc")){ //1/1 或者 0/1 代表有分离
             if (geno1 >0 || geno2 >0){
                 out = true;
             }else out = false;
         }
-        if (IfrefisAnc.equals("Der")){
-            if (geno0 >0 || geno1 >0){
+        if (IfrefisAnc.equals("Der")){ // 0/0 0/1 代表有分离
+//            if (geno0 >0 || geno1 >0){
+//                out = true;
+//            }else out = false;
+
+            /**
+             * 程序修改，满足该位点必须有分离，并且含有derived 才算是可以发现变异;分为4种情况
+             */
+            if(geno1 >0){
                 out = true;
-            }else out = false;
+            }else if (geno0>0 && geno2>0){
+                out = true;
+            }else if (geno0>0 && geno1>0){
+                out =true;
+            }else if (geno1>0 && geno2>0){
+                out=true;
+            }
         }
+
         return out;
     }
 
     /**
-     * 判断一堆基因型中的 0/0 1/1 0/1 ./.个数
+     * 判断某个位点中，多个个体的基因型中的 0/0 1/1 0/1 ./.个数
+     * 对应码：
+     * 0/0 -> 0
+     * 0/1 -> 1
+     * 1/1 -> 2
+     * ./. -> 9
      * @return
      */
     public String genotypeCount (List<String> geno){
@@ -108,39 +210,86 @@ public class VMap2Cal {
         return out;
     }
 
-    public void randomTaxa(){
-        //第一阶段： 抽样taxa，非连  续抽样
+    public void mainPipe(){
         String taxaListFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/000_Dsub.txt";
-        String[] taxaArray = AoFile.getStringArraybyList(taxaListFileS,0);
-//        int[] sampleArray = {4,9};
-        TIntArrayList sampleCountList = new TIntArrayList();
-        sampleCountList.add(1);
-        for (int i = 1; i < taxaArray.length; i++) { //每隔100个抽一次样******** 合计抽了6次 1，100，200，300，400，456
-            int element = 100*i;
-            if (element < taxaArray.length){
-                sampleCountList.add(element);
-            }else {
-                sampleCountList.add(taxaArray.length);
-                break;
-            }
-        }
-        List<String>[] taxaListArray =  AoMath.continuousRandom(taxaArray,sampleCountList);
-
-
-        //第二阶段：根据第一阶段抽样的taxa,进行genotype table 的提取，并返回数组类型的List
         String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/021_exon_genoTable/001_exon_Dsubgenome_genoTable.txt.gz";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/021_exon_genoTable/test.txt";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/002_sampleSize2VariantsDiscovery";
+        String finaloutfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/003_merge/test.txt";
+
+        String[] sampleType = {"continuous","discreteByConsistentIntervals","discreteByManual"};
+        String choice = "discreteByConsistentIntervals";
+
+        //第一阶段： 抽样taxa，非连续抽样
+        String[] taxaArray = AoFile.getStringArraybyList(taxaListFileS,0);
+        List<List<String>> taxaListList = new ArrayList<>();
+
+        //##**************************** 连续抽样
+        if (choice.equals("continuous")){
+            List<String>[] taxaListArray =  AoMath.continuousRandom_withoutReplacement(taxaArray,10);
+            taxaListList = Arrays.asList(taxaListArray);
+        }
+
+        //##**************************** 非连续抽样，程序化间隔，即间隔式抽样
+        if (choice.equals("discreteByConsistentIntervals")){
+            TIntArrayList sampleCountList = new TIntArrayList();
+            int interval = 5;
+            sampleCountList.add(1);
+            for (int i = 1; i < taxaArray.length; i++) { //每隔100个抽一次样******** 合计抽了6次 1，100，200，300，400，456
+                int element = interval*i;
+                if (element < taxaArray.length){
+                    sampleCountList.add(element);
+                }else {
+                    sampleCountList.add(taxaArray.length);
+                    break;
+                }
+            }
+            List<String>[] taxaListArray =  AoMath.noncontinuousRandom_withoutReplacement(taxaArray,sampleCountList);
+            taxaListList = Arrays.asList(taxaListArray);
+
+        }
+
+        //##**************************** 非连续抽样，自定义抽样，即间隔式抽样
+        if (choice.equals("discreteByManual")){
+            int[] sampleArray = {1,100,300,456};
+            List<String>[] taxaListArray =  AoMath.noncontinuousRandom_withoutReplacement(taxaArray,sampleArray);
+            taxaListList = Arrays.asList(taxaListArray);
+        }
+
+
+        ////第二阶段：根据第一阶段抽样的taxa,进行genotype table 的提取，并返回数组类型的List,第三阶段：根据geontypeList,进行各种类型的计数
+        List<File> fileList = new ArrayList<>();
+        //// 获取基因型table,不输出
+        ExonAnnotation exonanno = new ExonAnnotation();
+        System.out.println("new exonanno class has been build");
+        for (int i = 0; i < taxaListList.size(); i++) {
+            List<String> taxaList = taxaListList.get(i);
+            List<String> genoTable = CalVCF.extractGenotable(infileS,taxaList); //每个table含有header
+            System.out.println("the " + String.valueOf(i+1) + " genotype table has been finished");
+            int taxanum = taxaList.size(); //当下genotype table含有taxanum个taxa,即当下抽样数
+            //#### 每个基因型table
+            String outfileS = new File(outfileDirS,PStringUtils.getNDigitNumber(3,taxanum) + "_variantsDiscovery.txt").getAbsolutePath();
+//            this.getCountinEachCategory(genoTable,taxanum,outfileS,exonanno);
+            fileList.add(this.getCountinEachCategory(genoTable,taxanum,outfileS,exonanno));
+            System.out.println("the " + String.valueOf(i+1) + " variants count has been finished");
+        }
+
+        //////第四阶段：将最终结果进行合并，成为一个文件
+        File[] fileArray = fileList.toArray(new File[fileList.size()]);
+        AoFile.mergeTxt_byFileArray(fileArray,finaloutfileS);
+        System.out.println("All done");
+
+
+
+
+
+        //test
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/021_exon_genoTable/test.txt";
 //        String[] taxaArray = {"BaiMaZha","BaiQiuMai"};
 //        CalVCF.extractGenotable(infileS,taxaArray,outfileS);
 
-        List<String> taxaList = new ArrayList<>(); taxaList.add("BaiMaZha");taxaList.add("BaiQiuMai");
-        CalVCF.extractGenotable(infileS,taxaList,outfileS);
-
-
-        //第三阶段：根据geontypeList,进行各种类型的计数
-
-
-
+        //test
+//        List<String> taxaList = new ArrayList<>(); taxaList.add("BaiMaZha");taxaList.add("BaiQiuMai");
+//        CalVCF.extractGenotable(infileS,taxaList,outfileS);
 
 
     }

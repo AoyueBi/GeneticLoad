@@ -36,7 +36,7 @@ public class AoMath {
      * @param sampleArray
      * @return
      */
-    public static List<String>[] continuousRandom(String[] sampleArray, TIntArrayList sampleSizeArray){
+    public static List<String>[] noncontinuousRandom(String[] sampleArray, TIntArrayList sampleSizeArray){
 
         List<String>[] out = new List[sampleSizeArray.size()];
         for (int i = 0; i < out.length ; i++) {
@@ -74,7 +74,7 @@ public class AoMath {
      * @param sampleArray
      * @return
      */
-    public static List<String>[] continuousRandom(String[] sampleArray,int[] sampleSizeArray){
+    public static List<String>[] noncontinuousRandom(String[] sampleArray,int[] sampleSizeArray){
 
         List<String>[] out = new List[sampleSizeArray.length];
         for (int i = 0; i < out.length ; i++) {
@@ -142,6 +142,144 @@ public class AoMath {
 
         return out;
     }
+
+    /**
+     * Goal: 非连续抽样，从数组sampleArray中，非连续抽sampleSize个元素，（10，30，80..n）
+     * 返回一个list类型的数组，数组元素1包含1个抽样值，元素2包含2个抽样值，元素三包含3个抽样值，以此类推。
+     * @param sampleSizeArray
+     * @param sampleArray
+     * @return
+     */
+    public static List<String>[] noncontinuousRandom_withoutReplacement(String[] sampleArray, TIntArrayList sampleSizeArray){
+
+        List<String>[] out = new List[sampleSizeArray.size()];
+        for (int i = 0; i < out.length ; i++) {
+            out[i] = new ArrayList<>();
+        }
+
+        for (int i = 0; i < sampleSizeArray.size(); i++) { //抽10个 20个
+            int currentsize = sampleSizeArray.get(i);
+            Set<String> set = new HashSet<>(currentsize);
+
+            ////如果i>1。那么抽样的时候就将上一抽样的taxa全部加入下一抽样，剩下的随机抽样补齐。这样就解决了不放回的问题
+            if (currentsize>1){
+                for (int j = 0; j < out[i-1].size(); j++) {
+                    set.add(out[i-1].get(j));
+                }
+            }
+
+            for (int j = 0; j < 100000; j++) {
+                Random r=new Random();
+                String element = sampleArray[r.nextInt(sampleArray.length)];
+                set.add(element);
+                if (set.size()>=currentsize)break;
+            }
+
+            List<String> l = new ArrayList<>(set);
+            Collections.sort(l);
+            out[i] = l;
+
+            for (int j = 0; j < l.size(); j++) {
+                System.out.print(l.get(j) + "\t");
+            }
+            System.out.println();
+        }
+
+        return out;
+    }
+
+
+    /**
+     * Goal: 非连续抽样，从数组sampleArray中，非连续抽sampleSize个元素，（10，30，80..n）
+     * 返回一个list类型的数组，数组元素1包含1个抽样值，元素2包含2个抽样值，元素三包含3个抽样值，以此类推。
+     * @param sampleSizeArray
+     * @param sampleArray
+     * @return
+     */
+    public static List<String>[] noncontinuousRandom_withoutReplacement(String[] sampleArray,int[] sampleSizeArray){
+
+        List<String>[] out = new List[sampleSizeArray.length];
+        for (int i = 0; i < out.length ; i++) {
+            out[i] = new ArrayList<>();
+        }
+
+        for (int i = 0; i < sampleSizeArray.length; i++) { //抽10个 20个
+            int currentsize = sampleSizeArray[i];
+            Set<String> set = new HashSet<>(currentsize);
+
+            ////如果i>1。那么抽样的时候就将上一抽样的taxa全部加入下一抽样，剩下的随机抽样补齐。这样就解决了不放回的问题
+            if (currentsize>1){
+                for (int j = 0; j < out[i-1].size(); j++) {
+                    set.add(out[i-1].get(j));
+                }
+            }
+
+            for (int j = 0; j < 100000; j++) {
+                Random r=new Random();
+                String element = sampleArray[r.nextInt(sampleArray.length)];
+                set.add(element);
+                if (set.size()>=currentsize)break;
+            }
+
+            List<String> l = new ArrayList<>(set);
+            Collections.sort(l);
+            out[i] = l;
+
+            for (int j = 0; j < l.size(); j++) {
+                System.out.print(l.get(j) + "\t");
+            }
+            System.out.println();
+        }
+
+        return out;
+    }
+
+
+    /**
+     * Goal: 连续不放回抽样，从数组sampleArray中，连续抽sampleSize个元素，（1...n）
+     * Note: 连续抽取10次，注意
+     * 返回一个list类型的数组，数组元素1包含1个抽样值，元素2包含2个抽样值，元素三包含3个抽样值，以此类推。
+     * @param sampleSize
+     * @param sampleArray
+     * @return
+     */
+    public static List<String>[] continuousRandom_withoutReplacement(String[] sampleArray,int sampleSize){
+
+        List<String>[] out = new List[sampleSize];
+        for (int i = 0; i < out.length ; i++) {
+            out[i] = new ArrayList<>();
+        }
+
+        for (int i = 0; i < sampleSize; i++) { //抽1个 2个 3个 4个 5个 6个。。。
+            int currentsize = i+1;
+            Set<String> set = new HashSet<>(currentsize);
+            ////如果i>1。那么抽样的时候就将上一抽样的taxa全部加入下一抽样，剩下的随机抽样补齐。这样就解决了不放回的问题
+            if (currentsize>1){
+                for (int j = 0; j < out[i-1].size(); j++) {
+                    set.add(out[i-1].get(j));
+                }
+            }
+
+            for (int j = 0; j < 100000; j++) {
+                Random r=new Random();
+                String element = sampleArray[r.nextInt(sampleArray.length)];
+                set.add(element);
+                if (set.size()>=currentsize)break;
+            }
+
+            List<String> l = new ArrayList<>(set);
+            Collections.sort(l);
+            out[i] = l;
+
+            for (int j = 0; j < l.size(); j++) {
+                System.out.print(l.get(j) + "\t");
+            }
+            System.out.println();
+        }
+
+        return out;
+    }
+
 
 
     public static double[] NormalizeScore(double[] values){

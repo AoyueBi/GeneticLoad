@@ -740,6 +740,26 @@ public class AoFile {
         return br;
     }
 
+
+    public static void writeListtoFile(List<String> list, String outfileS){
+        try {
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < list.size(); i++) {
+                sb.setLength(0);
+                sb.append(list.get(i));
+                bw.write(sb.toString());
+                bw.newLine();
+            }
+            bw.flush();
+            bw.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
     public static BufferedWriter writeFile(String outfileS){
         BufferedWriter bw = null;
         if (outfileS.endsWith(".txt")){
