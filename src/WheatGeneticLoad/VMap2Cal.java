@@ -5,6 +5,7 @@ import AoUtils.AoMath;
 import AoUtils.CalVCF;
 import AoUtils.CountSites;
 import ExonAnnotation.ExonAnnotation;
+import GermplasmInfo.TaxaDB;
 import gnu.trove.list.array.TIntArrayList;
 import pgl.infra.table.RowTable;
 import pgl.infra.utils.PStringUtils;
@@ -18,7 +19,7 @@ import java.util.function.Predicate;
 public class VMap2Cal {
 
     public VMap2Cal(){
-//        this.extractAAFfromVMap2();
+//        this.extractAAFfromVMap2(); //计算在一个vcf中，不同给定群体的AAF值是多少， linux 完成
 //        this.buildJointSFS();
         this.sampleSize2variantsDiscovery();
 
@@ -31,9 +32,14 @@ public class VMap2Cal {
     public void sampleSize2variantsDiscovery(){
 //        this.mergeExonVCF();
 //        this.convert2GenoTable();
-        this.mainPipe();
+//        this.mainPipe();
 //        AoFile.readheader("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/001_exonSNP_anno_addGroup.txt.gz");
 
+        TaxaDB taxadb = new TaxaDB();
+        String[] array = taxadb.getTreeValidatedGroupbySubspeciesArray();
+        List<String> l = Arrays.asList(array);
+        System.out.println(l);
+        //Ae.tauschii, Cultivar, Domesticated_emmer, Free_threshing_tetraploid, Landrace, OtherHexaploid, OtherTetraploid, Wild_emmer
     }
 
     /**
@@ -53,7 +59,6 @@ public class VMap2Cal {
         String[] loadGroupArray = exonanno.loadGroupArray();
         Arrays.sort(loadGroupArray);
         int[] loadGroupCount = new int[loadGroupArray.length];
-
 
         try {
             //根据genoTable 获取 geno 和 chr pos
@@ -211,10 +216,30 @@ public class VMap2Cal {
     }
 
     public void mainPipe(){
-        String taxaListFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/000_Dsub.txt";
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/021_exon_genoTable/001_exon_Dsubgenome_genoTable.txt.gz";
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/002_sampleSize2VariantsDiscovery";
-        String finaloutfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/003_merge/test.txt";
+
+        String parentDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/004_sampleSize_to_variantsDiscovery";
+        String taxaListFileS = null;
+        String infileS = null;
+        String outfileDirS = null;
+        String finaloutfileS = null;
+
+
+        String[] goal = {"Dsub","ABsub"}; //因为不同亚基因组的样本数不同，所以要分开计算
+        String choice1 = "ABsub";
+        if (choice1.equals("Dsub")){ //即抽样6倍体和2倍体
+            taxaListFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/000_Dsub.txt";
+            infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/021_exon_genoTable/001_exon_Dsubgenome_genoTable.txt.gz";
+            outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/002_sampleSize2VariantsDiscovery";
+            finaloutfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/003_merge/test.txt";
+        }
+
+        if (choice1.equals("ABsub")){ //即抽样6倍体和4倍体
+            taxaListFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/000_ABsub.txt";
+            infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/021_exon_genoTable/001_exon_ABsubgenome_genoTable.txt.gz";
+            outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/002_sampleSize2VariantsDiscovery_AB";
+            finaloutfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/003_merge_AB/test.txt";
+        }
+
 
         String[] sampleType = {"continuous","discreteByConsistentIntervals","discreteByManual"};
         String choice = "discreteByConsistentIntervals";
@@ -277,10 +302,6 @@ public class VMap2Cal {
         File[] fileArray = fileList.toArray(new File[fileList.size()]);
         AoFile.mergeTxt_byFileArray(fileArray,finaloutfileS);
         System.out.println("All done");
-
-
-
-
 
         //test
 //        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/021_exon_genoTable/test.txt";
