@@ -172,6 +172,26 @@ public class TaxaDB {
         return out;
     }
 
+    /**
+     * 获取亚群的taxa数组
+     * @param subspecies
+     * @return
+     */
+    public List<String> getTaxaArrayofSubspecies(String subspecies){
+        List<String> subspeciestaxaList = new ArrayList<>();
+
+        for (int i = 0; i < taxaList.size(); i++) {
+            String taxa = taxaList.get(i);
+            String group = hmTaxaTreeValidatedGroupbySubspecies.get(taxa);
+            if (group.equals(subspecies)){
+                subspeciestaxaList.add(taxa);
+            }
+        }
+//        String[] out = taxaList.toArray(new String[taxaList.size()]);
+        Collections.sort(subspeciestaxaList);
+        return subspeciestaxaList;
+    }
+
 
     /**
      * get header list from the db file
