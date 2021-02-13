@@ -36,8 +36,9 @@ public class AoColor {
 //                "OtherTetraploid","Free_threshing_tetraploid","Domesticated_emmer","Wild_emmer","Ae.tauschii"};
 //        String[] in = {"Ae.tauschii","Cultivar","Domesticated_emmer","Free_threshing_tetraploid","Landrace","Wild_emmer"};
 //        String[] in = {"Ae.tauschii", "Wild_emmer", "Domesticated_emmer","Free_threshing_tetraploid","Landrace","Cultivar",};
+        String[] in = { "Wild_emmer", "Domesticated_emmer","Free_threshing_tetraploid","OtherTetraploid","Landrace","Cultivar","OtherHexaploid"};
 
-//        AoColor.subspecies(in);
+        AoColor.subspecies(in);
 
 //        String[] in = {"Africa" , "America" ,"Asia" ,   "Europe" , "Oceania"};
 //        String[] in = {"Africa", "America", "Central and South Asia", "East Asia", "Europe", "Oceania", "Western Asia"};

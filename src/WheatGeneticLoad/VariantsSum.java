@@ -127,7 +127,6 @@ public class VariantsSum {
 
         String dirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/002_popDepthBP_addDerivedSIFT_updateAAF";
 
-
         List<File> fList = AoFile.getFileListInDir(dirS);
         fList.parallelStream().forEach(f -> {
             String header = null;

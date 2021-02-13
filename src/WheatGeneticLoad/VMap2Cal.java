@@ -35,13 +35,33 @@ public class VMap2Cal {
 //        this.mainPipe();
 
 //        String[] subspeciesArray = {"Wild_emmer","Domesticated_emmer","Free_threshing_tetraploid","Landrace-AB","Cultivar-AB","Landrace-D","Cultivar-D","OtherTetraploid","OtherHexaploid-AB","OtherHexaploid-D"};
-        String[] subspeciesArray = {"Landrace","Cultivar","OtherHexaploid"};
+//        String[] subspeciesArray = {"Landrace","Cultivar","OtherHexaploid"};
 
-        for (int i = 0; i < subspeciesArray.length; i++) {
-            String choice1 = subspeciesArray[i];
-            this.mainPipe(choice1);
-            System.out.println("#########*****************************************" + choice1 + "   ####### has been completed.");
-        }
+        String[] subspeciesArray = {"ABsub","Dsub"};
+
+        /**
+         * 外加一层循环，从取样数1到最大值。 每个取样数重复多次
+         */
+
+        int loop = 10;
+//        for (int j = 0; j < loop; j++) {
+//            for (int i = 0; i < subspeciesArray.length; i++) {
+//                String choice1 = subspeciesArray[i];
+//                this.mainPipe(choice1,j+1);
+//                System.out.println("#########*****************************************" + choice1 + "_" + loop + "   ####### has been completed.");
+//            }
+//        }
+
+//        List<File> fileList = AoFile.getFileListInDir("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/006_sampleSize2VariantsDiscovery_ABsub");
+//        File[] fileArray = fileList.toArray(new File[fileList.size()]);
+//        AoFile.mergeTxt_byFileArray(fileArray,"/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/007_merge006/ABsub.txt");
+//        System.out.println("All done");
+
+        List<File> fileList = AoFile.getFileListInDir("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/006_sampleSize2VariantsDiscovery_Dsub");
+        File[] fileArray = fileList.toArray(new File[fileList.size()]);
+        AoFile.mergeTxt_byFileArray(fileArray,"/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/007_merge006/Dsub.txt");
+        System.out.println("All done");
+
 
         //Ae.tauschii, Cultivar, Domesticated_emmer, Free_threshing_tetraploid, Landrace, OtherHexaploid, OtherTetraploid, Wild_emmer
     }
@@ -49,7 +69,7 @@ public class VMap2Cal {
     /**
      * 根据genotypetable，输出每种分类在每个亚基因组中的个数
      */
-    public File getCountinEachCategory(List<String> genoTable,int taxanum,String outfileS,ExonAnnotation exonanno){
+    public File getCountinEachCategory(List<String> genoTable,int taxanum,String outfileS,ExonAnnotation exonanno, int loops){
         //test
 //        List<String> l = Arrays.asList("2", "9", "0","2","2","9");
 //        String test = this.genotypeCount(l);
@@ -111,26 +131,25 @@ public class VMap2Cal {
 
             //开始写文件
             BufferedWriter bw = AoFile.writeFile(outfileS);
-            bw.write( "TaxaNum\tGroup\tObservedCount");bw.newLine();
+            bw.write( "TaxaNum\tGroup\tObservedCount\tLoop");bw.newLine();
 
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < variantsGroupArray.length; i++) {
                 sb.setLength(0);
-                sb.append(String.valueOf(taxanum)).append("\t").append(variantsGroupArray[i]).append("\t").append(variantsGroupCount[i]);
+                sb.append(String.valueOf(taxanum)).append("\t").append(variantsGroupArray[i]).append("\t").append(variantsGroupCount[i]).append("\t").append(loops);
                 bw.write(sb.toString());
                 bw.newLine();
             }
 
             for (int i = 0; i < loadGroupArray.length; i++) {
                 sb.setLength(0);
-                sb.append(String.valueOf(taxanum)).append("\t").append(loadGroupArray[i]).append("\t").append(loadGroupCount[i]);
+                sb.append(String.valueOf(taxanum)).append("\t").append(loadGroupArray[i]).append("\t").append(loadGroupCount[i]).append("\t").append(loops);
                 bw.write(sb.toString());
                 bw.newLine();
             }
 
             bw.flush();
             bw.close();
-
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -219,12 +238,13 @@ public class VMap2Cal {
         return out;
     }
 
-    public void mainPipe(String choice1){
+    public void mainPipe(String choice1, int loop){
 
         String parentDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/004_sampleSize_to_variantsDiscovery";
         String taxaListFileS = null;
         String infileS = null;
         String outfileDirS = null;
+        String outfileDirS2 = null;
         String finaloutfileS = null;
         int interval = Integer.MIN_VALUE;
         List<String> taxalist = new ArrayList<>();
@@ -236,27 +256,35 @@ public class VMap2Cal {
 //        String choice1 = "Ae.tauschii";
 
         if (choice1.equals("Dsub")){ //即抽样6倍体和2倍体
-            taxaListFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/000_Dsub.txt";
+            interval = 50;
+            taxalist = taxadb.getTaxaListbyDsub();
             infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/021_exon_genoTable/001_exon_Dsubgenome_genoTable.txt.gz";
-            outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/002_sampleSize2VariantsDiscovery";
-            finaloutfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/003_merge/test.txt";
+//            outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/002_sampleSize2VariantsDiscovery";
+            outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/006_sampleSize2VariantsDiscovery_Dsub";
+            outfileDirS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/006_sampleSize2VariantsDiscovery_Dsub";
+//            finaloutfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/003_merge/test.txt";
+            finaloutfileS = new File(outfileDirS2,choice1 + "_loop" + loop + ".txt").getAbsolutePath();
         }
 
         if (choice1.equals("ABsub")){ //即抽样6倍体和4倍体
-            taxaListFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/000_ABsub.txt";
+            interval = 50;
+            taxalist = taxadb.getTaxaListbyABsub();
             infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/021_exon_genoTable/001_exon_ABsubgenome_genoTable.txt.gz";
-            outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/002_sampleSize2VariantsDiscovery_AB";
-            finaloutfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/003_merge_AB/test.txt";
+//            outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/002_sampleSize2VariantsDiscovery_AB";
+            outfileDirS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/006_sampleSize2VariantsDiscovery_ABsub";
+//            finaloutfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/003_merge/test.txt";
+            finaloutfileS = new File(outfileDirS2,choice1 + "_loop" + loop + ".txt").getAbsolutePath();
         }
 
-        if (choice1.equals("Ae.tauschii")){
+
+        if (choice1.equals("Ae.tauschii")){ //即抽样二倍体
             taxalist = taxadb.getTaxaArrayofSubspecies(choice1);
             infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/021_exon_genoTable/001_exon_Dsubgenome_genoTable.txt.gz";
             outfileDirS = new File(parentDirS,choice1).getAbsolutePath(); new File(outfileDirS).mkdirs();
             finaloutfileS = new File(parentDirS,choice1 + ".txt").getAbsolutePath();
         }
 
-        if (choice1.equals("Wild_emmer")){
+        if (choice1.equals("Wild_emmer")){ //即抽样四倍体
             interval =5;
             taxalist = taxadb.getTaxaArrayofSubspecies(choice1);
             infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/021_exon_genoTable/001_exon_ABsubgenome_genoTable.txt.gz";
@@ -264,7 +292,7 @@ public class VMap2Cal {
             finaloutfileS = new File(parentDirS,choice1 + ".txt").getAbsolutePath();
         }
 
-        if (choice1.equals("Domesticated_emmer")){
+        if (choice1.equals("Domesticated_emmer")){ //即抽样四倍体
             interval =5;
             taxalist = taxadb.getTaxaArrayofSubspecies(choice1);
             infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/021_exon_genoTable/001_exon_ABsubgenome_genoTable.txt.gz";
@@ -272,7 +300,7 @@ public class VMap2Cal {
             finaloutfileS = new File(parentDirS,choice1 + ".txt").getAbsolutePath();
         }
 
-        if (choice1.equals("Free_threshing_tetraploid")){
+        if (choice1.equals("Free_threshing_tetraploid")){ //即抽样四倍体
             interval =5;
             taxalist = taxadb.getTaxaArrayofSubspecies(choice1);
             infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/021_exon_genoTable/001_exon_ABsubgenome_genoTable.txt.gz";
@@ -280,7 +308,7 @@ public class VMap2Cal {
             finaloutfileS = new File(parentDirS,choice1 + ".txt").getAbsolutePath();
         }
 
-        if (choice1.equals("OtherTetraploid")){
+        if (choice1.equals("OtherTetraploid")){ //即抽样四倍体
             interval =5;
             taxalist = taxadb.getTaxaArrayofSubspecies(choice1);
             infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/021_exon_genoTable/001_exon_ABsubgenome_genoTable.txt.gz";
@@ -288,7 +316,7 @@ public class VMap2Cal {
             finaloutfileS = new File(parentDirS,choice1 + ".txt").getAbsolutePath();
         }
 
-//        if (choice1.equals("Landrace")){
+//        if (choice1.equals("Landrace")){ //即抽样六倍体
 //            interval =5;
 //            taxalist = taxadb.getTaxaArrayofSubspecies(choice1);
 //            infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/021_exon_genoTable/001_exon_ABsubgenome_genoTable.txt.gz";
@@ -296,7 +324,7 @@ public class VMap2Cal {
 //            finaloutfileS = new File(parentDirS,choice1 + ".txt").getAbsolutePath();
 //        }
 //
-//        if (choice1.equals("Cultivar")){
+//        if (choice1.equals("Cultivar")){ //即抽样六倍体
 //            interval = 2;
 //            taxalist = taxadb.getTaxaArrayofSubspecies(choice1);
 //            infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/021_exon_genoTable/001_exon_ABsubgenome_genoTable.txt.gz";
@@ -304,7 +332,7 @@ public class VMap2Cal {
 //            finaloutfileS = new File(parentDirS,choice1 + ".txt").getAbsolutePath();
 //        }
 //
-//        if (choice1.equals("OtherHexaploid")){
+//        if (choice1.equals("OtherHexaploid")){ //即抽样六倍体
 //            interval =5;
 //            taxalist = taxadb.getTaxaArrayofSubspecies(choice1);
 //            infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/021_exon_genoTable/001_exon_ABsubgenome_genoTable.txt.gz";
@@ -312,7 +340,7 @@ public class VMap2Cal {
 //            finaloutfileS = new File(parentDirS,choice1 + ".txt").getAbsolutePath();
 //        }
 
-        if (choice1.equals("Landrace")){
+        if (choice1.equals("Landrace")){ //即抽样六倍体
             interval =5;
             taxalist = taxadb.getTaxaArrayofSubspecies(choice1);
             infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/021_exon_genoTable/001_exon_Dsubgenome_genoTable.txt.gz";
@@ -320,7 +348,7 @@ public class VMap2Cal {
             finaloutfileS = new File(parentDirS,choice1 + ".txt").getAbsolutePath();
         }
 
-        if (choice1.equals("Cultivar")){
+        if (choice1.equals("Cultivar")){ //即抽样六倍体
             interval =2;
             taxalist = taxadb.getTaxaArrayofSubspecies(choice1);
             infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/021_exon_genoTable/001_exon_Dsubgenome_genoTable.txt.gz";
@@ -328,7 +356,7 @@ public class VMap2Cal {
             finaloutfileS = new File(parentDirS,choice1 + ".txt").getAbsolutePath();
         }
 
-        if (choice1.equals("OtherHexaploid")){
+        if (choice1.equals("OtherHexaploid")){ //即抽样六倍体
             interval =5;
             taxalist = taxadb.getTaxaArrayofSubspecies(choice1);
             infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/021_exon_genoTable/001_exon_Dsubgenome_genoTable.txt.gz";
@@ -389,13 +417,13 @@ public class VMap2Cal {
             System.out.println("the " + String.valueOf(i+1) + " genotype table has been finished");
             int taxanum = taxaList.size(); //当下genotype table含有taxanum个taxa,即当下抽样数
             //#### 每个基因型table
-            String outfileS = new File(outfileDirS,PStringUtils.getNDigitNumber(3,taxanum) + "_variantsDiscovery.txt").getAbsolutePath();
+            String outfileS = new File(outfileDirS,PStringUtils.getNDigitNumber(3,taxanum) + "_sampleSize_loop" + loop + "_variantsDiscovery.txt").getAbsolutePath();
 //            this.getCountinEachCategory(genoTable,taxanum,outfileS,exonanno);
-            fileList.add(this.getCountinEachCategory(genoTable,taxanum,outfileS,exonanno));
+            fileList.add(this.getCountinEachCategory(genoTable,taxanum,outfileS,exonanno,loop)); // genoTable是获取的基因型， taxanum是为了写入文件， outfileS是为了写出文件，只有9行，exonanno是个类，为了后续调用，loop也是为了写入文件。
             System.out.println("the " + String.valueOf(i+1) + " variants count has been finished");
         }
 
-        //////第四阶段：将最终结果进行合并，成为一个文件
+//        //////第四阶段：将最终结果进行合并，成为一个文件
         File[] fileArray = fileList.toArray(new File[fileList.size()]);
         AoFile.mergeTxt_byFileArray(fileArray,finaloutfileS);
         System.out.println("All done");
@@ -408,7 +436,6 @@ public class VMap2Cal {
         //test
 //        List<String> taxaList = new ArrayList<>(); taxaList.add("BaiMaZha");taxaList.add("BaiQiuMai");
 //        CalVCF.extractGenotable(infileS,taxaList,outfileS);
-
 
     }
 

@@ -113,6 +113,11 @@ public class TaxaDB {
                 }
 
             }
+
+            Collections.sort(taxaListABsub);
+            Collections.sort(taxaListDsub);
+            Collections.sort(taxaList);
+
             br.close();
             System.out.println("There is totally " + taxaList.size() + " taxa in " + infileS);
             System.out.println("********************* Finished reading taxaList files ***************************");
@@ -146,6 +151,9 @@ public class TaxaDB {
     public String[] getTaxaArray(){return taxaList.toArray(new String[taxaList.size()]);}
     public String[] getTaxaArraybyABsub(){return taxaListABsub.toArray(new String[taxaListABsub.size()]);}
     public String[] getTaxaArraybyDsub(){return taxaListDsub.toArray(new String[taxaListDsub.size()]);}
+    public List<String> getTaxaListbyABsub(){return taxaListABsub;}
+    public List<String> getTaxaListbyDsub(){return taxaListDsub;}
+
 
 
     public String[] getTreeValidatedGroupbySubspeciesArray(){

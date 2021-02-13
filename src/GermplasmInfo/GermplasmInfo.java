@@ -30,8 +30,8 @@ public class GermplasmInfo {
 //        this.mergeTxt();
 
         //************* 向新建立的taxaDB中添加列信息 ***************//
-        this.addColumntoTaxaDB();
-//        this.addMultipleColumn();
+//        this.addColumntoTaxaDB();
+        this.addMultipleColumn();
 //        this.summaryGroupbyContinent();
 //        this.summaryGroupbyLandrace();
 //        this.addDDgroup();
@@ -379,7 +379,8 @@ public class GermplasmInfo {
 //        String taxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/032_pca/001_input/002_matrix_Dsub.txt";
 //        String taxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/032_pca/001_input/003_matrix_hexa.txt";
 //        String taxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/032_pca/001_input/004_matrix_tetra.txt";
-        String taxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/032_pca/001_input/005_matrix_DD.txt";
+//        String taxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/032_pca/001_input/005_matrix_DD.txt";
+        String taxaFileS = "/Users/Aoyue/Documents/006_matrix_ABsub.txt";
         int[] columnIndexes = {3,8,10,12,15,16};
         HashMap<String,String>[] hm = new AoFile().getHashMapsStringKey(dbfileS,0,columnIndexes);
         AoFile.addColumsbyString(taxaFileS,0,hm,"GenomeType\tPart_Continent\tContinent_forTree\tIndexforMutationBurden\tSubspecies\tContinent_by7");
