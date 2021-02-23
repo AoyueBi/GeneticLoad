@@ -18,9 +18,9 @@ import java.util.List;
 public class HomoeologGenesAnalysis {
 
     public HomoeologGenesAnalysis(){
-//        this.getAverageDistance();
+        this.getAverageDistance();
 //        this.getCol();
-        this.extractDistance();
+//        this.extractDistance();
 
 
 

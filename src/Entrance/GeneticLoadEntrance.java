@@ -46,7 +46,7 @@ public class GeneticLoadEntrance {
 
         //ternary plot analysis
 //        this.geneExpression();
-        this.rebuildVCF();
+//        this.rebuildVCF();
 
 
     }
@@ -76,9 +76,9 @@ public class GeneticLoadEntrance {
 //        new AoP();
 //        new FdVSdel();
 //        new AoMap();
-//        new DBgene();
+        new DBgene();
 //        new RefBiasEvaluation();
-        new VMap2Cal();
+//        new VMap2Cal();
 
     }
 
@@ -86,17 +86,17 @@ public class GeneticLoadEntrance {
 
 
     public void geneExpression(){
-        new GeneExpressionbywheat();
+//        new GeneExpressionbywheat();
 
     }
 
 
 
     public void DBdeleterious(){
-        new DeleteriousBiologyAoyue();
-        new EstSFS();
-        new DeleteriousCountbyPop();
-        new HomoeologGenesAnalysis();
+//        new DeleteriousBiologyAoyue();
+//        new EstSFS();
+//        new DeleteriousCountbyPop();
+//        new HomoeologGenesAnalysis();
     }
 
     public void infoDB(){

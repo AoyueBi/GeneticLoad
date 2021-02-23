@@ -2,6 +2,9 @@ package AoUtils;
 
 import pgl.infra.utils.PStringUtils;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -106,5 +109,42 @@ public class WheatUtils {
     public static String getScaledPos(String chromosome, int posOnchromosome){
         int chromosomeLength = hmChromosomeLength.get(chromosome);
         return String.format("%.2f",(double)posOnchromosome*100/chromosomeLength);
+    }
+
+    /**
+     * 根据中心粒的位置，输出一个文件，包含起始终止片段，中间值，以及scale到100后的值
+     * @return
+     */
+    public static File getCentromereFile (String outfileS){
+        File out = new File(outfileS);
+        String infileS = "/Users/Aoyue/Documents/Data/wheat/position/ChrLenCentPosi_wheat.txt";
+
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String header = br.readLine();
+            bw.write(header + "\tScale100");bw.newLine();
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+                String chromosome = l.get(0);
+                int posOnchromosome = Integer.parseInt(l.get(2));
+                String scale = getScaledPos(chromosome,posOnchromosome);
+                bw.write(temp + "\t" + scale);
+                bw.newLine();
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        return out;
     }
 }

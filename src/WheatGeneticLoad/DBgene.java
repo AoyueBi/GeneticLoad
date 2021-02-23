@@ -30,7 +30,7 @@ import pgl.infra.range.Range;
 public class DBgene {
 
     public DBgene(){
-        this.getHexaploidAnnotation();
+//        this.getHexaploidAnnotation();
 //        this.getTranscriptSum(); //多线程运行造成内存不足，故使用单个染色体进行运行
 //        this.getTranscriptSum_bychr();
 //        this.script_getTranscriptSum();
@@ -61,8 +61,8 @@ public class DBgene {
 //        this.getHexaploidAnnotation_();
 //        this.script_getTranscriptSum();
 //        this.mergeTxt();
-//                this.mkSpreadFormat_hexaploid();
-//                this.addTriadIDforEpigenomicMap();
+        this.mkSpreadFormat_hexaploid();
+//        this.addTriadIDforEpigenomicMap();
 
 
     }
@@ -150,7 +150,7 @@ public class DBgene {
         List<File> files= AoFile.getFileListInDir(inputDir);
         String[] outNames=files.stream().map(File::getName).map(s->s.replaceAll("_anno.txt.gz", "_hexaploid_anno.txt")).toArray(String[]::new);
         RowTableTool<String> rowTable;
-        Predicate<List<String>> removed= l->Double.parseDouble(l.get(8))==0;
+        Predicate<List<String>> removed= l->Double.parseDouble(l.get(8))==0; //即AAF_ABD=0，过滤没有分离的位点
         for (int i = 0; i < files.size(); i++) {
             rowTable=new RowTableTool<>(files.get(i).getAbsolutePath());
             rowTable.removeIf(removed);
@@ -397,7 +397,7 @@ public class DBgene {
             BufferedWriter bw = AoFile.writeFile(outfileS);
 //            bw.write("TriadID\tNonVsSynRatioA\tNonVsSynRatioB\tNonVsSynRatioD\tNonVsSynRatioRegion"); ///////////////////////////////// need modify
 //            bw.write("TriadID\tDelVsSynRatioA\tDelVsSynRatioB\tDelVsSynRatioD\tDelVsSynRatioRegion");
-            bw.write("TriadID\tDelFreA\tDelFreB\tDelFreD\tDelFreRegion");
+            bw.write("TriadID\tDelFreA\tDelFreB\tDelFreD\tDelFreRegion"); //
 
             bw.newLine();
             int cnt=0;
@@ -408,6 +408,7 @@ public class DBgene {
                 String genea = tg.getGeneinAsub(triadID);
                 String geneb = tg.getGeneinBsub(triadID);
                 String gened = tg.getGeneinDsub(triadID);
+
 //                String ratioA = genedb.getNonVsSynRatio(genea);
 //                String ratioB = genedb.getNonVsSynRatio(geneb);
 //                String ratioD = genedb.getNonVsSynRatio(gened);
@@ -424,7 +425,7 @@ public class DBgene {
                 //filter NA
                 if (ratioA.startsWith("N") || ratioB.startsWith("N") || ratioD.startsWith("N")) continue;
                 double[] ratiodABD = {Double.parseDouble(ratioA),Double.parseDouble(ratioB),Double.parseDouble(ratioD)};
-                String region = Standardization.getNearestPointIndex(ratiodABD).getRegion();
+                String region = Standardization.getNearestPointIndex(ratiodABD).getRegion(); //##引用类来判断所在的位置
                 bw.write(triadID+"\t"+ratioA+"\t"+ratioB+"\t"+ratioD+"\t"+region);
                 bw.newLine();
                 cntremaining++;

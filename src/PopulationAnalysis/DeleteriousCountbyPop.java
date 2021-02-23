@@ -19,7 +19,7 @@ import pgl.infra.utils.wheat.RefV1Utils;
 public class DeleteriousCountbyPop {
     public DeleteriousCountbyPop(){
 
-        this.countDeleteriousVMapII_byChr();
+//        this.countDeleteriousVMapII_byChr();
 //        this.DeltoSynonymousRatio();
 
 //        this.getPopmutationBurden();

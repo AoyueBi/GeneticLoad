@@ -1,9 +1,6 @@
 package WheatGeneticLoad;
 
-import AoUtils.AoFile;
-import AoUtils.AoMath;
-import AoUtils.CalVCF;
-import AoUtils.CountSites;
+import AoUtils.*;
 import ExonAnnotation.ExonAnnotation;
 import GermplasmInfo.TaxaDB;
 import gnu.trove.list.array.TIntArrayList;
@@ -21,7 +18,8 @@ public class VMap2Cal {
     public VMap2Cal(){
 //        this.extractAAFfromVMap2(); //计算在一个vcf中，不同给定群体的AAF值是多少， linux 完成
 //        this.buildJointSFS();
-        this.sampleSize2variantsDiscovery();
+//        this.sampleSize2variantsDiscovery();
+        File out = WheatUtils.getCentromereFile("/Users/Aoyue/Documents/test.txt");
 
     }
 

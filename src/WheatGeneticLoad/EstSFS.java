@@ -48,12 +48,12 @@ public class EstSFS {
 //        this.calDAF(); //单线程计算
 //        this.addDAF_parallel(); //多线程运行
 //        this.mergeExonSNPAnnotation(); //计算后结果合并
-        this.mkDAFtable(); //开始分bin
+//        this.mkDAFtable(); //开始分bin
 
         /**
          * 处理达兴的简约法ancestral allele Pasimony
          */
-        this.extractAncestralAllele();
+//        this.extractAncestralAllele();
 //        this.test();
 //        this.deleteriousCount();
 

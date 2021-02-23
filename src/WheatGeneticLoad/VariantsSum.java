@@ -3148,7 +3148,7 @@ public class VariantsSum {
 
     public VariantsSum() {
 
-        this.variantsSumFromRebuildVCF();
+//        this.variantsSumFromRebuildVCF();
 
 //        new CountSites().mergeChr1Aand2A_bysubgenome();
 
