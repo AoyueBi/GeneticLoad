@@ -2987,8 +2987,10 @@ public class CountSites {
 
     /**
      * 统计一下位点既含有D又含有I的情况,确实存在着这种情况！！！
+     * 此方法没有考虑既含有D又含有I的情况
      *
      * @param infileDirS
+     * @deprecated
      */
     public void countrepeatIndelinFastCallformat(String infileDirS) {
         File[] fs = new File(infileDirS).listFiles();
@@ -3059,7 +3061,8 @@ public class CountSites {
     }
 
     /**
-     * 对已生成的14条染色体进行计数.注意加log文件，结果在log文件中显示
+     * 对已生成的14条染色体进行计数.注意加log文件，结果在log文件中显示。
+     *  最终采用方法。
      *
      * @param infileDirS
      */

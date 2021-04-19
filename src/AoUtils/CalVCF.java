@@ -36,9 +36,6 @@ public class CalVCF {
 
 //        this.getIBSdistance();
 
-
-
-
     }
 
     /**
@@ -1338,6 +1335,59 @@ public class CalVCF {
     }
 
     /**
+     * 根据MAF过滤VCF
+     * @param infileS
+     * @param mafRatio filter maf less than ratio
+     * @param outfileS
+     */
+
+    public static void filterMAFinVCF(String infileS, double mafRatio, String outfileS){
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cntTotal = 0;
+            int cntKeep = 0;
+            while ((temp = br.readLine()) != null) {
+                if (temp.startsWith("#")) {
+                    bw.write(temp);
+                    bw.newLine();
+                }
+                if (!temp.startsWith("#")) {
+                    cntTotal++;
+                    l = PStringUtils.fastSplit(temp);
+                    List<String> lgeno = new ArrayList<>();
+                    for (int i = 9; i < l.size(); i++) {
+                        lgeno.add(l.get(i));
+                    }
+                    String[] genoArray = lgeno.toArray(new String[lgeno.size()]);
+                    String maf = CalVCF.getPopMAF(genoArray);
+                    if (Double.parseDouble(maf) < mafRatio) continue;
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(temp);
+                    bw.write(sb.toString());
+                    bw.newLine();
+                    cntKeep++;
+                }
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println("****************************** LOG ******************************");
+            System.out.println("Total SNP number    " + cntTotal + "    Kept SNP number " + cntKeep);
+            System.out.println(infileS + " is completed at " + outfileS);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+
+    }
+
+    /**
      * 根据位点杂合度过滤单个群体的VCF
      *
      * @param infileS
@@ -1389,6 +1439,33 @@ public class CalVCF {
         }
     }
 
+    /**
+     * return the site MAF from vcf
+     * @param genoArray
+     * @return
+     */
+    public static Double calSNPsitesMAF(String[] genoArray){
+        Double out = Double.MIN_VALUE;
+        int nz = 0; //有基因型的个体数
+        int ht = 0;
+        List<String> tempList = null;
+        List<String> temList = null;
+        for (int i = 0; i < genoArray.length; i++) {
+            if (!genoArray[i].startsWith(".")) {
+                nz++;
+                tempList = PStringUtils.fastSplit(genoArray[i], ":"); //tempList是包含基因型AD还有PL的集合
+                //再计算基因型
+                temList = PStringUtils.fastSplit(tempList.get(0), "/"); //temList是包含基因型拆分后的集合 0/0的集合
+                int index1 = Integer.parseInt(temList.get(0)); //0/0基因型的
+                int index2 = Integer.parseInt(temList.get(1));
+                if (index1 != index2) {
+                    ht++;
+                }
+            }
+        }
+        out = (double) ht/nz;
+        return out;
+    }
 
     /**
      * return the site heterozygosity from vcf

@@ -19,7 +19,7 @@ public class VMap2Cal {
 //        this.extractAAFfromVMap2(); //计算在一个vcf中，不同给定群体的AAF值是多少， linux 完成
 //        this.buildJointSFS();
 //        this.sampleSize2variantsDiscovery();
-        File out = WheatUtils.getCentromereFile("/Users/Aoyue/Documents/test.txt");
+//        File out = WheatUtils.getCentromereFile("/Users/Aoyue/Documents/test.txt");
 
     }
 

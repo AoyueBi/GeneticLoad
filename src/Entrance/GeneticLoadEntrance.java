@@ -46,7 +46,7 @@ public class GeneticLoadEntrance {
 
         //ternary plot analysis
 //        this.geneExpression();
-//        this.rebuildVCF();
+        this.rebuildVCF();
 
 
     }
@@ -241,6 +241,8 @@ public class GeneticLoadEntrance {
 //        new FilterVCF2().filter2(args[0]);
 //        new RebuildVCF().checkErrorFromFastCall(args[0]);
 //        new XPCLR().step3_getAlleleCountXPCLR_3(args[0],args[1],args[2],args[3]);
+
+//        CalVCF.filterMAFinVCF(args[0],Double.parseDouble(args[1]),args[2]);
 
     }
 

@@ -5,6 +5,8 @@ import gnu.trove.list.array.TDoubleArrayList;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import pgl.infra.utils.IOUtils;
 import pgl.infra.utils.PStringUtils;
+import pgl.infra.utils.wheat.RefV1Utils;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -39,16 +41,20 @@ public class Fst {
         //********************************* VMap2.0 after -- new Version ********************//
 //        this.mkFstCommandbasedwinndow2();
 //        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/001_Fst/001_script_based100kwindow_50kstep/fst_baesd100kwindow_50kstep_20200907.sh",21,1);
-        this.window();
+//        this.window();
 //        this.addGroupToFstwindow();
 
 //        this.getMeanFstValue();
 //        this.getMatrixFst();
 
-        this.mkFstCMD_by2File();
+//        this.mkFstCMD_by2File();
 //        this.mergeExonVCF();
 
 
+//        this.changeChrPos();
+//        this.filterMAF();
+//        this.mkJAVAscript(); //script for filtering MAF of VCF
+//        this.mkFstCMD_single();
 
     }
 
@@ -306,6 +312,9 @@ public class Fst {
         String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/001_Fst/002_fst_based100000window_50000step/003_windowbyJava";
         String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/001_Fst/002_fst_based100000window_50000step/004_merge/001_Fst_2Mwindow_1Mstep.txt.gz";
 
+//        String infileDirS = "";
+//        String outfileDirS = "";
+
         File[] fs = AoFile.getFileArrayInDir(infileDirS);
         Arrays.sort(fs);
         try {
@@ -362,6 +371,9 @@ public class Fst {
         String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/001_Fst/002_fst_based100000window_50000step/001";
         String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/001_Fst/002_fst_based100000window_50000step/003_windowbyJava";
 
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/001_Fst/003_fst_based100000window_50000step_testforMAF/001";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/001_Fst/003_fst_based100000window_50000step_testforMAF/003_windowbyJava";
+
         List<File> fsList = AoFile.getFileListInDir(infileDirS);
         fsList.parallelStream().forEach(f -> {
             String infileS = f.getAbsolutePath();
@@ -380,6 +392,164 @@ public class Fst {
     }
 
 
+    public void mkJAVAscript(){
+        String infileDirS = "/data4/home/aoyue/vmap2/analysis/025_subsetVCF/005_changeChrPos_from002";
+        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/025_subsetVCF/005_changeChrPos_from002/filterMAF0.1";
+        String[] input = {"Asubgenome_RefChrPos.vcf.gz","Bsubgenome_RefChrPos.vcf.gz","Dsubgenome_RefChrPos.vcf.gz"};
+        String ratio = "0.1";
+        for (int i = 0; i < input.length; i++) {
+            String name = input[i];
+            String infileS = new File(infileDirS,name).getAbsolutePath();
+            String outfileS = new File(outfileDirS, name.replaceFirst(".vcf.gz","_MAF0.1.vcf.gz")).getAbsolutePath();
+            System.out.println("java -jar 053_filterVCFbyMAF.jar " + infileS + " " + ratio + " "+ outfileS + " > log_053_filterVCFbyMAF_2021-04-11.txt 2>&1 &" );
+        }
+
+    }
+
+    public void filterMAF(){
+        String infileS = "/Users/Aoyue/Documents/testout/Dsubgenome_diploid_RefChrPos.vcf.gz";
+        String outfileS ="/Users/Aoyue/Documents/testout/Dsubgenome_diploid_RefChrPos_maf0.1.vcf.gz";
+        double ratio = 0.1;
+        CalVCF.filterMAFinVCF(infileS,ratio,outfileS);
+    }
+
+    /**
+     * 将抽样的VCF文件的位置转换成RefChrPos
+     */
+    public void changeChrPos(){
+
+        String infileDirS = "/data4/home/aoyue/vmap2/analysis/025_subsetVCF/002_mergeVCFtoSub";
+        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/025_subsetVCF/005_changeChrPos_from002";
+//        String infileDirS = "/Users/Aoyue/Documents/test";
+//        String outfileDirS = "/Users/Aoyue/Documents/testout";
+        List<File> fsList = AoFile.getFileListInDir(infileDirS);
+        fsList.parallelStream().forEach(f -> {
+            try {
+                String infileS = f.getAbsolutePath();
+                String outfileS = new File(outfileDirS, f.getName().split(".vcf.gz")[0] + "_RefChrPos.vcf.gz").getAbsolutePath();
+                BufferedReader br = AoFile.readFile(infileS);
+                BufferedWriter bw = AoFile.writeFile(outfileS);
+                String temp = null;
+                List<String> l = new ArrayList<>();
+                StringBuilder sb = new StringBuilder();
+                while ((temp = br.readLine()) != null) {
+                    l = PStringUtils.fastSplit(temp);
+                    if (temp.startsWith("#")){
+                        bw.write(temp);
+                        bw.newLine();
+                    }else{
+                        int chr = Integer.parseInt(l.get(0));
+                        int pos = Integer.parseInt(l.get(1));
+                        String RefChr = RefV1Utils.getChromosome(chr,pos);
+                        int RefPos = RefV1Utils.getPosOnChromosome(chr, pos);
+                        sb.setLength(0);
+                        sb.append(RefChr).append("\t").append(RefPos);
+                        for (int i = 2; i < l.size(); i++) {
+                            sb.append("\t").append(l.get(i));
+                        }
+                        bw.write(sb.toString());
+                        bw.newLine();
+                    }
+                }
+                bw.flush();
+                bw.close();
+                br.close();
+                System.out.println(f.getName() + "\tis completed at " + outfileS);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+        // java -jar GeneticLoad.jar > log_changeChrPos_2021-04-10.txt 2>&1 &
+    }
+
+
+    /**
+     * 输出运行Fst的单行命令
+     * vcftools --gzvcf /data4/home/aoyue/vmap2/genotype/mergedVCF/105_VMap2.1ByRef/chr7D_vmap2.1.vcf.gz --weir-fst-pop /data4/home/aoyue/vmap2/analysis/021_popGen/101_Fst/000_group/hexaandDi/Cultivar.txt --weir-fst-pop /data4/home/aoyue/vmap2/analysis/021_popGen/101_Fst/000_group/hexaandDi/Landrace.txt --fst-window-size 100000 --fst-window-step 50000 --out /data4/home/aoyue/vmap2/analysis/031_popGen/002_fst_based100000window_50000step/001/Cultivar_VS_Landrace_chr7D
+     *
+     * 当VCF文件只有一个时，多个组的循环
+     */
+    public void mkFstCMD_single(){
+
+        // ******************************************* 参数设置 *********************************************************************
+// 先做一个测试，MAF过滤前后，FST是否有变化
+        //        //local file： one: group
+        String groupHexaandTetraDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/001_Fst/000_group/hexaandTetra";
+        String groupHexaandDiDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/001_Fst/000_group/hexaandDi";
+        // HPC file: group fileDirS
+        String group1FileDirS = "/data4/home/aoyue/vmap2/analysis/031_popGen/000_group/hexaandTetra";
+        String group2FileDirS = "/data4/home/aoyue/vmap2/analysis/031_popGen/000_group/hexaandDi";
+
+//        String infileDirS = ""; //HPC
+//        String outfileDirS = ""; //HPC
+//        String infileS = "/data4/home/aoyue/vmap2/analysis/025_subsetVCF/002_mergeVCFtoSub/Asubgenome.vcf.gz"; //未转换成RefChrPos
+//        String infileS = "/data4/home/aoyue/vmap2/analysis/025_subsetVCF/005_changeChrPos_from002/beforeFilterMAF0.1/Dsubgenome_RefChrPos.vcf.gz";
+        String infileS = "/data4/home/aoyue/vmap2/analysis/025_subsetVCF/005_changeChrPos_from002/filterMAF0.1/Bsubgenome_RefChrPos_MAF0.1.vcf.gz";
+        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/031_popGen/005_testFst_MAFfilter/002_fst_based100000window_50000step";
+        String scriptS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/001_Fst/001_script_based100kwindow_50kstep/fst_based100kwindow_50kstep_2021-04-10.sh";
+
+        //        //参数
+        int window = 100000;
+        int step = 50000;
+        int numcmd = 1;
+        //其他需要修改参数： 输入文件名称
+//        String infileS = new File(infileDirS, "chr" + chr + "_vmap2.1.vcf").getAbsolutePath();
+        System.out.println("mkdir 001_script_based" + window + "window_" + step + "step");
+        System.out.println("mkdir 002_fst_based" + window + "window_" + step + "step");
+
+
+        List<File> fs = AoFile.getFileListInDir(groupHexaandTetraDirS);
+        File[] group1FileS = fs.toArray(new File[fs.size()]);
+
+        List<File> fs2 = AoFile.getFileListInDir(groupHexaandDiDirS);
+        File[] group2FileS = fs2.toArray(new File[fs2.size()]);
+
+
+        try{
+            BufferedWriter bw = AoFile.writeFile(scriptS);
+            for (int i = 0; i < group1FileS.length - 1; i++) {
+                String pop1 = group1FileS[i].getName().replace(".txt", ""); //第一组的名字
+                for (int j = i + 1; j < group1FileS.length; j++) {
+                    String pop2 = group1FileS[j].getName().replace(".txt", ""); //第二组的名字
+                    String outfileS = new File(outfileDirS, pop1 + "_VS_" + pop2 + "_" + new File(infileS).getName().replaceFirst(".vcf.gz","")).getAbsolutePath();
+                    String group1S = new File(group1FileDirS, group1FileS[i].getName()).getAbsolutePath();
+                    String group2S = new File(group1FileDirS, group1FileS[j].getName()).getAbsolutePath();
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("vcftools --gzvcf ").append(infileS).append(" --weir-fst-pop ").append(group1S).append(" --weir-fst-pop ").append(group2S);
+                    sb.append(" --fst-window-size ").append(window).append(" --fst-window-step ").append(step);
+                    sb.append(" --out ").append(outfileS);
+                    System.out.println(sb.toString());
+                    bw.write(sb.toString());bw.newLine();
+                }
+            }
+
+//            for (int i = 0; i < group2FileS.length - 1; i++) {
+//                String pop1 = group2FileS[i].getName().replace(".txt", "");
+//                for (int j = i + 1; j < group2FileS.length; j++) {
+//                    String pop2 = group2FileS[j].getName().replace(".txt", "");
+//                    String outfileS = new File(outfileDirS, pop1 + "_VS_" + pop2 + "_" + new File(infileS).getName().replaceFirst(".vcf.gz","")).getAbsolutePath();
+//                    String group1S = new File(group2FileDirS, group2FileS[i].getName()).getAbsolutePath();
+//                    String group2S = new File(group2FileDirS, group2FileS[j].getName()).getAbsolutePath();
+//                    StringBuilder sb = new StringBuilder();
+//                    sb.append("vcftools --gzvcf ").append(infileS).append(" --weir-fst-pop ").append(group1S).append(" --weir-fst-pop ").append(group2S);
+//                    sb.append(" --fst-window-size ").append(window).append(" --fst-window-step ").append(step);
+//                    sb.append(" --out ").append(outfileS);
+//                    System.out.println(sb.toString());
+//                    bw.write(sb.toString());bw.newLine();
+//
+//                }
+//            }
+
+            bw.flush();bw.close();
+            SplitScript.splitScript3(scriptS,numcmd); //脚本拆分
+
+        }catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+    }
 
     /**
      * 终极版本！运行fst命令的脚本
@@ -401,6 +571,7 @@ public class Fst {
 //        int window = 100000;
 //        int step = 50000;
 //        int numcmd = 8;
+
 //        //其他需要修改参数： 输入文件名称
 ////        String infileS = new File(infileDirS, "chr" + chr + "_vmap2.1.vcf").getAbsolutePath();
 //
@@ -408,6 +579,8 @@ public class Fst {
 //        System.out.println("mkdir 002_fst_based" + window + "window_" + step + "step");
 //
 //
+
+// ******************************************* 参数设置 *********************************************************************
 //        //local file： one: group
 //        String groupHexaandTetraDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/000_group/hexaandTetra";
 //        String groupHexaandDiDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/000_group/hexaandDi";
@@ -422,32 +595,51 @@ public class Fst {
 //        String scriptS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/001_script_based100kwindow_50kstep/fst_based100kwindow_50kstep_20200213.sh"; //local script file
 //        new File(scriptS).getParentFile().mkdirs();
 
+//        int window = 2000;
+//        int step = 2000;
+//        int numcmd = 21;
 
-        int window = 2000;
-        int step = 2000;
-        int numcmd = 21;
+//        //其他需要修改参数： 输入文件名称
+////        String infileS = new File(infileDirS, "chr" + chr + "_vmap2.1.vcf").getAbsolutePath();
+//        System.out.println("mkdir 001_script_based" + window + "window_" + step + "step");
+//        System.out.println("mkdir 002_fst_based" + window + "window_" + step + "step");
+
+// ******************************************* 参数设置 *********************************************************************
+//        //local file： one: group
+//        String groupHexaandTetraDirS = "";
+//        String groupHexaandDiDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/000_group/hexaandDi";
+//
+//        // HPC file: group fileDirS
+//        String group1FileDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/101_Fst/000_group/hexaandTetra";
+//        String group2FileDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/101_Fst/000_group/hexaandDi";
+//
+//        // HPC file: output fileDirS
+//        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/105_VMap2.1ByRef";
+//        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/031_popGen/002_fst_based100000window_50000step/001";
+//        String scriptS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/001_script_based100kwindow_50kstep/fst_based100kwindow_50kstep_20200213.sh"; //local script file
+//        new File(scriptS).getParentFile().mkdirs();
+
+// ******************************************* 参数设置 *********************************************************************
+// 先做一个测试，MAF过滤前后，FST是否有变化
+        //        //local file： one: group
+        String groupHexaandTetraDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/000_group/hexaandTetra";
+        String groupHexaandDiDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/000_group/hexaandDi";
+        // HPC file: group fileDirS
+        String group1FileDirS = "/data4/home/aoyue/vmap2/analysis/031_popGen/000_group/hexaandTetra";
+        String group2FileDirS = "/data4/home/aoyue/vmap2/analysis/031_popGen/000_group/hexaandDi";
+
+        String infileDirS = ""; //HPC
+        String outfileDirS = ""; //HPC
+        String scriptS = ""; //local script file
+
+        //        //参数
+        int window = 100000;
+        int step = 50000;
+        int numcmd = 8;
         //其他需要修改参数： 输入文件名称
 //        String infileS = new File(infileDirS, "chr" + chr + "_vmap2.1.vcf").getAbsolutePath();
-
         System.out.println("mkdir 001_srcipt_based" + window + "window_" + step + "step");
         System.out.println("mkdir 002_fst_based" + window + "window_" + step + "step");
-
-
-        //local file： one: group
-        String groupHexaandTetraDirS = "";
-        String groupHexaandDiDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/000_group/hexaandDi";
-
-        // HPC file: group fileDirS
-        String group1FileDirS = "/data4/home/aoyue/vmap2/analysis/021_popGen/101_Fst/000_group/hexaandTetra";
-        String group2FileDirS = "/data4/home/oyue/vmap2/analysis/021_popGen/101_Fst/000_group/hexaandDi";
-
-        // HPC file: output fileDirS
-        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/105_VMap2.1ByRef";
-        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/031_popGen/002_fst_based100000window_50000step/001";
-        String scriptS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/001_script_based100kwindow_50kstep/fst_based100kwindow_50kstep_20200213.sh"; //local script file
-        new File(scriptS).getParentFile().mkdirs();
-
-
 
 
         List<File> fs = AoFile.getFileListInDir(groupHexaandTetraDirS);

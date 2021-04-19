@@ -49,7 +49,9 @@ public class Triadsgenes {
         triadsSyntenicMap = new HashMap<>();
         triadsExpressedMap = new HashMap<>();
 //        String infileS = "/Users/Aoyue/Documents/Data/wheat/gene/homoeologsGene111/triadGenes1.1.txt";
-        String infileS = "/Users/Aoyue/Documents/Data/wheat/gene/homoeologsGene111/triadGene1.1_V2.txt";
+//        String infileS = "/Users/Aoyue/Documents/Data/wheat/gene/homoeologsGene111/triadGene1.1_V2.txt";
+        String infileS = "/Users/Aoyue/Documents/Data/wheat/gene/homoeologsGene111/triadGenes1.1_V3.txt";
+
         try {
             BufferedReader br = AoFile.readFile(infileS);
             String header = br.readLine();
