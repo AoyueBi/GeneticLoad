@@ -6,10 +6,13 @@
 package GermplasmInfo;
 
 import AoUtils.AoFile;
+import AoUtils.SplitScript;
+import org.sqlite.util.StringUtils;
 import pgl.infra.utils.IOUtils;
 import pgl.infra.utils.PStringUtils;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.util.*;
 
 /**
@@ -31,14 +34,149 @@ public class GermplasmInfo {
 
         //************* 向新建立的taxaDB中添加列信息 ***************//
 //        this.addColumntoTaxaDB();
-        this.addMultipleColumn();
+//        this.addMultipleColumn();
 //        this.summaryGroupbyContinent();
 //        this.summaryGroupbyLandrace();
 //        this.addDDgroup();
 //        this.addIntrogressionID();
 //        this.add21subspeciesInfo();
 
+//        this.extractVCFfromVMap2(); //2021-06-11 Fei task
 
+
+    }
+
+    public void extractVCFfromVMap2(){
+//        this.checkTaxa();
+//        this.script_extractVCF();
+//        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/051_extractVCF_fromVMap2/script/script.sh",11,3);
+//        this.bgzip();
+        this.md5();
+    }
+
+    private void md5(){
+        String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
+
+        for (int i = 0; i < chrArr.length; i++) {
+            String chr = chrArr[i];
+            System.out.println("md5sum chr" + chr + "_vmap2.1_10X_hexaploid_S315.vcf.gz > chr" + chr + "_vmap2.1_10X_hexaploid_S315.vcf.gz.md5 &");
+        }
+    }
+
+    private void bgzip(){
+        String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
+
+        for (int i = 0; i < chrArr.length; i++) {
+            String chr = chrArr[i];
+            System.out.println("bgzip -@ 4 chr" + chr + "_vmap2.1_10X_hexaploid_S315.vcf && tabix -p vcf chr" + chr + "_vmap2.1_10X_hexaploid_S315.vcf.gz &");
+        }
+    }
+
+    private void checkTaxa(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/051_extractVCF_fromVMap2/001_TaxaNameUnify_20210611.txt";
+        String taxaDBFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/051_extractVCF_fromVMap2/taxa_InfoDB.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/051_extractVCF_fromVMap2/002_TaxaNameUnify_20210611.txt";
+
+        List<String> newTaxaNameList = new ArrayList<>();
+        List<String> taxaOnVMap2List = AoFile.getStringList(taxaDBFileS,0);
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String header = br.readLine();
+            bw.write(header + "\tFinalTaxa");bw.newLine();
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            String taxon = null;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+
+                String accessions = l.get(0);
+                String taxaName_V4 = l.get(1);
+                if (accessions.equals("PI94478")) {//该样品坏掉
+                    taxon = "PI94478";
+                    bw.write(temp + "\tNA");
+                    bw.newLine();
+                    cnt++;
+                }
+                else if (taxaName_V4.equals("YangMai(HLJ)")){
+                    taxon = "YangMai";
+                    bw.write(temp + "\t" + taxon);
+                    bw.newLine();
+                    cnt++;
+                    newTaxaNameList.add(taxon);
+                }
+                else if(accessions.equals("PI 231372") || accessions.equals("PI 298407")){
+                    taxon = taxaName_V4;
+                    bw.write(temp + "\t" + taxon);
+                    bw.newLine();
+                    cnt++;
+                    newTaxaNameList.add(taxon);
+                }
+                else if (accessions.startsWith("NA") || accessions.startsWith("MY")){ //没有PI编号，用英文名字
+                    taxon = taxaName_V4;
+                    bw.write(temp + "\t" + taxon);
+                    bw.newLine();
+                    cnt++;
+                    newTaxaNameList.add(taxon);
+                }
+                else if (accessions.startsWith("PI") || accessions.startsWith("CI")){
+                    taxon = accessions.replaceAll(" ","");
+                    bw.write(temp + "\t" + taxon);
+                    bw.newLine();
+                    cnt++;
+                    newTaxaNameList.add(taxon);
+                }
+                else { //01C0104984	Pepital	Pepital
+                    taxon = taxaName_V4;
+                    bw.write(temp + "\t" + taxon);
+                    bw.newLine();
+                    System.out.println(taxon);
+                    cnt++;
+                    newTaxaNameList.add(taxon);
+                }
+            }
+            System.out.println(cnt + "  hhhhh");
+            br.close();
+            bw.flush();
+            bw.close();
+
+            /**
+             * 验证多少个taxa在VMap2中
+             */
+
+            Collections.sort(newTaxaNameList);
+            for (int i = 0; i < newTaxaNameList.size(); i++) {
+                int index = Collections.binarySearch(taxaOnVMap2List,newTaxaNameList.get(i));
+                if (index < 0){
+                    System.out.println(newTaxaNameList.get(i) + "   is not in the VMap2 taxa list.");
+                }
+
+            }
+
+            //最终结论：清单上 320份小麦，其中有一份样品坏掉（PI94478），4份在call SNP质控中去除（Beaqle，Caruton，PI534284，PI583718），合计提取315份小麦样品。
+            //由于提取taxa名字应该和vmap2保持一致，故最终使用的taxa名在原列表基础上添加一列taxa信息。
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+    }
+
+    private void script_extractVCF(){
+        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/103_VMap2.1";
+        String outfileDirS ="/data4/home/aoyue/vmap2/analysis/034_vcf_S315_hexaploid";
+        String logDirS = "/data4/home/aoyue/vmap2/aaPlantGenetics/log_20210611";
+        String taxaListS = "/data4/home/aoyue/vmap2/analysis/034_taxaList/004_taxaList_20210611.txt";
+
+        String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
+        for (int i = 0; i < chrArr.length; i++) {
+            String infileS = new File(infileDirS,"chr" + chrArr[i] + "_vmap2.1.vcf.gz").getAbsolutePath();
+            String outfileS = new File(outfileDirS,"chr" + chrArr[i] + "_vmap2.1_10X_hexaploid_S315.vcf").getAbsolutePath();
+            String logfileS = new File(logDirS,"log_" + new File(outfileS).getName().split(".gz")[0]).getAbsolutePath(); //不管是不是gz结尾，我们只取gz前的部分，妙！
+            System.out.println("java -jar 049_extractVCF_GL.jar " + infileS + " " + outfileS + " " + taxaListS + " > " + logfileS + " 2>&1 &");
+
+        }
     }
 
     /**

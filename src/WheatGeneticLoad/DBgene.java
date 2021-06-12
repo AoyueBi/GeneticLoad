@@ -56,16 +56,16 @@ public class DBgene {
 //        this.mergeSpreadTable();
 
         /**
-         * 2020-11-19 update my data
+         * 2020-11-19 update hexaploid
          */
 //        this.getHexaploidAnnotation_();
-        this.script_getTranscriptSum();
+//        this.script_getTranscriptSum();
 //        this.mergeTxt();
-//        this.mkSpreadFormat_hexaploid();
+        this.mkSpreadFormat_hexaploid();
 //        this.addTriadIDforEpigenomicMap();
 
         /**
-         * 2021-04-15 update tetraploid and diploid
+         * 2021-04-15 update pseudohexaploid
          */
 
 //        this.getPseudoHexaploidAnnotation_(); //
@@ -73,12 +73,13 @@ public class DBgene {
 //        this.mergeTxt();
 //        this.mkSpreadFormat_hexaploid();
 
-
-
-
-
-
-
+        /**
+         * 2021-04-20 update tetraploid and diploid
+         */
+        //        this.getsubspeciesSNPAnnotation();
+//                this.script_getTranscriptSum();
+//                this.mergeTxt();
+//                this.mkSpreadFormat_hexaploid();
 
     }
 
@@ -424,7 +425,7 @@ public class DBgene {
          */
 //        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/003_traids_load/001_triadsLoad_nonsynVSsyn_hexaploid.txt"; //nonsyn vs syn
 //        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/003_traids_load/002_triadsLoad_delVSsyn_hexaploid.txt"; // del VS syn
-//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/003_traids_load/003_triadsLoad_delFre_hexaploid.txt"; // del frequency
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/003_traids_load/003_triadsLoad_delFre_hexaploid.txt"; // del frequency
 
         /**
          * 2021-04-15 update result
@@ -432,7 +433,23 @@ public class DBgene {
 
 //        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/103_traids_load/001_triadsLoad_nonsynVSsyn_pseudohexaploid.txt"; //nonsyn vs syn
 //        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/103_traids_load/002_triadsLoad_delVSsyn_pseudohexaploid.txt"; // del VS syn
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/103_traids_load/003_triadsLoad_delFre_pseudohexaploid.txt"; // del frequency
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/103_traids_load/003_triadsLoad_delFre_pseudohexaploid.txt"; // del frequency
+
+        /**
+         * 2021-04-20 update result
+         */
+//////////// landraceEU
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/203_traids_load/001_triadsLoad_nonsynVSsyn_landraceEU.txt"; //nonsyn vs syn
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/203_traids_load/001_triadsLoad_deVSsyn_landraceEU.txt"; // del VS syn
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/203_traids_load/001_triadsLoad_delFre_landraceEU.txt"; // del frequency
+
+//////////// cultivar
+//                String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/203_traids_load/001_triadsLoad_nonsynVSsyn_cultivar.txt"; //nonsyn vs syn
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/203_traids_load/001_triadsLoad_deVSsyn_cultivar.txt"; // del VS syn
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/203_traids_load/001_triadsLoad_delFre_cultivar.txt"; // del frequency
+
+
+
 
         GeneDB genedb = new GeneDB(); //需要修改, 每批数据都有一个基因的summary，这里要更新
         Triadsgenes tg = new Triadsgenes();  //需要修改； 有3个版本
@@ -455,11 +472,11 @@ public class DBgene {
 //                String ratioA = genedb.getNonVsSynRatio(genea);
 //                String ratioB = genedb.getNonVsSynRatio(geneb);
 //                String ratioD = genedb.getNonVsSynRatio(gened);
-
+//
 //                String ratioA = genedb.getDelVsSynRatio(genea);
 //                String ratioB = genedb.getDelVsSynRatio(geneb);
 //                String ratioD = genedb.getDelVsSynRatio(gened);
-
+//
                 String ratioA = genedb.getPercentageDel(genea);
                 String ratioB = genedb.getPercentageDel(geneb);
                 String ratioD = genedb.getPercentageDel(gened);
@@ -496,8 +513,10 @@ public class DBgene {
         /**
          * update data
          */
-//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/002_z1_geneSummary_merge/001_geneSummary_hexaploid.txt.gz";
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/102_z1_geneSummary_byChr/001_geneSummary_pseudohexaploid.txt.gz";
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/002_z1_geneSummary_merge/001_geneSummary_hexaploid.txt.gz";
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/102_z1_geneSummary_byChr/001_geneSummary_pseudohexaploid.txt.gz";
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/202_z1_geneSummary_byChr/001_geneSummary_landraceEU.txt.gz";
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/202_z1_geneSummary_byChr/001_geneSummary_cultivar.txt.gz";
 
 
         String[] geneArray = AoFile.getgeneArraybyList(infileS,0);
@@ -699,18 +718,26 @@ public class DBgene {
     public void getsubspeciesSNPAnnotation(){
 //        String taxaList = "";
 //        String outfileDirS = "";
-        String vcfFileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/002_exonSNPVCF";
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/009_exonSNPAnnotation_addAnc_addDAF_barley_secalePasimony";
+//        String vcfFileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/002_exonSNPVCF";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/009_exonSNPAnnotation_addAnc_addDAF_barley_secalePasimony";
 
+        String vcfFileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/016_exonVCF";
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/018_exonSNPAnnotation";
         //需要修改
         //landrace_EU
 //        String taxaList = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/009_treeValidatedFroup_byRegion/002_Landrace_European/Landrace_Europe.txt";
 //        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/003_hexaploid_subspecies_SNPAnnotation/001_landrace_exon_SNPAnnotation";
 
-        //cultivar
-        String taxaList = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/008_treeValidatedGroup_bySubspecies/Cultivar.txt";
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/003_hexaploid_subspecies_SNPAnnotation/002_cultivar_exon_SNPAnnotation";
+//        String taxaList = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/012_GroupbyContinent/LR_EU.txt";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/201_exonSNPAnnotation_Landrace_Cultivar/001_landraceEU_exon_SNPAnnotation";
 
+
+        //cultivar
+//        String taxaList = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/008_treeValidatedGroup_bySubspecies/Cultivar.txt";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/108_geneDB/003_hexaploid_subspecies_SNPAnnotation/002_cultivar_exon_SNPAnnotation";
+
+        String taxaList = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/012_GroupbyContinent/Cultivar.txt";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/201_exonSNPAnnotation_Landrace_Cultivar/002_cultivar_exon_SNPAnnotation";
 
         List<File> fsList = AoFile.getFileListInDir(infileDirS);
         AoFile.readheader(fsList.get(0).getAbsolutePath());
@@ -754,15 +781,25 @@ public class DBgene {
 //        AoFile.mergeTxt(infileDirS,outfileS);
 
         //合并 hexaploid 的
-//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/002_geneSummary_byChr";
-//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/002_z1_geneSummary_merge/001_geneSummary_hexaploid.txt.gz";
-//        AoFile.mergeTxt(infileDirS,outfileS);
-
-        //合并 pseudohexaploid 的
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/102_geneSummary_byChr";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/102_z1_geneSummary_byChr/001_geneSummary_pseudohexaploid.txt.gz";
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/002_geneSummary_byChr";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/002_z1_geneSummary_merge/001_geneSummary_hexaploid.txt.gz";
         AoFile.mergeTxt(infileDirS,outfileS);
 
+        //合并 pseudohexaploid 的
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/102_geneSummary_byChr";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/102_z1_geneSummary_byChr/001_geneSummary_pseudohexaploid.txt.gz";
+//        AoFile.mergeTxt(infileDirS,outfileS);
+
+        //合并 landraceEU 的 2021-4-20
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/202_geneSummary_byChr/001_landraceEU";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/202_z1_geneSummary_byChr/001_geneSummary_landraceEU.txt.gz";
+//        AoFile.mergeTxt(infileDirS,outfileS);
+
+
+        //合并 cultivar 的 2021-4-20
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/202_geneSummary_byChr/002_cultivar";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/202_z1_geneSummary_byChr/001_geneSummary_cultivar.txt.gz";
+//        AoFile.mergeTxt(infileDirS,outfileS);
 
     }
 
@@ -789,11 +826,21 @@ public class DBgene {
         /**
          * 2020-11-19 周四 update my data
          */
-//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/001_exonSNPAnnotation_hexaploid"; // 需要总结的 库 snpAnnotation 文件
-//        String outfileDirS ="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/002_geneSummary_byChr"; // 每条染色体上的基因生成的总结
+        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/001_exonSNPAnnotation_hexaploid"; // 需要总结的 库 snpAnnotation 文件
+        String outfileDirS ="/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/002_geneSummary_byChr"; // 每条染色体上的基因生成的总结
 
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/101_exonSNPAnnotation_pseudoHexaploid";
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/102_geneSummary_byChr";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/101_exonSNPAnnotation_pseudoHexaploid";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/102_geneSummary_byChr";
+
+        /**
+         * 2021-04-20 周四 update my data
+         */
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/201_exonSNPAnnotation_Landrace_Cultivar/001_landraceEU_exon_SNPAnnotation";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/202_geneSummary_byChr/001_landraceEU";
+
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/201_exonSNPAnnotation_Landrace_Cultivar/002_cultivar_exon_SNPAnnotation";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/044_methylation/202_geneSummary_byChr/002_cultivar";
+
 
         String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
         String[] chrArrAB ={"001","002","003","004","007","008","009","010","013","014","015","016","019","020","021","022","025","026","027","028","031","032","033","034","037","038","039","040"};
@@ -829,16 +876,25 @@ public class DBgene {
 //            }
 
             // hexaploid
-//            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_SNP_hexaploid_anno.txt.gz").getAbsolutePath();
-//            String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_vmap2.1_hexaploid_geneSummary.txt.gz").getAbsolutePath();
-//            this.getTranscriptSum_bychr(infileS,outfileS);
-//            System.out.println("chr" + chrArr[j] + " is completed at " + outfileS);
-
-            //pseudohexaploid
-            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_SNP_pseudohexaploid_anno.txt.gz").getAbsolutePath();
-            String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_vmap2.1_pseudohexaploid_geneSummary.txt.gz").getAbsolutePath();
+            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_SNP_hexaploid_anno.txt.gz").getAbsolutePath();
+            String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_vmap2.1_hexaploid_geneSummary.txt.gz").getAbsolutePath();
             this.getTranscriptSum_bychr(infileS,outfileS);
             System.out.println("chr" + chrArr[j] + " is completed at " + outfileS);
+
+//            //pseudohexaploid
+//            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_SNP_pseudohexaploid_anno.txt.gz").getAbsolutePath();
+//            String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_vmap2.1_pseudohexaploid_geneSummary.txt.gz").getAbsolutePath();
+
+            //landraceEU
+//            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_SNP_anno_landraceEU_.txt.gz").getAbsolutePath();
+//            String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_vmap2.1_landraceEU_geneSummary.txt.gz").getAbsolutePath();
+
+            //cultivar
+//            String infileS = new File(infileDirS,"chr" + chrArr[j] + "_SNP_anno_cultivar_.txt.gz").getAbsolutePath();
+//            String outfileS = new File(outfileDirS,"chr" + chrArr[j] + "_vmap2.1_cultivar_geneSummary.txt.gz").getAbsolutePath();
+//
+//            this.getTranscriptSum_bychr(infileS,outfileS);
+//            System.out.println("chr" + chrArr[j] + " is completed at " + outfileS);
 
         }
 

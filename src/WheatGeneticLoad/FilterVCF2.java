@@ -85,7 +85,7 @@ public class FilterVCF2 {
          * 提取六四二倍体的VCF
          */
 
-//        this.runJarParallele();
+        this.runJarParallele();
 //        SplitScript.splitScript2("/Users/Aoyue/Documents/sh_vmap2.0tovmap2.1_20200526.sh",21,2);
 //        this.getsharedSNP(); //获取六倍体四倍体二倍体共有的SNP
 //        this.mergeSharedSNP();
