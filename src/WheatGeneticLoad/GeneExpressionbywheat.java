@@ -4,7 +4,10 @@ import AoUtils.*;
 import AoUtils.Triads.Triadsgenes;
 import gnu.trove.list.array.TDoubleArrayList;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import pgl.infra.anno.gene.GeneFeature;
+import pgl.infra.table.RowTable;
+import pgl.infra.utils.IOUtils;
 import pgl.infra.utils.PStringUtils;
 import pgl.infra.utils.wheat.RefV1Utils;
 
@@ -20,7 +23,7 @@ public class GeneExpressionbywheat {
 //        this.getCSgeneSummary();
 //        this.getCSgeneSummary_usingTriadsClass();
 
-//        this.geneExpressionbyDevelopment();
+        this.geneExpressionbyDevelopment();
 //        this.geneExpressionbyRoot_fromJun();
 //        this.geneExpressionbyColeoptile_fromXiaohan();
 
@@ -34,6 +37,101 @@ public class GeneExpressionbywheat {
 //        this.calBreadth_onRootandcoleotiple();
 //        this.getwindowDistrbution_general();
 
+        /**
+         * 2021-06-15 Tuesday deleterious mutations vs gene expression
+         */
+        this.deleteriousAndGeneByTissue();
+
+    }
+
+    /**
+     * java code by fei， revised by aoyue
+     */
+    public void deleteriousAndGeneByTissue () {
+        String sourceDirS = "M:\\production\\maf\\003_expression\\delAndExpression\\";
+        String outputDirS = "M:\\production\\maf\\003_expression\\delAndGeneByTissue\\";
+        File[] fs = new File (sourceDirS).listFiles();
+        fs = IOUtils.listFilesEndsWith(fs, ".txt");
+        for (int i = 0; i < fs.length; i++) {
+            HashMap<String, Double> synMap = new HashMap();
+            HashMap<String, Double> delMap = new HashMap();
+            HashMap<String, Double> ratioMap = new HashMap();
+            RowTable t = new RowTable(fs[i].getAbsolutePath());
+            for (int j = 0; j < t.getRowNumber(); j++) { //获取文件中 有害突变的值
+                synMap.put(t.getCellAsString(j,0), Double.valueOf(t.getCellAsString(j,t.getColumnNumber()-4)));
+                delMap.put(t.getCellAsString(j,0), Double.valueOf(t.getCellAsString(j,t.getColumnNumber()-3)));
+                ratioMap.put(t.getCellAsString(j,0), Double.valueOf(t.getCellAsString(j,t.getColumnNumber()-2)));
+            }
+            String[] tissue = new String[t.getColumnNumber()-8]; //获取文件中的组织数目 合计17个组织
+            TDoubleArrayList[] synList = new TDoubleArrayList[tissue.length]; //每个组织有一个有害突变的list， 17个组织有17个list
+            TDoubleArrayList[] delList = new TDoubleArrayList[tissue.length];
+            TDoubleArrayList[] ratioList = new TDoubleArrayList[tissue.length];
+            ArrayList<String>[] geneList = new ArrayList[tissue.length]; //每个组织有一个基因的list
+            double[][] syn  = new double[tissue.length][];
+            double[][] del = new double[tissue.length][];
+            double[][] ratio = new double[tissue.length][];
+            for (int j = 0; j < tissue.length; j++) { //初始化这些list类型的数组
+                synList[j] = new TDoubleArrayList();
+                delList[j] = new TDoubleArrayList();
+                ratioList[j] = new TDoubleArrayList();
+                tissue[j] = t.getHeader().get(j+4).toString(); //获取每个组织的名字
+                geneList[j] = new ArrayList(); //获取每个组织的基因列表
+            }
+            for (int j = 0; j < t.getRowNumber(); j++) { //第一层循环，每个基因是一行
+                for (int k = 0; k < tissue.length; k++) { //第二层循环，对不同的组织进行循环
+                    if (Double.valueOf(t.getCellAsString(j,k+4))==0) continue; //如果表达量为0，则跳过，说明该组织在本基因中不表达。
+                    synList[k].add(synMap.get(t.getCellAsString(j,0))); //根据基因名字，获取syn的值，加入list中
+                    delList[k].add(delMap.get(t.getCellAsString(j,0)));
+                    ratioList[k].add(ratioMap.get(t.getCellAsString(j,0)));
+                    geneList[k].add(t.getCellAsString(j,0));
+                }
+            }
+            double[] meanSyn = new double[tissue.length]; //每个组织有一个平均值和标准差
+            double[] meanDel = new double[tissue.length];
+            double[] meanRatio = new double[tissue.length];
+            double[] seSyn = new double[tissue.length];
+            double[] seDel = new double[tissue.length];
+            double[] seRatio = new double[tissue.length];
+            for (int j = 0; j < tissue.length; j++) {
+                syn[j] = synList[j].toArray();
+                del[j] = delList[j].toArray();
+                ratio[j] = ratioList[j].toArray();
+                DescriptiveStatistics d = new DescriptiveStatistics(syn[j]);
+                meanSyn[j] = d.getMean();
+                seSyn[j] = d.getStandardDeviation()/Math.sqrt(syn[j].length);
+                d = new DescriptiveStatistics(del[j]);
+                meanDel[j] = d.getMean();
+                seDel[j] = d.getStandardDeviation()/Math.sqrt(del[j].length);
+                d = new DescriptiveStatistics(ratio[j]);
+                meanRatio[j] = d.getMean();
+                seRatio[j] = d.getStandardDeviation()/Math.sqrt(ratio[j].length);
+            }
+//            int[] indices = PStringUtils.getIndexByAscendingValue(meanRatio); //根据meanRatio按照从小到大的顺序排列,并输出文件 （返回排序后的index，比如 0.8， 0.3， 1.7， 1.5 数组返回的indices 数组是 1，0，3，2）
+            int[] indices = {1,2,3,4,5,6,7,8}; //该步已上一行代码为准
+
+            for (int j = 0; j < indices.length; j++) {
+                System.out.println(String.valueOf(meanSyn[indices[j]])+"\t"+String.valueOf(tissue[indices[j]]));
+            }
+            String outfileS = new File (outputDirS, fs[i].getName()).getAbsolutePath();
+            try {
+                BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+                bw.write("Tissue\tMeanSyn\tSESyn\tMeanDel\tSEDel\tMeanRatio\tSERatio");
+                bw.newLine();
+                for (int j = 0; j < tissue.length; j++) {
+                    StringBuilder sb = new StringBuilder(tissue[indices[j]]);
+                    sb.append("\t").append(meanSyn[indices[j]]).append("\t").append(seSyn[indices[j]]);
+                    sb.append("\t").append(meanDel[indices[j]]).append("\t").append(seDel[indices[j]]);
+                    sb.append("\t").append(meanRatio[indices[j]]).append("\t").append(seRatio[indices[j]]);
+                    bw.write(sb.toString());
+                    bw.newLine();
+                }
+                bw.flush();
+                bw.close();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 
