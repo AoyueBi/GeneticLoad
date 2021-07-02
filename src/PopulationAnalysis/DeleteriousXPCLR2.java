@@ -31,8 +31,10 @@ public class DeleteriousXPCLR2 {
 
     }
 
+
+
     public void pipeDeleteriousXPCLR(){
-//        this.step0(); //第一次计算
+        this.step0(); //第一次计算
 //        this.step1(); //第二次计算
         this.step3(); //第三次计算:ref bias evaluation 后，load 变化
 

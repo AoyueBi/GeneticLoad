@@ -58,7 +58,7 @@ public class DBgene {
         /**
          * 2020-11-19 update hexaploid
          */
-        this.getHexaploidAnnotation_();
+//        this.getHexaploidAnnotation_();
 //        this.script_getTranscriptSum();
 //        this.mergeTxt();
 //        this.mkSpreadFormat_hexaploid();
@@ -76,12 +76,14 @@ public class DBgene {
         /**
          * 2021-04-20 update tetraploid and diploid
          */
-                this.getsubspeciesSNPAnnotation();
+//                this.getsubspeciesSNPAnnotation();
 //                this.script_getTranscriptSum();
 //                this.mergeTxt();
-//                this.mkSpreadFormat_hexaploid();
-
+                this.mkSpreadFormat_hexaploid();
+//
     }
+
+
 
 
     /**

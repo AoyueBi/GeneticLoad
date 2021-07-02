@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import AoUtils.AoFile;
 import pgl.infra.table.RowTable;
 import pgl.infra.utils.IOUtils;
 import pgl.infra.utils.PStringUtils;
@@ -26,7 +28,7 @@ import pgl.infra.utils.PStringUtils;
 public class WheatABandDcleandataProcessor {
 
     public WheatABandDcleandataProcessor() {
-        this.getIDseqsubsamples();
+//        this.getIDseqsubsamples();
         //this.getBWAscript();
         //this.getRmdupscript();
         //this.splitRmdupScript();
@@ -40,7 +42,205 @@ public class WheatABandDcleandataProcessor {
 //        this.mkJavaCmdchr1_42_D();
         //this.mkParameterchr1_42_AB();
         //this.mkJavaCmdchr1_42_AB();
+
+        /**
+         * 2021-06-29 周二 为避免ref bias,抽取10份WE DE FTT AT 合计40份样品，以 WE 为ref，进行比对。
+         */
+
+//        this.getBWAscript_20210629();
+//        this.copyData();
+//        this.getBWAscript_20210630();
+        this.getBWAscript_20210630_2();
+
     }
+
+    
+    public void copyData(){
+//        String scriptS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/011_cleanData_alignWE/002_SeqID_hm/copyData/";
+//        String taxaFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/011_cleanData_alignWE/002_SeqID_hm/S18.txt";
+//        String[] taxaArray = AoFile.getStringArraybyList(taxaFileS,0);
+//        for (int i = 0; i < taxaArray.length; i++) {
+//            System.out.println("cp -Rf /mnt/usb/data2/" + taxaArray[i] + "_R1.fq.gz /data4/home/aoyue/vmap2/daxing/analysis/005_refBias_realign_WE_DE_FTT_AT/000_rawData/");
+//            System.out.println("cp -Rf /mnt/usb/data2/" + taxaArray[i] + "_R2.fq.gz /data4/home/aoyue/vmap2/daxing/analysis/005_refBias_realign_WE_DE_FTT_AT/000_rawData/");
+//        }
+
+        //NAFU数据拷贝
+        String[] taxaArray = {"S2","S12","S17","W3","W5"};
+        System.out.println("cp -Rf /mnt/usb/01.first30/" + "S2" + "_R1.clean.fq.gz /data4/home/aoyue/vmap2/daxing/analysis/005_refBias_realign_WE_DE_FTT_AT/000_rawData/");
+        System.out.println("cp -Rf /mnt/usb/01.first30/" + "S2" + "_R2.clean.fq.gz /data4/home/aoyue/vmap2/daxing/analysis/005_refBias_realign_WE_DE_FTT_AT/000_rawData/");
+        System.out.println("cp -Rf /mnt/usb/01.first30/" + "S12" + "_R1.clean.fq.gz /data4/home/aoyue/vmap2/daxing/analysis/005_refBias_realign_WE_DE_FTT_AT/000_rawData/");
+        System.out.println("cp -Rf /mnt/usb/01.first30/" + "S12" + "_R2.clean.fq.gz /data4/home/aoyue/vmap2/daxing/analysis/005_refBias_realign_WE_DE_FTT_AT/000_rawData/");
+        System.out.println("cp -Rf /mnt/usb/01.first30/" + "S17" + "_R1.clean.fq.gz /data4/home/aoyue/vmap2/daxing/analysis/005_refBias_realign_WE_DE_FTT_AT/000_rawData/");
+        System.out.println("cp -Rf /mnt/usb/01.first30/" + "S17" + "_R2.clean.fq.gz /data4/home/aoyue/vmap2/daxing/analysis/005_refBias_realign_WE_DE_FTT_AT/000_rawData/");
+        System.out.println("cp -Rf /mnt/usb/05.W1-10/" + "W3" + ".R1.clean.fq.gz /data4/home/aoyue/vmap2/daxing/analysis/005_refBias_realign_WE_DE_FTT_AT/000_rawData/W3_R1.clean.fq.gz");
+        System.out.println("cp -Rf /mnt/usb/05.W1-10/" + "W3" + ".R2.clean.fq.gz /data4/home/aoyue/vmap2/daxing/analysis/005_refBias_realign_WE_DE_FTT_AT/000_rawData/W3_R2.clean.fq.gz");
+        System.out.println("cp -Rf /mnt/usb/05.W1-10/" + "W5" + ".R1.clean.fq.gz /data4/home/aoyue/vmap2/daxing/analysis/005_refBias_realign_WE_DE_FTT_AT/000_rawData/W5_R1.clean.fq.gz");
+        System.out.println("cp -Rf /mnt/usb/05.W1-10/" + "W5" + ".R2.clean.fq.gz /data4/home/aoyue/vmap2/daxing/analysis/005_refBias_realign_WE_DE_FTT_AT/000_rawData/W5_R2.clean.fq.gz");
+
+
+
+
+    }
+
+    public void getBWAscript_20210630_2(){
+        String refAB = "/data4/home/aoyue/vmap2/daxing/reference/001_wildEmmer/ref/ab.WEWSeq_v.1.0";
+        String refD = "/data4/home/aoyue/vmap2/daxing/reference/002_Aegilops_tauschii/ref/Aet_v.4.0";
+
+        String rawdataDirS = "/data4/home/aoyue/vmap2/ab/001_rawData/";
+        String db = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/011_cleanData_alignWE/002_SeqID_hm/hm_SeqID_subID_forDuplicate.txt";
+
+        String bampathAB = "/data4/home/aoyue/vmap2/daxing/analysis/005_refBias_realign_WE_DE_FTT_AT/001_bamfile/AABB/";
+        String bampathD = "/data4/home/aoyue/vmap2/daxing/analysis/005_refBias_realign_WE_DE_FTT_AT/001_bamfile/DD/";
+
+        try {
+            String scriptS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/011_cleanData_alignWE/003_script_bwa/003_bwa.S5_forDuplicate.sh";
+            BufferedWriter bw = IOUtils.getTextWriter(scriptS);
+
+            RowTable<String> t = new RowTable<>(db);
+            for (int i = 0; i < t.getRowNumber(); i++) {
+                String id = t.getCell(i, 2);
+                String ploidy = t.getCell(i, 1);
+                String sample = t.getCell(i, 4);
+                StringBuilder sb = new StringBuilder("bwa mem -t 8 -R ");
+                sb.append("'@RG\\tID:" + id + "\\tPL:illumina\\tSM:" + id + "\\tLB:" + id + "' ");
+                String bampath;
+                String indexFileS;
+                if (ploidy.equals("WE") || ploidy.equals("DE") || ploidy.equals("FTT")) {
+                    indexFileS = refAB;
+                    bampath = bampathAB;
+                } else {
+                    indexFileS = refD;
+                    bampath = bampathD;
+                }
+                sb.append(indexFileS + " ");
+                sb.append(rawdataDirS + id + "/" + sample + "/" + sample + "_1.clean.fq.gz" + " ");
+                sb.append(rawdataDirS + id + "/" + sample + "/" + sample + "_2.clean.fq.gz");
+                sb.append(" | ").append("samtools view -S -b - > ").append(new File(bampath, sample + ".pe.bam").
+                        getAbsolutePath()).append(" && ");
+                sb.append("echo '** bwa mapping done **'");
+                bw.write(sb.toString());
+                bw.newLine();
+            }
+            bw.flush();
+            bw.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+    }
+
+    public void getBWAscript_20210630(){
+        /**
+         * ******** Path in script **********
+         */
+        //bwa mem -t 8 -R '@RG\tID:AT08079A\tPL:illumina\tSM:AT08079A\tLB:AT08079A' /data1/publicData/wheat/reference/v1.0/AB/bwaLib/ab_iwgscV1.fa.gz 190520_I4_V300021171_L1_WHEtkyRAAAA-501_1.clean.fq.gz 190520_I4_V300021171_L1_WHEtkyRAAAA-501_2.clean.fq.gz | samtools view -S -b - > /data2/aoyue/vmap2_AB_project/002_bamfile/AB/190520_I4_V300021171_L1_WHEtkyRAAAA-501.pe.bam && echo '** bwa mapping done **' &
+        String refAB = "/data4/home/aoyue/vmap2/daxing/reference/001_wildEmmer/ref/ab.WEWSeq_v.1.0";
+        String refD = "/data4/home/aoyue/vmap2/daxing/reference/002_Aegilops_tauschii/ref/Aet_v.4.0";
+
+        String bampathAB = "/data4/home/aoyue/vmap2/daxing/analysis/005_refBias_realign_WE_DE_FTT_AT/001_bamfile/AABB/";
+        String bampathD = "/data4/home/aoyue/vmap2/daxing/analysis/005_refBias_realign_WE_DE_FTT_AT/001_bamfile/DD/";
+
+        String rawdataDirS = "/data4/home/aoyue/vmap2/daxing/analysis/005_refBias_realign_WE_DE_FTT_AT/000_rawData/";
+        String db = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/011_cleanData_alignWE/002_SeqID_hm/S23_needUploadData_2.txt";
+
+
+        try {
+            String scriptS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/011_cleanData_alignWE/003_script_bwa/002_bwa.S23.sh";
+            BufferedWriter bw = IOUtils.getTextWriter(scriptS);
+
+            RowTable<String> t = new RowTable<>(db);
+            for (int i = 0; i < t.getRowNumber(); i++) {
+                String id = t.getCell(i, 2);
+                String ploidy = t.getCell(i, 1);
+                String sample = t.getCell(i, 2);
+                StringBuilder sb = new StringBuilder("bwa mem -t 8 -R ");
+                sb.append("'@RG\\tID:" + id + "\\tPL:illumina\\tSM:" + id + "\\tLB:" + id + "' ");
+                String bampath;
+                String indexFileS;
+                if (ploidy.equals("WE") || ploidy.equals("DE") || ploidy.equals("FTT")) {
+                    indexFileS = refAB;
+                    bampath = bampathAB;
+                } else {
+                    indexFileS = refD;
+                    bampath = bampathD;
+                }
+                sb.append(indexFileS + " ");
+                sb.append(rawdataDirS + sample + "_R1.fq.gz" + " ");
+                sb.append(rawdataDirS + sample + "_R2.fq.gz");
+                sb.append(" | ").append("samtools view -S -b - > ").append(new File(bampath, sample + ".pe.bam").
+                        getAbsolutePath()).append(" && ");
+                sb.append("echo '** bwa mapping done **'");
+                bw.write(sb.toString());
+                bw.newLine();
+            }
+            bw.flush();
+            bw.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+    }
+
+    /**
+     * Goal:生成BWA脚本文件;Map<String,List<T>> hashMap =new HashMap<String,List<T>>
+     * List<T> list = new List<T> hashMap.put("1",list) 根据
+     * /Users/Aoyue/project/wheatVMapII/006_ABandD/000_cleandata/000_dataCheck/ABandDlist.txt
+     * 进行AB 还是D材料的判断 1.建立一个list类型的数组，list 大小是父目录的文件数，每个父目录包括8个文件名的数组元素；
+     */
+    public void getBWAscript_20210629() {
+        /**
+         * ******** Path in script **********
+         */
+        //bwa mem -t 8 -R '@RG\tID:AT08079A\tPL:illumina\tSM:AT08079A\tLB:AT08079A' /data1/publicData/wheat/reference/v1.0/AB/bwaLib/ab_iwgscV1.fa.gz 190520_I4_V300021171_L1_WHEtkyRAAAA-501_1.clean.fq.gz 190520_I4_V300021171_L1_WHEtkyRAAAA-501_2.clean.fq.gz | samtools view -S -b - > /data2/aoyue/vmap2_AB_project/002_bamfile/AB/190520_I4_V300021171_L1_WHEtkyRAAAA-501.pe.bam && echo '** bwa mapping done **' &
+        String refAB = "/data4/home/aoyue/vmap2/daxing/reference/001_wildEmmer/ref/ab.WEWSeq_v.1.0";
+        String refD = "/data4/home/aoyue/vmap2/daxing/reference/002_Aegilops_tauschii/ref/Aet_v.4.0";
+
+        String rawdataDirS = "/data4/home/aoyue/vmap2/ab/001_rawData/";
+        String db = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/011_cleanData_alignWE/002_SeqID_hm/hm_SeqID_subID.txt";
+
+        String bampathAB = "/data4/home/aoyue/vmap2/daxing/analysis/005_refBias_realign_WE_DE_FTT_AT/001_bamfile/AABB/";
+        String bampathD = "/data4/home/aoyue/vmap2/daxing/analysis/005_refBias_realign_WE_DE_FTT_AT/001_bamfile/DD/";
+
+        try {
+            String scriptS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/011_cleanData_alignWE/003_script_bwa/001_bwa.S17.sh";
+            BufferedWriter bw = IOUtils.getTextWriter(scriptS);
+
+            RowTable<String> t = new RowTable<>(db);
+            for (int i = 0; i < t.getRowNumber(); i++) {
+                String id = t.getCell(i, 2);
+                String ploidy = t.getCell(i, 1);
+                String sample = t.getCell(i, 4);
+                StringBuilder sb = new StringBuilder("bwa mem -t 8 -R ");
+                sb.append("'@RG\\tID:" + id + "\\tPL:illumina\\tSM:" + id + "\\tLB:" + id + "' ");
+                String bampath;
+                String indexFileS;
+                if (ploidy.equals("WE") || ploidy.equals("DE") || ploidy.equals("FTT")) {
+                    indexFileS = refAB;
+                    bampath = bampathAB;
+                } else {
+                    indexFileS = refD;
+                    bampath = bampathD;
+                }
+                sb.append(indexFileS + " ");
+                sb.append(rawdataDirS + id + "/" + sample + "/" + sample + "_1.clean.fq.gz" + " ");
+                sb.append(rawdataDirS + id + "/" + sample + "/" + sample + "_2.clean.fq.gz");
+                sb.append(" | ").append("samtools view -S -b - > ").append(new File(bampath, sample + ".pe.bam").
+                        getAbsolutePath()).append(" && ");
+                sb.append("echo '** bwa mapping done **'");
+                bw.write(sb.toString());
+                bw.newLine();
+            }
+            bw.flush();
+            bw.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+
 
     /**
      * 本方法的目的是：建立42条染色体的java 运行脚本。

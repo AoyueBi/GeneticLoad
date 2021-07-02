@@ -108,7 +108,100 @@ public class VariantsSum {
 
 //        AoFile.readheader("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/003/chr006_SNP_anno.txt");
 
+        /**
+         * 2021-06-20 周日
+         */
+//        this.AddScalePos();
+        this.AddGenePosition();
+
     }
+
+
+    public void AddGenePosition(){
+
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/zz_rProject/R4VMap2Figs/data/geneExpression/geneBurdenByIndi/geneBurden_byIndiviSum.txt.gz";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/zz_rProject/R4VMap2Figs/data/geneExpression/geneBurdenByIndi/002_geneBurden_byIndiviSum_addPosition.txt.gz";
+
+        GeneFeature gf = new GeneFeature("/Users/Aoyue/Documents/Data/wheat/gene/v1.1/wheat_v1.1_Lulab.pgf");
+        gf.sortGeneByName();
+
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String header = br.readLine();
+            bw.write(header + "\tCHROM\tBIN_START\tBIN_END\tBIN_START_scale");bw.newLine();
+
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int line = 0;
+            String geneName = null;
+            StringBuilder sb = new StringBuilder();
+            while ((temp = br.readLine()) != null) {
+                sb.setLength(0);
+                l = PStringUtils.fastSplit(temp);
+                geneName = l.get(0);
+                int index = gf.getGeneIndex(geneName);
+                int chrID = gf.getGeneChromosome(index);
+                int pos = gf.getGeneStart(index);
+                int end = gf.getGeneEnd(index);
+                String chromosome = RefV1Utils.getChromosome(chrID,pos);
+                int posOnchromosome = RefV1Utils.getPosOnChromosome(chrID,pos);
+                int posendOnchromosome = RefV1Utils.getPosOnChromosome(chrID,end);
+                String startScalePos = WheatUtils.getScaledPos(chromosome,posOnchromosome);
+                sb.append(temp).append("\t").append(chromosome).append("\t").append(posOnchromosome).append("\t").append(posendOnchromosome).append("\t").append(startScalePos);
+                bw.write(sb.toString());
+                bw.newLine();
+                line++;
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+
+
+    public void AddScalePos(){
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/zz_rProject/R4VMap2Figs/data/fig2/indiviBurdenbyGene/001_geneExpression_StronglyLoad.txt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/zz_rProject/R4VMap2Figs/data/fig2/indiviBurdenbyGene/002_geneExpression_StronglyLoad_addScalePosition.txt";
+
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/zz_rProject/R4VMap2Figs/data/fig2/indiviBurdenbyGene/001_geneExpression_SlightlyLoad.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/zz_rProject/R4VMap2Figs/data/fig2/indiviBurdenbyGene/002_geneExpression_SlightlyLoad_addScalePosition.txt";
+
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String header = br.readLine();
+            bw.write(header + "\tCHROM\tTranStart_Scale");bw.newLine();
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int line = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+
+                int chrID = Integer.parseInt(l.get(1));
+                int pos = Integer.parseInt(l.get(2));
+                String chromosome = RefV1Utils.getChromosome(chrID,pos);
+                int posOnchromosome = RefV1Utils.getPosOnChromosome(chrID,pos);
+                String startScalePos = WheatUtils.getScaledPos(chromosome,posOnchromosome);
+                bw.write(temp + "\t" + chromosome + "\t" + startScalePos);bw.newLine();
+                line++;
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+
 
 
 

@@ -46,11 +46,12 @@ public class GeneticLoadEntrance {
 
         //ternary plot analysis
 //        this.geneExpression();
-        this.rebuildVCF();
+//        this.rebuildVCF();
 
 
 
     }
+
 
     public void rebuildVCF(){
 //        new RebuildVCF();
@@ -79,7 +80,7 @@ public class GeneticLoadEntrance {
 //        new AoMap();
 //        new DBgene();
 //        new RefBiasEvaluation();
-//        new VMap2Cal();
+        new VMap2Cal();
 
     }
 
@@ -87,7 +88,7 @@ public class GeneticLoadEntrance {
 
 
     public void geneExpression(){
-//        new GeneExpressionbywheat();
+        new GeneExpressionbywheat();
 
     }
 
@@ -114,8 +115,8 @@ public class GeneticLoadEntrance {
     }
 
     public void firstProcess() {
-        //new MapMake();
-        //new Wheat120cleandataProcessor();  //Jiao
+//        new MapMake();
+//        new Wheat120cleandataProcessor();  //Jiao
         //new Wheat120bamProcessor(); //Jiao
 //        new WheatBamDatabase();
 
@@ -123,7 +124,7 @@ public class GeneticLoadEntrance {
          * *************************************
          */
 //        new Wheat200cleanDataProcessor(); //Lu200ABD
-        //new WheatABandDcleandataProcessor(); //Lu106AB_D
+//        new WheatABandDcleandataProcessor(); //Lu106AB_D
         //new ABDvcfProcessor();
         //new ABvcfProcessor();
         //new DvcfProcessor();
