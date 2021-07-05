@@ -42,7 +42,7 @@ public class GeneticLoadEntrance {
 //        this.firstProcess();
 //        this.plot();
 //        this.infoDB(); // 种质信息库
-//        this.DBdeleterious();
+        this.DBdeleterious();
 
         //ternary plot analysis
 //        this.geneExpression();
@@ -80,7 +80,7 @@ public class GeneticLoadEntrance {
 //        new AoMap();
 //        new DBgene();
 //        new RefBiasEvaluation();
-        new VMap2Cal();
+//        new VMap2Cal();
 
     }
 
