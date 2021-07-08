@@ -196,7 +196,7 @@ public class GeneExpressionbywheat {
 
                 //get gene chr pos start
                 int index = gf.getGeneIndex(gene);
-                int chr = gf.getGeneChromosome(index);
+                int chr = gf.getChromosomeOfGene(index);
                 int pos = gf.getGeneStart(index);
                 String chromosome = RefV1Utils.getChromosome(chr,pos);
                 int posOnchromosome = RefV1Utils.getPosOnChromosome(chr,pos);
@@ -540,7 +540,7 @@ public class GeneExpressionbywheat {
 //                if (Double.parseDouble(ave) < 0.5)continue; //******** filter TPM ave less than 0.5
                 //get gene chr pos start
                 int index = gf.getGeneIndex(gene);
-                int chr = gf.getGeneChromosome(index);
+                int chr = gf.getChromosomeOfGene(index);
                 int pos = gf.getGeneStart(index);
                 String chromosome = RefV1Utils.getChromosome(chr,pos);
                 int posOnchromosome = RefV1Utils.getPosOnChromosome(chr,pos);
@@ -780,7 +780,7 @@ public class GeneExpressionbywheat {
 
                 //get gene chr pos start
                 int index = gf.getGeneIndex(gene);
-                int chr = gf.getGeneChromosome(index);
+                int chr = gf.getChromosomeOfGene(index);
                 int pos = gf.getGeneStart(index);
                 String chromosome = RefV1Utils.getChromosome(chr,pos);
                 int posOnchromosome = RefV1Utils.getPosOnChromosome(chr,pos);
@@ -847,7 +847,7 @@ public class GeneExpressionbywheat {
                 if (Double.parseDouble(ave) < 0.5)continue; //******** filter TPM ave less than 0.5
                 //get gene chr pos start
                 int index = gf.getGeneIndex(gene);
-                int chr = gf.getGeneChromosome(index);
+                int chr = gf.getChromosomeOfGene(index);
                 int pos = gf.getGeneStart(index);
                 String chromosome = RefV1Utils.getChromosome(chr,pos);
                 int posOnchromosome = RefV1Utils.getPosOnChromosome(chr,pos);
@@ -914,7 +914,7 @@ public class GeneExpressionbywheat {
                 if (Double.parseDouble(ave) < 0.5)continue; //******** filter TPM ave less than 0.5
                 //get gene chr pos start
                 int index = gf.getGeneIndex(gene);
-                int chr = gf.getGeneChromosome(index);
+                int chr = gf.getChromosomeOfGene(index);
                 int pos = gf.getGeneStart(index);
                 String chromosome = RefV1Utils.getChromosome(chr,pos);
                 int posOnchromosome = RefV1Utils.getPosOnChromosome(chr,pos);
@@ -979,7 +979,7 @@ public class GeneExpressionbywheat {
                 if (Double.parseDouble(ave) < 0.5)continue; //******** filter TPM ave less than 0.5
                 //get gene chr pos start
                 int index = gf.getGeneIndex(gene);
-                int chr = gf.getGeneChromosome(index);
+                int chr = gf.getChromosomeOfGene(index);
                 int pos = gf.getGeneStart(index);
                 String chromosome = RefV1Utils.getChromosome(chr,pos);
                 int posOnchromosome = RefV1Utils.getPosOnChromosome(chr,pos);

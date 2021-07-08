@@ -99,6 +99,15 @@ public class GeneticLoadEntrance {
 //        new EstSFS();
 //        new DeleteriousCountbyPop();
 //        new HomoeologGenesAnalysis();
+
+        TDoubleArrayList test = new TDoubleArrayList();
+        double[] aa = {1,2,3,4,5};
+        test.add(5); test.add(10);
+        String a = AoMath.getRelativeMean(test);
+        System.out.println(a + " this is the result");
+
+
+
     }
 
     public void infoDB(){

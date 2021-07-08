@@ -930,7 +930,7 @@ public class DBgene {
         /*将所有基因的名字进行for循环输入到数组genes中，对应于每一个基因，我们通过getTranscriptName得到转录本的名字，通过getCDSList方法得到编码序列的长度*/
         GeneFeature gf = new GeneFeature(geneFeatureFileS);
         for (int i = 0; i < gf.getGeneNumber(); i++) {
-            int chrindex = gf.getGeneChromosome(i)-1;
+            int chrindex = gf.getChromosomeOfGene(i)-1;
             if (! (chrindex== chrIndex))continue; //一条一条进行call
             int longTransIndex = gf.getLongestTranscriptIndex(i); //根据基因获取最长转录本索引
             String geneName = gf.getTranscriptName(i, longTransIndex); //根据索引获取最长转录本的名字
@@ -1182,7 +1182,7 @@ public class DBgene {
         //*********************************** START1 ***********************************//
         /*将所有基因的名字进行for循环输入到数组genes中，对应于每一个基因，我们通过getTranscriptName得到转录本的名字，通过getCDSList方法得到编码序列的长度*/
         for (int i = 0; i < gf.getGeneNumber(); i++) {
-            int chrIndex = gf.getGeneChromosome(i)-1;
+            int chrIndex = gf.getChromosomeOfGene(i)-1;
             if ((chrIndex== -1))continue;
             int longTransIndex = gf.getLongestTranscriptIndex(i); //根据基因获取最长转录本索引
             String geneName = gf.getTranscriptName(i, longTransIndex); //根据索引获取最长转录本的名字

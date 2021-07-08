@@ -141,7 +141,7 @@ public class VariantsSum {
                 l = PStringUtils.fastSplit(temp);
                 geneName = l.get(0);
                 int index = gf.getGeneIndex(geneName);
-                int chrID = gf.getGeneChromosome(index);
+                int chrID = gf.getChromosomeOfGene(index);
                 int pos = gf.getGeneStart(index);
                 int end = gf.getGeneEnd(index);
                 String chromosome = RefV1Utils.getChromosome(chrID,pos);
@@ -5157,7 +5157,7 @@ public class VariantsSum {
         //*********************************** START1 ***********************************//
         //该段代码的作用是，通过读取每个基因，得到最长转录本的名字，计算该转录本的长度。
         for (int i = 0; i < gf.getGeneNumber(); i++) {
-            int chrIndex = gf.getGeneChromosome(i) - 1;
+            int chrIndex = gf.getChromosomeOfGene(i) - 1;
             /*这个地方是先过滤数据，将定位在11号12号染色体上的基因过滤掉，并且跳出循环*/
             if (chrIndex > 9) {
                 cntchr11and12++;

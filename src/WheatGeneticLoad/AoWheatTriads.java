@@ -56,7 +56,7 @@ public class AoWheatTriads {
                     int geneindex = gf.getGeneIndex(gene);
                     int start=gf.getGeneStart(geneindex);
                     int end = gf.getGeneEnd(geneindex);
-                    int chrID=gf.getGeneChromosome(geneindex);
+                    int chrID=gf.getChromosomeOfGene(geneindex);
                     int refStart= RefV1Utils.getPosOnChromosome(chrID, start);
                     int refEnd=RefV1Utils.getPosOnChromosome(chrID, end);
                     String chr = AoString.getChrFromGene(gene);
@@ -119,7 +119,7 @@ public class AoWheatTriads {
                 int geneindex = gf.getGeneIndex(gene);
                 int start=gf.getGeneStart(geneindex);
                 int end = gf.getGeneEnd(geneindex);
-                int chrID=gf.getGeneChromosome(geneindex);
+                int chrID=gf.getChromosomeOfGene(geneindex);
                 int refStart= RefV1Utils.getPosOnChromosome(chrID, start);
                 int refEnd=RefV1Utils.getPosOnChromosome(chrID, end);
                 String chr = AoString.getChrFromGene(gene);

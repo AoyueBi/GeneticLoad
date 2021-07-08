@@ -183,7 +183,7 @@ public class DeleteriousXPCLR2 {
             int cdsEnd = -1;
             for (int j = 0; j < gt.getRowNumber(); j++) { //gt已通过名字进行了排序
                 geneIndex = gf.getGeneIndex(gt.getCell(j, 0)); //根据基因名字（不是转录本的名字，没有.后缀12）获取索引
-                int chr = gf.getGeneChromosome(geneIndex);
+                int chr = gf.getChromosomeOfGene(geneIndex);
                 int geneCDSlength = 0;
                 for (int k = 0; k < gf.getTranscriptNumber(geneIndex); k++) { //获取最长转录本的index
                     if (!gt.getCell(j,1).equals(gf.getTranscriptName(geneIndex, k)))continue; //如果 gt.getCell(j,1) 是该基因的最长转录本，已经提前总结出
