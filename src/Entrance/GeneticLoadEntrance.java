@@ -18,6 +18,7 @@ import Plot.PCA;
 import Plot.Tree;
 import PopulationAnalysis.*;
 import WheatGeneticLoad.*;
+import WheatVMap2S1000.VMap2S1000;
 import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TIntArrayList;
 import org.apache.commons.math3.stat.StatUtils;
@@ -55,7 +56,7 @@ public class GeneticLoadEntrance {
     }
 
     public void projectVMap2S1000(){
-        new VariantsSum();
+        new VMap2S1000(); //进行变异数据库最原始的提取
 
 
     }

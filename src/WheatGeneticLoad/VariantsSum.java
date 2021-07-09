@@ -45,7 +45,7 @@ public class VariantsSum {
      */
 
     public void variantsSumFromRebuildVCF(){
-        this.extractInfoFromVMap2();
+//        this.extractInfoFromVMap2();
 //        this.mkExonVCF();
 //        this.mkExonAnnotation(); //弃用
 //        this.mkExonAnnotation2();
@@ -112,7 +112,7 @@ public class VariantsSum {
          * 2021-06-20 周日
          */
 //        this.AddScalePos();
-        this.AddGenePosition();
+//        this.AddGenePosition();
 
     }
 
@@ -2900,7 +2900,7 @@ public class VariantsSum {
      * 第二步：根据chr pos，使用getGeneIndex方法得到基因的index  找基因索引
      * 第三步：使用getGeneName方法，得到基因的名字； 找基因名字
      * 第四步：使用getLongestTranscriptIndex方法，得到该基因最长转录本的index;  找转录本索引
-     * 第五步：使用getTranscriptName方法，根据基因的index和最长转录本的index得到转录本的名字；  找转录本名字
+     * 第五步：使用getTranscriptName方法，根据基因的index和最长转录本的index得到转录本的名字。
      */
     public void mkExonAnnotation2(){
         int subLength = 200; //取VCF文件的前200个字符串
@@ -3059,6 +3059,9 @@ public class VariantsSum {
      * 提取高置信度的基因的外显子VCF文件
      */
     public void mkExonVCF () {
+        /**
+         * inputFile
+         */
         String vmapDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/103_VMap2.1"; //modify
         String geneFeatureFileS = "/data1/publicData/wheat/annotation/gene/v1.1/wheat_v1.1_Lulab.pgf"; //modify
         String hcGeneFileS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/001_geneHC/geneHC.txt"; //modify
@@ -3119,7 +3122,7 @@ public class VariantsSum {
                     l = PStringUtils.fastSplit(temp.substring(0, 100));
                     pos = Integer.parseInt(l.get(1));
                     index = Arrays.binarySearch(starts, pos);
-                    if (index < 0) index = -index - 2; //zai
+                    if (index < 0) index = -index - 2;
                     if (index < 0) continue;
                     if (pos < ends[index]) {
                         bw.write(temp);bw.newLine();
@@ -3142,13 +3145,21 @@ public class VariantsSum {
      * 提取VMap2的基因区间的基本信息
      */
     public void extractInfoFromVMap2 () {
-        int subLength = 200;
+        /**
+         * inputFile
+         */
         String outDirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/001_genicSNPByChr";
         String vmapDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/103_VMap2.1";
+        String geneHCFileS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/001_geneHC/geneHC.txt";
+        /**
+         * parameters need to modify
+         */
+
+
+        int subLength = 200;
         File[] fs  = AoFile.getFileArrayInDir(vmapDirS);
         List<File> vmapList = Arrays.asList(fs);
         Collections.sort(vmapList);
-        String geneHCFileS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/001_geneHC/geneHC.txt";
         AoFile.readheader(geneHCFileS);
         tech.tablesaw.api.Table t = TablesawUtils.readTsv(geneHCFileS);
         System.out.println(t.structure());
@@ -3165,9 +3176,9 @@ public class VariantsSum {
         }
 
         for (int i = 0; i < t.rowCount(); i++) {
-            startLists[Integer.parseInt(t.getString(i, 2))-1].add(Integer.parseInt(t.getString(i, 3)));
-            endLists[Integer.parseInt(t.getString(i, 2))-1].add(Integer.parseInt(t.getString(i, 4)));
-            tranLists[Integer.parseInt(t.getString(i, 2))-1].add(t.getString(i, 1));
+            startLists[Integer.parseInt(t.getString(i, 2))-1].add(Integer.parseInt(t.getString(i, 3))); //获取开始位点
+            endLists[Integer.parseInt(t.getString(i, 2))-1].add(Integer.parseInt(t.getString(i, 4))); //获取终止位点
+            tranLists[Integer.parseInt(t.getString(i, 2))-1].add(t.getString(i, 1)); //获取基因名字
         }
         vmapList.parallelStream().forEach(f -> {
             int chrIndex = Integer.parseInt(f.getName().substring(3, 6))-1;
@@ -3197,12 +3208,12 @@ public class VariantsSum {
                     if (temp.startsWith("#"))continue;
                     sb.setLength(0);
                     int currentSub = subLength;
-                    if (temp.length() < subLength) {
+                    if (temp.length() < subLength) { //如果该行的字符长度小于 200，那么最长设置为该行的实际长度
                         currentSub = temp.length();
                     }
                     l = PStringUtils.fastSplit(temp.substring(0, currentSub));
                     currentPos = Integer.parseInt(l.get(1));
-                    posIndex = startLists[chrIndex].binarySearch(currentPos);
+                    posIndex = startLists[chrIndex].binarySearch(currentPos); //在开始位点搜索是否在
                     if (posIndex < 0) {
                         posIndex = -posIndex-2;
                     }
