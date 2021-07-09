@@ -13,6 +13,7 @@ import AoUtils.CountSites;
 import GermplasmInfo.GermplasmInfo;
 import GermplasmInfo.TaxaDB;
 import Plot.AoMap;
+import Plot.GOanalysis;
 import Plot.PCA;
 import Plot.Tree;
 import PopulationAnalysis.*;
@@ -42,12 +43,19 @@ public class GeneticLoadEntrance {
 //        this.firstProcess();
 //        this.plot();
 //        this.infoDB(); // 种质信息库
-        this.DBdeleterious();
+//        this.DBdeleterious();
 
         //ternary plot analysis
 //        this.geneExpression();
 //        this.rebuildVCF();
+        this.projectVMap2S1000();
 
+
+
+    }
+
+    public void projectVMap2S1000(){
+        new VariantsSum();
 
 
     }
@@ -64,14 +72,11 @@ public class GeneticLoadEntrance {
 //        new DeleteriousCountbyIndi(); //根据数据库进行个体Load计算
 //        new TaxaDB();  //taxa 类
 //        new AoIntrogression();
-
 //        new ScriptHapscanner2(); // 进行indel的hapscanner
 //        new  FilterVCF2();
-
 //        new AoWheatTriads();
 //        new XPCLR();
 //        new DeleteriousXPCLR2();
-
 //        new Fst();
 //        new Pi();
 //        new TajimaD();
@@ -99,19 +104,10 @@ public class GeneticLoadEntrance {
 //        new EstSFS();
 //        new DeleteriousCountbyPop();
 //        new HomoeologGenesAnalysis();
-
-        TDoubleArrayList test = new TDoubleArrayList();
-        double[] aa = {1,2,3,4,5};
-        test.add(5); test.add(10);
-        String a = AoMath.getRelativeMean(test);
-        System.out.println(a + " this is the result");
-
-
-
     }
 
     public void infoDB(){
-        new GermplasmInfo();
+//        new GermplasmInfo();
     }
 
 
@@ -124,69 +120,61 @@ public class GeneticLoadEntrance {
     }
 
     public void firstProcess() {
-//        new MapMake();
-//        new Wheat120cleandataProcessor();  //Jiao
-        //new Wheat120bamProcessor(); //Jiao
-//        new WheatBamDatabase();
-
-        /**
-         * *************************************
-         */
-//        new Wheat200cleanDataProcessor(); //Lu200ABD
-//        new WheatABandDcleandataProcessor(); //Lu106AB_D
-        //new ABDvcfProcessor();
-        //new ABvcfProcessor();
-        //new DvcfProcessor();
-//        new DataStorage();
-//        new SIFT();
-//        new CountSites();
-//        new ScriptHapscanner2();
-//        new VariantsSum();
-//        new PopGenParaWheat();
-        //new SplitScript();
-//        new Script();
-//        new FilterVCF();
-//        new Bin();
-//        new AoMath();
-//        new TreePreparation();
-//        new CalVCF();
-//        new BadMutations();
-//        new AoHeterozygosity();
-//        new Fst();
-//        new Pi();
-//        new TajimaD();
-//        new AnnotationCrossover();
-//        new XPCLR();
-//        AoMath.topK();
-//        new GOanalysis();
-//        new DeleteriousXPCLR();
-//        new GermplasmInfo();
-//        new DBgene();
-//        new GeneExpressionbywheat();
+        new MapMake();
+        new Wheat120cleandataProcessor();  //Jiao
+        new Wheat120bamProcessor(); //Jiao
+        new WheatBamDatabase();
+        new Wheat200cleanDataProcessor(); //Lu200ABD
+        new WheatABandDcleandataProcessor(); //Lu106AB_D
+        new ABDvcfProcessor();
+        new ABvcfProcessor();
+        new DvcfProcessor();
+        new SIFT();
+        new CountSites();
+        new ScriptHapscanner2();
+        new VariantsSum();
+        new PopGenParaWheat();
+        new FilterVCF();
+        new AoMath();
+        new CalVCF();
+        new BadMutations();
+        new AoHeterozygosity();
+        new Fst();
+        new Pi();
+        new TajimaD();
+        new AnnotationCrossover();
+        new XPCLR();
+        AoMath.topK();
+        new GOanalysis();
+        new DeleteriousXPCLR();
+        new GermplasmInfo();
+        new DBgene();
+        new GeneExpressionbywheat();
     }
 
 
     public static void main(String[] args) {
+
+        System.out.println("Aoyue Repository --- Here is the entrance of GeneticLoad!\n");
+        System.out.println(new SimpleDateFormat().format(new Date()) + "\tbegin.");
+        new GeneticLoadEntrance();
+//        new GeneticLoadEntrance(args);
+        System.out.println(new SimpleDateFormat().format(new Date()) + "\tend.");
+
         //ChrConvertionRule c=new ChrConvertionRule(Paths.get("/Users/Aoyue/Documents/Data/wheat/chrConvertionRule.txt"));
 //        ChrConvertionRule c = new ChrConvertionRule(Paths.get("/data4/home/aoyue/vmap2/analysis/000_taxaList/chrConvertionRule.txt"));
 //        VCF.mergeVCFtoLineage(args[0], args[1], c);
-        System.out.println("Aoyue Repository --- Here is the entrance of GeneticLoad!\n");
-        System.out.println(new SimpleDateFormat().format(new Date()) + "\tbegin.");
 
-        new GeneticLoadEntrance();
-//        new GeneticLoadEntrance(args);
-//        new CountSites().filterSNPtoBi_parallel(args[0], args[1]);
+    }
+
+    public GeneticLoadEntrance(String[] args){
+
+        //        new CountSites().filterSNPtoBi_parallel(args[0], args[1]);
 //        new FilterVCF2().filter_singleThread(args[0], args[1]);
 //        CountSites.mergeVCFbysubgenome(args[0], args[1]);
 //        CountSites.mergeVCFtoABsubgenome(args[0], args[1]);
 //        CountSites.mergeVCFtoAB_Dsubgenome(args[0], args[1]);
 
-
-        System.out.println(new SimpleDateFormat().format(new Date()) + "\tend.");
-
-    }
-
-    public GeneticLoadEntrance(String[] args){
         //        VCF vcf=new VCF("/data4/home/aoyue/vmap2/analysis/020_subsetvcf_fromMAF0.01byPop/002_mergedbySub/chr.lineageA.vcf.gz");
 //        vcf.addVCF(new VCF("/data4/home/aoyue/vmap2/analysis/020_subsetvcf_fromMAF0.01byPop/002_mergedbySub/chr.lineageB.vcf.gz"));
 //        vcf.write("/data4/home/aoyue/vmap2/analysis/020_subsetvcf_fromMAF0.01byPop/003_all/chr.ABsubgenome.vcf.gz");

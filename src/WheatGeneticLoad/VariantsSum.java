@@ -45,7 +45,7 @@ public class VariantsSum {
      */
 
     public void variantsSumFromRebuildVCF(){
-//        this.extractInfoFromVMap2();
+        this.extractInfoFromVMap2();
 //        this.mkExonVCF();
 //        this.mkExonAnnotation(); //弃用
 //        this.mkExonAnnotation2();

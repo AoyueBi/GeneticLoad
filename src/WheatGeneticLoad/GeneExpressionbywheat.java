@@ -30,7 +30,7 @@ public class GeneExpressionbywheat {
         /**
          * tissue express breadth
          */
-        this.getTissueBreadth();
+//        this.getTissueBreadth();
 //        this.getwindowDistrbution();
 //
 //        this.mergegeneExpression_fromJun();
@@ -41,7 +41,7 @@ public class GeneExpressionbywheat {
          * 2021-06-15 Tuesday deleterious mutations vs gene expression
          */
 //        this.deleteriousAndGeneByTissue();
-        this.checkHeader();
+//        this.checkHeader();
 
     }
 
