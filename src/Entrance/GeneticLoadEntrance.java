@@ -66,7 +66,7 @@ public class GeneticLoadEntrance {
 //        new RebuildVCF();
 //        new ScriptHapscanner2();
 //        new AoHeterozygosity();
-//        new  FilterVCF2();
+        new  FilterVCF2();
 //        new GermplasmInfo();
 //        new VariantsSum();
 //        new SIFT();

@@ -4,6 +4,8 @@ import WheatGeneticLoad.VariantsSum;
 
 public class VMap2S1000 {
     public VMap2S1000(){
+
+        this.vcfQC();
         this.snpAnnotationBuild();
 
 
@@ -19,6 +21,9 @@ public class VMap2S1000 {
         new VariantsSum().addDAF();
         new VariantsSum().addGerp();
         new VariantsSum().mergeExonSNPAnnotation();
+    }
+
+    public void vcfQC(){
 
 
     }

@@ -26,7 +26,7 @@ public class FilterVCF2 {
         /**
          * 过滤 MAF > 0.01  Occurrence>2 MissingRate<0.2
          */
-        this.filter_parallel(); //老师的方法
+//        this.filter_parallel(); //老师的方法
 //        this.filterMafbyPopHTD(); //我的方法
 //        String a = "";
 //        String b = "";
@@ -85,7 +85,7 @@ public class FilterVCF2 {
          * 提取六四二倍体的VCF
          */
 
-        this.runJarParallele();
+//        this.runJarParallele();
 //        SplitScript.splitScript2("/Users/Aoyue/Documents/sh_vmap2.0tovmap2.1_20200526.sh",21,2);
 //        this.getsharedSNP(); //获取六倍体四倍体二倍体共有的SNP
 //        this.mergeSharedSNP();
