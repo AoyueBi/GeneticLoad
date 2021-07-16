@@ -48,6 +48,171 @@ public class Model {
         String outfileDirS = "";
     }
 
+    public void vcfParallel() {
+        double extractRatio = 0;
+        String infileDirS = "";
+        String outfileDirS = "";
+
+        File[] fs = new File(infileDirS).listFiles();
+        for (int i = 0; i < fs.length; i++) {
+            if (fs[i].isHidden()) {
+                fs[i].delete();
+            }
+        }
+        fs = new File(infileDirS).listFiles();
+        List<File> fsList = Arrays.asList(fs);
+        Collections.sort(fsList);
+        fsList.parallelStream().forEach(f -> {
+            try {
+                String infileS = f.getAbsolutePath();
+                String outfileS = null;
+                BufferedReader br = null;
+                if (infileS.endsWith(".vcf")) {
+                    br = IOUtils.getTextReader(infileS);
+                    outfileS = new File(outfileDirS, f.getName().split(".vcf")[0] + "_subset.vcf.gz").getAbsolutePath();
+                } else if (infileS.endsWith(".vcf.gz")) {
+                    br = IOUtils.getTextGzipReader(infileS);
+                    outfileS = new File(outfileDirS, f.getName().split(".vcf.gz")[0] + "_subset.vcf.gz").getAbsolutePath();
+                }
+                BufferedWriter bw = IOUtils.getTextGzipWriter(outfileS);
+                String temp = null;
+                int cnttotal = 0;
+                int cntsubset = 0;
+                while ((temp = br.readLine()) != null) {
+                    if (temp.startsWith("#")) {
+                        bw.write(temp);
+                        bw.newLine();
+                    } else {
+                        cnttotal++;
+                        double r = Math.random();
+                        double ratio = extractRatio;
+                        if (r > ratio) {
+                            continue; //返回带正号的 double 值，该值大于等于 0.0 且小于 1.0。返回值是一个伪随机选择的数，在该范围内（近似）均匀分布
+                        }
+                        List<String> l = PStringUtils.fastSplit(temp);
+                        if (l.get(3).contains(",")) {
+                            continue; // 第3列是alt的信息，若有2个等位基因，则去除这一行
+                        }
+                        bw.write(temp);
+                        bw.newLine();
+                        cntsubset++;
+                    }
+                }
+                bw.flush();
+                bw.close();
+                br.close();
+                System.out.println(f.getName() + "\twith " + cnttotal + " bp has a subset of\t" + cntsubset + "\tis completed at " + outfileS);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    //本模板使用多线程流
+    public void txtParallel() {
+        String infileDirS = "";
+        String outfileDirS = "";
+        List<File> fsList = AoFile.getFileListInDir(infileDirS);
+        fsList.parallelStream().forEach(f -> {
+            try {
+                String infileS = f.getAbsolutePath();
+                String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "_subset.txt.gz").getAbsolutePath();
+                BufferedReader br = AoFile.readFile(infileS);
+                BufferedWriter bw = AoFile.writeFile(outfileS);
+                String header = br.readLine();
+                String temp = null;
+                List<String> l = new ArrayList<>();
+                while ((temp = br.readLine()) != null) {
+                    l = PStringUtils.fastSplit(temp);
+
+                }
+                bw.flush();
+                bw.close();
+                br.close();
+                System.out.println(f.getName() + "\tis completed at " + outfileS);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public void vcfSinglethread() {
+
+
+        try {
+            String infileS = "";
+            String outfileS = "";
+            BufferedReader br = IOUtils.getTextReader(infileS);
+            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
+            String temp = null;
+            int cnt = 0;
+            List<String> l = new ArrayList<>();
+            while ((temp = br.readLine()) != null) {
+                StringBuilder sb = new StringBuilder();
+                if (temp.startsWith("#")) {
+                    continue;
+                }
+                cnt++;
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+
+        List<ChrPos> l = new ArrayList();
+        String chr = null;
+        String pos = null;
+        l.add(new ChrPos(Short.valueOf(chr), Integer.valueOf(pos)));
+
+    }
+
+
+    /**
+     *  ################################### 初
+     */
+
+    public void txtSinglethread(){
+        String infileS = "";
+        String outfileS = "";
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String header = br.readLine();
+            bw.write(header);bw.newLine();
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    public void TryCatch(){
+
+        try{
+
+        }catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+    }
+
     /**
      * 为了列出文件中的 vcf 文件或者 vcf.gz 文件，不管是压缩还是不压缩都可以，建立了index也可以
      */
@@ -265,170 +430,6 @@ public class Model {
     }
 
 
-    public void vcfParallel() {
-        double extractRatio = 0;
-        String infileDirS = "";
-        String outfileDirS = "";
-
-        File[] fs = new File(infileDirS).listFiles();
-        for (int i = 0; i < fs.length; i++) {
-            if (fs[i].isHidden()) {
-                fs[i].delete();
-            }
-        }
-        fs = new File(infileDirS).listFiles();
-        List<File> fsList = Arrays.asList(fs);
-        Collections.sort(fsList);
-        fsList.parallelStream().forEach(f -> {
-            try {
-                String infileS = f.getAbsolutePath();
-                String outfileS = null;
-                BufferedReader br = null;
-                if (infileS.endsWith(".vcf")) {
-                    br = IOUtils.getTextReader(infileS);
-                    outfileS = new File(outfileDirS, f.getName().split(".vcf")[0] + "_subset.vcf.gz").getAbsolutePath();
-                } else if (infileS.endsWith(".vcf.gz")) {
-                    br = IOUtils.getTextGzipReader(infileS);
-                    outfileS = new File(outfileDirS, f.getName().split(".vcf.gz")[0] + "_subset.vcf.gz").getAbsolutePath();
-                }
-                BufferedWriter bw = IOUtils.getTextGzipWriter(outfileS);
-                String temp = null;
-                int cnttotal = 0;
-                int cntsubset = 0;
-                while ((temp = br.readLine()) != null) {
-                    if (temp.startsWith("#")) {
-                        bw.write(temp);
-                        bw.newLine();
-                    } else {
-                        cnttotal++;
-                        double r = Math.random();
-                        double ratio = extractRatio;
-                        if (r > ratio) {
-                            continue; //返回带正号的 double 值，该值大于等于 0.0 且小于 1.0。返回值是一个伪随机选择的数，在该范围内（近似）均匀分布
-                        }
-                        List<String> l = PStringUtils.fastSplit(temp);
-                        if (l.get(3).contains(",")) {
-                            continue; // 第3列是alt的信息，若有2个等位基因，则去除这一行
-                        }
-                        bw.write(temp);
-                        bw.newLine();
-                        cntsubset++;
-                    }
-                }
-                bw.flush();
-                bw.close();
-                br.close();
-                System.out.println(f.getName() + "\twith " + cnttotal + " bp has a subset of\t" + cntsubset + "\tis completed at " + outfileS);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
-    }
-
-    //本模板使用多线程流
-    public void txtParallel() {
-        String infileDirS = "";
-        String outfileDirS = "";
-        List<File> fsList = AoFile.getFileListInDir(infileDirS);
-        fsList.parallelStream().forEach(f -> {
-            try {
-                String infileS = f.getAbsolutePath();
-                String outfileS = new File(outfileDirS, f.getName().split(".txt")[0] + "_subset.txt.gz").getAbsolutePath();
-                BufferedReader br = AoFile.readFile(infileS);
-                BufferedWriter bw = AoFile.writeFile(outfileS);
-                String header = br.readLine();
-                String temp = null;
-                List<String> l = new ArrayList<>();
-                while ((temp = br.readLine()) != null) {
-                    l = PStringUtils.fastSplit(temp);
-
-                }
-                bw.flush();
-                bw.close();
-                br.close();
-                System.out.println(f.getName() + "\tis completed at " + outfileS);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
-    }
-
-    public void vcfSinglethread() {
-
-
-        try {
-            String infileS = "";
-            String outfileS = "";
-            BufferedReader br = IOUtils.getTextReader(infileS);
-            BufferedWriter bw = IOUtils.getTextWriter(outfileS);
-            String temp = null;
-            int cnt = 0;
-            List<String> l = new ArrayList<>();
-            while ((temp = br.readLine()) != null) {
-                StringBuilder sb = new StringBuilder();
-                if (temp.startsWith("#")) {
-                    continue;
-                }
-                cnt++;
-            }
-            br.close();
-            bw.flush();
-            bw.close();
-            System.out.println();
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-
-
-        List<ChrPos> l = new ArrayList();
-        String chr = null;
-        String pos = null;
-        l.add(new ChrPos(Short.valueOf(chr), Integer.valueOf(pos)));
-
-    }
-
-
-    /**
-     *  ################################### 初
-     */
-
-    public void txtSinglethread(){
-        String infileS = "";
-        String outfileS = "";
-        try {
-            BufferedReader br = AoFile.readFile(infileS);
-            BufferedWriter bw = AoFile.writeFile(outfileS);
-            String header = br.readLine();
-            bw.write(header);bw.newLine();
-            String temp = null;
-            List<String> l = new ArrayList<>();
-            int cnt = 0;
-            while ((temp = br.readLine()) != null) {
-                l = PStringUtils.fastSplit(temp);
-                cnt++;
-
-            }
-            br.close();
-            bw.flush();
-            bw.close();
-            System.out.println();
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-    }
-
-    public void TryCatch(){
-
-        try{
-
-        }catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-
-    }
 
     public void testifD() {
         boolean ifd = false;
