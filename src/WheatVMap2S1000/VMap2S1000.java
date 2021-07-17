@@ -5,6 +5,7 @@ import AoUtils.CalVCF;
 import AoUtils.CountSites;
 import WheatGeneticLoad.FilterVCF;
 import WheatGeneticLoad.FilterVCF2;
+import WheatGeneticLoad.SIFT;
 import WheatGeneticLoad.VariantsSum;
 import com.google.common.collect.Table;
 import daxing.common.IOTool;
@@ -13,10 +14,12 @@ import daxing.common.RowTableTool;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.set.hash.TIntHashSet;
+import htsjdk.samtools.util.StringUtil;
 import pgl.graph.tSaw.TablesawUtils;
 import pgl.infra.anno.gene.GeneFeature;
 import pgl.infra.range.Range;
 import pgl.infra.table.RowTable;
+import pgl.infra.utils.IOUtils;
 import pgl.infra.utils.PStringUtils;
 import tech.tablesaw.api.IntColumn;
 
@@ -31,7 +34,6 @@ import java.util.stream.IntStream;
 
 public class VMap2S1000 {
     public VMap2S1000(){
-
 //        this.bgzip();
 //        this.rename();
 //        this.vcfQC(); //include many methods XXXXXXX
@@ -44,19 +46,50 @@ public class VMap2S1000 {
 //        new FilterVCF2().mkDepthOfVMapII();
 //        new FilterVCF2().mkDepthSummary();
 //        this.extractVCF();
-        new FilterVCF2().QC();
-
-
-
-
-
-
+//        new FilterVCF2().QC();
+        /**
+         * gene site annotation
+         */
 //        this.geneInfo(); //列出所要建立数据库的基因
-//        this.snpAnnotationBuild(); //include many methods
+
+        this.snpAnnotationBuild(); //include many methods
 
 
     }
 
+    public void snpAnnotationBuild(){
+//        this.mkGeneVCF();
+//        this.mkGeneVCF2();
+//        this.extractInfoFromGeneVCF();
+//        new VariantsSum().mkExonAnnotation2(); //未用
+//        new VariantsSum().addAncestral();
+//        new VariantsSum().addDerived_SIFT();
+//        this.addDAF();
+//        new VariantsSum().addGerp();
+        /**
+         * sift 计算
+         */
+//        new SIFT();
+//        this.calFileLine();
+//        new VariantsSum().addSift_20210717();
+//        new VariantsSum().addDerived_SIFT();
+
+        new VariantsSum().mergeExonSNPAnnotation();
+    }
+
+
+    public void calFileLine (){
+//        String infileDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/002_sift/003_output/001_alt";
+        String infileDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/002_sift/003_output/002_ref";
+        File[] fsArray = AoFile.getFileArrayInDir(infileDirS);
+        for (int i = 0; i < fsArray.length; i++) {
+            String filename = fsArray[i].getName();
+            String infileS = fsArray[i].getAbsolutePath();
+            String chr = filename.substring(3,6);
+            int lineNum =  AoFile.countFileRowNumber_withHeader(infileS);
+            System.out.println(chr + "\t" + lineNum);
+        }
+    }
     public void extractVCF(){
 
         String infileS = "/Users/Aoyue/project/wheatVMap2_1000/001_germplasm/008_WheatVMap2_GermplasmInfo_20210708.txt";
@@ -92,44 +125,89 @@ public class VMap2S1000 {
 
     }
 
-    public void snpAnnotationBuild(){
-//        this.mkGeneVCF();
-//        this.mkGeneVCF2();
-        this.extractInfoFromGeneVCF();
-//        new VariantsSum().extractInfoFromVMap2();
 
-//        new VariantsSum().mkExonAnnotation2();
-//        new VariantsSum().addSift();
-//        new VariantsSum().addAncestral();
-//        new VariantsSum().addDerived_SIFT();
-//        new VariantsSum().addDAF();
-//        new VariantsSum().addGerp();
-//        new VariantsSum().mergeExonSNPAnnotation();
+
+    /**
+     * 老师的方法
+     */
+    public void addDAF () {
+//        String dirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/003_exonSNPAnnotation";
+        String dirS = "/data4/home/aoyue/vmap2/analysis/036_annoDB/002_genicSNP/001_geneSNPByChr";
+        File[] fs = new File (dirS).listFiles();
+        fs = IOUtils.listFilesEndsWith(fs, ".txt");
+        List<File> fList = Arrays.asList(fs);
+        fList.parallelStream().forEach(f -> {
+            String header = null;
+            List<String> recordList = new ArrayList();
+            String tem = null;
+            try {
+                BufferedReader br = AoFile.readFile(f.getAbsolutePath());
+                header = br.readLine();
+                List<String> l = PStringUtils.fastSplit(header);
+                StringBuilder sb = new StringBuilder(header);
+                sb.append("\tDAF");
+                header = sb.toString();
+                String temp = null;
+                while ((temp = br.readLine()) != null) {
+                    recordList.add(temp);
+                }
+                br.close();
+                BufferedWriter bw = AoFile.writeFile(f.getAbsolutePath());
+                bw.write(header);
+                bw.newLine();
+                float daf = -1;
+                String subMajor = null;
+                String subMinor = null;
+                String ancestral = null;
+                String derivedSIFT = null;
+                double subMaf = -1;
+                for (int i = 0; i < recordList.size(); i++) {
+                    sb.setLength(0);
+                    sb.append(recordList.get(i)).append("\t");
+                    l = PStringUtils.fastSplit(recordList.get(i));
+                    ancestral = l.get(9);
+                    if (l.get(5).equals(ancestral)) { //major
+                        sb.append((float)Double.parseDouble(l.get(7)));
+                    }
+                    else if (l.get(6).equals(ancestral)) { //minor
+                        sb.append((float)(1- Double.parseDouble(l.get(7))));
+                    }
+                    else sb.append("NA");
+                    bw.write(sb.toString());
+                    bw.newLine();
+                }
+                bw.flush();
+                bw.close();
+                System.out.println(f.getName());
+            }
+            catch (Exception e) {
+                System.out.println(tem);
+                e.printStackTrace();
+            }
+        });
+        // java -Xms50g -Xmx200g -jar PlantGenetics.jar > log_addDAFbyFeisMethod_20200720.txt 2>&1 &
+        // java -Xms50g -Xmx200g -jar GeneticLoad.jar > log_addDAFbyFeisMethod_20210716.txt 2>&1 &
     }
-
 
     public void extractInfoFromGeneVCF () {
         /**
          * inputFile
          */
-        String outDirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/001_genicSNPByChr";
-        String vmapDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/103_VMap2.1";
-        String geneHCFileS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/001_geneHC/geneHC.txt";
+        String outDirS = "/data4/home/aoyue/vmap2/analysis/036_annoDB/002_genicSNP/001_geneSNPByChr";
+        String vmapDirS = "/data4/home/aoyue/vmap2/analysis/036_annoDB/002_genicSNP/002_geneSNPVCF";
+        String geneHCFileS = "/data4/home/aoyue/vmap2/analysis/036_annoDB/001_geneHC/wheat_v1.1_nonoverlap_addPos.txt.gz";
         /**
          * parameters need to modify
          */
-
-
         int subLength = 200;
         File[] fs  = AoFile.getFileArrayInDir(vmapDirS);
         List<File> vmapList = Arrays.asList(fs);
         Collections.sort(vmapList);
         AoFile.readheader(geneHCFileS);
-        tech.tablesaw.api.Table t = TablesawUtils.readTsv(geneHCFileS);
-        System.out.println(t.structure());
-        t.sortAscendingOn("Chr", "TranStart");
-        IntColumn chrColumn = t.intColumn("chr");
-        int chrNum = chrColumn.countUnique(); //chr的个数
+        RowTable<String> t = new RowTable<>(geneHCFileS);
+
+        TIntHashSet chrSet = new TIntHashSet(t.getColumnAsIntArray(5)); //get chr的set集合
+        int chrNum = chrSet.size(); //chr的个数
         TIntList[] startLists = new TIntList[chrNum]; //list类型的数组，每个数组存放一堆list值
         TIntList[] endLists = new TIntList[chrNum];
         List<String>[] tranLists = new ArrayList[chrNum];
@@ -139,22 +217,24 @@ public class VMap2S1000 {
             tranLists[i] = new ArrayList();
         }
 
-        for (int i = 0; i < t.rowCount(); i++) {
-            startLists[Integer.parseInt(t.getString(i, 2))-1].add(Integer.parseInt(t.getString(i, 3))); //获取开始位点
-            endLists[Integer.parseInt(t.getString(i, 2))-1].add(Integer.parseInt(t.getString(i, 4))); //获取终止位点
-            tranLists[Integer.parseInt(t.getString(i, 2))-1].add(t.getString(i, 1)); //获取基因名字
+        for (int i = 0; i < t.getRowNumber(); i++) {
+            int ifunique = Integer.parseInt(t.getCell(i,3));
+            if (ifunique == 0) continue; //过滤不是unique的基因
+            startLists[Integer.parseInt(t.getCell(i, 5))-1].add(Integer.parseInt(t.getCell(i, 6))); //获取开始位点
+            endLists[Integer.parseInt(t.getCell(i, 5))-1].add(Integer.parseInt(t.getCell(i, 7))); //获取终止位点
+            tranLists[Integer.parseInt(t.getCell(i, 5))-1].add(t.getCell(i, 4)); //获取基因名字
         }
         vmapList.parallelStream().forEach(f -> {
             int chrIndex = Integer.parseInt(f.getName().substring(3, 6))-1;
-            String outfileS = new File (outDirS, f.getName().replaceFirst("_vmap2.1.vcf", "_genicSNP.txt")).getAbsolutePath();
+            String outfileS = new File (outDirS, f.getName().replaceFirst("_vmap2.1.vcf", "_geneSNP.txt")).getAbsolutePath();
             int[] dc = {5, 6, 11, 12, 17, 18, 23, 24, 29, 30, 35, 36, 41, 42};
             Arrays.sort(dc);
             StringBuilder sb = new StringBuilder();
             if (Arrays.binarySearch(dc, chrIndex+1) < 0) {
-                sb.append("ID\tChr\tPos\tRef\tAlt\tMajor\tMinor\tMaf\tAAF_ABD\tAAF_AB\tTranscript");
+                sb.append("ID\tChr\tPos\tRef\tAlt\tMajor\tMinor\tMaf\tTranscript");
             }
             else {
-                sb.append("ID\tChr\tPos\tRef\tAlt\tMajor\tMinor\tMaf\tAAF_ABD\tAAF_D\tTranscript");
+                sb.append("ID\tChr\tPos\tRef\tAlt\tMajor\tMinor\tMaf\tTranscript");
             }
             try {
                 BufferedReader br = AoFile.readFile(f.getAbsolutePath());
@@ -168,6 +248,7 @@ public class VMap2S1000 {
                 String info = null;
                 int currentPos = -1;
                 int posIndex = -1;
+                int cnt = 0;
                 while ((temp = br.readLine()) != null) {
                     if (temp.startsWith("#"))continue;
                     sb.setLength(0);
@@ -183,6 +264,7 @@ public class VMap2S1000 {
                     }
                     if (posIndex < 0) continue;
                     if (currentPos >= endLists[chrIndex].get(posIndex)) continue;
+                    cnt++;
                     sb.append(l.get(2)).append("\t").append(l.get(0)).append("\t").append(l.get(1)).append("\t").append(l.get(3));
                     sb.append("\t").append(l.get(4)).append("\t");
                     ll = PStringUtils.fastSplit(l.get(7), ";");
@@ -193,7 +275,7 @@ public class VMap2S1000 {
                     else {
                         sb.append(l.get(4)).append("\t").append(l.get(3)).append("\t");
                     }
-                    sb.append(ll.get(6).split("=")[1]).append("\t").append(ll.get(7).split("=")[1]).append("\t").append(ll.get(8).split("=")[1]);
+                    sb.append(ll.get(6).split("=")[1]);
                     sb.append("\t").append(tranLists[chrIndex].get(posIndex));
                     bw.write(sb.toString());
                     bw.newLine();
@@ -201,14 +283,14 @@ public class VMap2S1000 {
                 bw.flush();
                 bw.close();
                 br.close();
-                System.out.println(f.getAbsolutePath() + " is completed.");
+                System.out.println(f.getAbsolutePath() + "\t" + cnt  + " is completed.");
             }
             catch (Exception e) {
                 e.printStackTrace();
             }
         });
 
-        //在HPC上运行： java -Xms50g -Xmx200g -jar PlantGenetics.jar > log_extractInfoFromVMap2_20200606.txt 2>&1 &
+        //在HPC上运行： nohup java -jar GeneticLoad.jar > log_extractInfoFromVMap2_20210716.txt 2>&1 &
     }
 
 

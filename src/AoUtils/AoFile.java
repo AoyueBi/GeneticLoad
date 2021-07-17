@@ -736,6 +736,10 @@ public class AoFile {
             br = IOUtils.getTextReader(infileS);
         }else if (infileS.endsWith(".fasta")) {
             br = IOUtils.getTextReader(infileS);
+        }else if (infileS.endsWith(".xls.gz")) {
+            br = IOUtils.getTextGzipReader(infileS);
+        }else if (infileS.endsWith(".xls")) {
+            br = IOUtils.getTextReader(infileS);
         }
         return br;
     }

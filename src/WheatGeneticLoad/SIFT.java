@@ -56,7 +56,7 @@ public class SIFT {
 //this.move();
 
         /**
-         * ******** for new test when rever the ref and alt **************
+         * ******** for new test when reverse the ref and alt **************
          *
          */
 //        this.reverseRefAltallelebyExonVCF();
@@ -78,6 +78,20 @@ public class SIFT {
 //        this.move();
 //        this.reverseRefAltallelebyExonVCF();
 
+        //******** 2021 版本 VMap2.0 的计算 **************//
+///////////// refalt
+//        this.mkdis(); //建立42个空的文件夹，上传至集群
+//        this.annotatorVCF3();
+//        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/002_sift/001_script/siftAnnotator_geneRefAlt_20210716.sh",6,7);
+//        this.reverseRefAltallelebyExonVCF();
+///////////// refref
+//        this.mkdis(); //建立42个空的文件夹，上传至集群
+//        this.annotatorVCF3();
+//        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/002_sift/002_script_refref/siftAnnotator_geneRefAlt_20210716.sh",6,7);
+        this.move();
+
+
+
     }
 
 //     find -name "*.vcf" | cut -c3- ; 本地获取运行脚本，输出在netbeans的output界面。
@@ -92,14 +106,24 @@ public class SIFT {
 //        String infileDirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/002_exonSNPVCF";
 //        String outfileDirS ="/data4/home/aoyue/vmap2/analysis/008_sift/003_result_Vmap2.1-2020_exonVCF";
 
-        String infileDirS = "/data4/home/aoyue/vmap2/analysis/028_sift/001_exon_refref/001_exonVCF_refref";
-        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/028_sift/001_exon_refref";
+//        String infileDirS = "/data4/home/aoyue/vmap2/analysis/028_sift/001_exon_refref/001_exonVCF_refref";
+//        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/028_sift/001_exon_refref";
+
+//        String infileDirS = "/data4/home/aoyue/vmap2/analysis/036_annoDB/002_genicSNP/002_geneSNPVCF";
+//        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/037_sift/001_gene_refalt";
+
+        String infileDirS = "/data4/home/aoyue/vmap2/analysis/037_sift/002_gene_refref/001_geneVCF_refref";
+        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/037_sift/002_gene_refref/";
+
+
 
         String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
         for (int i = 0; i < chrArr.length; i++) {
             String chr = chrArr[i];
 //            String infileS = new File(infileDirS,"chr" + chr + "_exon_vmap2.1.vcf").getAbsolutePath();
-            String infileS = new File(infileDirS,"chr" + chr + "_exon_vmap2.1_RefRef.vcf").getAbsolutePath();
+//            String infileS = new File(infileDirS,"chr" + chr + "_exon_vmap2.1_RefRef.vcf").getAbsolutePath();
+//            String infileS = new File(infileDirS,"chr" + chr + "_gene_vmap2.1.vcf").getAbsolutePath();
+            String infileS = new File(infileDirS,"chr" + chr + "_gene_vmap2.1_RefRef.vcf").getAbsolutePath();
 
             String outfileDirS2 = new File(outfileDirS,"output" + chr).getAbsolutePath();
             File f = new File(infileS);
@@ -132,9 +156,11 @@ public class SIFT {
 //        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/010_exonVCF_reverseRefAlt/001_reverseRefAltallelebyExonVCF";
 //        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/008_sift/010_exonVCF_reverseRefAlt/003_convertAltAlleletoRefAllelebyExonVCF";
 
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/016_exonVCF";
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/034_sift/001_exonVCF_RefRef";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/016_exonVCF";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/034_sift/001_exonVCF_RefRef";
 
+        String infileDirS = "/data4/home/aoyue/vmap2/analysis/036_annoDB/002_genicSNP/002_geneSNPVCF";
+        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/037_sift/002_gene_refref/001_geneVCF_refref";
 
         List<File> fsList = AoFile.getFileListInDir(infileDirS);
         Collections.sort(fsList);
@@ -178,6 +204,7 @@ public class SIFT {
                 e.printStackTrace();
             }
         });
+        // java -jar GeneticLoad.jar > log_changeVCFrefref_20210716.txt 2>&1 &
     }
 
     /**
@@ -190,8 +217,10 @@ public class SIFT {
 //            System.out.println("mv output" + chr + "/chr" + chr + "_exon_vmap2.1_reverseRefAlt_SIFTannotations.xls output/");
 //            System.out.println("mv output" + chr + "/chr" + chr + "_exon_vmap2.1_SIFTannotations.xls output/");
 //            System.out.println("mv output" + chr + "/chr" + chr + "_exon_vmap2.1_SIFTannotations.xls output/");
-            System.out.println("mv output" + chr + "/chr" + chr + "_exon_vmap2.1_RefRef_SIFTannotations.xls output/");
-
+//            System.out.println("mv output" + chr + "/chr" + chr + "_exon_vmap2.1_RefRef_SIFTannotations.xls output/");
+/////////// 2021-07-16 周五
+//            System.out.println("mv output" + chr + "/chr" + chr + "_gene_vmap2.1_RefRef_SIFTannotations.xls output/");
+            System.out.println("mv output" + chr + "/chr" + chr + "_gene_vmap2.1_SIFTannotations.xls output/");
 
         }
 

@@ -49,9 +49,7 @@ public class GeneticLoadEntrance {
         //ternary plot analysis
 //        this.geneExpression();
 //        this.rebuildVCF();
-        this.projectVMap2S1000();
-
-
+//        this.projectVMap2S1000();
 
     }
 
@@ -66,11 +64,11 @@ public class GeneticLoadEntrance {
 //        new RebuildVCF();
 //        new ScriptHapscanner2();
 //        new AoHeterozygosity();
-        new  FilterVCF2();
+//        new  FilterVCF2();
 //        new GermplasmInfo();
 //        new VariantsSum();
 //        new SIFT();
-//        new DeleteriousCountbyIndi(); //根据数据库进行个体Load计算
+        new DeleteriousCountbyIndi(); //根据数据库进行个体Load计算
 //        new TaxaDB();  //taxa 类
 //        new AoIntrogression();
 //        new ScriptHapscanner2(); // 进行indel的hapscanner
@@ -86,7 +84,7 @@ public class GeneticLoadEntrance {
 //        new AoMap();
 //        new DBgene();
 //        new RefBiasEvaluation();
-//        new VMap2Cal();
+//        new VMap2Cal(); //sample size vs variants discovery
 
     }
 

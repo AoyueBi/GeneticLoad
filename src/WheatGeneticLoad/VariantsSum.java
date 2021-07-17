@@ -2084,9 +2084,11 @@ public class VariantsSum {
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/004_popDepthBP_remove01";
 //        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/002_exonSNP_anno_beforePopDepth.txt.gz";
 
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/004_popDepthBP_addDerivedSIFT_updateAAF_addDAF_remove01";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/002_exonSNP_anno_beforePopDepth.txt.gz";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/004_popDepthBP_addDerivedSIFT_updateAAF_addDAF_remove01";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/002_exonSNP_anno_beforePopDepth.txt.gz";
 
+        String infileDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/005_SNP_Annotation_filterN";
+        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/001_geneSNP_anno.txt.gz";
         AoFile.mergeTxt(infileDirS,outfileS);
 
 
@@ -2172,7 +2174,9 @@ public class VariantsSum {
 
 //        String dirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/003_exonSNPAnnotation";
 
-        String dirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/004_exonAnnotation_beforeDepthFilter/002";
+//        String dirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/004_exonAnnotation_beforeDepthFilter/002";
+
+        String dirS = "/data4/home/aoyue/vmap2/analysis/036_annoDB/002_genicSNP/001_geneSNPByChr";
         List<File> fList = AoFile.getFileListInDir(dirS);
         fList.parallelStream().forEach(f -> {
             String gerpFileS = f.getName().split("_")[0]+"_gerp.txt.gz";
@@ -2227,6 +2231,7 @@ public class VariantsSum {
         });
         // java -Xms50g -Xmx200g -jar PlantGenetics.jar > log_addGerp_20200608.txt 2>&1 &
         // java -Xms50g -Xmx200g -jar PlantGenetics.jar > log_addGerp_20200721.txt 2>&1 &
+//         java -Xms50g -Xmx200g -jar GeneticLoad.jar > log_addGerp_20210716.txt 2>&1 &
 
     }
 
@@ -2295,9 +2300,10 @@ public class VariantsSum {
      * 老师的方法
      */
     public void addDAF () {
-        String dirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/003_exonSNPAnnotation";
+//        String dirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/003_exonSNPAnnotation";
+        String dirS = "/data4/home/aoyue/vmap2/analysis/036_annoDB/002_genicSNP/001_geneSNPByChr";
         File[] fs = new File (dirS).listFiles();
-        fs = IOUtils.listFilesEndsWith(fs, ".txt.gz");
+        fs = IOUtils.listFilesEndsWith(fs, ".txt");
         List<File> fList = Arrays.asList(fs);
         fList.parallelStream().forEach(f -> {
             String header = null;
@@ -2547,10 +2553,13 @@ public class VariantsSum {
 //        String infileDirS = "/Users/Aoyue/Downloads/003_exonSNPAnnotation";
 //        String outfileDirS = "/Users/Aoyue/Downloads/003";
 
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/001_popDepthBP";
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/002_popDepthBP_addDerivedSIFT";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/001_popDepthBP";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/002_popDepthBP_addDerivedSIFT";
 
-        AoFile.readheader("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/001_popDepthBP/chr006_SNP_anno.txt");
+        String infileDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/003_SNP_Annotation";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/004_SNP_Annotation";
+
+        AoFile.readheader("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/003_SNP_Annotation/chr001_gene_geneSNP.txt.gz");
         System.out.println();
         List<File> fsList = AoFile.getFileListInDir(infileDirS);
         fsList.forEach(f ->{
@@ -2566,11 +2575,21 @@ public class VariantsSum {
                 List<String> l = new ArrayList<>();
                 while ((temp = br.readLine()) != null) {
                     l = PStringUtils.fastSplit(temp);
+
+//                    StringBuilder sb = new StringBuilder();
+//                    for (int i = 0; i < 11; i++) {
+//                        sb.append(l.get(i)).append("\t");
+//                    }
+//                    sb.append(l.get(12)).append("\t").append(l.get(13)).append("\t").append(l.get(14)).append("\t").append(l.get(15)).append("\t").append(l.get(16));
+//                    String newTemp = sb.toString();
                     String ref = l.get(3);
                     String alt = l.get(4);
-                    String ancestral = l.get(15);
-                    String refSIFT = l.get(14);
-                    String altSIFT = l.get(13);
+//                    String ancestral = l.get(15);
+                    String ancestral = l.get(9);
+//                    String refSIFT = l.get(14);
+//                    String altSIFT = l.get(13);
+                    String refSIFT = l.get(16);
+                    String altSIFT = l.get(15);
                     if (ancestral.equals("NA")){
                         bw.write(temp + "\tNA");
                         bw.newLine();
@@ -2604,12 +2623,14 @@ public class VariantsSum {
 //        String inDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/107_estsfs/007_ancestral_Barley_secale_parsimony/002_byChrID";
 //        String dirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/003_exonSNPAnnotation";
 
-        String inDirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/003_annotation/001_ancestral";
-        String dirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/003_exonSNPAnnotation";
+//        String inDirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/003_annotation/001_ancestral";
+//        String dirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/003_exonSNPAnnotation";
 
+        String inDirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/003_annotation/001_ancestral";
+        String dirS = "/data4/home/aoyue/vmap2/analysis/036_annoDB/002_genicSNP/001_geneSNPByChr";
         List<File> fList = AoFile.getFileListInDir(inDirS);
         fList.parallelStream().forEach(f -> {
-            String annoFileS = f.getName().split("_")[0]+"_SNP_anno.txt";
+            String annoFileS = f.getName().split("_")[0]+"_gene_geneSNP.txt";
             annoFileS = new File(dirS, annoFileS).getAbsolutePath();
             String header = null;
             List<String> recordList = new ArrayList();
@@ -2662,12 +2683,85 @@ public class VariantsSum {
         });
 
         // java -Xms50g -Xmx200g -jar PlantGenetics.jar > log_addAncestral_20200720.txt 2>&1 &   cat /data4/home/aoyue/vmap2/aaPlantGenetics/log_addAncestral_20200720.txt
+        // java -Xms50g -Xmx200g -jar GeneticLoad.jar > log_addAncestral_20210716.txt 2>&1 &
+        // cat /data4/home/aoyue/vmap2/aaPlantGenetics/log_addAncestral_20210716.txt
+
     }
 
     /**
      * 此方法是同时添加 ref 和 sift 的方法，注意 在ref 的结果中只提取sift score 这一项内容；
      * refsift 和  altsift 的结果，行数和pos的位置都一一对应。
-     * 另外注意：单独添加sift alt的方法在下文可以找到，需要用到的时候，请打开注释号。
+     * 另外注意：单独添加sift alt的方法在下文 addSift 可以找到，需要用到的时候，请打开注释号。
+     * CHROM	POS	REF_ALLELE	ALT_ALLELE	TRANSCRIPT_ID	GENE_ID	GENE_NAME	REGION	VARIANT_TYPE	REF_AMINO	ALT_AMINO	AMINO_POS	SIFT_SCORE	SIFT_MEDIAN	NUM_SEQS	dbSNSIFT_PREDICTION
+     */
+    public void addSift_20210717() {
+
+        // 2021-07-16 周五
+        String siftDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/002_sift/003_output/004_mergeRefAlt_RefRef"; //chr001_exon_vmap2.1_SIFTannotations.xls.gz
+        String dirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/003_SNP_Annotation"; //库文件
+
+        File[] fs = new File(siftDirS).listFiles();
+        fs = IOUtils.listFilesEndsWith(fs, ".txt.gz");
+        List<File> fList = Arrays.asList(fs);
+        fList.parallelStream().forEach(f -> {
+            String dbFileS = f.getName().split("_")[0]+"_gene_geneSNP.txt.gz";
+            dbFileS = new File (dirS, dbFileS).getAbsolutePath();
+            RowTable<String> t = new RowTable (f.getAbsolutePath()); //两行行数可能不一致
+            SIFTRecord[] records = new SIFTRecord[t.getRowNumber()];
+            for (int i = 0; i < records.length; i++) {
+                SIFTRecord s = new SIFTRecord(Integer.parseInt(t.getCell(i, 1)), t.getCell(i, 3), t.getCell(i, 4), t.getCell(i,
+                        7), t.getCell(i, 8), t.getCell(i, 12), t.getCell(i, 17));
+                records[i] = s;
+            }
+            Arrays.sort(records);
+            try {
+                List<String> dbList = new ArrayList();
+                String temp = null;
+                BufferedReader br = AoFile.readFile(dbFileS);
+                String header = br.readLine();
+                while ((temp = br.readLine()) != null) {
+                    dbList.add(temp);
+                }
+                br.close();
+                BufferedWriter bw = AoFile.writeFile(dbFileS);
+                StringBuilder sb = new StringBuilder(header);
+                sb.append("\tRegion\tVariant_type\tAlt_SIFT\tRef_SIFT");
+                bw.write(sb.toString());
+                bw.newLine();
+                List<String> l = null;
+                for (int i = 0; i < dbList.size(); i++) {
+                    l = PStringUtils.fastSplit(dbList.get(i));
+                    SIFTRecord query = new SIFTRecord(Integer.parseInt(l.get(2)), l.get(4), l.get(8)); //pos alt trans
+                    int index = Arrays.binarySearch(records, query);
+                    sb.setLength(0);
+                    if (index < 0) {
+                        sb.append(dbList.get(i)).append("\t");
+                        sb.append("Intron\tNA\tNA\tNA");
+                    }else{
+                        sb.append(dbList.get(i)).append("\t");
+                        sb.append(records[index].region).append("\t");
+                        sb.append(records[index].type).append("\t");
+                        sb.append(records[index].altSift).append("\t").append(records[index].refSift);
+                    }
+                    bw.write(sb.toString());
+                    bw.newLine();
+                }
+                bw.flush();
+                bw.close();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+        // java -Xms50g -Xmx200g -jar PlantGenetics.jar > log_addSift_20200720.txt 2>&1 &   cat /data4/home/aoyue/vmap2/aaPlantGenetics/log_addSift_20200720.txt
+    }
+
+
+    /**
+     * 此方法是同时添加 ref 和 sift 的方法，注意 在ref 的结果中只提取sift score 这一项内容；
+     * refsift 和  altsift 的结果，行数和pos的位置都一一对应。
+     * 另外注意：单独添加sift alt的方法在下文 addSift 可以找到，需要用到的时候，请打开注释号。
      * CHROM	POS	REF_ALLELE	ALT_ALLELE	TRANSCRIPT_ID	GENE_ID	GENE_NAME	REGION	VARIANT_TYPE	REF_AMINO	ALT_AMINO	AMINO_POS	SIFT_SCORE	SIFT_MEDIAN	NUM_SEQS	dbSNSIFT_PREDICTION
      * 1	1145382	C	A	TraesCS1A02G001800.1	TraesCS1A02G001800	TraesCS1A02G001800	CDS	NONSYNONYMOUS	F	L	68	0.68	2.70	227	novel	TOLERATED
      * 1	1145386	G	T	TraesCS1A02G001800.1	TraesCS1A02G001800	TraesCS1A02G001800	CDS	STOP-GAIN	E	*	70	NA	NA	NA	novel	NA
@@ -2680,18 +2774,25 @@ public class VariantsSum {
      * 1	1145454	G	C	TraesCS1A02G001800.1	TraesCS1A02G001800	TraesCS1A02G001800	CDS	SYNONYMOUS	V	V	92	1.00	2.73	227	novel	TOLERATED
      */
     public void addSift() {
-        String siftAltDirS = "/data4/home/aoyue/vmap2/analysis/008_sift/003_result_Vmap2.1-2020_exonVCF/output"; //chr001_exon_vmap2.1_SIFTannotations.xls.gz
-        String siftRefDirS = "/data4/home/aoyue/vmap2/analysis/028_sift/001_exon_refref/output";
-        String dirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/003_exonSNPAnnotation"; //库文件
+//        String siftAltDirS = "/data4/home/aoyue/vmap2/analysis/008_sift/003_result_Vmap2.1-2020_exonVCF/output"; //chr001_exon_vmap2.1_SIFTannotations.xls.gz
+//        String siftRefDirS = "/data4/home/aoyue/vmap2/analysis/028_sift/001_exon_refref/output";
+//        String dirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/003_exonSNPAnnotation"; //库文件
+
+        // 2021-07-16 周五
+        String siftAltDirS = "/data4/home/aoyue/vmap2/analysis/037_sift/001_gene_refalt/output"; //chr001_exon_vmap2.1_SIFTannotations.xls.gz
+        String siftRefDirS = "/data4/home/aoyue/vmap2/analysis/037_sift/002_gene_refref/output";
+        String dirS = "/data4/home/aoyue/vmap2/analysis/036_annoDB/002_genicSNP/001_geneSNPByChr"; //库文件
+
         File[] fs = new File(siftAltDirS).listFiles();
         fs = IOUtils.listFilesEndsWith(fs, ".xls.gz");
         List<File> fList = Arrays.asList(fs);
         fList.parallelStream().forEach(f -> {
             String dbFileS = f.getName().split("_")[0]+"_SNP_anno.txt";
             dbFileS = new File (dirS, dbFileS).getAbsolutePath();
-            String refFileS = new File (siftRefDirS, f.getName().split("_")[0]+"_exon_vmap2.1_RefRef_SIFTannotations.xls.gz").getAbsolutePath();
-            RowTable<String> tAlt = new RowTable (f.getAbsolutePath());
-            RowTable<String> tRef = new RowTable (refFileS);
+//            String refFileS = new File (siftRefDirS, f.getName().split("_")[0]+"_exon_vmap2.1_RefRef_SIFTannotations.xls.gz").getAbsolutePath();
+            String refFileS = new File (siftRefDirS, f.getName().split("_")[0]+"_gene_vmap2.1_RefRef_SIFTannotations.xls.gz").getAbsolutePath();
+            RowTable<String> tAlt = new RowTable (f.getAbsolutePath()); //两行行数可能不一致
+            RowTable<String> tRef = new RowTable (refFileS); //两行行数可能不一致
             SIFTRecord[] records = new SIFTRecord[tAlt.getRowNumber()];
             for (int i = 0; i < records.length; i++) {
                 SIFTRecord s = new SIFTRecord(Integer.parseInt(tAlt.getCell(i, 1)), tAlt.getCell(i, 3), tAlt.getCell(i, 4), tAlt.getCell(i,
