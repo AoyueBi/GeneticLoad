@@ -28,7 +28,7 @@ import pgl.infra.utils.wheat.RefV1Utils;
 public class AnnotationCrossover {
     public AnnotationCrossover(){
 //        this.convertCoordinate();
-        this.addRecombination();
+//        this.addRecombination();
 //        this.mergeExonAnnotation();
 
     }

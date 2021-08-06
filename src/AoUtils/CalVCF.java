@@ -33,7 +33,6 @@ public class CalVCF {
 //        this.mkPhylipFormat();
 //        this.mkdirs();
 //        this.extractVCF("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/002_exonSNPVCF/chr032_exon_vmap2.1.vcf.gz","/Users/Aoyue/Documents/test.vcf","/Users/Aoyue/Documents/test.txt");
-
 //        this.getIBSdistance();
 
     }
@@ -93,48 +92,6 @@ public class CalVCF {
         }
     }
 
-    /**
-     *
-     */
-    public void getIBSdistance(){
-
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/001_subsetVCF/Dsubgenome_diploid.vcf.gz";
-        GenotypeGrid gt = new GenotypeGrid(infileS,GenoIOFormat.VCF_GZ);
-
-        int taxaNum = gt.getTaxaNumber();
-        String[] taxa = gt.getTaxaNames();
-        System.out.println(taxaNum + "\t" + taxa.length);
-        float[][] ibsMatrix =   gt.getIBSDistanceMatrix();
-
-//        GenotypeGrid[] gts = new GenotypeGrid[fN];
-//        int totalSiteCount = 0;
-//        for (int i = 0; i < gts.length; i++) { //对genotypeTable 进行初始化
-//            gts[i] = new GenotypeGrid(fList.get(i).getAbsolutePath(), GenoIOFormat.VCF_GZ);
-//            totalSiteCount+=gts[i].getSiteNumber(); //获取 fN 个文件的总位点数
-//        }
-//        GenotypeOperation.mergeGenotypesBySite(gts[0], gts[1]); // 合并两个VCF文件
-//        GenotypeGrid gt = gts[0];
-//        TDoubleArrayList missingSite = new TDoubleArrayList(); // calculation 1
-//        TDoubleArrayList hetSite = new TDoubleArrayList(); // calculation 2
-//        TDoubleArrayList maf = new TDoubleArrayList(); // calculation 3
-//        TDoubleArrayList missingTaxon = new TDoubleArrayList(); // calculation 4
-//        TDoubleArrayList hetTaxon = new TDoubleArrayList(); // calculation 5
-//
-//        int step = gt.getSiteNumber()/size;
-//        for (int i = 0; i < gt.getSiteNumber(); i+=step) {
-//            missingSite.add(((double) gt.getMissingNumberBySite(i)/gt.getTaxaNumber()));
-//            hetSite.add(gt.getHeterozygousProportionBySite(i));
-//            maf.add(gt.getMinorAlleleFrequency(i));
-//        }
-//        for (int i = 0; i < gt.getTaxaNumber(); i++) {
-//            missingTaxon.add((double)gt.getMissingNumberByTaxon(i)/gt.getSiteNumber());
-//            hetTaxon.add(gt.getHeterozygousProportionByTaxon(i));
-//        }
-//
-//        String siteQCfileS = new File(outDirS,genomeType + "_site_QC.txt.gz").getAbsolutePath();
-//        String taxaQCFileS = new File (outDirS, genomeType+"_taxa_QC.txt.gz").getAbsolutePath();
-
-    }
 
     /**
      *
@@ -679,6 +636,10 @@ public class CalVCF {
                         continue;
                     }
                     cntKept++;
+                    //log
+                    if (cntKept % 10000 == 0){
+                        System.out.println("SNP number" + cntKept );
+                    }
                     String info = getInfo(taxaGenoArray, altList);
                     StringBuilder sb = new StringBuilder();
                     for (int i = 0; i < 7; i++) {
@@ -704,19 +665,16 @@ public class CalVCF {
         }
     }
 
-
     /**
-     * 根据提供的taxa列表，从总的VCF文件中提取所需的VCF文件，并对没有分离的位点进行去除,没有分离位点包括全部都是./.的位点
-     *
+     *  根据提供的taxa列表，从总的VCF文件中提取所需的VCF文件，并对没有分离的位点进行去除,没有分离位点包括全部都是./.的位点
      * @param infileS   VCF file
      * @param outfileS  VCF file
-     * @param taxalist !!!! 没有header，一行一个taxa名字
+     * @param taxaListFileS 没有header，一行一个taxa名字
      */
-    public void extractVCF(String infileS, String outfileS, String taxalist) {
+    public static void extractVCF(String infileS, String outfileS, String taxaListFileS) {
 
         List<Integer> indexTaxa = new ArrayList<>();
-        String[] taxaArray = AoFile.getStringArraybyList_withoutHeader(taxalist,0);
-
+        String[] taxaArray = AoFile.getStringArraybyList_withoutHeader(taxaListFileS,0);
 
         System.out.println("Chr\tNum_MergedFileVariants\tNum_KeptVariants\tNum_RemovedSites\tNum_NosegregationSites\tNum_NogenotypeSites");
         try {
@@ -779,13 +737,13 @@ public class CalVCF {
                         continue;
                     } //若不过滤，则全是./.的位点在下面的分离测试中会统计到
                     String[] taxaGenoArray = lTaxaGeno.toArray(new String[lTaxaGeno.size()]);
-                    boolean segregation = this.ifSegregationIncl2alt(taxaGenoArray, altList);
+                    boolean segregation = ifSegregationIncl2alt(taxaGenoArray, altList);
                     if (segregation == false) { //过滤没有分离的位点
                         cntNosegregation++;
                         continue;
                     }
                     cntKept++;
-                    String info = this.getInfo(taxaGenoArray, altList);
+                    String info = getInfo(taxaGenoArray, altList);
                     StringBuilder sb = new StringBuilder();
                     for (int i = 0; i < 7; i++) {
                         sb.append(l.get(i)).append("\t");
@@ -856,6 +814,10 @@ public class CalVCF {
             }
         }
         return a;
+    }
+
+    public enum Ploidy{
+
     }
 
 
@@ -1019,6 +981,50 @@ public class CalVCF {
         }
 
         return sb.toString();
+    }
+
+
+    /**
+     * 根据genotype提取 MAF major minor 信息
+     * @param PopGenoArray
+     * @param ref
+     * @param alt
+     * @return
+     */
+    public static List<String> getMAFMajorMinor(String[] PopGenoArray,String ref,String alt) {
+        List<String> out = new ArrayList<>();
+        String mafS = null;
+        String major = null;
+        String minor = null;
+        int[] acCnt = new int[2]; //所有包括ref和alt的个数
+        List<String> tempList = null;
+        List<String> temList = null;
+        for (int i = 0; i < PopGenoArray.length; i++) {
+            if (PopGenoArray[i].startsWith(".")) continue;
+            tempList = PStringUtils.fastSplit(PopGenoArray[i], ":"); //tempList是包含基因型AD还有PL的集合
+            temList = PStringUtils.fastSplit(tempList.get(0), "/"); //temList是包含基因型拆分后的集合
+            for (int j = 0; j < temList.size(); j++) {
+                int c = Integer.parseInt(temList.get(j)); // c是基因型第j个数值
+                acCnt[c]++; //acCnt[c] 是所有taxa基因型某一数值如0 1 2的总和
+            }
+        }
+        int sum = 0;
+        for (int i = 0; i < acCnt.length; i++) {
+            sum += acCnt[i];
+        }
+        float maf = (float) ((double) acCnt[0] / sum);
+        major = alt;
+        minor = ref;
+        if (maf > 0.5) {
+            maf = (float) ((double) acCnt[1] / sum);
+            major = ref;
+            minor = alt;
+        }
+        out.add(String.format("%.4f", maf));
+        out.add(major);
+        out.add(minor);
+
+        return out;
     }
 
     /**
@@ -1542,34 +1548,6 @@ public class CalVCF {
             e.printStackTrace();
             System.exit(1);
         }
-    }
-
-    /**
-     * return the site MAF from vcf
-     * @param genoArray
-     * @return
-     */
-    public static Double calSNPsitesMAF(String[] genoArray){
-        Double out = Double.MIN_VALUE;
-        int nz = 0; //有基因型的个体数
-        int ht = 0;
-        List<String> tempList = null;
-        List<String> temList = null;
-        for (int i = 0; i < genoArray.length; i++) {
-            if (!genoArray[i].startsWith(".")) {
-                nz++;
-                tempList = PStringUtils.fastSplit(genoArray[i], ":"); //tempList是包含基因型AD还有PL的集合
-                //再计算基因型
-                temList = PStringUtils.fastSplit(tempList.get(0), "/"); //temList是包含基因型拆分后的集合 0/0的集合
-                int index1 = Integer.parseInt(temList.get(0)); //0/0基因型的
-                int index2 = Integer.parseInt(temList.get(1));
-                if (index1 != index2) {
-                    ht++;
-                }
-            }
-        }
-        out = (double) ht/nz;
-        return out;
     }
 
     /**

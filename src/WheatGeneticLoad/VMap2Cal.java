@@ -24,15 +24,6 @@ public class VMap2Cal {
     }
 
     /**
-     *
-     */
-    public void getMergeFasta(){
-
-
-    }
-
-
-    /**
      * 估算在exon区域，随着样本量的增大，各种类型的变异数目评估，判定是否达到饱和
      */
     public void sampleSize2variantsDiscovery(){

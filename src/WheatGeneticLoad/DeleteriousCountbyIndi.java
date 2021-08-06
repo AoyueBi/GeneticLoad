@@ -26,7 +26,7 @@ public class DeleteriousCountbyIndi {
     ////// 最新版结果
     public DeleteriousCountbyIndi(){
 
-        this.countDeleteriousVMapII_byChr();
+//        this.countDeleteriousVMapII_byChr();
 //        this.DeltoSynonymousRatio();
 //        this.filterLandrace();
 
@@ -40,14 +40,15 @@ public class DeleteriousCountbyIndi {
 //        this.addGrouptoCorrelationFile();
 //        this.addNewGrouptoLoadFile();
 
-//        this.countDeleteriousVMapII_byChr_onlyHomo(); //统计分子是纯合，分母也是纯合基因型的3种分类； 统计分子是纯合，分母是纯合加杂合的3种分类； 统计分子是杂合，分母
+//        this.countDeleteriousVMapII_byChr_onlyHomo(); //统计分子是纯合，分母也是纯合基因型的3种分类；
 //        this.DeltoSynonymousRatio();
 //        this.filterLandrace();
 
         /**
-         * ******** 计算个体load的时候，只看纯合子。 遇到杂合子就跳过
+         * 对2021-07月版本的VMap2.1进行load计算
          */
 
+        this.countDeleteriousVMapII_byChr();
 
     }
 

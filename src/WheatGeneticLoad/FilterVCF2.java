@@ -26,7 +26,7 @@ public class FilterVCF2 {
         /**
          * 过滤 MAF > 0.01  Occurrence>2 MissingRate<0.2
          */
-        this.filter_parallel(); //老师的方法
+//        this.filter_parallel(); //老师的方法
 //        this.filterMafbyPopHTD(); //我的方法
 //        String a = "";
 //        String b = "";

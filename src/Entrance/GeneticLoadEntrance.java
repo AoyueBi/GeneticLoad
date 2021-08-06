@@ -46,15 +46,16 @@ public class GeneticLoadEntrance {
 //        this.infoDB(); // 种质信息库
 //        this.DBdeleterious();
 
-        //ternary plot analysis
-//        this.geneExpression();
-//        this.rebuildVCF();
-//        this.projectVMap2S1000();
+        //*** ternary plot analysis ***//
+//        this.geneExpression(); //analysis on wheat gene expression and deleterious load
+//        this.rebuildVCF(); //new analysis on VMap2.0-2020 (主要)
+        this.projectVMap2S1000(); //new analysis on VMap2.0-2021-07
 
     }
 
     public void projectVMap2S1000(){
-        new VMap2S1000(); //进行变异数据库最原始的提取
+        new VMap2S1000(); //进行VCF的fix, QC, and SNP annotation build
+
 
 
     }
@@ -65,10 +66,10 @@ public class GeneticLoadEntrance {
 //        new ScriptHapscanner2();
 //        new AoHeterozygosity();
 //        new  FilterVCF2();
-//        new GermplasmInfo();
+//        new GermplasmInfo(); // 种质信息库
 //        new VariantsSum();
 //        new SIFT();
-        new DeleteriousCountbyIndi(); //根据数据库进行个体Load计算
+//        new DeleteriousCountbyIndi(); //根据数据库进行个体Load计算
 //        new TaxaDB();  //taxa 类
 //        new AoIntrogression();
 //        new ScriptHapscanner2(); // 进行indel的hapscanner
@@ -111,7 +112,6 @@ public class GeneticLoadEntrance {
 
 
     public void plot() {
-        //new CalVCF()
         //new Circos();
 //        new Tree();
 //        new PCA();
@@ -143,7 +143,6 @@ public class GeneticLoadEntrance {
         new TajimaD();
         new AnnotationCrossover();
         new XPCLR();
-        AoMath.topK();
         new GOanalysis();
         new DeleteriousXPCLR();
         new GermplasmInfo();

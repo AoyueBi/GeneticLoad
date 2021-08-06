@@ -49,50 +49,36 @@ public class Model {
     }
 
     public void vcfParallel() {
-        double extractRatio = 0;
-        String infileDirS = "";
-        String outfileDirS = "";
-
-        File[] fs = new File(infileDirS).listFiles();
-        for (int i = 0; i < fs.length; i++) {
-            if (fs[i].isHidden()) {
-                fs[i].delete();
-            }
-        }
-        fs = new File(infileDirS).listFiles();
-        List<File> fsList = Arrays.asList(fs);
-        Collections.sort(fsList);
+        String infileDirS = "/data4/home/aoyue/vmap2/analysis/036_annoDB/002_genicSNP/002_geneSNPVCF";
+        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/036_annoDB/002_genicSNP/003_geneSNPVCF_RemoveN";
+        List<File> fsList = AoFile.getFileListInDir(infileDirS);
         fsList.parallelStream().forEach(f -> {
             try {
                 String infileS = f.getAbsolutePath();
-                String outfileS = null;
-                BufferedReader br = null;
-                if (infileS.endsWith(".vcf")) {
-                    br = IOUtils.getTextReader(infileS);
-                    outfileS = new File(outfileDirS, f.getName().split(".vcf")[0] + "_subset.vcf.gz").getAbsolutePath();
-                } else if (infileS.endsWith(".vcf.gz")) {
-                    br = IOUtils.getTextGzipReader(infileS);
-                    outfileS = new File(outfileDirS, f.getName().split(".vcf.gz")[0] + "_subset.vcf.gz").getAbsolutePath();
-                }
-                BufferedWriter bw = IOUtils.getTextGzipWriter(outfileS);
+                String outfileS = new File(outfileDirS,f.getName()).getAbsolutePath();
+                BufferedReader br = AoFile.readFile(infileS);
+                BufferedWriter bw = AoFile.writeFile(outfileS);
                 String temp = null;
                 int cnttotal = 0;
                 int cntsubset = 0;
                 while ((temp = br.readLine()) != null) {
-                    if (temp.startsWith("#")) {
+                    if (temp.startsWith("##")) {
                         bw.write(temp);
                         bw.newLine();
-                    } else {
-                        cnttotal++;
-                        double r = Math.random();
-                        double ratio = extractRatio;
-                        if (r > ratio) {
-                            continue; //返回带正号的 double 值，该值大于等于 0.0 且小于 1.0。返回值是一个伪随机选择的数，在该范围内（近似）均匀分布
-                        }
+                    } else if(temp.startsWith("#C")){
                         List<String> l = PStringUtils.fastSplit(temp);
-                        if (l.get(3).contains(",")) {
-                            continue; // 第3列是alt的信息，若有2个等位基因，则去除这一行
+                        bw.write("#CHROM");
+                        StringBuilder sb = new StringBuilder();
+                        for (int i = 1; i < l.size(); i++) {
+                            sb.append("\t").append(l.get(i));
                         }
+                        bw.write(sb.toString());
+                        bw.newLine();
+                    }
+                    else {
+                        cnttotal++;
+                        List<String> l = PStringUtils.fastSplit(temp);
+                        if (l.get(3).equals("N")) continue;
                         bw.write(temp);
                         bw.newLine();
                         cntsubset++;
@@ -101,7 +87,7 @@ public class Model {
                 bw.flush();
                 bw.close();
                 br.close();
-                System.out.println(f.getName() + "\twith " + cnttotal + " bp has a subset of\t" + cntsubset + "\tis completed at " + outfileS);
+                System.out.println(f.getName() + "\t" + cnttotal + "\t" + cntsubset);
             } catch (Exception e) {
                 e.printStackTrace();
             }

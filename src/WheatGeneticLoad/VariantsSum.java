@@ -2087,10 +2087,13 @@ public class VariantsSum {
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/004_popDepthBP_addDerivedSIFT_updateAAF_addDAF_remove01";
 //        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/002_exonSNP_anno_beforePopDepth.txt.gz";
 
-        String infileDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/005_SNP_Annotation_filterN";
-        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/001_geneSNP_anno.txt.gz";
-        AoFile.mergeTxt(infileDirS,outfileS);
+//        String infileDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/005_SNP_Annotation_filterN";
+//        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/001_geneSNP_anno.txt.gz";
+//        AoFile.mergeTxt(infileDirS,outfileS);
 
+        String infileDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/007_SNP_Annotation";
+        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/004_geneSiteAnno.txt.gz";
+        AoFile.mergeTxt(infileDirS,outfileS);
 
         //java -Xms50g -Xmx200g -jar PlantGenetics.jar > log_mergeExonSNPAnnotation_20200609.txt 2>&1 &
     }
@@ -2626,11 +2629,15 @@ public class VariantsSum {
 //        String inDirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/003_annotation/001_ancestral";
 //        String dirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/003_exonSNPAnnotation";
 
-        String inDirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/003_annotation/001_ancestral";
-        String dirS = "/data4/home/aoyue/vmap2/analysis/036_annoDB/002_genicSNP/001_geneSNPByChr";
+//        String inDirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/003_annotation/001_ancestral";
+//        String dirS = "/data4/home/aoyue/vmap2/analysis/036_annoDB/002_genicSNP/001_geneSNPByChr";
+
+        String inDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/000_est_sfs_ancestral_chrID";
+        String dirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/005_SNP_Annotation_filterN";
+
         List<File> fList = AoFile.getFileListInDir(inDirS);
         fList.parallelStream().forEach(f -> {
-            String annoFileS = f.getName().split("_")[0]+"_gene_geneSNP.txt";
+            String annoFileS = f.getName().split("_")[0]+"_gene_geneSNP.txt.gz";
             annoFileS = new File(dirS, annoFileS).getAbsolutePath();
             String header = null;
             List<String> recordList = new ArrayList();
@@ -2665,7 +2672,7 @@ public class VariantsSum {
 
                 BufferedWriter bw = AoFile.writeFile(annoFileS);
                 StringBuilder sb = new StringBuilder(header);
-                sb.append("\tAncestral");
+                sb.append("\tAncestral_estsfs");
                 bw.write(sb.toString());
                 bw.newLine();
                 for (int i = 0; i < recordList.size(); i++) {

@@ -25,7 +25,7 @@ import java.util.*;
 public class DeleteriousXPCLR2 {
 
     public DeleteriousXPCLR2(){
-//        this.pipeDeleteriousXPCLR();
+        this.pipeDeleteriousXPCLR();
 //        this.pipeFilterTaxa();
 //        this.getCDSlength();
 
@@ -34,9 +34,9 @@ public class DeleteriousXPCLR2 {
 
 
     public void pipeDeleteriousXPCLR(){
-        this.step0(); //第一次计算
-//        this.step1(); //第二次计算
-        this.step3(); //第三次计算:ref bias evaluation 后，load 变化
+//        this.step0(); //第一次计算 所有个体的load，各种类型都计算
+//        this.step1(); //第二次计算  将不同类型进行比率相除，求ratio
+        this.step3(); //第三次计算:ref bias evaluation 后，load 变化.  分为8种类型。
 
 
 
