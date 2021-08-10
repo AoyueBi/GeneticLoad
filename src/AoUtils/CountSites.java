@@ -2928,56 +2928,78 @@ public class CountSites {
         }
 
         Collections.sort(fsList);
-        //        System.out.println("Chr\tSNPNum\tBiallelicNum\tIndelNum\tInsertionNum\tDelectionNum\t");
+        System.out.println("Chr\tSNPNum\tBiallelicNum\tIndelNum\tInsertionNum\tDelectionNum\t");
         fsList.parallelStream().forEach(f -> {
+
             try {
                 String chr = f.getName().substring(3, 6); //提取染色体号 001
-                int chrint = Integer.parseInt(chr); //将染色体号转化为数字
-                String outfileS = new File(outfileDirS, "chr" + chr + "_Bi.vcf").getAbsolutePath();
-                BufferedReader br = AoFile.readFile(f.getAbsolutePath());
+                String infileS = f.getAbsolutePath();
+                String outfileS = new File(outfileDirS, "chr" + chr + "_Bi_SNP.vcf").getAbsolutePath();
+                BufferedReader br = AoFile.readFile(infileS);
                 BufferedWriter bw = AoFile.writeFile(outfileS);
+                int chrint = Integer.parseInt(chr); //将染色体号转化为数字
+                int cntSNP = 0;
+                int cntBi = 0;
+                int cntTri = 0;
+                int cntIndel = 0;
+                int cntI = 0;
+                int cntD = 0;
                 String temp = null;
-//                int snpNum = 0;
-                int biallelicNum = 0;
-//                int indelNum = 0;
-//                int insertionNum = 0;
-//                int delectionNum = 0;
-                while ((temp = br.readLine()) != null) {
+                while ((temp = br.readLine()) != null) { //是否含有D I
                     if (temp.startsWith("#")) {
                         bw.write(temp);
                         bw.newLine();
-                    } else {
-
-                        String alt = PStringUtils.fastSplit(temp).get(4);
-//                        if (alt.contains("D")) {
-//                            delectionNum++;
-//                        }
-//                        if (alt.contains("I")) {
-//                            insertionNum++;
-//                        }
-
-//                        if (!(alt.contains(",")) && !(alt.equals("D")) && !(alt.equals("I"))) {
-//                            biallelicNum++;
-//                            bw.write(temp);
-//                            bw.newLine();
-//                        }
-
-                        if (alt.contains(",")) continue;
-                        if (alt.equals("D")) continue;
-                        if (alt.equals("I")) continue;
-                        biallelicNum++;
-                        bw.write(temp);
-                        bw.newLine();
+                        continue;
                     }
+//                    temp = temp.substring(0, 150);
+                    String alt = PStringUtils.fastSplit(temp).get(4);
+                    /**
+                     * 含有逗号，即有2个alt.
+                     * case 1: A,T
+                     * case 2: D,I
+                     * case 3: D,G
+                     * case 4: I,T
+                     */
+                    if (!(alt.length() == 1)) { //2个alt的情况;若该位点含有D或I ，那么就属于Indel，如果没有D 或者I，那么就属于SNP
+                        boolean ifD = false;
+                        if (!alt.contains("D") && (!alt.contains("I"))) {
+                            cntTri++;
+                            cntSNP++;
+                        }
+                        if (alt.contains("D")) {
+                            cntD++;
+                            cntIndel++;
+                            ifD = true;
+                        }
+                        if (alt.contains("I")) {
+                            cntI++;
+                            if (ifD == false) { //针对 case 2的情况，即含有D又含有I， 这时在上面的D中已经加过 cntIndel了，所以不用再加了
+                                cntIndel++;
+                            }
+                        }
 
+                    } else if (alt.length() == 1) { //1个alt的情况;
+                        if (!alt.equals("D") && (!alt.equals("I"))) {
+                            cntBi++;
+                            cntSNP++;
+                            bw.write(temp);
+                            bw.newLine();
+
+                        }
+                        if (alt.equals("D")) {
+                            cntD++;
+                            cntIndel++;
+                        }
+                        if (alt.equals("I")) {
+                            cntI++;
+                            cntIndel++;
+                        }
+                    }
                 }
-//                indelNum = delectionNum + insertionNum;
-//                snpNum = cnt - indelNum;
-                br.close();
                 bw.flush();
                 bw.close();
-//                System.out.println(String.valueOf(chrint) + "\t" + String.valueOf(snpNum) + "\t" + String.valueOf(biallelicNum) + "\t" + String.valueOf(indelNum) + "\t" + String.valueOf(insertionNum) + "\t" + String.valueOf(delectionNum));
-                System.out.println(chrint + "\t" + biallelicNum + "\t" + f.getName() + " is completed at " + outfileS);
+                br.close();
+                System.out.println(String.valueOf(chrint) + "\t" + String.valueOf(cntSNP) + "\t" + String.valueOf(cntBi) + "\t" + String.valueOf(cntTri) + "\t" + String.valueOf(cntIndel) + "\t" + String.valueOf(cntI) + "\t" + String.valueOf(cntD));
             } catch (Exception e) {
                 e.printStackTrace();
                 System.exit(1);

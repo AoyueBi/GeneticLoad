@@ -56,8 +56,6 @@ public class GeneticLoadEntrance {
     public void projectVMap2S1000(){
         new VMap2S1000(); //进行VCF的fix, QC, and SNP annotation build
 
-
-
     }
 
 
@@ -240,6 +238,7 @@ public class GeneticLoadEntrance {
 //        new XPCLR().step3_getAlleleCountXPCLR_3(args[0],args[1],args[2],args[3]);
 
 //        CalVCF.filterMAFinVCF(args[0],Double.parseDouble(args[1]),args[2]);
+//        CalVCF.calMAFcountfromPop(args[0],args[1],args[2]);
 
     }
 

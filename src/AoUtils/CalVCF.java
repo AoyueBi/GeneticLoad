@@ -898,6 +898,73 @@ public class CalVCF {
         return sb.toString();
     }
 
+    /**
+     * 根据提供的taxa列表，从总的VCF文件中提取所需的VCF文件，并对没有分离的位点进行去除,没有分离位点包括全部都是./.的位点
+     *
+     * @param infileS
+     * @param outfileS
+     * @param taxalist 没有header，一行一个taxa名字
+     */
+    public static void calMAFcountfromPop(String infileS, String outfileS, String taxalist) {
+        List<Integer> indexTaxa = new ArrayList<>();
+        String[] taxaArray = AoFile.getStringArraybyList_withoutHeader(taxalist,0);
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            bw.write("Chr\tMafMore005\tMAFLess005\tTotal");
+            bw.newLine();
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            int cntMAFmore005 = 0;
+            int cntMAFless005 = 0;
+            String chr = null;
+            while ((temp = br.readLine()) != null) {
+                if (temp.startsWith("##")) continue;
+                if (temp.startsWith("#CHR")) {
+                    l = PStringUtils.fastSplit(temp);
+                    for (int i = 9; i < l.size(); i++) {
+                        String taxon = l.get(i);
+                        int index1 = Arrays.binarySearch(taxaArray, taxon);
+                        if (index1 > -1) {
+                            indexTaxa.add(i);
+                        }
+                    }
+                    Collections.sort(indexTaxa);
+                }
+                if (!temp.startsWith("#")) {
+                    l = PStringUtils.fastSplit(temp);
+                    chr = l.get(0);
+                    int pos = Integer.parseInt(l.get(1)) ;
+                    List<String> lTaxaGeno = new ArrayList<>();
+                    for (int i = 0; i < indexTaxa.size(); i++) { //无论有无基因型，都加进去了
+                        lTaxaGeno.add(l.get(indexTaxa.get(i)));
+                    }
+                    String[] taxaGenoArray = lTaxaGeno.toArray(new String[lTaxaGeno.size()]);
+                    String aaf = CalVCF.getPopAAF(taxaGenoArray);
+                    cnt++;
+                    // 进行maf的判断
+                    if (Math.min(Double.parseDouble(aaf),1- Double.parseDouble(aaf)) > 0.05){
+                        cntMAFmore005++;
+                    }else {
+                        cntMAFless005++;
+                    }
+                }
+            }
+
+            bw.write(chr + "\t" + cntMAFmore005 + "\t" + cntMAFless005);
+            bw.newLine();
+
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println(infileS + " is completed at " + outfileS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
 
     /**
      * 根据提供的taxa列表，从总的VCF文件中提取所需的VCF文件，并对没有分离的位点进行去除,没有分离位点包括全部都是./.的位点
@@ -950,6 +1017,31 @@ public class CalVCF {
             System.exit(1);
         }
     }
+
+    public static String getPopAAF(String[] PopGenoArray) {
+        int[] acCnt = new int[2]; //所有包括ref和alt的个数
+        List<String> tempList = null;
+        List<String> temList = null;
+        for (int i = 0; i < PopGenoArray.length; i++) {
+            if (PopGenoArray[i].startsWith(".")) continue;
+            tempList = PStringUtils.fastSplit(PopGenoArray[i], ":"); //tempList是包含基因型AD还有PL的集合
+            temList = PStringUtils.fastSplit(tempList.get(0), "/"); //temList是包含基因型拆分后的集合
+            for (int j = 0; j < temList.size(); j++) {
+                int c = Integer.parseInt(temList.get(j)); // c是基因型第j个数值
+                acCnt[c]++; //acCnt[c] 是所有taxa基因型某一数值如0 1 2的总和
+            }
+        }
+        int sum = 0;
+        for (int i = 0; i < acCnt.length; i++) {
+            sum += acCnt[i];
+        }
+        float aaf = (float) ((double) acCnt[1] / sum);
+
+        String out = String.format("%.4f", aaf);
+
+        return out;
+    }
+
 
     public static String getPopMAF(String[] PopGenoArray) {
         int[] acCnt = new int[2]; //所有包括ref和alt的个数

@@ -2,26 +2,18 @@ package WheatVMap2S1000;
 
 import AoUtils.AoFile;
 import AoUtils.CalVCF;
-import AoUtils.CountSites;
-import WheatGeneticLoad.FilterVCF;
-import WheatGeneticLoad.FilterVCF2;
-import WheatGeneticLoad.SIFT;
-import WheatGeneticLoad.VariantsSum;
-import com.google.common.collect.Table;
+import AoUtils.SplitScript;
+import PopulationAnalysis.XPCLR;
 import daxing.common.IOTool;
 import daxing.common.PGF;
 import daxing.common.RowTableTool;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.set.hash.TIntHashSet;
-import htsjdk.samtools.util.StringUtil;
-import pgl.graph.tSaw.TablesawUtils;
 import pgl.infra.anno.gene.GeneFeature;
-import pgl.infra.range.Range;
 import pgl.infra.table.RowTable;
 import pgl.infra.utils.IOUtils;
 import pgl.infra.utils.PStringUtils;
-import tech.tablesaw.api.IntColumn;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -29,7 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.function.Predicate;
-import java.util.logging.Filter;
 import java.util.stream.IntStream;
 
 public class VMap2S1000 {
@@ -52,23 +43,27 @@ public class VMap2S1000 {
 //        new FilterVCF2().QC();
 
 //        this.getVCFbyPolyploid();
+//        this.getMAFcountfromPop();
 
         /**
          * gene site annotation
          */
 //        this.geneInfo(); //列出所要建立数据库的基因的详细信息表格
-        this.snpAnnotationBuild(); //include many methods XXXXXXX
+//        this.snpAnnotationBuild(); //include many methods XXXXXXX
 //        new DeleteriousCount();
 //        this.filterN_fromVCF();
 
-
+        /**
+         * XPCLR
+         */
+        new XPCLR();
 
 
 
     }
 
     public void snpAnnotationBuild(){
-        this.mkGeneVCF(); //自己的方法（最终采用）
+//        this.mkGeneVCF(); //自己的方法（最终采用）
 //        this.mkGeneVCF2(); //来自达兴的方法
 //        this.extractInfoFromGeneVCF();
 //        this.extractInfoFromGeneVCF_byAoyue();
@@ -87,30 +82,91 @@ public class VMap2S1000 {
 //        new VariantsSum().mergeExonSNPAnnotation();
     }
 
+    /**
+     * 获取642倍体中的MAF 个数
+     */
+    public void getMAFcountfromPop(){
+
+//        String infileS = "/Users/Aoyue/Documents/in/chr005.vcf";
+//        String outfileS = "/Users/Aoyue/Documents/out/chr005.txt";
+//        String taxaInfoDB = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/001_taxaCheck/000_taxaList/VcfIDList_DD.txt";
+//        CalVCF.calMAFcountfromPop(infileS,outfileS,taxaInfoDB);
+
+        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/201_VMap2.1";
+        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/039_MAFcount/aabbdd";
+        String logDirS = "/data4/home/aoyue/vmap2/aaPlantGenetics/log_20210810";
+
+        String taxaInfoDB = "/data4/home/aoyue/vmap2/analysis/038_subsetVCF/VcfIDList_AABBDD.txt";
+        String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
+
+//        String taxaInfoDB = "/data4/home/aoyue/vmap2/analysis/038_subsetVCF/VcfIDList_AABBDD.txt";
+        //        String[] chrArr ={"001","002","003","004","007","008","009","010","013","014","015","016","019","020","021","022","025","026","027","028","031","032","033","034","037","038","039","040"};
+
+//        String taxaInfoDB = "/data4/home/aoyue/vmap2/analysis/038_subsetVCF/VcfIDList_AABBDD.txt";
+//        String[] chrArr ={"005","006","011","012","017","018","023","024","029","030","035","036","041","042"};
+
+//        for (int i = 0; i < chrArr.length; i++) {
+//            String chr = chrArr[i];
+//            String infileS = new File(infileDirS,"chr" + chr + "_vmap2.1.vcf").getAbsolutePath();
+//            String outfileS = new File(outfileDirS,"chr" + chr + "_vmap2.1_MAFcount.txt").getAbsolutePath();
+//            String logfileS = new File(logDirS,"log_" + new File(outfileS).getName().split(".gz")[0]).getAbsolutePath(); //不管是不是gz结尾，我们只取gz前的部分，妙！
+//            System.out.println("java -jar 054_calMAFcountFromPop.jar " +  infileS + " " + outfileS + " " + taxaInfoDB + " > log_20210810_aabbdd.txt");
+////            CalVCF.calMAFcountfromPop(infileS,outfileS,taxaInfoDB);
+////            System.out.println(chr + "\t finished");
+//        }
+
+        SplitScript.splitScript2("/Users/Aoyue/Documents/sh.sh",14,3);
+    }
+
+
+
 
     public void getVCFbyPolyploid(){
-//        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/002_subsetVCF_Subgenome/500k/chrAB_vmap2.1.500k.vcf.gz";
-//        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/002_subsetVCF_Ploidy/tetraploid.vcf.gz";
+
+        //*** 提取四倍体的VCF ***//
+//        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/002_subsetVCF_Subgenome/500k/chrAB_vamp2.1_500k.vcf.gz";
+//        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/002_subsetVCF_Ploidy/tetra.vcf.gz";
 //        List<String> taxaList = AoFile.getStringListwithoutHeader("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/001_taxaCheck/000_taxaList/VcfIDList_AABB.txt",0);
 //        CalVCF.extractVCF(infileS,outfileS,taxaList);
 
         //*** AABBDD - AB sub ***//
-        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/002_subsetVCF_Subgenome/500k/chrAB_vmap2.1.500k.vcf.gz";
-        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/002_subsetVCF_Ploidy/hexaploid_ABsub.vcf.gz";
-        List<String> taxaList = AoFile.getStringListwithoutHeader("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/001_taxaCheck/000_taxaList/VcfIDList_AABBDD.txt",0);
-        CalVCF.extractVCF(infileS,outfileS,taxaList);
+//        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/002_subsetVCF_Subgenome/500k/chrAB_vmap2.1.500k.vcf.gz";
+//        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/002_subsetVCF_Ploidy/hexaploid_ABsub.vcf.gz";
+//        List<String> taxaList = AoFile.getStringListwithoutHeader("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/001_taxaCheck/000_taxaList/VcfIDList_AABBDD.txt",0);
+//        CalVCF.extractVCF(infileS,outfileS,taxaList);
 
         //*** DD - D sub ***//
-//        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/002_subsetVCF_Subgenome/500k/chrD_vmap2.1.500k.vcf.gz";
-//        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/002_subsetVCF_Ploidy/Diploid.vcf.gz";
-//        List<String> taxaList = AoFile.getStringListwithoutHeader("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/001_taxaCheck/000_taxaList/VcfIDList_DD.txt",0);
-//        CalVCF.extractVCF(infileS,outfileS,taxaList);
+        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/002_subsetVCF_Subgenome/500k/chrD_vmap2.1_500k.vcf.gz";
+        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/002_subsetVCF_Ploidy/Diploid.vcf.gz";
+        List<String> taxaList = AoFile.getStringListwithoutHeader("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/001_taxaCheck/000_taxaList/VcfIDList_DD.txt",0);
+        CalVCF.extractVCF(infileS,outfileS,taxaList);
 
         //*** AABBDD - D sub ***//
 //                String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/002_subsetVCF_Subgenome/500k/chrD_vmap2.1.500k.vcf.gz";
 //        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/002_subsetVCF_Ploidy/hexaploid_Dsub.vcf.gz";
 //        List<String> taxaList = AoFile.getStringListwithoutHeader("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/001_taxaCheck/000_taxaList/VcfIDList_AABBDD.txt",0);
 //        CalVCF.extractVCF(infileS,outfileS,taxaList);
+
+
+        //*** AABBDD ***//
+//        String infileDirS = "/data4/home/aoyue/vmap2/daxing/analysis/007_vmap2_1062/001_subsetVmap2.1/001_vmap2_500k/001_byChrID";
+//        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/038_subsetVCF/001_hexaploid";
+//        String taxaList = "/data4/home/aoyue/vmap2/analysis/038_subsetVCF/VcfIDList_AABBDD.txt";
+//        String logDirS = "/data4/home/aoyue/vmap2/aaPlantGenetics/log_049_20210808";
+//
+//        String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
+//        for (int i = 0; i < chrArr.length; i++) {
+//            String chr = chrArr[i];
+//            String infileS = new File(infileDirS,"chr" + chr + "_vmap2.1.500k.vcf.gz").getAbsolutePath();
+//            String outfileS = new File(outfileDirS,"chr" + chr + "_vmap2.1_hexaploid_subset.vcf.gz").getAbsolutePath();
+//            String logfileS = new File(logDirS,"log_" + new File(outfileS).getName().split(".gz")[0]).getAbsolutePath(); //不管是不是gz结尾，我们只取gz前的部分，妙！
+//            System.out.println("nohup java -jar 049_extractVCF_GL.jar " + infileS + " " + outfileS + " " + taxaList + " > " + logfileS );
+//        }
+
+//        SplitScript.splitScript2("/Users/Aoyue/Documents/sh.sh",20,3);
+
+
+
 
     }
 
@@ -119,13 +175,24 @@ public class VMap2S1000 {
      * 过滤GeneVCF中alt 含有N的位点
      */
     public void filterN_fromVCF(){
-        String infileDirS = "/data4/home/aoyue/vmap2/analysis/036_annoDB/002_genicSNP/002_geneSNPVCF";
-        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/036_annoDB/002_genicSNP/003_geneSNPVCF_RemoveN";
-        List<File> fsList = AoFile.getFileListInDir(infileDirS);
+//        String infileDirS = "/data4/home/aoyue/vmap2/analysis/036_annoDB/002_genicSNP/002_geneSNPVCF";
+//        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/036_annoDB/002_genicSNP/003_geneSNPVCF_RemoveN";
+
+        String infileDirS = "/data1/publicData/wheat/genotype/VMap/VMap2.0/VMap2.0";
+        String outfileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/202_VMap2.0";
+
+        File[] fs = new File(infileDirS).listFiles();
+        File[] fs1 = IOUtils.listFilesEndsWith(fs,"vcf.gz");
+        List<File> fsList = new ArrayList<>();
+        for (int i = 0; i < fs1.length; i++) {
+            fsList.add(fs1[i]);
+        }
+        Collections.sort(fsList);
+
         fsList.parallelStream().forEach(f -> {
             try {
                 String infileS = f.getAbsolutePath();
-                String outfileS = new File(outfileDirS,f.getName()).getAbsolutePath();
+                String outfileS = new File(outfileDirS,f.getName().replaceFirst(".vcf.gz",".vcf")).getAbsolutePath();
                 BufferedReader br = AoFile.readFile(infileS);
                 BufferedWriter bw = AoFile.writeFile(outfileS);
                 String temp = null;
@@ -163,6 +230,8 @@ public class VMap2S1000 {
             }
         });
         // java -jar GeneticLoad.jar > log_removeNfromVCF_20210717.txt 2>&1 &
+        // java -jar GeneticLoad.jar > log_removeNfromVMap2.0_20210806.txt 2>&1 &
+
 
     }
 
@@ -224,7 +293,8 @@ public class VMap2S1000 {
      */
     public void addDAF () {
 //        String dirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/003_exonSNPAnnotation";
-        String dirS = "/data4/home/aoyue/vmap2/analysis/036_annoDB/002_genicSNP/001_geneSNPByChr";
+//        String dirS = "/data4/home/aoyue/vmap2/analysis/036_annoDB/002_genicSNP/001_geneSNPByChr";
+        String dirS = "/data4/home/aoyue/vmap2/analysis/036_annoDB/002_genicSNP/001_geneSNP_Annotation";
         File[] fs = new File (dirS).listFiles();
         fs = IOUtils.listFilesEndsWith(fs, ".txt");
         List<File> fList = Arrays.asList(fs);
@@ -279,6 +349,8 @@ public class VMap2S1000 {
         });
         // java -Xms50g -Xmx200g -jar PlantGenetics.jar > log_addDAFbyFeisMethod_20200720.txt 2>&1 &
         // java -Xms50g -Xmx200g -jar GeneticLoad.jar > log_addDAFbyFeisMethod_20210716.txt 2>&1 &
+        // java -Xms50g -Xmx200g -jar GeneticLoad.jar > log_addDAFbyFeisMethod_20210806.txt 2>&1 &
+
     }
 
     /**
@@ -288,9 +360,14 @@ public class VMap2S1000 {
         /**
          * inputFile
          */
-        String outDirS = "/Users/Aoyue/Documents/out";
-        String vmapDirS = "/Users/Aoyue/Documents/in";
-        String geneHCFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/001_geneTable/wheat_v1.1_nonoverlap_addPos.txt.gz";
+//        String outDirS = "/Users/Aoyue/Documents/out";
+//        String vmapDirS = "/Users/Aoyue/Documents/in";
+//        String geneHCFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/001_geneTable/wheat_v1.1_nonoverlap_addPos.txt.gz";
+
+        String outDirS = "/data4/home/aoyue/vmap2/analysis/036_annoDB/002_genicSNP/001_geneSNP_Annotation";
+        String vmapDirS = "/data4/home/aoyue/vmap2/analysis/036_annoDB/002_genicSNP/002_geneSNPVCF";
+        String geneHCFileS = "/data4/home/aoyue/vmap2/analysis/036_annoDB/001_geneHC/wheat_v1.1_nonoverlap_addPos.txt.gz";
+
 
         /**
          * parameters need to modify
@@ -321,7 +398,7 @@ public class VMap2S1000 {
         }
         vmapList.parallelStream().forEach(f -> {
             int chrIndex = Integer.parseInt(f.getName().substring(3, 6))-1;
-            String outfileS = new File (outDirS, f.getName().replaceFirst("_vmap2.1.vcf", "_geneSNP.txt")).getAbsolutePath();
+            String outfileS = new File (outDirS, f.getName().replaceFirst("_gene_vmap2.1.vcf", "_geneSNPAnno.txt")).getAbsolutePath();
             StringBuilder sb = new StringBuilder();
             sb.append("ID\tChr\tPos\tRef\tAlt\tMajor\tMinor\tMaf\tTranscript");
             try {
@@ -383,7 +460,7 @@ public class VMap2S1000 {
             }
         });
 
-        //在HPC上运行： nohup java -jar GeneticLoad.jar > log_extractInfoFromVMap2_20210716.txt 2>&1 &
+        //在HPC上运行： nohup java -jar GeneticLoad.jar > log_extractInfoFromVMap2_20210806.txt 2>&1 &
     }
 
 
@@ -778,8 +855,9 @@ public class VMap2S1000 {
         for (int i = 0; i < chrArr.length; i++) {
             String chr = chrArr[i];
 //            System.out.println("nohup gunzip chr" + chr + ".vmap2.vcf.gz 2>&1 &");
-            System.out.println("nohup bgzip -@ 20 chr" + chr + ".vmap2.vcf && tabix -p vcf chr" + chr + ".vmap2.vcf.gz &");
-//            System.out.println("nohup bgzip chr" + chr + ".vmap2.vcf && tabix -p vcf chr" + chr + ".vmap2.vcf.gz &");
+//            System.out.println("nohup bgzip -@ 20 chr" + chr + ".vmap2.vcf && tabix -p vcf chr" + chr + ".vmap2.vcf.gz &");
+//            System.out.println("nohup bgzip chr" + chr + "_vmap2.0.vcf && tabix -p vcf chr" + chr + "_vmap2.0.vcf.gz &");
+            System.out.println("nohup tabix -p vcf chr" + chr + "_vmap2.0.vcf.gz &");
 
             //测试失败，只能在原来文件夹中压缩
 //            System.out.println("nohup bgzip -@ 4 chr" + chr + ".vmap2.vcf -c ../vmap2.0/chr" + chr + ".vmap2.0.vcf.gz && cd ../vmap2.0/ " + "&& tabix -p vcf chr" + chr + ".vmap2.0.vcf.gz &");

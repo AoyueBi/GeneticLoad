@@ -83,12 +83,16 @@ public class SIFT {
 //        this.mkdis(); //建立42个空的文件夹，上传至集群
 //        this.annotatorVCF3();
 //        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/002_sift/001_script/siftAnnotator_geneRefAlt_20210716.sh",6,7);
-//        this.reverseRefAltallelebyExonVCF();
+//        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/002_sift/001_script/siftAnnotator_geneRefAlt_20210806.sh",6,7);
+
 ///////////// refref
+//        this.reverseRefAltallelebyExonVCF();
 //        this.mkdis(); //建立42个空的文件夹，上传至集群
 //        this.annotatorVCF3();
 //        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/002_sift/002_script_refref/siftAnnotator_geneRefAlt_20210716.sh",6,7);
-        this.move();
+//        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/002_sift/002_script_refref/siftAnnotator_geneRefAlt_20210806.sh",21,2);
+
+        this.move(); //将结果 move 到同一个文件夹中，以便于下载使用
 
 
 
@@ -205,6 +209,8 @@ public class SIFT {
             }
         });
         // java -jar GeneticLoad.jar > log_changeVCFrefref_20210716.txt 2>&1 &
+        // java -jar GeneticLoad.jar > log_changeVCFrefref_20210806.txt 2>&1 &
+
     }
 
     /**
