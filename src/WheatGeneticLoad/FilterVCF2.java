@@ -734,8 +734,17 @@ public class FilterVCF2 {
 //        String taxaDepthDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/005_taxaDepth/ABsub";
 //        String taxaSummaryFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/005_taxaDepth/ABsub.summary.txt";
 
-        String taxaDepthDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/005_taxaDepth/Dsub";
-        String taxaSummaryFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/005_taxaDepth/Dsub.summary.txt";
+//        String taxaDepthDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/005_taxaDepth/Dsub";
+//        String taxaSummaryFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/005_taxaDepth/Dsub.summary.txt";
+//
+//        String taxaDepthDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/005_taxaDepth/aabbdd";
+//        String taxaSummaryFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/005_taxaDepth/aabbdd.summary.txt";
+
+//        String taxaDepthDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/005_taxaDepth/aabb";
+//        String taxaSummaryFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/005_taxaDepth/aabb.summary.txt";
+
+        String taxaDepthDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/005_taxaDepth/dd";
+        String taxaSummaryFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/005_taxaDepth/dd.summary.txt";
 
         File[] fs = AoFile.getFileArrayInDir(taxaDepthDirS);
         Arrays.sort(fs);
@@ -782,9 +791,17 @@ public class FilterVCF2 {
 //        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/002_subset/chrABsubgenome.100k.vcf.gz";
 //        String taxaDepthDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/005_taxaDepth/ABsub";
 
-        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/002_subset/chrDsubgenome.100k.vcf.gz";
-        String taxaDepthDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/005_taxaDepth/Dsub";
+//        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/002_subset/chrDsubgenome.100k.vcf.gz";
+//        String taxaDepthDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/005_taxaDepth/Dsub";
 
+//        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/002_subsetVCF_Ploidy/hexa.vcf.gz";
+//        String taxaDepthDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/005_taxaDepth/aabbdd";
+//
+//        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/002_subsetVCF_Ploidy/tetra.vcf.gz";
+//        String taxaDepthDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/005_taxaDepth/aabb";
+//
+        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/002_subsetVCF_Ploidy/diploid.vcf.gz";
+        String taxaDepthDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/005_taxaDepth/dd";
 
         try {
             String temp = null;
@@ -909,7 +926,16 @@ public class FilterVCF2 {
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/007_IndelQC/000_VCFwithonlyIndel";
 //        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/031_VMap2.0_QC/007_IndelQC/004_siteDepth/001_byPloidy";
 
-        String infileDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/002_subset";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/002_subset";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/004_siteDepth/bySub";
+
+        /**
+         * 2021-08-11 周三
+         */
+//        String infileDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/002_subsetVCF_Ploidy";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/004_siteDepth/byGenomeType";
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/002_subsetVCF_Subgenome/500k";
         String outfileDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/004_siteDepth/bySub";
 
 
@@ -1100,10 +1126,22 @@ public class FilterVCF2 {
 //        String outfileDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/003_QC/001";
 //        this.checkQualityA(infileS,outfileDirS,"D");
 
-        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/002_subsetVCF/diploid.vcf.gz";
-        String outfileDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/003_QC/001";
-        this.checkQualityA(infileS,outfileDirS,"diploid");
+//        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/002_subsetVCF/diploid.vcf.gz";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/003_QC/001";
+//        this.checkQualityA(infileS,outfileDirS,"diploid");
 
+        /**
+         * 2021-08-11 周三
+         */
+        String abdinfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/002_subsetVCF_Ploidy/hexa.vcf.gz";
+        String abinfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/002_subsetVCF_Ploidy/tetra.vcf.gz";
+        String dinfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/002_subsetVCF_Ploidy/diploid.vcf.gz";
+
+        String outfileDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/003_QC/001";
+
+        this.checkQuality(abinfileS,outfileDirS,"AABB");
+        this.checkQuality(abdinfileS,outfileDirS,"AABBDD");
+        this.checkQuality(dinfileS,outfileDirS,"DD");
 
     }
 

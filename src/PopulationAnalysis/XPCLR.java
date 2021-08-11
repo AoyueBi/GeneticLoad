@@ -33,7 +33,7 @@ public class XPCLR {
         /**
          * 1： XPCLR 程序文件准备和脚本运行
          */
-        this.checkAnnotationDBisinExonVCF(); //确定annotation的位点都在exonVCF中!！！ 只运行一次即可
+//        this.checkAnnotationDBisinExonVCF(); //确定annotation的位点都在exonVCF中!！！ 只运行一次即可
 //        this.getExonVCFbyPloidy(); //在提取基因型之前，先把没有分离的位点去除掉，因此要提取基因型，每次都需运行
 //        this.mkSNPfile_hexaploid(); //重要重要！！！分很多步骤
 //        this.mkSNPfile_tetraploid(); //
@@ -41,7 +41,7 @@ public class XPCLR {
 //        this.getXPCLRscript("abd"); //运行XPCLR时的脚本
 //        this.getXPCLRscript("ab");
 //        this.testScript();
-//        this.XPCLR_Script(); //////************ 通用脚本
+//        this.XPCLR_Script(); //////************ 通用脚本 **** 周正奎的方法，推荐使用
 //        AoFile.subsetTxt_withoutHeaer_singleStream("/Users/Aoyue/Documents/chr040_vmap2.1_bi.subset.count_ori.txt","/Users/Aoyue/Documents/chr040_vmap2.1_bi.subset.count.txt","0.2");
 
         //对exon位点数进行计数
@@ -61,7 +61,7 @@ public class XPCLR {
          */
 //        this.checkInfNum();  //检查一下XPCLR中的异常值
 //        this.pipeTopK(); // old method
-//        this.getTopKfromSampleSNP(); // new method
+        this.getTopKfromSampleSNP(); // new method
 
         /**
          * 4: check chr19
@@ -133,8 +133,8 @@ public class XPCLR {
      */
     public void XPCLR_Script(){
 
-//        String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
-        String[] chrArr ={"001","002","003","004","007","008","009","010","013","014","015","016","019","020","021","022","025","026","027","028","031","032","033","034","037","038","039","040"};
+        String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
+//        String[] chrArr ={"001","002","003","004","007","008","009","010","013","014","015","016","019","020","021","022","025","026","027","028","031","032","033","034","037","038","039","040"};
 
 
         try {
@@ -157,7 +157,9 @@ public class XPCLR {
                 String method = "log2";
 
                 String soft = "nohup XPCLR -c";
-                String input = "../004_in/chr" + chr + "_vmap2.1_bi.subset.count.txt";
+//                String input = "../004_in/chr" + chr + "_vmap2.1_bi.subset.count.txt";
+                String input = "../004_in/chr" + chr + "_vmap2.1.500k.count.txt";
+
                 String output = "./chr" + chr + "_" + method + "_" + morgen + "_" + snp + "_" + grid;
                 String para = "-w1 " + morgen + " " + snp + " " + grid + " " + chrInt;
                 String log = "> ./chr" + chr + "_" + method + "_" + morgen + "_" + snp + "_" + grid + ".log.txt 2>&1 &";
@@ -368,7 +370,10 @@ public class XPCLR {
 //        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/005_tetraploid/006_output/Domesticated_emmer_VS_Wild_emmer_exonRegion_0.0001_100_500.xpclr_100000lines.txt.gz";
 //        String outfileS = "/Users/Aoyue/Documents/out.txt";
 
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/011_hexaploid/008_snp_sample/abd_log2_0.0001_200_100000.clrgs.txt.gz";
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/011_hexaploid/008_snp_sample/abd_log2_0.0001_200_100000.clrgs.txt.gz";
+//        String outfileS = "/Users/Aoyue/Documents/out.txt";
+
+        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/009_xpclr/002_output/abd_log2_0.0001_200_100000.clrgs.txt.gz";
         String outfileS = "/Users/Aoyue/Documents/out.txt";
 
         try {
@@ -415,25 +420,49 @@ public class XPCLR {
 //        this.getGeneListfromTopK2(topKfileS3,bin,snpfileS,outfileS); //根据输入的文件，找寻受选择区域的位点
 
 
+//        double topK = 0.05;
+//        int bin = 100000;
+//        String exonAnnotationS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/019_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
+//
+//        String xpclroutS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/014_summary_XPCLR/001_finalResult/ab_WE_DE_log2_0.0001_200_100000.clrgs.txt.gz";
+//        String xpclroutS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/014_summary_XPCLR/001_finalResult/ab_DE_Durum_log2_0.0001_200_100000.clrgs.txt.gz";
+//        String xpclroutS3 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/014_summary_XPCLR/001_finalResult/abd_log2_0.0001_200_100000.clrgs.txt.gz";
+//
+//        String chrposS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/014_summary_XPCLR/000_chrpos/ab_wede_vmap2.1_bi.subset.chrpos.txt.gz";
+//        String chrposS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/014_summary_XPCLR/000_chrpos/ab_dedurum_vmap2.1_bi.subset.chrpos.txt.gz";
+//        String chrposS3 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/014_summary_XPCLR/000_chrpos/abd_vmap2.1_bi.subset.chrpos.txt.gz";
+//
+//        String group1 = "wede";
+//        String group2 = "dedurum";
+//        String group3 = "lrcul";
+//
+//        String topKDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/014_summary_XPCLR/002_topK";
+
+
+        /**
+         * VMap2.0-2021 08-11 周三
+         */
         double topK = 0.05;
         int bin = 100000;
-        String exonAnnotationS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/019_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
+        String exonAnnotationS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/001_geneSNPAnno.txt.gz";
 
-        String xpclroutS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/014_summary_XPCLR/001_finalResult/ab_WE_DE_log2_0.0001_200_100000.clrgs.txt.gz";
-        String xpclroutS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/014_summary_XPCLR/001_finalResult/ab_DE_Durum_log2_0.0001_200_100000.clrgs.txt.gz";
-        String xpclroutS3 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/014_summary_XPCLR/001_finalResult/abd_log2_0.0001_200_100000.clrgs.txt.gz";
+        String xpclroutS1 = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/009_xpclr/002_output/ab_WE_DE_log2_0.0001_200_100000.clrgs.txt.gz";
+        String xpclroutS2 = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/009_xpclr/002_output/ab_DE_Durum_log2_0.0001_200_100000.clrgs.txt.gz";
+        String xpclroutS3 = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/009_xpclr/002_output/abd_log2_0.0001_200_100000.clrgs.txt.gz";
 
-        String chrposS1 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/014_summary_XPCLR/000_chrpos/ab_wede_vmap2.1_bi.subset.chrpos.txt.gz";
-        String chrposS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/014_summary_XPCLR/000_chrpos/ab_dedurum_vmap2.1_bi.subset.chrpos.txt.gz";
-        String chrposS3 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/014_summary_XPCLR/000_chrpos/abd_vmap2.1_bi.subset.chrpos.txt.gz";
+        String chrposS1 = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/009_xpclr/003_summary_XPCLR/000_chrpos/ab_wede_vmap2.1_bi.subset.chrpos.txt.gz";
+        String chrposS2 = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/009_xpclr/003_summary_XPCLR/000_chrpos/ab_dedurum_vmap2.1_bi.subset.chrpos.txt.gz";
+        String chrposS3 = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/009_xpclr/003_summary_XPCLR/000_chrpos/abd_vmap2.1_bi.subset.chrpos.txt.gz";
 
         String group1 = "wede";
         String group2 = "dedurum";
         String group3 = "lrcul";
 
-        String topKDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/014_summary_XPCLR/002_topK";
+        String topKDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/009_xpclr/003_summary_XPCLR/002_topK";
+
+
         new File(topKDirS).mkdirs();
-        String[] xpclroutArray = {xpclroutS1,xpclroutS2,xpclroutS3};
+        String[] xpclroutArray = {xpclroutS1,xpclroutS2,xpclroutS3}; //XPCLR的最初结果文件，合并后并且添加表头的结果
         String[] chrposArray = {chrposS1,chrposS2,chrposS3};
         String[] groupArray = {group1,group2,group3};
 
@@ -444,10 +473,12 @@ public class XPCLR {
             String topKfileS = new File(topKDirS,"top" + topK + "_" + group + ".txt.gz").getAbsolutePath();
             String outfileS = new File(topKDirS,"top" + topK + "_" + group + "_ChrPosTrans.txt.gz").getAbsolutePath();
             String outfileS2 = new File(topKDirS,"top" + topK + "_" + group + "_ChrPos_fromExonAnnotation.txt.gz").getAbsolutePath();
+            // 分3步跑，每一步的作用是，第一步：过滤原文件，只保留受选择区域的位点； 第二步：结果还在topK文件夹，获取当时用来抽样做XPCLR时，所用的snp位点中，受选择区域位点所在的基因是什么.
+            //第三步：获取在我们得到的geneSNPAnnotation文件中，处于受选择区域的位点Chr Pos Trans信息，用来后进行load计算使用。
+            //注意：第二步的输入文件数是当时用来计算XCLR的位点信息，可以是exon区域，也可以是Indel,也可以是全基因组抽样位点，第三步的输入文件是当时用来构建Annotation数据库的位点。第二步和第三步没有相关性。
 //            this.getThreshodFile(xpclrS,topK,xpclrS,topKfileS); // from the sample file, we can get the threshold, and extract the top rows
 //            this.getGeneListfromTopK2(topKfileS,bin,chrposS,outfileS); //根据输入的文件，找寻受选择区域的位点
             this.getExonPosListfromTopK(topKfileS,bin,exonAnnotationS,outfileS2);
-
 
         }
 
@@ -715,7 +746,6 @@ public class XPCLR {
                 }
                 if (posIndex < 0) continue; //如果不在起始位点的右边，那么就不在范围内，跳过该位点
                 if (pos >= endLists[index].get(posIndex)) continue; //确保在末端位点的前面，若不在，也舍去
-//                bw.write(index+1 + "\t" + pos + "\t" + trans);
                 bw.write(index+1 + "\t" + pos);
                 bw.newLine();
             }
@@ -873,6 +903,13 @@ public class XPCLR {
     }
 
 
+    /**
+     * 对原文件进行过滤，找到topK的行数，并保留，列数不变
+     * @param infileS
+     * @param topK
+     * @param xpclrFileS2
+     * @param outfileS
+     */
     public void getThreshodFile(String infileS, double topK, String xpclrFileS2, String outfileS){
         //input model
 //        double topK = 0.01;
@@ -889,7 +926,7 @@ public class XPCLR {
 
         //// CHROM	Grid	N_SNPs	POS	Genetic_pos	ChrRef	PosRef	XPCLR_100score
         //// 1	0	29	1146726.000000	0.054851	1A	1146726	2.170520219982543
-        TDoubleArrayList xpclrScores = AoFile.getTDoubleList(infileS,7);
+        TDoubleArrayList xpclrScores = AoFile.getTDoubleList(infileS,7); //index 7 的变量是 XPCLR_100score
         int size = xpclrScores.size();
         xpclrScores.sort();
         xpclrScores.reverse();
@@ -1073,7 +1110,14 @@ public class XPCLR {
 
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/011_hexaploid/008_snp_sample/005_out_lrcu";
 //        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/012_tetraploid_WE_DE/008_snp_sample/005_out_wede";
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/013_tetraploid_DE_Durum/008_snp_sample/006_out_dedurum";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/013_tetraploid_DE_Durum/008_snp_sample/006_out_dedurum";
+
+        /**
+         * VMap 2.0 S1062
+         */
+//        String infileDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/009_xpclr/002_output/005_out_CL_LR";
+        String infileDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/009_xpclr/002_output/005_out_DE_WE";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/009_xpclr/002_output/005_out_Durum_DE";
 
 
         String outfileDirS = AoString.autoOutfileDirS(infileDirS);

@@ -911,7 +911,7 @@ public class CalVCF {
         try {
             BufferedReader br = AoFile.readFile(infileS);
             BufferedWriter bw = AoFile.writeFile(outfileS);
-            bw.write("Chr\tMafMore005\tMAFLess005\tTotal");
+            bw.write("Chr\tMafMore005\tMafLess005\tTotal");
             bw.newLine();
             String temp = null;
             List<String> l = new ArrayList<>();
@@ -952,7 +952,8 @@ public class CalVCF {
                 }
             }
 
-            bw.write(chr + "\t" + cntMAFmore005 + "\t" + cntMAFless005);
+
+            bw.write(chr + "\t" + cntMAFmore005 + "\t" + cntMAFless005+ "\t" + cnt);
             bw.newLine();
 
             br.close();

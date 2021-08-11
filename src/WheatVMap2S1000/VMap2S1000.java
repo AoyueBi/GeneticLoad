@@ -4,6 +4,7 @@ import AoUtils.AoFile;
 import AoUtils.CalVCF;
 import AoUtils.SplitScript;
 import PopulationAnalysis.XPCLR;
+import WheatGeneticLoad.FilterVCF2;
 import daxing.common.IOTool;
 import daxing.common.PGF;
 import daxing.common.RowTableTool;
@@ -39,7 +40,7 @@ public class VMap2S1000 {
 //        new FilterVCF2().statVcfDepth_SD();
 //        new FilterVCF2().mkDepthOfVMapII();
 //        new FilterVCF2().mkDepthSummary();
-//        this.extractVCF();
+//        this.extractVCF(); //提取不同倍性的VCF
 //        new FilterVCF2().QC();
 
 //        this.getVCFbyPolyploid();
@@ -87,30 +88,39 @@ public class VMap2S1000 {
      */
     public void getMAFcountfromPop(){
 
+        /**
+         * test
+         */
 //        String infileS = "/Users/Aoyue/Documents/in/chr005.vcf";
 //        String outfileS = "/Users/Aoyue/Documents/out/chr005.txt";
 //        String taxaInfoDB = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/001_taxaCheck/000_taxaList/VcfIDList_DD.txt";
 //        CalVCF.calMAFcountfromPop(infileS,outfileS,taxaInfoDB);
 
+//        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/201_VMap2.1";
+//        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/039_MAFcount/aabbdd";
+//        String logDirS = "/data4/home/aoyue/vmap2/aaPlantGenetics/log_20210810";
+//        String taxaInfoDB = "/data4/home/aoyue/vmap2/analysis/038_subsetVCF/VcfIDList_AABBDD.txt";
+//        String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
+
+
+//        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/201_VMap2.1";
+//        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/039_MAFcount/aabb";
+//        String logDirS = "/data4/home/aoyue/vmap2/aaPlantGenetics/log_20210810";
+//        String taxaInfoDB = "/data4/home/aoyue/vmap2/analysis/038_subsetVCF/VcfIDList_AABB.txt";
+//        String[] chrArr ={"001","002","003","004","007","008","009","010","013","014","015","016","019","020","021","022","025","026","027","028","031","032","033","034","037","038","039","040"};
+
         String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/201_VMap2.1";
-        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/039_MAFcount/aabbdd";
+        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/039_MAFcount/dd";
         String logDirS = "/data4/home/aoyue/vmap2/aaPlantGenetics/log_20210810";
-
-        String taxaInfoDB = "/data4/home/aoyue/vmap2/analysis/038_subsetVCF/VcfIDList_AABBDD.txt";
-        String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
-
-//        String taxaInfoDB = "/data4/home/aoyue/vmap2/analysis/038_subsetVCF/VcfIDList_AABBDD.txt";
-        //        String[] chrArr ={"001","002","003","004","007","008","009","010","013","014","015","016","019","020","021","022","025","026","027","028","031","032","033","034","037","038","039","040"};
-
-//        String taxaInfoDB = "/data4/home/aoyue/vmap2/analysis/038_subsetVCF/VcfIDList_AABBDD.txt";
-//        String[] chrArr ={"005","006","011","012","017","018","023","024","029","030","035","036","041","042"};
+        String taxaInfoDB = "/data4/home/aoyue/vmap2/analysis/038_subsetVCF/VcfIDList_DD.txt";
+        String[] chrArr ={"005","006","011","012","017","018","023","024","029","030","035","036","041","042"};
 
 //        for (int i = 0; i < chrArr.length; i++) {
 //            String chr = chrArr[i];
 //            String infileS = new File(infileDirS,"chr" + chr + "_vmap2.1.vcf").getAbsolutePath();
 //            String outfileS = new File(outfileDirS,"chr" + chr + "_vmap2.1_MAFcount.txt").getAbsolutePath();
 //            String logfileS = new File(logDirS,"log_" + new File(outfileS).getName().split(".gz")[0]).getAbsolutePath(); //不管是不是gz结尾，我们只取gz前的部分，妙！
-//            System.out.println("java -jar 054_calMAFcountFromPop.jar " +  infileS + " " + outfileS + " " + taxaInfoDB + " > log_20210810_aabbdd.txt");
+//            System.out.println("java -jar 054_calMAFcountFromPop.jar " +  infileS + " " + outfileS + " " + taxaInfoDB + " > log_20210810_dd.txt");
 ////            CalVCF.calMAFcountfromPop(infileS,outfileS,taxaInfoDB);
 ////            System.out.println(chr + "\t finished");
 //        }
