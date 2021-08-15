@@ -41,7 +41,7 @@ public class XPCLR {
 //        this.getXPCLRscript("abd"); //运行XPCLR时的脚本
 //        this.getXPCLRscript("ab");
 //        this.testScript();
-//        this.XPCLR_Script(); //////************ 通用脚本 **** 周正奎的方法，推荐使用
+        this.XPCLR_Script(); //////************ 通用脚本 **** 周正奎的方法，推荐使用
 //        AoFile.subsetTxt_withoutHeaer_singleStream("/Users/Aoyue/Documents/chr040_vmap2.1_bi.subset.count_ori.txt","/Users/Aoyue/Documents/chr040_vmap2.1_bi.subset.count.txt","0.2");
 
         //对exon位点数进行计数
@@ -61,7 +61,7 @@ public class XPCLR {
          */
 //        this.checkInfNum();  //检查一下XPCLR中的异常值
 //        this.pipeTopK(); // old method
-        this.getTopKfromSampleSNP(); // new method
+//        this.getTopKfromSampleSNP(); // new method
 
         /**
          * 4: check chr19
@@ -147,7 +147,8 @@ public class XPCLR {
 //                String grid = "100000";
 
                 String morgen = "0.0001";
-                String snp = "200";
+//                String snp = "200";
+                String snp = "600";
                 String grid = "100000";
 
 //            String morgen = "0.0001";
@@ -158,7 +159,8 @@ public class XPCLR {
 
                 String soft = "nohup XPCLR -c";
 //                String input = "../004_in/chr" + chr + "_vmap2.1_bi.subset.count.txt";
-                String input = "../004_in/chr" + chr + "_vmap2.1.500k.count.txt";
+//                String input = "../004_in/chr" + chr + "_vmap2.1.500k.count.txt";
+                String input = "../004_in/chr" + chr + "_vmap2.1.count.txt";
 
                 String output = "./chr" + chr + "_" + method + "_" + morgen + "_" + snp + "_" + grid;
                 String para = "-w1 " + morgen + " " + snp + " " + grid + " " + chrInt;

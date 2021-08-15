@@ -25,8 +25,8 @@ import java.util.*;
 public class DeleteriousXPCLR2 {
 
     public DeleteriousXPCLR2(){
-        this.pipeDeleteriousXPCLR();
-//        this.pipeFilterTaxa();
+//        this.pipeDeleteriousXPCLR();
+        this.pipeFilterTaxa();
 //        this.getCDSlength();
 
     }
@@ -34,9 +34,10 @@ public class DeleteriousXPCLR2 {
 
 
     public void pipeDeleteriousXPCLR(){
-//        this.step0(); //第一次计算 所有个体的load，各种类型都计算
-//        this.step1(); //第二次计算  将不同类型进行比率相除，求ratio
-        this.step3(); //第三次计算:ref bias evaluation 后，load 变化.  分为8种类型。
+//        this.step0(); //第一次计算 所有个体的load，各种类型都计算 wede dedurum lrcl 分了3次计算，很麻烦。
+        this.step1(); //第二次计算  和上一步是独立的，方法有所改进，即 wede dedurum lrcl 合在一起计算，写了个循环，简单了一些。
+
+//        this.step3(); //第三次计算:和上一步也是独立的。 ref bias evaluation 后，load 变化.  分为8种类型。
 
 
 
@@ -422,43 +423,43 @@ public class DeleteriousXPCLR2 {
 
         //**************************** up 不必修改 **************************//
         String parentDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/014_summary_XPCLR/003_deleteriousXPCLR";
-//        new File(parentDirS).mkdirs();
-//        for (int i = 0; i < choice4.length; i++) {
-//            group = choice4[i];
-//            String infileS = new File("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/014_summary_XPCLR/002_topK","top0.05_" + group + "_ChrPos_fromExonAnnotation.txt.gz").getAbsolutePath();
-//            for (int j = 0; j < choice2.length; j++) {
-//                ifselected = choice2[j];
-//                for (int k = 0; k < choice1.length; k++) {
-//                    variantType = choice1[k];
-//                    String addCountFileS = new File(parentDirS,variantType + "_ifselected" + ifselected + "_" + group + "_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr.txt").getAbsolutePath();
-//                    this.countDeleteriousVMapII_byChr(infileS,ifselected,variantType,addCountFileS);
-//                }
-//            }
-//        }
-
-        int cnt = 0;
+        new File(parentDirS).mkdirs();
         for (int i = 0; i < choice4.length; i++) {
             group = choice4[i];
+            String infileS = new File("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/038_XPCLR/014_summary_XPCLR/002_topK","top0.05_" + group + "_ChrPos_fromExonAnnotation.txt.gz").getAbsolutePath();
             for (int j = 0; j < choice2.length; j++) {
                 ifselected = choice2[j];
-                for (int k = 1; k < choice1.length; k++) {
+                for (int k = 0; k < choice1.length; k++) {
                     variantType = choice1[k];
-                    for (int l = 0; l < choice3.length; l++) {
-                        ratioType = choice3[l];
-                        String infileS1 = new File(parentDirS,variantType + "_ifselected" + ifselected + "_" + group + "_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr_" + ratioType + ".txt").getAbsolutePath();
-                        String infileS2 = new File(parentDirS,"001_synonymous" + "_ifselected" + ifselected + "_" + group + "_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr_" + ratioType +".txt").getAbsolutePath();
-                        this.DeltoSynonymousRatio(infileS1,ratioType,infileS2);
-                        cnt++;
-                        System.out.println("********" + cnt + " " + "ifselected" + ifselected + " " + variantType + " " + ratioType + " " + group);
-
-//addCountFileAddGroupS2 = new File(addCountFileAddGroupS2,variantType + "_ifselected" + ifselected + "_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr.txt").getAbsolutePath();
-//String infileS1 = new File(parentFileS1,variantType + "_ifselected" + ifselected + "_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr_" + ratioType + ".txt").getAbsolutePath();
-//String infileS2 = new File(parentFileS1, "001_synonymous" + "_ifselected" + ifselected + "_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr_" + ratioType + ".txt").getAbsolutePath();
-
-                    }
+                    String addCountFileS = new File(parentDirS,variantType + "_ifselected" + ifselected + "_" + group + "_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr.txt").getAbsolutePath();
+                    this.countDeleteriousVMapII_byChr(infileS,ifselected,variantType,addCountFileS);
                 }
             }
         }
+
+        int cnt = 0;
+//        for (int i = 0; i < choice4.length; i++) {
+//            group = choice4[i];
+//            for (int j = 0; j < choice2.length; j++) {
+//                ifselected = choice2[j];
+//                for (int k = 1; k < choice1.length; k++) {
+//                    variantType = choice1[k];
+//                    for (int l = 0; l < choice3.length; l++) {
+//                        ratioType = choice3[l];
+//                        String infileS1 = new File(parentDirS,variantType + "_ifselected" + ifselected + "_" + group + "_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr_" + ratioType + ".txt").getAbsolutePath();
+//                        String infileS2 = new File(parentDirS,"001_synonymous" + "_ifselected" + ifselected + "_" + group + "_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr_" + ratioType +".txt").getAbsolutePath();
+//                        this.DeltoSynonymousRatio(infileS1,ratioType,infileS2);
+//                        cnt++;
+//                        System.out.println("********" + cnt + " " + "ifselected" + ifselected + " " + variantType + " " + ratioType + " " + group);
+//
+////addCountFileAddGroupS2 = new File(addCountFileAddGroupS2,variantType + "_ifselected" + ifselected + "_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr.txt").getAbsolutePath();
+////String infileS1 = new File(parentFileS1,variantType + "_ifselected" + ifselected + "_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr_" + ratioType + ".txt").getAbsolutePath();
+////String infileS2 = new File(parentFileS1, "001_synonymous" + "_ifselected" + ifselected + "_additiveDeleterious_ANCbarleyVSsecalePasimony_vmap2_bychr_" + ratioType + ".txt").getAbsolutePath();
+//
+//                    }
+//                }
+//            }
+//        }
     }
 
 
@@ -1065,7 +1066,6 @@ public class DeleteriousXPCLR2 {
             int cnt = 0;
             while ((temp = br.readLine()) != null) {
                 l = PStringUtils.fastSplit(temp);
-                int chrID = Integer.parseInt(l.get(1));
                 int index = Integer.parseInt(l.get(1)) - 1; //染色体号的索引 ################ 需要修改 需要修改 需要修改 ################
                 int pos = Integer.parseInt(l.get(2)); //################ 需要修改 需要修改 需要修改 ################
 

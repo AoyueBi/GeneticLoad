@@ -170,6 +170,14 @@ public class AoFile {
     }
 
 
+    /**
+     * 过滤操作，即保留和List种一样的行，过滤不满足条件的行
+     * @param infileS
+     * @param columIndex
+     * @param inlist
+     * @param outfileS
+     * @return
+     */
     public static File filterTxtLines(String infileS, int columIndex, List<String> inlist, String outfileS){
         File out = new File(outfileS);
         Collections.sort(inlist);

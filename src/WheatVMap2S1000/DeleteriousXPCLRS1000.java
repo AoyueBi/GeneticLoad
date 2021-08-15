@@ -2,27 +2,22 @@ package WheatVMap2S1000;
 
 import AoUtils.AoFile;
 import gnu.trove.list.array.TCharArrayList;
-import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TIntArrayList;
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import pgl.infra.table.RowTable;
 import pgl.infra.utils.PStringUtils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
-public class DeleteriousCount {
+public class DeleteriousXPCLRS1000 {
 
-    /**
-     * 2021年7月中旬，对VMap2.0样本增加到1000+,此时重新进行个体deleterious load的计算
-     */
-    public DeleteriousCount(){
-//        AoFile.readheader("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/005_SNP_Annotation_filterN/chr036_gene_geneSNP.txt.gz");
-//        AoFile.readheader("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/002_geneSiteAnno.txt.gz");
-        this.callDeleterious();
-//        AoFile.readheader("/Users/Aoyue/project/wheatVMap2_1000/001_germplasm/009_WheatVMap2_GermplasmInfo_20210708.txt");
+    public DeleteriousXPCLRS1000(){
+        this.callDeleteriousXPCLR();
 
     }
 
@@ -50,8 +45,8 @@ public class DeleteriousCount {
      * @param19
      *
      */
-    public void callDeleterious(){
-//**************************** 不必修改 **************************//
+    public void callDeleteriousXPCLR(){
+        //**************************** 不必修改 **************************//
         String variantType = null;
         String variantType1 = "001_synonymous";
         String variantType2 = "002_nonsynonymous";
@@ -61,53 +56,60 @@ public class DeleteriousCount {
         String variantType6 = "006_StopGain"; //只是SIFT中为
         String variantType7 = "007_VEP";
         String variantType8 = "008_snpEff";
+        String variantType9 = "009_VEP_stopGained";
 
 
-//        String variantType7 = "006_nonsynGERPandDerivedSIFT_correction";
-//        String variantType8 = "007_nonsynDerivedSIFT_correction";
-//        String variantType9 = "008_GERP_correction";
-
-        String ratioType = null;
-        String ratioType1 = "bySub";
-        String ratioType2 = "bysub_mergeByTaxa";
+        String ifselected = null;
+        String ifselected1 = "1";
+        String ifselected2 = "0";
+        String ifselected3 = "Whole_genome";
 
 
-        String[] choice1 = {variantType1,variantType2,variantType3,variantType4,variantType5,variantType6,variantType7,variantType8};
-//        String[] choice1 = {variantType6};
-
-        String[] choice3 = {ratioType1,ratioType2};
+        String group = null;
+        String group1 = "wede";
+        String group2 = "dedurum";
+        String group3 = "lrcul";
+        String group4 = "allIndivi";
         //**************************** up 不必修改 **************************//
 
 
-          //********** 这一步是进行 不同类型的load 的计算 ************//
+//        String[] choice1_variantType = {variantType1,variantType2,variantType3,variantType4,variantType5, variantType6,variantType7,variantType8,variantType9};
+//        String[] choice2_ifSelected = {ifselected1,ifselected2};
+//        String[] choice3_refobj = {group1,group2,group3};
 
-        String parentDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/005_delCount/001_allIndivi"; //结果文件需要存放的地方
-//        String parentDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/005_delCount/002_allIndivi_syntenicGene";
+        String[] choice1_variantType = {variantType1,variantType2,variantType3,variantType4,variantType5, variantType6,variantType7,variantType8,variantType9};
+        String[] choice2_ifSelected = {ifselected3};
+        String[] choice3_refobj = {group4};
 
+//        String parentDirS = ""; //model
+//        String parentDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/009_xpclr/003_summary_XPCLR/003_deleteriousXPCLR";  //结果文件需要存放的地方
+//        String parentDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/005_delCount/001_allIndivi";
+        String parentDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/005_delCount/002_allIndivi_syntenicGene";
         new File(parentDirS).mkdirs();
-        for (int k = 0; k < choice1.length; k++) { //每种变异类型，都输出了一个delCount的文件，到时候把文件
-            variantType = choice1[k];
-            String DelCountFileS = new File(parentDirS,variantType + "_DelCount_bychr.txt").getAbsolutePath();
-            this.countDeleteriousVMapII_byChr(variantType,DelCountFileS);
+
+        for (int i = 0; i < choice3_refobj.length; i++) {
+            group = choice3_refobj[i];
+            // infileS 文件是Gene SNP 数据库中受选择区域内的 SNP 位点，即为 Annotation 数据库的子集, 如果计算的是全基因组区域的话，则该文件在程序中不会被处理到，可以忽略。
+            String infileS = new File("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/009_xpclr/003_summary_XPCLR/002_topK","top0.05_" + group + "_ChrPos_fromExonAnnotation.txt.gz").getAbsolutePath();
+            for (int j = 0; j < choice2_ifSelected.length; j++) {
+                ifselected = choice2_ifSelected[j];
+                for (int k = 0; k < choice1_variantType.length; k++) {
+                    variantType = choice1_variantType[k];
+                    String DelCountFileS = new File(parentDirS,variantType + "_ifselected" + ifselected + "_" + group + "_DelCount_bychr.txt").getAbsolutePath();
+                    this.countDeleteriousVMapII_byChr(infileS,ifselected,variantType,DelCountFileS,group);
+                }
+            }
         }
-
-//        //********** 这一步是进行 ratio = nonsyn / syn 的计算 ************//
-//        int cnt = 0;
-//        for (int k = 1; k < choice1.length; k++) {
-//            variantType = choice1[k];
-//            for (int l = 0; l < choice3.length; l++) {
-//                ratioType = choice3[l];
-//                String infileS1 = new File(parentDirS,variantType + "_bychr_" + ratioType + ".txt").getAbsolutePath();
-//                String infileS2 = new File(parentDirS,"001_synonymous" + "_bychr_" + ratioType +".txt").getAbsolutePath();
-//                this.DeltoSynonymousRatio(infileS1,ratioType,infileS2);
-//                cnt++;
-//                System.out.println("********" + cnt + " " + variantType + " " + ratioType);
-//            }
-//        }
-
     }
 
-    public void countDeleteriousVMapII_byChr(String type, String DelCountFileS) {
+    /**
+     * 计算指定选择区域的mutation burden 一共有 5 步
+     * @param infileS
+     * @param ifselected
+     * @param type
+     * @param DelCountFileS
+     */
+    public void countDeleteriousVMapII_byChr(String infileS,String ifselected,String type,String DelCountFileS, String group) {
         //model
 
         //######## 需要修改 ########//
@@ -117,16 +119,38 @@ public class DeleteriousCount {
 
         int cntNONSY = 0; //非同义突变的个数
 
-        //########### 大麦和黑麦简约法 ******* VMap2.0-2020 *********** 加上Derived SIFT的数据库 2020-07-21 ################w
-        String exonVCFDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/007_geneVCF"; //外显子变异数据
-//        String SNPAnnoFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/001_geneSNP_anno.txt.gz"; //注释信息库合并后的总文件
-//        String SNPAnnoFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/002_geneSiteAnno.txt.gz";
-        String SNPAnnoFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/003_geneSiteAnno_syntenic.txt.gz";
+        //########### 大麦和黑麦简约法 ******* VMap2.0-2021 *********** 加上Derived SIFT的数据库 ################w
+        String exonVCFDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/007_geneVCF"; //外显子变异数据 20210808 完成
+//        String SNPAnnoFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/001_geneSNPAnno.txt.gz"; //注释信息库合并后的总文件
+        String SNPAnnoFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/002_geneSNPAnno_syntenic.txt.gz";
 
         AoFile.readheader(SNPAnnoFileS);
         //************* 无需修改的路径 ****************** //
         String DelCountFiletempS = new File(DelCountFileS).getAbsolutePath().replaceFirst(".txt",".temp.txt"); //有害变异加性模型输出文件
 
+/**
+ * ################################### step0: 建立受选择区域的集合，并在下文进行 posList 和 ancestral charList 构建时进行适当的过滤。
+ */
+
+
+        TIntArrayList[] selectedPosList = new TIntArrayList[42]; //不同染色体下，不同受选择区域位点的集合
+
+        if (!ifselected.equals("Whole_genome")){
+            // I only need to know the chr pos information about the selected region
+            for (int i = 0; i < selectedPosList.length; i++) {
+                selectedPosList[i] = new TIntArrayList();
+            }
+            RowTable<String> selectedT = new RowTable<>(infileS);
+            for (int i = 0; i < selectedT.getRowNumber(); i++) {
+                int chr = selectedT.getCellAsInteger(i,0);
+                int pos = selectedT.getCellAsInteger(i,1);
+                selectedPosList[chr-1].add(pos);
+            }
+            for (int i = 0; i < selectedPosList.length; i++) {
+                selectedPosList[i].sort();
+            }
+            System.out.println("Finished step0: completing the initialization of selected list.");
+        }
 
         /**
          *  ################################### step1: 初始化染色体集合
@@ -165,6 +189,23 @@ public class DeleteriousCount {
                 l = PStringUtils.fastSplit(temp);
                 int index = Integer.parseInt(l.get(1)) - 1; //染色体号的索引 ################ 需要修改 需要修改 需要修改 ################
                 int pos = Integer.parseInt(l.get(2)); //################ 需要修改 需要修改 需要修改 ################
+
+                /**
+                 * 进行受选择区域的判断,如果受选择，那么判断该位点是否受选择，不受选择的进行过滤。
+                 * 如果不受选择，那么判断该位点是否受选择，受选择的进行过滤。
+                 */
+
+                if (!ifselected.equals("Whole_genome")){
+                    int indexselect = selectedPosList[index].binarySearch(pos);
+                    if (ifselected.equals("1")){ //只保留受选择的位点，把不受选择的进行过滤
+                        if (indexselect <0) continue;
+                    }
+                    if (ifselected.equals("0")){ //只保留不受选择的位点，把受选择的进行过滤
+                        if (indexselect>= 0) continue;
+                    }
+                }
+
+
                 String variantType = l.get(13); //################ 需要修改 需要修改 需要修改 ################
                 String sift = l.get(16); //################ 需要修改 需要修改 需要修改 ################
                 String gerp = l.get(11); //################ 需要修改 需要修改 需要修改 ################
@@ -178,6 +219,7 @@ public class DeleteriousCount {
                 String alt = l.get(4);
                 String majorAllele = l.get(5);
                 String minorAllele = l.get(6);
+                String Effect_VEP = l.get(17);
                 String Impact_VEP = l.get(18);
                 String Impact_snpEff = l.get(20);
                 if(!(ancestralAllele.equals(ref)||ancestralAllele.equals(alt)))continue;
@@ -199,7 +241,7 @@ public class DeleteriousCount {
                     if (sift.startsWith("N"))continue; //说明必须满足有sift值
                     double gerpd = Double.parseDouble(gerp);
                     double siftd = Double.parseDouble(sift);
-                    if (gerpd <= 1) continue; //说明必须满足gerp大于等于1
+                    if (gerpd <= 1) continue; //说明必须满足gerp大于1
                     if (siftd >= 0.05 ) continue; //说明必须满足sift小于0.05
                 }
 
@@ -214,7 +256,7 @@ public class DeleteriousCount {
                     if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
                     if(gerp.startsWith("N")) continue; //说明必须满足GERP有值
                     double gerpd = Double.parseDouble(gerp);
-                    if (gerpd <= 1) continue; //说明必须满足gerp大于等于1
+                    if (gerpd <= 1) continue; //说明必须满足gerp大于1
                 }
 
                 if(type.equals("006_StopGain")){
@@ -223,6 +265,10 @@ public class DeleteriousCount {
 
                 if(type.equals("007_VEP")){
                     if (!Impact_VEP.equals("HIGH"))continue; //
+                }
+
+                if(type.equals("009_VEP_stopGained")){
+                    if (!Effect_VEP.contains("start_lost") && !Effect_VEP.contains("stop_gained") && !Effect_VEP.contains("stop_lost")) continue;
                 }
 
                 if(type.equals("008_snpEff")){
@@ -317,7 +363,7 @@ public class DeleteriousCount {
         /**
          *  ################################### step3: taxa 集合 642个taxa
          */
-        String vmap2TaxaList = "/Users/Aoyue/project/wheatVMap2_1000/001_germplasm/009_WheatVMap2_GermplasmInfo_20210708.txt";
+        String vmap2TaxaList = "/Users/Aoyue/project/wheatVMap2_1000/001_germplasm/019_WheatVMap2_GermplasmInfo.txt";
 
         String[] taxa = AoFile.getStringArraybyList(vmap2TaxaList,0);
 
@@ -350,7 +396,7 @@ public class DeleteriousCount {
                         taxainVCFfile = new String[l.size() - 9];
                         for (int i = 9; i < l.size(); i++) {
                             taxainVCFfile[i - 9] = l.get(i);
-                            hmtaxainVCFindex.put(taxainVCFfile[i - 9], i); //第0个taxa的genotype在第9行，第一个taxa的genotype在第10行，依次类推；
+                            hmtaxainVCFindex.put(taxainVCFfile[i - 9], i); //第0个taxa的genotype在第9列，第一个taxa的genotype在第10列，依次类推；
                         }
                         // ************** 在总的taxa中，搜索VCF文件中的taxa的index
                         for (int i = 0; i < taxainVCFfile.length; i++) { //找到taxa
@@ -383,8 +429,7 @@ public class DeleteriousCount {
                             idx[1] = 0;
                         }
 
-
-                        //合计642个taxa，在A Bgenome中只有606（419+187）个，在Dgenome中只有455（419+36）个，我们要找到每个VCF文件中的genotype所对应的taxa的index
+                        //合计642个taxa，在A Bgenome中只有606（814+212=1026）个，在Dgenome中只有814+36=850个，我们要找到每个VCF文件中的genotype所对应的taxa的index
                         //code:本段代码是每行SNP位点，每个taxa的有害位点的统计
                         for (int i = 0; i < taxainVCFlist.size(); i++) {
                             int genotypeIndex = hmtaxainVCFindex.get(taxainVCFlist.get(i)); //获取该taxa的基因型所在的列的索引
@@ -404,7 +449,7 @@ public class DeleteriousCount {
                             int sum = 0;
                             //如果ref是derived allele，那么idx[0]=0;idx[1]=1. 当是0/0时，sum=2; 0/1时，sum=1; 1/1时， sum=0.
                             //如果alt是derived allele，那么idx[0]=1;idx[1]=0. 当是0/0时，sum=0; 0/1时，sum=1; 1/1时， sum=2.
-                            //
+                            //      巧妙利用 0/0 和 derived allele 的关系，如果 ref 是 derived, 那么 idx[0] = 0， 效应可以加1; 如果 ref 是 ancestral, 那么 idx[0] = 1, 效应就不能加1了;
                             //
                             if (v1 == idx[0]) { //
                                 sum++;
@@ -442,13 +487,13 @@ public class DeleteriousCount {
 
         try {
             BufferedWriter bw = AoFile.writeFile(DelCountFileS);
-            bw.write("Taxa\tChr\tTotalDerivedSNPCount\tHomoDerivedSNPCount\tHeterDerivedSNPCount\tSiteCountWithMinDepth\tVariantsGroup"); //每个taxa有多少个加性效应的derivedAllele, 每个taxa在del库中含有基因型的个数
+            bw.write("Taxa\tChr\tTotalDerivedSNPCount\tHomoDerivedSNPCount\tHeterDerivedSNPCount\tSiteCountWithMinDepth\tVariantsGroup\tIfSelected\tGroup_refobj"); //每个taxa有多少个加性效应的derivedAllele, 每个taxa在del库中含有基因型的个数
             bw.newLine();
             for (int i = 0; i < homoDelCount.length; i++) { //第一层是染色体号
                 String chr = String.valueOf(i + 1);
                 for (int j = 0; j < homoDelCount[0].length; j++) { //第二层是该号染色体的有害变异个数
                     bw.write(taxa[j] + "\t" + chr + "\t" + String.valueOf(totalDelCount[i][j])+ "\t" + String.valueOf(homoDelCount[i][j]) + "\t" + String.valueOf(heterDelCount[i][j])+ "\t" + String.valueOf(siteWithMinDepthCount[i][j])
-                            + "\t" + type);
+                            + "\t" + type + "\t" + ifselected+ "\t" + group);
                     bw.newLine();
                 }
             }
@@ -461,6 +506,4 @@ public class DeleteriousCount {
             e.printStackTrace();
         }
     }
-
-
 }

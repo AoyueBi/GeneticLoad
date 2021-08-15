@@ -5,6 +5,7 @@ import AoUtils.CalVCF;
 import AoUtils.SplitScript;
 import PopulationAnalysis.XPCLR;
 import WheatGeneticLoad.FilterVCF2;
+import WheatGeneticLoad.VariantsSum;
 import daxing.common.IOTool;
 import daxing.common.PGF;
 import daxing.common.RowTableTool;
@@ -50,14 +51,16 @@ public class VMap2S1000 {
          * gene site annotation
          */
 //        this.geneInfo(); //列出所要建立数据库的基因的详细信息表格
-//        this.snpAnnotationBuild(); //include many methods XXXXXXX
+        this.snpAnnotationBuild(); //include many methods XXXXXXX
 //        new DeleteriousCount();
 //        this.filterN_fromVCF();
 
         /**
          * XPCLR
          */
-        new XPCLR();
+//        new XPCLR();
+//        new DeleteriousXPCLRS1000();
+
 
 
 
@@ -71,7 +74,7 @@ public class VMap2S1000 {
 //        new VariantsSum().mkExonAnnotation2(); //未用
 //        new VariantsSum().addAncestral();
 //        this.addDAF();
-//        new VariantsSum().addGerp();
+        new VariantsSum().addGerp();
         /**
          * sift 计算
          */
