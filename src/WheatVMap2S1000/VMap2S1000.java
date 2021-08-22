@@ -71,7 +71,6 @@ public class VMap2S1000 {
 //        this.getVCFofRht("Rht-B1");
 //        this.getVCFofRht("Rht-D1");
 //        new Model().runJarParallele();
-        SplitScript.splitScript2("/Users/Aoyue/Documents/sh.sh",14,3);
 
     }
 
