@@ -1592,6 +1592,56 @@ public class CalVCF {
     }
 
     /**
+     * Goal: 根据pos文件来过滤VCF，保留在pos中的位点，注意pos没有表头。
+     * @param infileS
+     * @param posFileS
+     */
+    public static void filterVCFbyPos(String infileS, String posFileS, String outfileS){
+        TIntArrayList posdb = new TIntArrayList();
+        try{
+            String temp;
+            BufferedReader br = AoFile.readFile(posFileS);
+            while((temp = br.readLine()) != null){
+                posdb.add(Integer.parseInt(temp));
+            }
+            br.close();
+            posdb.sort();
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = null;
+            int cnttotal = 0;
+            int cntsubset = 0;
+            List<String> l = new ArrayList<>();
+            while ((temp = br.readLine()) != null) {
+                if (temp.startsWith("#")) {
+                    bw.write(temp);
+                    bw.newLine();
+                } else {
+                    cnttotal++;
+                    l = PStringUtils.fastSplit(temp);
+                    int pos = Integer.parseInt(l.get(1));
+                    int index = posdb.binarySearch(pos);
+                    if (index < 0)continue;
+                    bw.write(temp);
+                    bw.newLine();
+                    cntsubset++;
+                }
+            }
+            bw.flush();
+            bw.close();
+            br.close();
+            System.out.println(new File(infileS).getName() + "\twith " + cnttotal + " bp has a subset of\t" + cntsubset + "\tbiallelic SNPs is completed at " + new File(outfileS).getName());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * 根据位点杂合度过滤单个群体的VCF
      *
      * @param infileS

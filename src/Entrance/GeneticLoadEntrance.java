@@ -239,6 +239,8 @@ public class GeneticLoadEntrance {
 
 //        CalVCF.filterMAFinVCF(args[0],Double.parseDouble(args[1]),args[2]);
 //        CalVCF.calMAFcountfromPop(args[0],args[1],args[2]);
+//        CalVCF.filterVCFbyPos(args[0],args[1],args[2]);
+//        new VMap2S1000().checkAltCaseCount(args[0],args[1]);
 
     }
 

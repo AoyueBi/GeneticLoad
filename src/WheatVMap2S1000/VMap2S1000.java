@@ -2,6 +2,7 @@ package WheatVMap2S1000;
 
 import AoUtils.AoFile;
 import AoUtils.CalVCF;
+import AoUtils.Model;
 import AoUtils.SplitScript;
 import PopulationAnalysis.XPCLR;
 import WheatGeneticLoad.FilterVCF2;
@@ -47,11 +48,13 @@ public class VMap2S1000 {
 //        this.getVCFbyPolyploid();
 //        this.getMAFcountfromPop();
 
+
+
         /**
          * gene site annotation
          */
 //        this.geneInfo(); //列出所要建立数据库的基因的详细信息表格
-        this.snpAnnotationBuild(); //include many methods XXXXXXX
+//        this.snpAnnotationBuild(); //include many methods XXXXXXX
 //        new DeleteriousCount();
 //        this.filterN_fromVCF();
 
@@ -60,11 +63,179 @@ public class VMap2S1000 {
          */
 //        new XPCLR();
 //        new DeleteriousXPCLRS1000();
+//        this.getVCF();
+
+        /**
+         *  Rht gene 的验证
+         */
+//        this.getVCFofRht("Rht-B1");
+//        this.getVCFofRht("Rht-D1");
+//        new Model().runJarParallele();
+        SplitScript.splitScript2("/Users/Aoyue/Documents/sh.sh",14,3);
+
+    }
 
 
+    /**
+     *
+     */
+    public void checkAltCaseCount(String infileS, String outfileS){
+//        String infileS = "/Users/Aoyue/Documents/chr021_RhtB1_vmap2.1.vcf.gz";
+//        String outfileS ="/Users/Aoyue/Documents/countCase.txt";
+        Set<String> altSet = new HashSet<>();
+        List<String> altList = new ArrayList<>();
+        int cnt = 0;
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            while((temp = br.readLine()) != null){
+                if (temp.startsWith("#"))continue;
+                l = PStringUtils.fastSplit(temp);
+                String alt = l.get(4);
+                altSet.add(alt);
+                altList.add(alt);
+                cnt++;
+            }
+
+            br.close();bw.flush();bw.close();
+
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+
+        File out = new File(outfileS);
+        BufferedWriter bw = AoFile.writeFile(out.getAbsolutePath());
+        System.out.println(altList.size() + " list个数");
+        Set<String> s = new HashSet<>(altList);
+        System.out.println(s.size() + " set个数");
+        System.out.println(s);
+
+        try{
+            bw.write("Case\tCount");
+            bw.newLine();
+            for(String a : s){
+                System.out.println(a + "\t" + Collections.frequency(altList, a));
+                bw.write(a+"\t"+Collections.frequency(altList, a));
+                bw.newLine();
+            }
+            bw.flush();
+            bw.close();
+        }catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+    }
+
+    public void getVCFofRht(String geneGoal){
+        String infileS = null;
+        String outfileS =null;
+        String[] geneArray = {"Rht-B1","Rht-D1"};
+
+
+        String gene = null;
+        gene = geneGoal;
+
+        // // RhtB1 position
+        int chrID4b = 21;
+        int pos4b_1 = 30861382;
+        int pos4b_2 = 30863283;
+        // // RhtD1 position
+        int chrID4d = 23;
+        int pos4d_1 = 18781062;
+        int pos4d_2 = 18782934;
+
+//        String infileS1 = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/007_geneVCF/chr021_gene_vmap2.1.vcf.gz";
+//        String outfileS1 = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/010_Rht/001_outputVCF/chr021_Rht_vmap2.1.vcf.gz";
+//        String infileS2 = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/007_geneVCF/chr023_gene_vmap2.1.vcf.gz";
+//        String outfileS2 = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/010_Rht/001_outputVCF/chr023_Rht_vmap2.1.vcf.gz";
+
+        String infileS1 = "/data1/home/xinyue/Vmap2_Out/chr021.vmap2.vcf.gz";
+        String outfileS1 = "/data4/home/aoyue/vmap2/analysis/042_Rht/001_outVCF/chr021_RhtB1_vmap2.1.vcf.gz";
+        String infileS2 = "/data1/home/xinyue/Vmap2_Out/chr023.vmap2.vcf.gz";
+        String outfileS2 = "/data4/home/aoyue/vmap2/analysis/042_Rht/001_outVCF/chr023_RhtD1_vmap2.1.vcf.gz";
+
+        int chrRht = Integer.MIN_VALUE;
+        int pos1Rht = Integer.MIN_VALUE;
+        int pos2Rht = Integer.MIN_VALUE;
+        if (gene.equals(geneArray[0])){
+            infileS = infileS1;
+            outfileS = outfileS1;
+            chrRht = chrID4b;
+            pos1Rht = pos4b_1;
+            pos2Rht = pos4b_2;
+
+        }else if(gene.equals(geneArray[1])){
+            infileS = infileS2;
+            outfileS = outfileS2;
+            chrRht = chrID4d;
+            pos1Rht = pos4d_1;
+            pos2Rht = pos4d_2;
+        }
+
+        try{
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = null;
+            int cnt = 0;
+            List<String> l = new ArrayList<>();
+            while((temp = br.readLine()) != null){
+                if (temp.startsWith("#")){
+                    bw.write(temp);
+                    bw.newLine();
+                    continue;
+                }
+                l = PStringUtils.fastSplit(temp);
+                int chr = Integer.parseInt(l.get(0));
+                int pos = Integer.parseInt(l.get(1));
+                if (pos >= (pos1Rht) && pos <= (pos2Rht)){
+                    cnt++;
+                    bw.write(temp);
+                    bw.newLine();
+                }
+                if (pos > pos2Rht) break;
+            }
+            System.out.println("Totally " + cnt + " SNPs were disvovered in " + gene);
+            br.close();
+            bw.flush();
+            bw.close();
+        }catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    public void getVCF(){
+        String taxaList = "/Users/Aoyue/Documents/TaxaList.txt";
+
+
+//        String infileS = "/Users/Aoyue/Documents/chr002_S1062.subset.vcf.gz";
+//        String outfileS = "/Users/Aoyue/Documents/chr002_spelt.subset.vcf.gz";
+
+        String infileDirS = "/Users/Aoyue/Documents/in";
+        String outfileDirS = "/Users/Aoyue/Documents/out";
+        List<File> fsList = AoFile.getFileListInDir(infileDirS);
+        fsList.parallelStream().forEach(f -> {
+            try {
+                String infileS = f.getAbsolutePath();
+                String outfileS = new File(outfileDirS, f.getName().split(".vcf")[0] + "_subset.vcf").getAbsolutePath();
+                CalVCF.extractVCF(infileS,outfileS,taxaList);
+
+                System.out.println(f.getName() + "\tis completed at " + outfileS);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
 
 
     }
+
 
     public void snpAnnotationBuild(){
 //        this.mkGeneVCF(); //自己的方法（最终采用）
@@ -870,10 +1041,9 @@ public class VMap2S1000 {
 //            System.out.println("nohup gunzip chr" + chr + ".vmap2.vcf.gz 2>&1 &");
 //            System.out.println("nohup bgzip -@ 20 chr" + chr + ".vmap2.vcf && tabix -p vcf chr" + chr + ".vmap2.vcf.gz &");
 //            System.out.println("nohup bgzip chr" + chr + "_vmap2.0.vcf && tabix -p vcf chr" + chr + "_vmap2.0.vcf.gz &");
-            System.out.println("nohup tabix -p vcf chr" + chr + "_vmap2.0.vcf.gz &");
+//            System.out.println("nohup tabix -p vcf chr" + chr + "_vmap2.0.vcf.gz &");
 
-            //测试失败，只能在原来文件夹中压缩
-//            System.out.println("nohup bgzip -@ 4 chr" + chr + ".vmap2.vcf -c ../vmap2.0/chr" + chr + ".vmap2.0.vcf.gz && cd ../vmap2.0/ " + "&& tabix -p vcf chr" + chr + ".vmap2.0.vcf.gz &");
+            System.out.println("nohup bgzip chr" + chr + "_vmap2.1.vcf 2>&1 &");
 
         }
     }

@@ -157,7 +157,6 @@ public class Model {
         String chr = null;
         String pos = null;
         l.add(new ChrPos(Short.valueOf(chr), Integer.valueOf(pos)));
-
     }
 
 
@@ -395,9 +394,9 @@ public class Model {
 
 
     public void runJarParallele(){ //一次性将所有的jar都运行上
-        String infileDirS = "";
-        String outfileDirS ="";
-        String logDirS = "";
+        String infileDirS = "/data1/home/xinyue/Vmap2_Out";
+        String outfileDirS ="/data4/home/aoyue/vmap2/analysis/043_rawVCF_count";
+        String logDirS = "/data4/home/aoyue/vmap2/analysis/043_rawVCF_count/log";
 //        String[] chrArr = {"1A", "1B", "1D", "2A", "2B", "2D", "3A", "3B", "3D", "4A", "4B", "4D", "5A", "5B", "5D", "6A", "6B", "6D", "7A", "7B", "7D"};
 //        String[] chrArr = {"1A", "1B", "2A", "2B", "3A", "3B", "4A", "4B", "5A", "5B", "6A", "6B", "7A", "7B"};
 //        String[] chrArr = {"1D","2D", "3D", "4D", "5D", "6D","7D"};
@@ -410,10 +409,16 @@ public class Model {
 
         for (int i = 0; i < chrArr.length; i++) {
             String chr = chrArr[i];
-            String infileS = new File(infileDirS,"chr" + chr + "_vmap2.1_heter_SNPbased_Cultivar.vcf.gz").getAbsolutePath();
-            String outfileS = new File(outfileDirS,"chr" + chr + "_vmap2.1_heter_SNPbased_Cultivar_chrposGenotype.txt.gz").getAbsolutePath();
+//            String infileS = new File(infileDirS,"chr" + chr + "_vmap2.1_heter_SNPbased_Cultivar.vcf.gz").getAbsolutePath();
+//            String outfileS = new File(outfileDirS,"chr" + chr + "_vmap2.1_heter_SNPbased_Cultivar_chrposGenotype.txt.gz").getAbsolutePath();
+//            String logfileS = new File(logDirS,"log_" + new File(outfileS).getName().split(".gz")[0]).getAbsolutePath(); //不管是不是gz结尾，我们只取gz前的部分，妙！
+//            System.out.println("nohup java -jar 034_mkindividualVCFtoChrPosGenotype.jar " + infileS + " " + outfileS + " > " + logfileS  + " 2>&1 &" );
+
+            String infileS = new File(infileDirS,"chr" + chr + ".vmap2.vcf.gz").getAbsolutePath();
+            String outfileS = new File(outfileDirS,"chr" + chr + ".vmap2.alt.count.txt").getAbsolutePath();
             String logfileS = new File(logDirS,"log_" + new File(outfileS).getName().split(".gz")[0]).getAbsolutePath(); //不管是不是gz结尾，我们只取gz前的部分，妙！
-            System.out.println("nohup java -jar 034_mkindividualVCFtoChrPosGenotype.jar " + infileS + " " + outfileS + " > " + logfileS  + " 2>&1 &" );
+            System.out.println("nohup java -jar 056_countAltCase.jar " + infileS + " " + outfileS + " > " + logfileS );
+
         }
 
     }
