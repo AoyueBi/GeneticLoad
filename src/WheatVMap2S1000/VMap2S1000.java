@@ -14,6 +14,8 @@ import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.set.hash.TIntHashSet;
 import pgl.infra.anno.gene.GeneFeature;
+import pgl.infra.dna.FastaBit;
+import pgl.infra.dna.FastaByte;
 import pgl.infra.table.RowTable;
 import pgl.infra.utils.IOUtils;
 import pgl.infra.utils.PStringUtils;
@@ -48,8 +50,6 @@ public class VMap2S1000 {
 //        this.getVCFbyPolyploid();
 //        this.getMAFcountfromPop();
 
-
-
         /**
          * gene site annotation
          */
@@ -70,10 +70,116 @@ public class VMap2S1000 {
          */
 //        this.getVCFofRht("Rht-B1");
 //        this.getVCFofRht("Rht-D1");
-//        new Model().runJarParallele();
+//        new Model().runJarParallele(); //checkAltCaseCount()
+//        this.getGenoTable();
+
+
 
     }
 
+
+    public void getRefFasta_Rht(){
+        String infileS = "";
+        FastaByte fa = new FastaByte(infileS);
+
+    }
+
+
+    public void getGenoTable(){
+//        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/010_Rht/001_outputVCF/chr021_RhtB1_vmap2.1.vcf.gz";
+//        String taxaListFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/010_Rht/002_genoTable/taxaList/LR_EU_CL.txt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/010_Rht/002_genoTable/chr021_RhtB1_genoTable.txt.gz";
+
+//        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/010_Rht/001_outputVCF/chr023_RhtD1_vmap2.1.vcf.gz";
+//        String taxaListFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/010_Rht/002_genoTable/taxaList/LR_EU_CL.txt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/010_Rht/002_genoTable/chr023_RhtD1_genoTable.txt.gz";
+
+
+        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/010_Rht/001_outputVCF/chr021_RhtB1_vmap2.1.vcf.gz";
+        String taxaListFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/010_Rht/002_genoTable/taxaList/TaxaList_HexaploidandTetraploid.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/010_Rht/002_genoTable/S1026/chr021_RhtB1_genoTable.txt.gz";
+
+//        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/010_Rht/001_outputVCF/chr023_RhtD1_vmap2.1.vcf.gz";
+//        String taxaListFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/010_Rht/002_genoTable/taxaList/TaxaList_HexaploidandTetraploid.txt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/010_Rht/002_genoTable/S1026/chr023_RhtD1_genoTable.txt.gz";
+
+
+        List<Integer> indexTaxa = new ArrayList<>();
+        String[] taxaArray = AoFile.getStringArraybyList_withoutHeader(taxaListFileS,0);
+        Arrays.sort(taxaArray);
+
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                //***********************************************************//
+                if (temp.startsWith("##")) {//将注释信息写入表格中
+
+                }
+                //***********************************************************//
+                //开始处理taxa的问题，先把所有taxa放入array中，记住在temp中的index
+                if (temp.startsWith("#CHROM")) {
+                    l = PStringUtils.fastSplit(temp);
+//                    bw.write("CHROM" + "\t" + l.get(1));
+                    bw.write("CHROM" + "\t" + l.get(1) + "\t" + l.get(3) + "\t" + l.get(4));
+                    for (int i = 9; i < l.size(); i++) {
+                        String taxon = l.get(i);
+                        int index1 = Arrays.binarySearch(taxaArray, taxon);
+
+                        if (index1 > -1) { //当找到列表中的taxa时，写列表中的taxa信息
+                            indexTaxa.add(i);
+                            bw.write("\t" + l.get(i));
+                        }
+                    }
+                    bw.newLine(); //写完之后记得换行
+                    Collections.sort(indexTaxa);
+                }
+                if (!temp.startsWith("#")) {
+                    l = PStringUtils.fastSplit(temp);
+                    String altList = l.get(4);
+//                    int nAlt = PStringUtils.fastSplit(altList, ",").size();
+//                    if (nAlt > 1) continue; //filter alt num with 2 or more
+//                    if (altList.equals("D") || altList.equals("I")) continue; //filter D I
+
+                    String chr = l.get(0);
+                    String pos = l.get(1);
+                    String ref = l.get(3);
+                    String alt = l.get(4);
+//                    bw.write(chr + "\t" + pos);
+                    bw.write(chr + "\t" + pos + "\t" + ref + "\t" + alt);
+
+                    for (int i = 0; i < indexTaxa.size(); i++) { //无论有无基因型，都加进去了
+                        String geno = l.get(indexTaxa.get(i));
+                        geno = PStringUtils.fastSplit(geno,":").get(0);
+//                        System.out.println(geno);
+                        if(geno.equals("0/0")){
+                            bw.write( "\t0");
+                        }
+                        if(geno.equals("0/1") || geno.equals("1/0")){
+                            bw.write(  "\t1");
+                        }
+                        if(geno.equals("1/1")){
+                            bw.write( "\t2");
+                        }
+                        if(geno.equals("./.")){
+                            bw.write("\t9");
+                        }
+                    }
+                    bw.newLine();
+                } //
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println(infileS + " is completed at " + outfileS + "\tActual taxa size: " + indexTaxa.size() + "\tTotal sites : " + cnt);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
 
     /**
      *
