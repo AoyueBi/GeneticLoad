@@ -79,7 +79,7 @@ public class DBgene {
 //                this.getsubspeciesSNPAnnotation();
 //                this.script_getTranscriptSum();
 //                this.mergeTxt();
-                this.mkSpreadFormat_hexaploid();
+//                this.mkSpreadFormat_hexaploid();
 //
     }
 

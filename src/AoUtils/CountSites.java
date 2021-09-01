@@ -2447,7 +2447,7 @@ public class CountSites {
      * @param infileDirS
      * @param outfileDirS
      */
-    public void subsetVCF(String infileDirS, String outfileDirS, String extractRatio) {
+    public void subsetVCF_filterAlt2(String infileDirS, String outfileDirS, String extractRatio) {
 
 
 

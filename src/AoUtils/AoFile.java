@@ -797,6 +797,8 @@ public class AoFile {
             bw = IOUtils.getTextWriter(outfileS);
         }else if (outfileS.endsWith(".fasta")) {
             bw = IOUtils.getTextWriter(outfileS);
+        }else if (outfileS.endsWith(".bed")) {
+            bw = IOUtils.getTextWriter(outfileS);
         }
         return bw;
     }
@@ -1880,12 +1882,59 @@ public class AoFile {
 
     }
 
+
+    /**
+     *
+     * @param infileDirS
+     * @param outfileDirS
+     * @param ratio
+     */
+    public static void subsetTxt_parallel(String infileDirS, String outfileDirS, String ratio) {
+
+        List<File> fsList = AoFile.getFileListInDir(infileDirS);
+        fsList.parallelStream().forEach(f -> {
+            try {
+                String infileS = f.getAbsolutePath();
+                String outfileS = new File(outfileDirS,f.getName().split(".txt")[0] + "_subsetRatio" + ratio + ".txt.gz").getAbsolutePath();
+                BufferedReader br = AoFile.readFile(infileS);
+                BufferedWriter bw = AoFile.writeFile(outfileS);
+                String temp = null;
+                String header = br.readLine();
+                bw.write(header);
+                bw.newLine();
+                int cnt = 0;
+                int subset = 0;
+                System.out.println(new SimpleDateFormat().format(new Date()) + "    program execution.\n");
+                long startTime = System.nanoTime();
+                Double Ratio = Double.parseDouble(ratio);
+                while ((temp = br.readLine()) != null) {
+                    cnt++;
+                    double r = Math.random();
+                    if (r > Ratio) continue;
+                    //返回带正号的 double 值，该值大于等于 0.0 且小于 1.0。返回值是一个伪随机选择的数，在该范围内（近似）均匀分布
+                    bw.write(temp);
+                    bw.newLine();
+                    subset++;
+                }
+                bw.flush();
+                bw.close();
+                br.close();
+                long endTime = System.nanoTime();
+                float excTime = (float) (endTime - startTime) / 1000000000;
+                System.out.println("Execution time: " + String.format("%.2f", excTime) + "s");
+                System.out.println("The num of subset lines is " + subset);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
     /**
      *
      * @param infileS
      * @param outfileS
      */
-    public static void subsetTxt_withoutHeaer_singleStream(String infileS, String outfileS, String ratio) {
+    public static void subsetTxt_singleStream(String infileS, String outfileS, String ratio) {
 
         try {
 
@@ -1893,6 +1942,9 @@ public class AoFile {
             BufferedWriter bw = AoFile.writeFile(outfileS);
 
             String temp = null;
+            String header = br.readLine();
+            bw.write(header);
+            bw.newLine();
             int cnt = 0;
             System.out.println(new SimpleDateFormat().format(new Date()) + "    program execution.\n");
             long startTime = System.nanoTime();

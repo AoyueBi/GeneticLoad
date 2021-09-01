@@ -1,9 +1,7 @@
 package WheatVMap2S1000;
 
-import AoUtils.AoFile;
-import AoUtils.CalVCF;
-import AoUtils.Model;
-import AoUtils.SplitScript;
+import AoUtils.*;
+import AoUtils.Gene.GeneMisc;
 import PopulationAnalysis.XPCLR;
 import WheatGeneticLoad.FilterVCF2;
 import WheatGeneticLoad.VariantsSum;
@@ -16,9 +14,12 @@ import gnu.trove.set.hash.TIntHashSet;
 import pgl.infra.anno.gene.GeneFeature;
 import pgl.infra.dna.FastaBit;
 import pgl.infra.dna.FastaByte;
+import pgl.infra.range.Range;
 import pgl.infra.table.RowTable;
 import pgl.infra.utils.IOUtils;
 import pgl.infra.utils.PStringUtils;
+import pgl.infra.utils.wheat.RefV1Utils;
+import pgl.infra.window.SimpleWindow;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -36,6 +37,8 @@ public class VMap2S1000 {
 //        this.bgzip();
 //        this.rename();
 //        this.filterSNPtoBi_parallel();
+//        this.filterN_fromVCF();
+
 
         /**
          * vcf QC
@@ -53,17 +56,16 @@ public class VMap2S1000 {
         /**
          * gene site annotation
          */
-//        this.geneInfo(); //列出所要建立数据库的基因的详细信息表格
 //        this.snpAnnotationBuild(); //include many methods XXXXXXX
 //        new DeleteriousCount();
-//        this.filterN_fromVCF();
 
         /**
          * XPCLR
          */
 //        new XPCLR();
 //        new DeleteriousXPCLRS1000();
-//        this.getVCF();
+//        this.getVCF(); //提取亚群的VCF文件
+//        new GeneMisc();
 
         /**
          *  Rht gene 的验证
@@ -73,17 +75,330 @@ public class VMap2S1000 {
 //        new Model().runJarParallele(); //checkAltCaseCount()
 //        this.getGenoTable();
 
+        /**
+         * 全基因组 del 分布
+         */
+//        new VariantsSum().AddGenePosition();
+        this.WindowDelvsSyn_fromExonAnnotation();
 
+
+        /**
+         * 有害突变数目随样本大小变化
+         */
 
     }
 
 
-    public void getRefFasta_Rht(){
-        String infileS = "";
-        FastaByte fa = new FastaByte(infileS);
+    /**
+     * 这里只研究 del 和 syn
+     */
+    public void WindowDelvsSyn_fromExonAnnotation(){
+//        int windowSize = 2000000; //2 M
+//        int windowStep = 1000000; //1 M
 
+//        int windowSize = 20000000; //20 M
+//        int windowStep = 5000000; //5 M
+
+        int windowSize = 10000000; //2 M
+        int windowStep = 1000000; //1 M
+
+
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/019_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/016_genomeScan_delvsSyn/001/001_delVSsynOnChr_" + windowSize + "Window" + windowStep + "step.txt";
+
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/019_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/016_genomeScan_delvsSyn/001/001_delVSsynOnChr_" + windowSize + "Window" + windowStep + "step.txt";
+
+        //******* 2021-09-01 周三 *******//
+        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/001_geneSNPAnno.txt.gz";
+        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/009_genomeScan_delvcSyn/001/001_delVSsynOnChr_" + windowSize + "window" + windowStep + "step.txt";
+        String outfile2S = outfileS.replaceFirst(".txt","_addEffectiveCDSLength.txt");
+        AoFile.readheader(infileS);
+        String[] chrArr = {"1A", "1B", "1D", "2A", "2B", "2D", "3A", "3B", "3D", "4A", "4B", "4D", "5A", "5B", "5D", "6A", "6B", "6D", "7A", "7B", "7D"};
+        int chrNum = chrArr.length;
+
+        int[][] synPos = new int[chrNum][];
+        int[][] nonsynPos = new int[chrNum][];
+        int[][] siftGerpPos = new int[chrNum][];
+        int[][] siftPos = new int[chrNum][];
+        int[][] gerpPos = new int[chrNum][];
+        int[][] stopGainSiftPos = new int[chrNum][];
+        int[][] vepPos = new int[chrNum][];
+        int[][] stopGainVEPPos = new int[chrNum][];
+        int[][] snpEffPos = new int[chrNum][];
+
+        TIntArrayList[] synposList = new TIntArrayList[chrNum];
+        TIntArrayList[] nonsynPosList = new TIntArrayList[chrNum];
+        TIntArrayList[] siftGerpPosList = new TIntArrayList[chrNum];
+        TIntArrayList[] siftPosList = new TIntArrayList[chrNum];
+        TIntArrayList[] gerpPosList = new TIntArrayList[chrNum];
+        TIntArrayList[] stopGainSiftPosList = new TIntArrayList[chrNum];
+        TIntArrayList[] vepPosList = new TIntArrayList[chrNum];
+        TIntArrayList[] stopGainVEPPosList = new TIntArrayList[chrNum];
+        TIntArrayList[] snpEffPosList = new TIntArrayList[chrNum];
+
+
+        for (int i = 0; i < chrNum; i++) { //集合类数组，要初始化每一个list
+            synposList[i] = new TIntArrayList();
+            nonsynPosList[i] = new TIntArrayList();
+            siftGerpPosList[i] = new TIntArrayList();
+            siftPosList[i] = new TIntArrayList();
+            gerpPosList[i] = new TIntArrayList();
+            stopGainSiftPosList[i] = new TIntArrayList();
+            vepPosList[i] = new TIntArrayList();
+            stopGainVEPPosList[i] = new TIntArrayList();
+            snpEffPosList[i] = new TIntArrayList();
+        }
+
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            String temp = null;
+            String header = br.readLine();
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                int chr =  Integer.parseInt(l.get(1));
+                int pos = Integer.parseInt(l.get(2));
+
+                String chromosome = RefV1Utils.getChromosome(chr,1); //获取 RefChr
+                int posonchromosome = RefV1Utils.getPosOnChromosome(chr,pos);
+                int index = Arrays.binarySearch(chrArr,chromosome); //染色体的索引号
+                String ancestralAllele = l.get(9);
+                String variantType = l.get(13);
+                String sift = l.get(16); // derived_sift
+                String gerp = l.get(11);
+                String Effect_VEP = l.get(17);
+                String Impact_VEP = l.get(18);
+                String Impact_snpEff = l.get(20);
+
+                // 只考虑有 ancestral 状态的那些位点
+                String ref = l.get(3); String alt = l.get(4);
+                if (!ancestralAllele.equals(ref) && !ancestralAllele.equals(alt)) continue;
+
+                if (variantType.equals("SYNONYMOUS")){
+                    synposList[index].add(posonchromosome);
+                }
+
+                if (variantType.equals("NONSYNONYMOUS")){
+                    nonsynPosList[index].add(posonchromosome); // nonsyn
+                }
+
+                if (variantType.equals("NONSYNONYMOUS")){ // sift_gerp
+                    if (!sift.startsWith("N")){
+                        if(!gerp.startsWith("N")){
+                            double gerpd = Double.parseDouble(gerp);
+                            double siftd = Double.parseDouble(sift);
+                            if (siftd < 0.05 && gerpd > 1){
+                                siftGerpPosList[index].add(posonchromosome);
+                            }
+                        }
+                    }
+                }
+
+                if (variantType.equals("NONSYNONYMOUS")){ // sift
+                    if (!sift.startsWith("N")){
+                        double siftd = Double.parseDouble(sift);
+                        if (siftd < 0.05){
+                            siftPosList[index].add(posonchromosome);
+                        }
+                    }
+                }
+
+                if (variantType.equals("NONSYNONYMOUS")){ // gerp
+                    if(!gerp.startsWith("N")){
+                        double gerpd = Double.parseDouble(gerp);
+                        if (gerpd > 1){
+                            gerpPosList[index].add(posonchromosome);
+                        }
+                    }
+                }
+
+                if (variantType.equals("STOP-GAIN")){ // stop gain_sift
+                    stopGainSiftPosList[index].add(posonchromosome);
+                }
+
+                if (Impact_VEP.equals("HIGH")){ // vepPosList
+                    vepPosList[index].add(posonchromosome);
+                }
+
+                if (Effect_VEP.contains("start_lost") || Effect_VEP.contains("stop_gained") || Effect_VEP.contains("stop_lost")){ // vepPosList
+                    stopGainVEPPosList[index].add(posonchromosome);
+                }
+
+                if (Impact_snpEff.equals("HIGH")){ // vepPosList
+                    snpEffPosList[index].add(posonchromosome);
+                }
+            }
+            System.out.println("======== completing the posList DB on all chromosome.");
+
+            String[] variantTypeArray = {"001_synonymous","002_nonsynonymous","003_nonsynGERPandDerivedSIFT","004_nonsynDerivedSIFT","005_GERP",
+            "006_StopGain","007_VEP","008_snpEff","009_VEP_stopGained"};
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String outheader = "CHROM\tBIN_START\tBIN_END\tBIN_START_scale"; //和vcftools的格式保持一致
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < variantTypeArray.length ; i++) {
+                sb.append("\t").append(variantTypeArray[i]).append("_Count");
+            }
+            bw.write(outheader);bw.write(sb.toString());bw.newLine();
+
+            sb.setLength(0);
+            for (int i = 0; i < chrArr.length; i++) {
+                String chromosome = chrArr[i];
+                int chrLength = RefV1Utils.getChromosomeLength(chromosome);
+                SimpleWindow sw = new SimpleWindow(chrLength, windowSize, windowStep);
+
+                sw.addPositionCount(synposList[i].toArray());
+                int[] synPosWindowCount = sw.getWindowValuesInt();
+                sw.clearWindowValues();
+
+                sw.addPositionCount(nonsynPosList[i].toArray());
+                int[] nonsynPosWindowCount = sw.getWindowValuesInt();
+                sw.clearWindowValues();
+
+                sw.addPositionCount(siftGerpPosList[i].toArray());
+                int[] siftGerpPosWindowCount = sw.getWindowValuesInt();
+                sw.clearWindowValues();
+
+                sw.addPositionCount(siftPosList[i].toArray());
+                int[] siftPosWindowCount = sw.getWindowValuesInt();
+                sw.clearWindowValues();
+
+                sw.addPositionCount(gerpPosList[i].toArray());
+                int[] gerpPosWindowCount = sw.getWindowValuesInt();
+                sw.clearWindowValues();
+
+                sw.addPositionCount(stopGainSiftPosList[i].toArray());
+                int[] stopGainSiftPosWindowCount = sw.getWindowValuesInt();
+                sw.clearWindowValues();
+
+                sw.addPositionCount(vepPosList[i].toArray());
+                int[] vepPosWindowCount = sw.getWindowValuesInt();
+                sw.clearWindowValues();
+
+                sw.addPositionCount(stopGainVEPPosList[i].toArray());
+                int[] stopGainVEPPosWindowCount = sw.getWindowValuesInt();
+                sw.clearWindowValues();
+
+                sw.addPositionCount(snpEffPosList[i].toArray());
+                int[] snpEffPosWindowCount = sw.getWindowValuesInt();
+                sw.clearWindowValues();
+
+                int[] windowStarts = sw.getWindowStarts();
+                int[] windowEnds = sw.getWindowEnds();
+                for (int j = 0; j < windowStarts.length; j++) {
+                    sb.setLength(0);
+                    String posscale = WheatUtils.getScaledPos(chromosome,windowStarts[j]);
+                    sb.append(chromosome).append("\t").append(windowStarts[j]).append("\t").append(windowEnds[j]).append("\t").append(posscale).append("\t");
+                    sb.append(synPosWindowCount[j]).append("\t").append(nonsynPosWindowCount[j]).append("\t");
+                    sb.append(siftGerpPosWindowCount[j]).append("\t").append(siftPosWindowCount[j]).append("\t");
+                    sb.append(gerpPosWindowCount[j]).append("\t").append(stopGainSiftPosWindowCount[j]).append("\t");
+                    sb.append(vepPosWindowCount[j]).append("\t").append(stopGainVEPPosWindowCount[j]).append("\t");
+                    sb.append(snpEffPosWindowCount[j]);
+                    bw.write(sb.toString());
+                    bw.newLine();
+                }
+                System.out.println("======== " + chromosome + " is completed.");
+            }
+            bw.flush();bw.close();
+//*********************************** add cds length *******************************************
+            this.addCDSLengthInWindow(outfileS, windowSize, windowStep,outfile2S);
+            System.out.println("======== " + "add effective CDS length.");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
+    /**
+     * 将 del nonsyn syn 的结果写在同一个文件中，不进行分开， 和addCDSLengthInWindow方法的区别在于，前者只计算了del 和 syn 的count 和cds
+     * @param dbFileS
+     * @param windowSize
+     * @param windowStep
+     * @param outfile2S
+     */
+    public void addCDSLengthInWindow (String dbFileS, int windowSize, int windowStep, String outfile2S) {
+//        int windowSize = 2000000;
+//        int windowStep = 1000000;
+
+        String geneFeatureFileS = "/Users/Aoyue/Documents/Data/wheat/gene/v1.1/wheat_v1.1_Lulab.pgf";
+//        String dbFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/016_genomeScan_delvsSyn/001/001_delVSsynOnChr_2000000Window1000000step.txt";
+//        String hcGeneFileS = "/Users/Aoyue/Documents/Data/wheat/gene/001_geneHC/geneHC.txt";
+        String nonoverlapGeneFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/001_geneTable/wheat_v1.1_nonoverlap_addPos.txt.gz";
+
+        RowTable<String> gt = new RowTable<>(nonoverlapGeneFileS);
+        GeneFeature gf = new GeneFeature(geneFeatureFileS);
+        gf.sortGeneByName(); //通过名字排序
+        List<String> chromosomeList = RefV1Utils.getChromosomeList(); //返回1A 2A - 7D
+        TIntArrayList cdsWindowList = new TIntArrayList(); //所有cds的list，这里并没有指明大小
+
+        for (int i = 0; i < chromosomeList.size(); i++) { //每条染色体进行循环
+            // 研究思路： 首先得到每条染色体的长度，建立一个 simpleWindow 类，
+            // 对基因列表中的所有基因进行循环，如果输入的基因染色体不在该循环染色体内，就跳出循环。
+            //根据基因名字，获取基因的Index，后续找到最长转录本，获取该转录本的 cdsList ,对 cdsList 进行循环，一一装入 SimpleWindow 类中，调用 addPositionCountFromRange 方法，统计不同 Bin 里的 cds 长度。
+            int chrlength = RefV1Utils.getChromosomeLength(chromosomeList.get(i));
+            SimpleWindow sw = new SimpleWindow(chrlength, windowSize, windowStep); //new 一个 SimpleWindow 类
+            int chrID = RefV1Utils.getChrID(chromosomeList.get(i), 1); //根据chromosomeList中的1A等，获取chrID
+            int geneIndex = -1;
+            int tranIndex = -1;
+            int cdsStart = -1;
+            int cdsEnd = -1;
+            for (int j = 0; j < gt.getRowNumber(); j++) { //gt已通过名字进行了排序
+                int isuniqueGene = Integer.parseInt(gt.getCell(j, 3));
+                if (isuniqueGene == 0) continue;
+                int currentChrID = Integer.parseInt(gt.getCell(j, 5));
+                if (currentChrID < chrID) continue; //如果，gt文件中的chrID小于循环内的chromosomeList.get(i)，则跳出循环，一直到gt列表里的chrID等于此时正在循环的染色体号
+                else if (currentChrID > (chrID +1)) break; //如果，gt文件中的currentChrID 等于chrID+1，说明还是在1A内，其他情况都终止循环
+                geneIndex = gf.getGeneIndex(gt.getCell(j, 0)); //根据基因名字（不是转录本的名字，没有.后缀12）获取索引
+                for (int k = 0; k < gf.getTranscriptNumber(geneIndex); k++) { //获取最长转录本的index
+                    if (!gt.getCell(j,4).equals(gf.getTranscriptName(geneIndex, k)))continue; //如果 gt.getCell(j,1) 是该基因的最长转录本，已经提前总结出
+                    tranIndex = k; //该循环的意思是：如果最长转录本不等于k，那么就跳出循环，一直到等于k为止，最后终止循环。
+                    break;
+                }
+                List<Range> cdsList = gf.getCDSList(geneIndex, tranIndex); //根据 gene index 和 tranIndex 获取该转录本的 cdsList
+                for (int k = 0; k < cdsList.size(); k++) {
+                    cdsStart = cdsList.get(k).start;
+                    cdsEnd = cdsList.get(k).end;
+                    if (currentChrID == chrID + 1) { //chrID 是根据chromosomeList求出来的1A的第一个染色体chr001,同时chr002也属于1A。 这里如果是在2号的话，则需要改变位置。
+                        cdsStart = RefV1Utils.getPosOnChromosome(currentChrID, cdsStart);
+                        cdsEnd = RefV1Utils.getPosOnChromosome(currentChrID, cdsEnd);
+                    }
+                    sw.addPositionCountFromRange(cdsStart, cdsEnd); //每个基因的每个cds的起始和终止段，都加入了 sw类中
+                }
+            } //所有的基因都进行了cds的起始和终止的计数，并且加入了 sw类中
+            cdsWindowList.add(sw.getWindowValuesInt()); //将每个window的值装入cdsWindowList中
+        }
+
+
+        try {
+            BufferedReader br = AoFile.readFile(dbFileS);
+            //dbFileS include: CHROM	BIN_START	BIN_END	BIN_START_scale	DelCount	NonsynCount	SynCount	DelSynRatio	NonsynSynRatio
+            BufferedWriter bw = AoFile.writeFile(outfile2S);
+            String header = br.readLine();
+            bw.write(header + "\tCDSLength");bw.newLine();
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int line = 0;
+            int cdsLength = -1;
+            StringBuilder sb = new StringBuilder();
+            while ((temp = br.readLine()) != null) {
+                sb.setLength(0);
+                cdsLength = cdsWindowList.get(line);
+                line++;
+                sb.append(temp).append("\t").append(cdsLength);
+                bw.write(sb.toString());
+                bw.newLine();
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println( "======== completed at " + outfile2S);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
 
     public void getGenoTable(){
 //        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/010_Rht/001_outputVCF/chr021_RhtB1_vmap2.1.vcf.gz";
@@ -95,13 +410,13 @@ public class VMap2S1000 {
 //        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/010_Rht/002_genoTable/chr023_RhtD1_genoTable.txt.gz";
 
 
-        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/010_Rht/001_outputVCF/chr021_RhtB1_vmap2.1.vcf.gz";
-        String taxaListFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/010_Rht/002_genoTable/taxaList/TaxaList_HexaploidandTetraploid.txt";
-        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/010_Rht/002_genoTable/S1026/chr021_RhtB1_genoTable.txt.gz";
-
-//        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/010_Rht/001_outputVCF/chr023_RhtD1_vmap2.1.vcf.gz";
+//        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/010_Rht/001_outputVCF/chr021_RhtB1_vmap2.1.vcf.gz";
 //        String taxaListFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/010_Rht/002_genoTable/taxaList/TaxaList_HexaploidandTetraploid.txt";
-//        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/010_Rht/002_genoTable/S1026/chr023_RhtD1_genoTable.txt.gz";
+//        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/010_Rht/002_genoTable/S1026/chr021_RhtB1_genoTable.txt.gz";
+
+        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/010_Rht/001_outputVCF/chr023_RhtD1_vmap2.1.vcf.gz";
+        String taxaListFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/010_Rht/002_genoTable/taxaList/TaxaList_HexaploidandDiploid.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/010_Rht/002_genoTable/S1026/chr023_RhtD1_genoTable.txt.gz";
 
 
         List<Integer> indexTaxa = new ArrayList<>();
@@ -425,10 +740,10 @@ public class VMap2S1000 {
 //        CalVCF.extractVCF(infileS,outfileS,taxaList);
 
         //*** DD - D sub ***//
-        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/002_subsetVCF_Subgenome/500k/chrD_vmap2.1_500k.vcf.gz";
-        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/002_subsetVCF_Ploidy/Diploid.vcf.gz";
-        List<String> taxaList = AoFile.getStringListwithoutHeader("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/001_taxaCheck/000_taxaList/VcfIDList_DD.txt",0);
-        CalVCF.extractVCF(infileS,outfileS,taxaList);
+//        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/002_subsetVCF_Subgenome/500k/chrD_vmap2.1_500k.vcf.gz";
+//        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/002_subsetVCF_Ploidy/Diploid.vcf.gz";
+//        List<String> taxaList = AoFile.getStringListwithoutHeader("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/001_taxaCheck/000_taxaList/VcfIDList_DD.txt",0);
+//        CalVCF.extractVCF(infileS,outfileS,taxaList);
 
         //*** AABBDD - D sub ***//
 //                String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/003_vcfQC/002_subsetVCF_Subgenome/500k/chrD_vmap2.1.500k.vcf.gz";
@@ -442,15 +757,28 @@ public class VMap2S1000 {
 //        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/038_subsetVCF/001_hexaploid";
 //        String taxaList = "/data4/home/aoyue/vmap2/analysis/038_subsetVCF/VcfIDList_AABBDD.txt";
 //        String logDirS = "/data4/home/aoyue/vmap2/aaPlantGenetics/log_049_20210808";
+
+        //*** AABBDD ***//
+        String infileDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/010_Rht/001_outputVCF";
+        String outfileDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/010_Rht/003_VCF_AABBDD";
+        String taxaList = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/001_taxaCheck/000_taxaList/VcfIDList_AABBDD.txt";
+        String logDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/010_Rht/003_VCF_AABBDD/log";
+
 //
 //        String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
-//        for (int i = 0; i < chrArr.length; i++) {
-//            String chr = chrArr[i];
+        String[] chrArr = {"chr021_RhtB1_vmap2.1.vcf.gz","chr023_RhtD1_vmap2.1.vcf.gz"};
+        for (int i = 0; i < chrArr.length; i++) {
+            String chr = chrArr[i];
 //            String infileS = new File(infileDirS,"chr" + chr + "_vmap2.1.500k.vcf.gz").getAbsolutePath();
 //            String outfileS = new File(outfileDirS,"chr" + chr + "_vmap2.1_hexaploid_subset.vcf.gz").getAbsolutePath();
 //            String logfileS = new File(logDirS,"log_" + new File(outfileS).getName().split(".gz")[0]).getAbsolutePath(); //不管是不是gz结尾，我们只取gz前的部分，妙！
 //            System.out.println("nohup java -jar 049_extractVCF_GL.jar " + infileS + " " + outfileS + " " + taxaList + " > " + logfileS );
-//        }
+
+            String infileS = new File(infileDirS,chr).getAbsolutePath();
+            String outfileS = new File(outfileDirS,chr).getAbsolutePath();
+            String logfileS = new File(logDirS,"log_" + new File(outfileS).getName().split(".gz")[0]).getAbsolutePath(); //不管是不是gz结尾，我们只取gz前的部分，妙！
+            CalVCF.extractVCF(infileS,outfileS,taxaList);
+        }
 
 //        SplitScript.splitScript2("/Users/Aoyue/Documents/sh.sh",20,3);
 
@@ -467,26 +795,31 @@ public class VMap2S1000 {
 //        String infileDirS = "/data4/home/aoyue/vmap2/analysis/036_annoDB/002_genicSNP/002_geneSNPVCF";
 //        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/036_annoDB/002_genicSNP/003_geneSNPVCF_RemoveN";
 
-        String infileDirS = "/data1/publicData/wheat/genotype/VMap/VMap2.0/VMap2.0";
-        String outfileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/202_VMap2.0";
+//        String infileDirS = "/data1/publicData/wheat/genotype/VMap/VMap2.0/VMap2.0";
+//        String outfileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/202_VMap2.0";
 
-        File[] fs = new File(infileDirS).listFiles();
-        File[] fs1 = IOUtils.listFilesEndsWith(fs,"vcf.gz");
-        List<File> fsList = new ArrayList<>();
-        for (int i = 0; i < fs1.length; i++) {
-            fsList.add(fs1[i]);
-        }
-        Collections.sort(fsList);
+        String infileDirS = "/data1/home/feilu/filter2";
+        String outfileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/200_VMap2.0";
 
+//        String infileDirS = "/Users/Aoyue/Documents/in";
+//        String outfileDirS = "/Users/Aoyue/Documents/out";
+
+        List<File> fsList = AoFile.getFileListInDir(infileDirS);
         fsList.parallelStream().forEach(f -> {
             try {
                 String infileS = f.getAbsolutePath();
-                String outfileS = new File(outfileDirS,f.getName().replaceFirst(".vcf.gz",".vcf")).getAbsolutePath();
+                String outfileS = new File(outfileDirS,f.getName().split(".vcf")[0] + ".vcf").getAbsolutePath();
                 BufferedReader br = AoFile.readFile(infileS);
                 BufferedWriter bw = AoFile.writeFile(outfileS);
                 String temp = null;
-                int cnttotal = 0;
-                int cntsubset = 0;
+                int cntTotalVariants = 0;
+                int cntSNP = 0;
+                int cntIndel = 0;
+                int cntInsertion = 0;
+                int cntDeletion = 0;
+                int cntN = 0;
+                int cntAllincludeN = 0;
+
                 while ((temp = br.readLine()) != null) {
                     if (temp.startsWith("##")) {
                         bw.write(temp);
@@ -502,18 +835,35 @@ public class VMap2S1000 {
                         bw.newLine();
                     }
                     else {
-                        cnttotal++;
+                        cntAllincludeN++;
                         List<String> l = PStringUtils.fastSplit(temp);
-                        if (l.get(4).equals("N")) continue; //alt是index为4的列
+                        String alt = l.get(4);
+                        if (alt.equals("N")) {
+                            cntN++;
+                            continue; //alt是index为4的列
+                        }
+
+                        cntTotalVariants++;
+
+                        if (!alt.equals("D") && !alt.equals("I") && !alt.equals("N")){
+                            cntSNP++;
+                        }
+                        if (alt.equals("D")){
+                            cntDeletion++;
+                            cntIndel++;
+                        }
+                        if (alt.equals("I")){
+                            cntInsertion++;
+                            cntIndel++;
+                        }
                         bw.write(temp);
                         bw.newLine();
-                        cntsubset++;
                     }
                 }
                 bw.flush();
                 bw.close();
                 br.close();
-                System.out.println(f.getName() + "\t" + cnttotal + "\t" + cntsubset);
+                System.out.println(f.getName().substring(3,6) + "\t" + cntTotalVariants + "\t" + cntSNP + "\t" + cntIndel + "\t" + cntInsertion + "\t" + cntDeletion + "\t" + cntN);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -1000,58 +1350,6 @@ public class VMap2S1000 {
         //java -Xms50g -Xmx200g -jar GeneticLoad_2.jar > log_mkGeneVCF_20210806.txt 2>&1 &
     }
 
-    /**
-     * 在wheat_v1.1_nonoverlap.txt文件中添加列信息：Chr,TransStart,TransEnd,TranStrand,CDSExonNumber,CDSLength六列信息
-     */
-    public void geneInfo(){
-        String infileS = "/Users/Aoyue/Documents/Data/wheat/gene/v1.1/wheat_v1.1_nonoverlap.txt";
-        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/001_geneTable/wheat_v1.1_nonoverlap_addPos.txt.gz";
-        String geneFeatureFileS = "/Users/Aoyue/Documents/Data/wheat/gene/v1.1/wheat_v1.1_Lulab.pgf";
-        GeneFeature gf = new GeneFeature (geneFeatureFileS);
-        PGF pgf = new PGF(geneFeatureFileS);
-        pgf.sortGeneByName();
-        gf.sortGeneByName();
-        try {
-            BufferedReader br = AoFile.readFile(infileS);
-            BufferedWriter bw = AoFile.writeFile(outfileS);
-            String header = br.readLine();
-            bw.write(header + "\tChr\tTransStart\tTransEnd\tTranStrand\tExonNumber\tCDSLength");bw.newLine();
-            String temp = null;
-            List<String> l = new ArrayList<>();
-            int cnt = 0;
-            StringBuilder sb = new StringBuilder();
-            while ((temp = br.readLine()) != null) {
-                sb.setLength(0);
-                l = PStringUtils.fastSplit(temp);
-                cnt++;
-                String gene = l.get(0);
-                String trans = l.get(4);
-                int geneIndex = gf.getGeneIndex(gene);
-                int longIndex = gf.getLongestTranscriptIndex(geneIndex);
-                String longTrans = gf.getTranscriptName(geneIndex,longIndex);
-                if (!trans.equals(longTrans)) System.out.println(temp);
-                int chr = gf.getChromosomeOfGene(geneIndex);
-                if (chr==0)continue;
-                int start = gf.getTranscriptStart(geneIndex,longIndex);
-                int end = gf.getTranscriptEnd(geneIndex,longIndex);
-                int strand = gf.getTranscriptStrand(geneIndex,longIndex);
-                int exonNum = gf.getExonList(geneIndex,longIndex).size();
-                int CDSlength = pgf.getCDSLen(geneIndex, longIndex);
-                sb.append("\t").append(chr).append("\t").append(start).append("\t").append(end).append("\t").append(strand).append("\t").append(exonNum).append("\t").append(CDSlength);
-                bw.write(temp + sb.toString());
-                bw.newLine();
-            }
-            br.close();
-            bw.flush();
-            bw.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-    }
-
-
-
     public void rename(){
         String[] chrArr = {"001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042"};
         for (int i = 0; i < chrArr.length; i++) {
@@ -1147,8 +1445,10 @@ public class VMap2S1000 {
 //            System.out.println("nohup bgzip -@ 20 chr" + chr + ".vmap2.vcf && tabix -p vcf chr" + chr + ".vmap2.vcf.gz &");
 //            System.out.println("nohup bgzip chr" + chr + "_vmap2.0.vcf && tabix -p vcf chr" + chr + "_vmap2.0.vcf.gz &");
 //            System.out.println("nohup tabix -p vcf chr" + chr + "_vmap2.0.vcf.gz &");
+            System.out.println("nohup tabix -p vcf chr" + chr + ".vmap2.vcf.gz &");
 
-            System.out.println("nohup bgzip chr" + chr + "_vmap2.1.vcf 2>&1 &");
+//            System.out.println("nohup bgzip chr" + chr + ".vmap2.vcf 2>&1 &");
+//            System.out.println("nohup bgzip chr" + chr + "_vmap2.1.vcf 2>&1 &");
 
         }
     }

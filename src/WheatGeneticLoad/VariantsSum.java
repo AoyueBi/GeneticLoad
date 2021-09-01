@@ -102,8 +102,8 @@ public class VariantsSum {
 //        this.sortAndFilter();
 
         //*********** ratio of del/syn and nonsyn/syn on genome landscape ********************//
-//        this.WindowDelvsSyn_fromExonAnnotation();
-//        this.WindowDel_Nonsyn_vsSyn_fromExonAnnotation();
+        this.WindowDelvsSyn_fromExonAnnotation();
+        this.WindowDel_Nonsyn_vsSyn_fromExonAnnotation();
 //        this.addRecombinationfromScience(); //该方法凑效！思路：将 del nonysn syn 数据的滑窗设置成和science一致，然后再将重组率文件合并，后续进行其他处理。本次数据分析采用此方法。
 
 //        AoFile.readheader("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/003/chr006_SNP_anno.txt");
@@ -119,8 +119,14 @@ public class VariantsSum {
 
     public void AddGenePosition(){
 
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/zz_rProject/R4VMap2Figs/data/geneExpression/geneBurdenByIndi/geneBurden_byIndiviSum.txt.gz";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/zz_rProject/R4VMap2Figs/data/geneExpression/geneBurdenByIndi/002_geneBurden_byIndiviSum_addPosition.txt.gz";
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/zz_rProject/R4VMap2Figs/data/geneExpression/geneBurdenByIndi/geneBurden_byIndiviSum.txt.gz";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/zz_rProject/R4VMap2Figs/data/geneExpression/geneBurdenByIndi/002_geneBurden_byIndiviSum_addPosition.txt.gz";
+
+//        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/008_geneBurden_fromDaxing/007_HIGH_VEP/003_sumFrom002/GeneBurden.sum.txt.gz";
+//        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/008_geneBurden_fromDaxing/007_HIGH_VEP/003_sumFrom002/GeneBurden.sum_addPosition.txt.gz";
+
+        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/008_geneBurden_fromDaxing/003_SIFT_GERP/003_sumFrom002/GeneBurden.sum.txt.gz";
+        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/008_geneBurden_fromDaxing/003_SIFT_GERP/003_sumFrom002/GeneBurden.sum_addPosition.txt.gz";
 
         GeneFeature gf = new GeneFeature("/Users/Aoyue/Documents/Data/wheat/gene/v1.1/wheat_v1.1_Lulab.pgf");
         gf.sortGeneByName();
@@ -795,8 +801,15 @@ public class VariantsSum {
         int windowStep = 1000000; //1 M
 
 
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/019_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/016_genomeScan_delvsSyn/001/001_delVSsynOnChr_" + windowSize + "Window" + windowStep + "step.txt";
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/019_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/016_genomeScan_delvsSyn/001/001_delVSsynOnChr_" + windowSize + "Window" + windowStep + "step.txt";
+
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/019_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/016_genomeScan_delvsSyn/001/001_delVSsynOnChr_" + windowSize + "Window" + windowStep + "step.txt";
+
+        //******* 2021-09-01 周三 *******//
+        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/001_geneSNPAnno.txt.gz";
+        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/009_genomeScan_delvcSyn/001/001_delVSsynOnChr_" + windowSize + "window" + windowStep + "step.txt";
         String outfile2S = outfileS.replaceFirst(".txt","_addEffectiveCDSLength.txt");
         AoFile.readheader(infileS);
         String[] chrArr = {"1A", "1B", "1D", "2A", "2B", "2D", "3A", "3B", "3D", "4A", "4B", "4D", "5A", "5B", "5D", "6A", "6B", "6D", "7A", "7B", "7D"};
@@ -834,7 +847,7 @@ public class VariantsSum {
                         if(!gerp.startsWith("N")){
                             double gerpd = Double.parseDouble(gerp);
                             double siftd = Double.parseDouble(sift);
-                            if (siftd <= 0.05 && gerpd >= 1){
+                            if (siftd < 0.05 && gerpd > 1){
                                 delposList[index].add(posonchromosome);
                             }
                         }

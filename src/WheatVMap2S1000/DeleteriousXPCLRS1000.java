@@ -77,23 +77,35 @@ public class DeleteriousXPCLRS1000 {
 //        String[] choice2_ifSelected = {ifselected1,ifselected2};
 //        String[] choice3_refobj = {group1,group2,group3};
 
+//        String[] choice1_variantType = {variantType1,variantType2,variantType3,variantType4,variantType5, variantType6,variantType7,variantType8,variantType9};
+//        String[] choice2_ifSelected = {ifselected3};
+//        String[] choice3_refobj = {group4};
+
         String[] choice1_variantType = {variantType1,variantType2,variantType3,variantType4,variantType5, variantType6,variantType7,variantType8,variantType9};
-        String[] choice2_ifSelected = {ifselected3};
-        String[] choice3_refobj = {group4};
+        String[] choice2_ifSelected = {ifselected1};
+        String[] choice3_refobj = {group1,group2,group3};
+
 
 //        String parentDirS = ""; //model
 //        String parentDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/009_xpclr/003_summary_XPCLR/003_deleteriousXPCLR";  //结果文件需要存放的地方
 //        String parentDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/005_delCount/001_allIndivi";
-        String parentDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/005_delCount/002_allIndivi_syntenicGene";
+//        String parentDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/005_delCount/002_allIndivi_syntenicGene";
+        //从2021-08-25 开始区分 top5 top1
+//        String parentDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/009_xpclr/004_summary_XPCLR_top005/003_deleteriousXPCLR";
+        String parentDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/009_xpclr/005_summary_XPCLR_top001/003_deleteriousXPCLR";
+
         new File(parentDirS).mkdirs();
 
-        for (int i = 0; i < choice3_refobj.length; i++) {
+        for (int i = 0; i < choice3_refobj.length; i++) { //第一层循环：选择区的wede dedurum lrcl 或者是 全基因组
             group = choice3_refobj[i];
             // infileS 文件是Gene SNP 数据库中受选择区域内的 SNP 位点，即为 Annotation 数据库的子集, 如果计算的是全基因组区域的话，则该文件在程序中不会被处理到，可以忽略。
-            String infileS = new File("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/009_xpclr/003_summary_XPCLR/002_topK","top0.05_" + group + "_ChrPos_fromExonAnnotation.txt.gz").getAbsolutePath();
-            for (int j = 0; j < choice2_ifSelected.length; j++) {
+//            String infileS = new File("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/009_xpclr/003_summary_XPCLR/002_topK","top0.05_" + group + "_ChrPos_fromExonAnnotation.txt.gz").getAbsolutePath();
+//            String infileS = new File("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/009_xpclr/004_summary_XPCLR_top005/002_topK","top0.05_" + group + "_ChrPos_fromExonAnnotation.txt.gz").getAbsolutePath();
+            String infileS = new File("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/009_xpclr/005_summary_XPCLR_top001/002_topK","top0.01_" + group + "_ChrPos_fromExonAnnotation.txt.gz").getAbsolutePath();
+
+            for (int j = 0; j < choice2_ifSelected.length; j++) { //第二层循环：是否受选择
                 ifselected = choice2_ifSelected[j];
-                for (int k = 0; k < choice1_variantType.length; k++) {
+                for (int k = 0; k < choice1_variantType.length; k++) { //第二层循环：计数的类型
                     variantType = choice1_variantType[k];
                     String DelCountFileS = new File(parentDirS,variantType + "_ifselected" + ifselected + "_" + group + "_DelCount_bychr.txt").getAbsolutePath();
                     this.countDeleteriousVMapII_byChr(infileS,ifselected,variantType,DelCountFileS,group);
@@ -121,13 +133,10 @@ public class DeleteriousXPCLRS1000 {
 
         //########### 大麦和黑麦简约法 ******* VMap2.0-2021 *********** 加上Derived SIFT的数据库 ################w
         String exonVCFDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/007_geneVCF"; //外显子变异数据 20210808 完成
-//        String SNPAnnoFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/001_geneSNPAnno.txt.gz"; //注释信息库合并后的总文件
-        String SNPAnnoFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/002_geneSNPAnno_syntenic.txt.gz";
+        String SNPAnnoFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/001_geneSNPAnno.txt.gz"; //注释信息库合并后的总文件
+//        String SNPAnnoFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/002_geneSNPAnno_syntenic.txt.gz";
 
         AoFile.readheader(SNPAnnoFileS);
-        //************* 无需修改的路径 ****************** //
-        String DelCountFiletempS = new File(DelCountFileS).getAbsolutePath().replaceFirst(".txt",".temp.txt"); //有害变异加性模型输出文件
-
 /**
  * ################################### step0: 建立受选择区域的集合，并在下文进行 posList 和 ancestral charList 构建时进行适当的过滤。
  */
