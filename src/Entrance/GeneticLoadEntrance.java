@@ -243,6 +243,7 @@ public class GeneticLoadEntrance {
 //        new VMap2S1000().checkAltCaseCount(args[0],args[1]);
 //        AoFile.subsetTxt_parallel(args[0],args[1],args[2]);
 //        AoFile.subsetTxt_singleStream(args[0],args[1],args[2]);
+//        CalVCF.filterMAFinVCF_parallel(args[0],Double.parseDouble(args[1]),args[2]);
 
     }
 

@@ -2449,8 +2449,6 @@ public class CountSites {
      */
     public void subsetVCF_filterAlt2(String infileDirS, String outfileDirS, String extractRatio) {
 
-
-
         List<File> fsList = AoFile.getFileListInDir(infileDirS);
         Collections.sort(fsList);
         fsList.parallelStream().forEach(f -> {

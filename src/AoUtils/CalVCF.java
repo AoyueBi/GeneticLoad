@@ -1539,6 +1539,71 @@ public class CalVCF {
     }
 
     /**
+     *
+     * @param infileDirS
+     * @param mafRatio
+     * @param outfileDirS
+     */
+    public static void filterMAFinVCF_parallel(String infileDirS, double mafRatio, String outfileDirS){
+        File[] fs = new File(infileDirS).listFiles();
+        File[] fs1 = IOUtils.listFilesEndsWith(fs,"vcf.gz");
+        File[] fs2 = IOUtils.listFilesEndsWith(fs,"vcf");
+        List<File> fsList = new ArrayList<>();
+        for (int i = 0; i < fs1.length; i++) {
+            fsList.add(fs1[i]);
+        }
+        for (int i = 0; i < fs2.length; i++) {
+            fsList.add(fs2[i]);
+        }
+
+        Collections.sort(fsList);
+        fsList.parallelStream().forEach(f -> {
+
+            try{
+                String outfileS = new File(outfileDirS,f.getName().split(".vcf")[0] + "_MAF" + mafRatio + ".vcf").getAbsolutePath();
+                BufferedReader br = AoFile.readFile(f.getAbsolutePath());
+                BufferedWriter bw = AoFile.writeFile(outfileS);
+                String temp = null;
+                List<String> l = new ArrayList<>();
+                int cntTotal = 0;
+                int cntKeep = 0;
+                while ((temp = br.readLine()) != null) {
+                    if (temp.startsWith("#")) {
+                        bw.write(temp);
+                        bw.newLine();
+                    }
+                    if (!temp.startsWith("#")) {
+                        cntTotal++;
+                        l = PStringUtils.fastSplit(temp);
+                        List<String> lgeno = new ArrayList<>();
+                        for (int i = 9; i < l.size(); i++) {
+                            lgeno.add(l.get(i));
+                        }
+                        String[] genoArray = lgeno.toArray(new String[lgeno.size()]);
+                        String maf = CalVCF.getPopMAF(genoArray);
+                        if (Double.parseDouble(maf) < mafRatio) continue;
+                        StringBuilder sb = new StringBuilder();
+                        sb.append(temp);
+                        bw.write(sb.toString());
+                        bw.newLine();
+                        cntKeep++;
+                    }
+                }
+                br.close();
+                bw.flush();
+                bw.close();
+                System.out.println("****************************** LOG ******************************");
+                System.out.println("Total SNP number    " + cntTotal + "    Kept SNP number " + cntKeep);
+                System.out.println(f.getAbsolutePath() + " is completed at " + outfileS);
+            } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+
+            }
+        });
+    }
+
+    /**
      * 根据MAF过滤VCF
      * @param infileS
      * @param mafRatio filter maf less than ratio

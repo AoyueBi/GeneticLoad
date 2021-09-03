@@ -102,9 +102,9 @@ public class VariantsSum {
 //        this.sortAndFilter();
 
         //*********** ratio of del/syn and nonsyn/syn on genome landscape ********************//
-        this.WindowDelvsSyn_fromExonAnnotation();
-        this.WindowDel_Nonsyn_vsSyn_fromExonAnnotation();
-//        this.addRecombinationfromScience(); //该方法凑效！思路：将 del nonysn syn 数据的滑窗设置成和science一致，然后再将重组率文件合并，后续进行其他处理。本次数据分析采用此方法。
+//        this.WindowDelvsSyn_fromExonAnnotation();
+//        this.WindowDel_Nonsyn_vsSyn_fromExonAnnotation();
+        this.addRecombinationfromScience(); //该方法凑效！思路：将 del nonysn syn 数据的滑窗设置成和science一致，然后再将重组率文件合并，后续进行其他处理。本次数据分析采用此方法。
 
 //        AoFile.readheader("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/003/chr006_SNP_anno.txt");
 

@@ -5,6 +5,7 @@ import AoUtils.Gene.GeneMisc;
 import PopulationAnalysis.XPCLR;
 import WheatGeneticLoad.FilterVCF2;
 import WheatGeneticLoad.VariantsSum;
+import com.google.common.collect.Table;
 import daxing.common.IOTool;
 import daxing.common.PGF;
 import daxing.common.RowTableTool;
@@ -38,6 +39,7 @@ public class VMap2S1000 {
 //        this.rename();
 //        this.filterSNPtoBi_parallel();
 //        this.filterN_fromVCF();
+//        CalVCF.filterMAFinVCF_parallel("/Users/Aoyue/Documents/in",0.1,"/Users/Aoyue/Documents/out");
 
 
         /**
@@ -56,7 +58,7 @@ public class VMap2S1000 {
         /**
          * gene site annotation
          */
-//        this.snpAnnotationBuild(); //include many methods XXXXXXX
+        this.snpAnnotationBuild(); //include many methods XXXXXXX
 //        new DeleteriousCount();
 
         /**
@@ -79,7 +81,8 @@ public class VMap2S1000 {
          * 全基因组 del 分布
          */
 //        new VariantsSum().AddGenePosition();
-        this.WindowDelvsSyn_fromExonAnnotation();
+//        this.WindowDelvsSyn_fromExonAnnotation();
+//        this.addRecombinationfromScience();
 
 
         /**
@@ -88,6 +91,35 @@ public class VMap2S1000 {
 
     }
 
+    public void addRecombinationfromScience(){
+        String inputFile1 = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/009_genomeScan_delvcSyn/001/001_delVSsynOnChr_10000000window1000000step_addEffectiveCDSLength.txt"; //
+        String inputFile2 = "/Users/Aoyue/Documents/Data/wheat/article/iwgsc_refseqv1.0_recombination_rate_analysis/iwgsc_refseqv1.0_recombination_rate_addScalePos.txt"; //重组率文件
+        String outFile = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/009_genomeScan_delvcSyn/001/002_delVSsynOnChr_10000000window1000000step_addEffectiveCDSLength_addRecom.txt"; //
+        Table<String,String,String> table2=RowTableTool.getTable(inputFile2, 0, 1, 4);
+        try (BufferedReader br1 = IOTool.getReader(inputFile1);
+             BufferedWriter bw = IOTool.getTextWriter(outFile)) {
+            String line=br1.readLine();
+            bw.write(line+"\tRecombinationRate");
+            bw.newLine();
+            List<String> temp;
+            String chr, pos;
+            while ((line=br1.readLine())!=null){
+                temp=PStringUtils.fastSplit(line);
+                chr="chr"+temp.get(0);
+                pos=temp.get(1);
+                if (table2.contains(chr,pos)){
+                    temp.add(table2.get(chr,pos));
+                }else {
+                    temp.add("NA");
+                }
+                bw.write(String.join("\t", temp));
+                bw.newLine();
+            }
+            bw.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * 这里只研究 del 和 syn
@@ -174,7 +206,7 @@ public class VMap2S1000 {
 
                 // 只考虑有 ancestral 状态的那些位点
                 String ref = l.get(3); String alt = l.get(4);
-                if (!ancestralAllele.equals(ref) && !ancestralAllele.equals(alt)) continue;
+//                if (!ancestralAllele.equals(ref) && !ancestralAllele.equals(alt)) continue;
 
                 if (variantType.equals("SYNONYMOUS")){
                     synposList[index].add(posonchromosome);
@@ -238,7 +270,7 @@ public class VMap2S1000 {
             String outheader = "CHROM\tBIN_START\tBIN_END\tBIN_START_scale"; //和vcftools的格式保持一致
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < variantTypeArray.length ; i++) {
-                sb.append("\t").append(variantTypeArray[i]).append("_Count");
+                sb.append("\t").append("a").append(variantTypeArray[i]);
             }
             bw.write(outheader);bw.write(sb.toString());bw.newLine();
 
@@ -658,14 +690,14 @@ public class VMap2S1000 {
 
 
     public void snpAnnotationBuild(){
-//        this.mkGeneVCF(); //自己的方法（最终采用）
+        this.mkGeneVCF(); //自己的方法（最终采用）
 //        this.mkGeneVCF2(); //来自达兴的方法
 //        this.extractInfoFromGeneVCF();
 //        this.extractInfoFromGeneVCF_byAoyue();
 //        new VariantsSum().mkExonAnnotation2(); //未用
 //        new VariantsSum().addAncestral();
 //        this.addDAF();
-        new VariantsSum().addGerp();
+//        new VariantsSum().addGerp();
         /**
          * sift 计算
          */
@@ -1280,7 +1312,6 @@ public class VMap2S1000 {
         String outputDirS = "/data4/home/aoyue/vmap2/analysis/036_annoDB/002_genicSNP/002_geneSNPVCF"; //modify
         GeneFeature gf = new GeneFeature(geneFeatureFileS);
         gf.sortGeneByName();
-
         RowTable<String> t = new RowTable<>(hcGeneFileS);
         TIntHashSet chrSet = new TIntHashSet(t.getColumnAsIntArray(5)); //get chr的set集合
         List<Integer> chrList = new ArrayList<>();
@@ -1365,7 +1396,7 @@ public class VMap2S1000 {
      */
     public void filterSNPtoBi_parallel() {
         String infileDirS = "/data1/publicData/wheat/genotype/VMap/VMap2.0/VMap2.0";
-        String outfileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/201_VMap2.1";
+        String outfileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/202_VMap2.1";
         File[] fs = new File(infileDirS).listFiles();
         File[] fs1 = IOUtils.listFilesEndsWith(fs,"vcf.gz");
         File[] fs2 = IOUtils.listFilesEndsWith(fs,"vcf");
@@ -1445,10 +1476,10 @@ public class VMap2S1000 {
 //            System.out.println("nohup bgzip -@ 20 chr" + chr + ".vmap2.vcf && tabix -p vcf chr" + chr + ".vmap2.vcf.gz &");
 //            System.out.println("nohup bgzip chr" + chr + "_vmap2.0.vcf && tabix -p vcf chr" + chr + "_vmap2.0.vcf.gz &");
 //            System.out.println("nohup tabix -p vcf chr" + chr + "_vmap2.0.vcf.gz &");
-            System.out.println("nohup tabix -p vcf chr" + chr + ".vmap2.vcf.gz &");
+//            System.out.println("nohup tabix -p vcf chr" + chr + ".vmap2.vcf.gz &");
 
 //            System.out.println("nohup bgzip chr" + chr + ".vmap2.vcf 2>&1 &");
-//            System.out.println("nohup bgzip chr" + chr + "_vmap2.1.vcf 2>&1 &");
+            System.out.println("nohup bgzip chr" + chr + "_vmap2.1.vcf 2>&1 &");
 
         }
     }
