@@ -690,10 +690,10 @@ public class VMap2S1000 {
 
 
     public void snpAnnotationBuild(){
-        this.mkGeneVCF(); //自己的方法（最终采用）
+//        this.mkGeneVCF(); //自己的方法（最终采用）
 //        this.mkGeneVCF2(); //来自达兴的方法
 //        this.extractInfoFromGeneVCF();
-//        this.extractInfoFromGeneVCF_byAoyue();
+        this.extractInfoFromGeneVCF_byAoyue();
 //        new VariantsSum().mkExonAnnotation2(); //未用
 //        new VariantsSum().addAncestral();
 //        this.addDAF();
