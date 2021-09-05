@@ -4,6 +4,7 @@ import AoUtils.*;
 import AoUtils.Gene.GeneMisc;
 import PopulationAnalysis.XPCLR;
 import WheatGeneticLoad.FilterVCF2;
+import WheatGeneticLoad.SIFT;
 import WheatGeneticLoad.VariantsSum;
 import com.google.common.collect.Table;
 import daxing.common.IOTool;
@@ -693,15 +694,15 @@ public class VMap2S1000 {
 //        this.mkGeneVCF(); //自己的方法（最终采用）
 //        this.mkGeneVCF2(); //来自达兴的方法
 //        this.extractInfoFromGeneVCF();
-        this.extractInfoFromGeneVCF_byAoyue();
-//        new VariantsSum().mkExonAnnotation2(); //未用
+//        this.extractInfoFromGeneVCF_byAoyue(); //该方法是提取 gene 区的SNP信息
+//        new VariantsSum().mkExonAnnotation2(); //未用（该方法是提取CDS区域的SNP）
 //        new VariantsSum().addAncestral();
 //        this.addDAF();
 //        new VariantsSum().addGerp();
         /**
          * sift 计算
          */
-//        new SIFT();
+        new SIFT();
 //        this.calFileLine();
 
 //        new VariantsSum().addSift_20210717();
