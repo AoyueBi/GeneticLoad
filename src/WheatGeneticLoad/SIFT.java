@@ -87,16 +87,29 @@ public class SIFT {
 //        SplitScript.splitScript2("/Users/Aoyue/Documents/sh.sh",6,7);
 
 ///////////// refref
-        this.reverseRefAltallelebyExonVCF();
+//        this.reverseRefAltallelebyExonVCF();
 //        this.mkdis(); //建立42个空的文件夹，上传至集群
 //        this.annotatorVCF3();
 //        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/002_sift/002_script_refref/siftAnnotator_geneRefAlt_20210716.sh",6,7);
 //        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/002_sift/002_script_refref/siftAnnotator_geneRefAlt_20210806.sh",21,2);
 
 //        this.move(); //将结果 move 到同一个文件夹中，以便于下载使用
+        this.deleteVCF(); //删除 sift注释结果中的VCF文件，值保留xlsx文件即可
 
 
 
+
+    }
+
+    /**
+     * 删除 sift注释结果中的VCF文件，值保留xlsx文件即可
+     */
+    public void deleteVCF(){
+        for (int i = 1; i < 43; i++) {
+            String chr = PStringUtils.getNDigitNumber(3, i);
+/////////// 2021-07-16 周五
+            System.out.println("rm -fr output" + chr );
+        }
     }
 
 //     find -name "*.vcf" | cut -c3- ; 本地获取运行脚本，输出在netbeans的output界面。
@@ -114,11 +127,11 @@ public class SIFT {
 //        String infileDirS = "/data4/home/aoyue/vmap2/analysis/028_sift/001_exon_refref/001_exonVCF_refref";
 //        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/028_sift/001_exon_refref";
 
-        String infileDirS = "/data4/home/aoyue/vmap2/analysis/036_annoDB/002_genicSNP/002_geneSNPVCF";
-        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/037_sift/001_gene_refalt";
+//        String infileDirS = "/data4/home/aoyue/vmap2/analysis/036_annoDB/002_genicSNP/002_geneSNPVCF";
+//        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/037_sift/001_gene_refalt";
 
-//        String infileDirS = "/data4/home/aoyue/vmap2/analysis/037_sift/002_gene_refref/001_geneVCF_refref";
-//        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/037_sift/002_gene_refref/";
+        String infileDirS = "/data4/home/aoyue/vmap2/analysis/037_sift/002_gene_refref/001_geneVCF_refref";
+        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/037_sift/002_gene_refref/";
 
 
 
@@ -127,8 +140,8 @@ public class SIFT {
             String chr = chrArr[i];
 //            String infileS = new File(infileDirS,"chr" + chr + "_exon_vmap2.1.vcf").getAbsolutePath();
 //            String infileS = new File(infileDirS,"chr" + chr + "_exon_vmap2.1_RefRef.vcf").getAbsolutePath();
-            String infileS = new File(infileDirS,"chr" + chr + "_gene_vmap2.1.vcf").getAbsolutePath();
-//            String infileS = new File(infileDirS,"chr" + chr + "_gene_vmap2.1_RefRef.vcf").getAbsolutePath();
+//            String infileS = new File(infileDirS,"chr" + chr + "_gene_vmap2.1.vcf").getAbsolutePath();
+            String infileS = new File(infileDirS,"chr" + chr + "_gene_vmap2.1_RefRef.vcf").getAbsolutePath();
 
             String outfileDirS2 = new File(outfileDirS,"output" + chr).getAbsolutePath();
             File f = new File(infileS);
@@ -226,8 +239,8 @@ public class SIFT {
 //            System.out.println("mv output" + chr + "/chr" + chr + "_exon_vmap2.1_SIFTannotations.xls output/");
 //            System.out.println("mv output" + chr + "/chr" + chr + "_exon_vmap2.1_RefRef_SIFTannotations.xls output/");
 /////////// 2021-07-16 周五
-//            System.out.println("mv output" + chr + "/chr" + chr + "_gene_vmap2.1_RefRef_SIFTannotations.xls output/");
-            System.out.println("mv output" + chr + "/chr" + chr + "_gene_vmap2.1_SIFTannotations.xls output/");
+            System.out.println("mv output" + chr + "/chr" + chr + "_gene_vmap2.1_RefRef_SIFTannotations.xls output/");
+//            System.out.println("mv output" + chr + "/chr" + chr + "_gene_vmap2.1_SIFTannotations.xls output/");
 
         }
 
