@@ -81,7 +81,7 @@ public class SIFT {
         //******** 2021 版本 VMap2.0 的计算 **************//
 ///////////// refalt
 //        this.mkdis(); //建立42个空的文件夹，上传至集群
-//        this.annotatorVCF3();
+        this.annotatorVCF3();
 //        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/002_sift/001_script/siftAnnotator_geneRefAlt_20210716.sh",6,7);
 //        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/002_sift/001_script/siftAnnotator_geneRefAlt_20210806.sh",6,7);
 //        SplitScript.splitScript2("/Users/Aoyue/Documents/sh.sh",6,7);
@@ -94,7 +94,7 @@ public class SIFT {
 //        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/002_sift/002_script_refref/siftAnnotator_geneRefAlt_20210806.sh",21,2);
 
 //        this.move(); //将结果 move 到同一个文件夹中，以便于下载使用
-        this.deleteVCF(); //删除 sift注释结果中的VCF文件，值保留xlsx文件即可
+//        this.deleteVCF(); //删除 sift注释结果中的VCF文件，值保留xlsx文件即可
 
 
 

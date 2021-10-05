@@ -748,7 +748,10 @@ public class AoFile {
             br = IOUtils.getTextGzipReader(infileS);
         }else if (infileS.endsWith(".xls")) {
             br = IOUtils.getTextReader(infileS);
+        }else if (infileS.endsWith(".predictions")) {
+            br = IOUtils.getTextReader(infileS);
         }
+
         return br;
     }
 

@@ -61,6 +61,7 @@ public class DeleteriousCount {
         String variantType6 = "006_StopGain"; //只是SIFT中为
         String variantType7 = "007_VEP";
         String variantType8 = "008_snpEff";
+        String variantType9 = "009_GERP16way";
 
 
 //        String variantType7 = "006_nonsynGERPandDerivedSIFT_correction";
@@ -72,7 +73,9 @@ public class DeleteriousCount {
         String ratioType2 = "bysub_mergeByTaxa";
 
 
-        String[] choice1 = {variantType1,variantType2,variantType3,variantType4,variantType5,variantType6,variantType7,variantType8};
+//        String[] choice1 = {variantType1,variantType2,variantType3,variantType4,variantType5,variantType6,variantType7,variantType8,variantType9};
+        String[] choice1 = {variantType1,variantType2,variantType7,variantType9};
+
 //        String[] choice1 = {variantType6};
 
         String[] choice3 = {ratioType1,ratioType2};
@@ -81,8 +84,9 @@ public class DeleteriousCount {
 
           //********** 这一步是进行 不同类型的load 的计算 ************//
 
-        String parentDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/005_delCount/001_allIndivi"; //结果文件需要存放的地方
+//        String parentDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/005_delCount/001_allIndivi"; //结果文件需要存放的地方
 //        String parentDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/005_delCount/002_allIndivi_syntenicGene";
+        String parentDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/005_delCount/004_allIndivi";
 
         new File(parentDirS).mkdirs();
         for (int k = 0; k < choice1.length; k++) { //每种变异类型，都输出了一个delCount的文件，到时候把文件
@@ -119,9 +123,9 @@ public class DeleteriousCount {
 
         //########### 大麦和黑麦简约法 ******* VMap2.0-2020 *********** 加上Derived SIFT的数据库 2020-07-21 ################w
         String exonVCFDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/007_geneVCF"; //外显子变异数据
-//        String SNPAnnoFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/001_geneSNP_anno.txt.gz"; //注释信息库合并后的总文件
+        String SNPAnnoFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/001_geneSNPAnno.txt.gz"; //注释信息库合并后的总文件
 //        String SNPAnnoFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/002_geneSiteAnno.txt.gz";
-        String SNPAnnoFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/003_geneSiteAnno_syntenic.txt.gz";
+//        String SNPAnnoFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/003_geneSiteAnno_syntenic.txt.gz";
 
         AoFile.readheader(SNPAnnoFileS);
         //************* 无需修改的路径 ****************** //
@@ -168,6 +172,7 @@ public class DeleteriousCount {
                 String variantType = l.get(13); //################ 需要修改 需要修改 需要修改 ################
                 String sift = l.get(16); //################ 需要修改 需要修改 需要修改 ################
                 String gerp = l.get(11); //################ 需要修改 需要修改 需要修改 ################
+                String gerp16way = l.get(22);
 
                 //********************* 过滤没有 ancestral allele 信息的位点
                 //################### 需要修改 //###################//###################//###################//###################
@@ -180,6 +185,7 @@ public class DeleteriousCount {
                 String minorAllele = l.get(6);
                 String Impact_VEP = l.get(18);
                 String Impact_snpEff = l.get(20);
+
                 if(!(ancestralAllele.equals(ref)||ancestralAllele.equals(alt)))continue;
 
 
@@ -227,6 +233,14 @@ public class DeleteriousCount {
 
                 if(type.equals("008_snpEff")){
                     if (!Impact_snpEff.equals("HIGH"))continue; //
+                }
+
+                if (type.equals("009_GERP16way")){
+                    if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
+                    if(gerp16way.startsWith("N")) continue; //说明必须满足GERP有值
+                    double gerp16wayd = Double.parseDouble(gerp16way);
+                    if (gerp16wayd <= 1) continue; //说明必须满足gerp大于等于1
+
                 }
 
 
@@ -317,7 +331,8 @@ public class DeleteriousCount {
         /**
          *  ################################### step3: taxa 集合 642个taxa
          */
-        String vmap2TaxaList = "/Users/Aoyue/project/wheatVMap2_1000/001_germplasm/009_WheatVMap2_GermplasmInfo_20210708.txt";
+//        String vmap2TaxaList = "/Users/Aoyue/project/wheatVMap2_1000/001_germplasm/009_WheatVMap2_GermplasmInfo_20210708.txt";
+        String vmap2TaxaList = "/Users/Aoyue/project/wheatVMap2_1000/001_germplasm/021_WheatVMap2_GermplasmInfo.txt";
 
         String[] taxa = AoFile.getStringArraybyList(vmap2TaxaList,0);
 
@@ -461,6 +476,5 @@ public class DeleteriousCount {
             e.printStackTrace();
         }
     }
-
 
 }

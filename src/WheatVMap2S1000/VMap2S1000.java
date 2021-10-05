@@ -60,13 +60,15 @@ public class VMap2S1000 {
          * gene site annotation
          */
         this.snpAnnotationBuild(); //include many methods XXXXXXX
+//        new DeleteriousXPCLRS1000(); //计算 xpclr 下的Load
 //        new DeleteriousCount();
 
         /**
          * XPCLR
          */
-//        new XPCLR();
-//        new DeleteriousXPCLRS1000();
+//        new XPCLR(); //计算XPCLR
+//        AoFile.readheader("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/003_geneSNPAnno.txt.gz");
+//        new DeleteriousXPCLRS1000(); //计算 xpclr 下的Load
 //        this.getVCF(); //提取亚群的VCF文件
 //        new GeneMisc();
 
@@ -699,15 +701,38 @@ public class VMap2S1000 {
 //        new VariantsSum().addAncestral();
 //        this.addDAF();
 //        new VariantsSum().addGerp();
+//        new VariantsSum().addPhyloP();
         /**
          * sift 计算
          */
-        new SIFT();
+//        new SIFT(); //根据 VCF 文件进行 sift 的最初计算， 分为 ref ancestral ref derived
 //        this.calFileLine();
 
 //        new VariantsSum().addSift_20210717();
 //        new VariantsSum().addDerived_SIFT();
 //        new VariantsSum().mergeExonSNPAnnotation();
+
+        /**
+         * PolyPhen script
+         */
+        this.runPolyPhen_2();
+//        this.mergePolyPhen_2();
+
+    }
+
+    /**
+     * 由于输出4万多个文件，比较大，在R中运行比较费时，故用 java 合并这4万多个文件
+     */
+    public void mergePolyPhen_2(){
+        String infileDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/015_PolyPhen_2/002_out2";
+        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/015_PolyPhen_2/002_out2_merge/PolyPhen_2_predictions.txt.gz";
+        AoFile.mergeTxt(infileDirS,outfileS);
+    }
+
+    public void runPolyPhen_2(){
+//        SplitScript.splitScript2("/Users/Aoyue/Documents/sh.sh",180,140);
+        SplitScript.splitScript2("/Users/Aoyue/Documents/sh.sh",130,2);
+
     }
 
     /**

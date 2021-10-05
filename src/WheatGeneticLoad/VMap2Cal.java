@@ -18,7 +18,7 @@ public class VMap2Cal {
     public VMap2Cal(){
 //        this.extractAAFfromVMap2(); //计算在一个vcf中，不同给定群体的AAF值是多少， linux 完成
 //        this.buildJointSFS();
-//        this.sampleSize2variantsDiscovery();
+        this.sampleSize2variantsDiscovery();
 //        File out = WheatUtils.getCentromereFile("/Users/Aoyue/Documents/test.txt");
 
     }
@@ -27,7 +27,7 @@ public class VMap2Cal {
      * 估算在exon区域，随着样本量的增大，各种类型的变异数目评估，判定是否达到饱和
      */
     public void sampleSize2variantsDiscovery(){
-//        this.mergeExonVCF();
+        this.mergeExonVCF();
 //        this.convert2GenoTable();
 //        this.mainPipe();
 

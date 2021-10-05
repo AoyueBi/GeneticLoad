@@ -23,7 +23,7 @@ public class DeleteriousXPCLRS1000 {
 
     /**
      * 先计算不同变异类型下的个体load结果,再和同义突变进行标准化
-     * @param1 choice1 选择要计算的不同变异类型的计数
+     * @param1 choice1 选择要计算的不同变异类型的计数 choice2_ifSelected  choice3_refobj
      * @param2 parentDirS 结果文件夹
      * @param3 exonVCFDirS geneVCF vcf文件夹路径
      * @param4 SNPAnnoFileS SNP Annotation DB位点数据库，注意是42条染色体都合并在一起的文件
@@ -57,6 +57,19 @@ public class DeleteriousXPCLRS1000 {
         String variantType7 = "007_VEP";
         String variantType8 = "008_snpEff";
         String variantType9 = "009_VEP_stopGained";
+        String variantType10 = "010_GERP16way";
+        String variantType11 = "011_GERP16way_1.2_max";
+        String variantType12 = "012_GERP16way_1.2_2.5";
+        String variantType13 = "013_GERP16way_2.5_max";
+        String variantType14 = "014_GERP16way_2.14_max";
+        String variantType15 = "015_LIST_S2";
+        String variantType16 = "016_PhyloP";
+        String variantType17 = "017_PhyloP_RefMask";
+        String variantType18 = "018_GERP16wayandSIFT";
+
+
+
+
 
 
         String ifselected = null;
@@ -72,18 +85,24 @@ public class DeleteriousXPCLRS1000 {
         String group4 = "allIndivi";
         //**************************** up 不必修改 **************************//
 
-
+        ////*********** selected sweep or not selected sweep *********////
 //        String[] choice1_variantType = {variantType1,variantType2,variantType3,variantType4,variantType5, variantType6,variantType7,variantType8,variantType9};
 //        String[] choice2_ifSelected = {ifselected1,ifselected2};
 //        String[] choice3_refobj = {group1,group2,group3};
 
-//        String[] choice1_variantType = {variantType1,variantType2,variantType3,variantType4,variantType5, variantType6,variantType7,variantType8,variantType9};
-//        String[] choice2_ifSelected = {ifselected3};
-//        String[] choice3_refobj = {group4};
+        ////*********** whole genome *********////
+//        String[] choice1_variantType = {variantType1,variantType2,variantType3,variantType4,variantType5, variantType6,variantType7,variantType8,variantType9,variantType10};
+//        String[] choice1_variantType = {variantType1,variantType2,variantType7,variantType11,variantType12,variantType13};
+//        String[] choice1_variantType = {variantType3,variantType4,variantType5, variantType6,variantType8,variantType9,variantType10};
+        String[] choice1_variantType = {variantType18};
+        String[] choice2_ifSelected = {ifselected3};
+        String[] choice3_refobj = {group4};
 
-        String[] choice1_variantType = {variantType1,variantType2,variantType3,variantType4,variantType5, variantType6,variantType7,variantType8,variantType9};
-        String[] choice2_ifSelected = {ifselected1};
-        String[] choice3_refobj = {group1,group2,group3};
+        ////*********** selected sweep or not selected sweep *********////
+//        String[] choice1_variantType = {variantType1,variantType2,variantType3,variantType4,variantType5, variantType6,variantType7,variantType8,variantType9,variantType10};
+//        String[] choice2_ifSelected = {ifselected1};
+//        String[] choice3_refobj = {group1,group2,group3};
+
 
 
 //        String parentDirS = ""; //model
@@ -92,7 +111,11 @@ public class DeleteriousXPCLRS1000 {
 //        String parentDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/005_delCount/002_allIndivi_syntenicGene";
         //从2021-08-25 开始区分 top5 top1
 //        String parentDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/009_xpclr/004_summary_XPCLR_top005/003_deleteriousXPCLR";
-        String parentDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/009_xpclr/005_summary_XPCLR_top001/003_deleteriousXPCLR";
+//        String parentDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/009_xpclr/005_summary_XPCLR_top001/003_deleteriousXPCLR";
+
+//        String parentDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/005_delCount/004_allIndivi";
+        String parentDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/005_delCount/005_allIndivi";
+
 
         new File(parentDirS).mkdirs();
 
@@ -133,14 +156,14 @@ public class DeleteriousXPCLRS1000 {
 
         //########### 大麦和黑麦简约法 ******* VMap2.0-2021 *********** 加上Derived SIFT的数据库 ################w
         String exonVCFDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/007_geneVCF"; //外显子变异数据 20210808 完成
-        String SNPAnnoFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/001_geneSNPAnno.txt.gz"; //注释信息库合并后的总文件
+//        String SNPAnnoFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/001_geneSNPAnno.txt.gz"; //注释信息库合并后的总文件
 //        String SNPAnnoFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/002_geneSNPAnno_syntenic.txt.gz";
+        String SNPAnnoFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/007_geneSNPAnno.txt.gz";
 
         AoFile.readheader(SNPAnnoFileS);
 /**
  * ################################### step0: 建立受选择区域的集合，并在下文进行 posList 和 ancestral charList 构建时进行适当的过滤。
  */
-
 
         TIntArrayList[] selectedPosList = new TIntArrayList[42]; //不同染色体下，不同受选择区域位点的集合
 
@@ -218,6 +241,7 @@ public class DeleteriousXPCLRS1000 {
                 String variantType = l.get(13); //################ 需要修改 需要修改 需要修改 ################
                 String sift = l.get(16); //################ 需要修改 需要修改 需要修改 ################
                 String gerp = l.get(11); //################ 需要修改 需要修改 需要修改 ################
+                String gerp16way = l.get(22);
 
                 //********************* 过滤没有 ancestral allele 信息的位点
                 //################### 需要修改 //###################//###################//###################//###################
@@ -231,6 +255,9 @@ public class DeleteriousXPCLRS1000 {
                 String Effect_VEP = l.get(17);
                 String Impact_VEP = l.get(18);
                 String Impact_snpEff = l.get(20);
+                String LIST_S2 = l.get(25);
+                String phyloP = l.get(26);
+                String phyloP_RefMask = l.get(28);
                 if(!(ancestralAllele.equals(ref)||ancestralAllele.equals(alt)))continue;
 
 
@@ -284,8 +311,81 @@ public class DeleteriousXPCLRS1000 {
                     if (!Impact_snpEff.equals("HIGH"))continue; //
                 }
 
+                if(type.equals("010_GERP16way")){
+                    if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
+                    if(gerp16way.startsWith("N")) continue; //说明必须满足GERP有值
+                    double gerp16wayd = Double.parseDouble(gerp16way);
+                    if (gerp16wayd <= 1) continue; //说明必须满足gerp大于等于1
+                }
+
+                if(type.equals("011_GERP16way_1.2_max")){
+                    if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
+                    if(gerp16way.startsWith("N")) continue; //说明必须满足GERP有值
+                    double gerp16wayd = Double.parseDouble(gerp16way);
+                    if (gerp16wayd <= 1.2) continue; //说明必须满足gerp大于等于1
+                }
+
+                if(type.equals("012_GERP16way_1.2_2.5")){
+                    if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
+                    if(gerp16way.startsWith("N")) continue; //说明必须满足GERP有值
+                    double gerp16wayd = Double.parseDouble(gerp16way);
+                    if (gerp16wayd <= 1.2 || gerp16wayd >= 2.5) continue; //说明必须满足gerp大于等于1
+                }
+
+                if(type.equals("013_GERP16way_2.5_max")){
+                    if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
+                    if(gerp16way.startsWith("N")) continue; //说明必须满足GERP有值
+                    double gerp16wayd = Double.parseDouble(gerp16way);
+                    if (gerp16wayd <= 2.5) continue; //说明必须满足gerp大于等于1
+                }
+
+                if(type.equals("014_GERP16way_2.14_max")){
+                    if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
+                    if(gerp16way.startsWith("N")) continue; //说明必须满足GERP有值
+                    double gerp16wayd = Double.parseDouble(gerp16way);
+                    if (gerp16wayd < 2.14) continue; //说明必须满足gerp大于等于1
+                }
+
+                if(type.equals("015_LIST_S2")){
+                    if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
+                    if(LIST_S2.startsWith("N")) continue; //说明必须满足 LIST 有值
+                    double LIST_S2d = Double.parseDouble(LIST_S2);
+                    if (LIST_S2d < 0.85) continue; //说明必须满足 list 大于等于 0.85
+                }
+
+                if(type.equals("016_PhyloP")){
+                    if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
+                    if(phyloP.startsWith("N")) continue; //说明必须满足有值
+                    double phyloPd = Double.parseDouble(phyloP);
+                    if (phyloPd < 1.5) continue; //说明必须满足 list 大于等于 0.85
+                }
+
+                if(type.equals("017_PhyloP_RefMask")){
+                    if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
+                    if(phyloP_RefMask.startsWith("N")) continue; //说明必须满足有值
+                    double phyloP_RefMaskd = Double.parseDouble(phyloP_RefMask);
+                    if (phyloP_RefMaskd < 1.5) continue; //说明必须满足 list 大于等于 0.85
+                }
+
+                if (type.equals("018_GERP16wayandSIFT")){
+                    if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
+                    if(gerp16way.startsWith("N")) continue; //说明必须满足GERP有值
+                    if (sift.startsWith("N"))continue; //说明必须满足有sift值
+                    double gerp16wayd = Double.parseDouble(gerp16way);
+                    double siftd = Double.parseDouble(sift);
+                    if (gerp16wayd < 2.14) continue; //说明必须满足gerp大于等于2.14
+                    if (siftd >= 0.05 ) continue; //说明必须满足sift小于0.05
+                }
+
+                //String variantType18 = "018_GERP16wayandSIFT";
+
+                //        String variantType17 = "017_PhyloP_RefMask";
+
+                //        String variantType15 = "015_LIST_S2";
+                //        String variantType16 = "016_PhyloP";
 
 
+                ////////////////////// depracate
                 if (type.equals("006_nonsynGERPandDerivedSIFT_correction")){
                     if (ancestralAllele.equals(ref)){ //
                         if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
@@ -335,7 +435,7 @@ public class DeleteriousXPCLRS1000 {
                         double gerpd = Double.parseDouble(gerp);
                         if (gerpd < 0.0139) continue; //说明必须满足gerp大于1
                     }
-                }
+                } // end
 
 
                 if (ancestralAllele.equals(majorAllele)) {
@@ -372,7 +472,7 @@ public class DeleteriousXPCLRS1000 {
         /**
          *  ################################### step3: taxa 集合 642个taxa
          */
-        String vmap2TaxaList = "/Users/Aoyue/project/wheatVMap2_1000/001_germplasm/019_WheatVMap2_GermplasmInfo.txt";
+        String vmap2TaxaList = "/Users/Aoyue/project/wheatVMap2_1000/001_germplasm/021_WheatVMap2_GermplasmInfo.txt";
 
         String[] taxa = AoFile.getStringArraybyList(vmap2TaxaList,0);
 

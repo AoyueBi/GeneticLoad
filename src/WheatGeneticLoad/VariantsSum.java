@@ -2111,7 +2111,18 @@ public class VariantsSum {
 //        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/001_geneSNPAnno.txt.gz";
 //        AoFile.mergeTxt(infileDirS,outfileS);
 
+//        String infileDirS = "/data4/home/aoyue/vmap2/analysis/036_annoDB/002_genicSNP/001_geneSNP_Annotation/";
+//        String outfileS = "/data4/home/aoyue/vmap2/analysis/036_annoDB/002_genicSNP/003_geneSNP_Annotation_merge/001_geneSNPAnno.txt.gz";
+//        AoFile.mergeTxt(infileDirS,outfileS);
+
+        String infileDirS = "/data4/home/aoyue/vmap2/analysis/036_annoDB/002_genicSNP/001_geneSNP_Annotation/";
+        String outfileS = "/data4/home/aoyue/vmap2/analysis/036_annoDB/002_genicSNP/003_geneSNP_Annotation_merge/007_geneSNPAnno.txt.gz";
+        AoFile.mergeTxt(infileDirS,outfileS);
+
+
+
         //java -Xms50g -Xmx200g -jar PlantGenetics.jar > log_mergeExonSNPAnnotation_20200609.txt 2>&1 &
+        //java -Xms50g -Xmx200g -jar GeneticLoad.jar > log_mergeExonSNPAnnotation_20200609.txt 2>&1 &
     }
 
     /**
@@ -2186,8 +2197,74 @@ public class VariantsSum {
         });
     }
 
+    public void addPhyloP () {
+//        String phyloPDirS = "/data4/home/aoyue/vmap2/daxing/analysis/008_vmap2_1062_spelt/002_variantsAnnotation/004_gerp16/003_phyloP";
+        String phyloPDirS = "/data4/home/aoyue/vmap2/daxing/analysis/008_vmap2_1062_spelt/002_variantsAnnotation/004_constrainted/004_phyloP_removeRef/001_chrID";
+        String dirS = "/data4/home/aoyue/vmap2/analysis/036_annoDB/002_genicSNP/001_geneSNP_Annotation";
+
+        List<File> fList = AoFile.getFileListInDir(dirS);
+        fList.parallelStream().forEach(f -> {
+//            String phyloPS = f.getName().split("_")[0] + "_phyloP_CON.bedg.gz";
+            String phyloPS = f.getName().split("_")[0] + "_phyloP_CON_refmask.bedg.gz";
+
+            phyloPS = new File (phyloPDirS, phyloPS).getAbsolutePath();
+            String header = null;
+            List<String> recordList = new ArrayList();
+            try {
+                BufferedReader br = AoFile.readFile(f.getAbsolutePath());
+                header = br.readLine();
+                StringBuilder sb = new StringBuilder(header);
+//                sb.append("\tPhyloP");
+                sb.append("\tPhyloP_RefMask");
+                header = sb.toString();
+                String temp = null;
+                TIntArrayList posList = new TIntArrayList();
+                List<String> l = new ArrayList();
+                while ((temp = br.readLine()) != null) {
+                    recordList.add(temp);
+                    l = PStringUtils.fastSplit(temp);
+                    posList.add(Integer.parseInt(l.get(2)));
+                }
+                br.close();
+                br = AoFile.readFile(phyloPS);
+                br.readLine(); //header
+                int pos = -1;
+                int index = -1;
+                String[] gerp = new String[posList.size()];
+                for (int i = 0; i < gerp.length; i++) gerp[i] = "NA";
+                while ((temp = br.readLine()) != null) {
+                    l = PStringUtils.fastSplit(temp);
+                    pos = Integer.parseInt(l.get(1));
+                    index = posList.binarySearch(pos);
+                    if (index < 0) continue;
+                    gerp[index] = l.get(2);
+                }
+                br.close();
+                BufferedWriter bw = AoFile.writeFile(f.getAbsolutePath());
+                bw.write(header);
+                bw.newLine();
+                for (int i = 0; i < posList.size(); i++) {
+                    sb.setLength(0);
+                    sb.append(recordList.get(i)).append("\t").append(gerp[i]);
+                    bw.write(sb.toString());
+                    bw.newLine();
+                }
+                bw.flush();
+                bw.close();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+            System.out.println(f.getAbsolutePath() + " is completed.");
+        });
+        // java -Xms50g -Xmx200g -jar GeneticLoad.jar > log_addPhyloP_20210922.txt 2>&1 &
+
+    }
+
     public void addGerp () {
-        String gerpDirS = "/data4/home/aoyue/vmap2/feilu/003_annotation/003_gerp/byChr_29way";
+//        String gerpDirS = "/data4/home/aoyue/vmap2/feilu/003_annotation/003_gerp/byChr_29way";
+        String gerpDirS = "/data4/home/aoyue/vmap2/daxing/analysis/007_vmap2_1062/010_gerp16/002_merge_score/003_gerp_chrID";
+
 
 //        String dirS = "/data4/home/aoyue/vmap2/analysis/027_annoDB/002_genicSNP/003_exonSNPAnnotation";
 
@@ -2200,7 +2277,9 @@ public class VariantsSum {
         String dirS = "/data4/home/aoyue/vmap2/analysis/036_annoDB/002_genicSNP/001_geneSNP_Annotation";
         List<File> fList = AoFile.getFileListInDir(dirS);
         fList.parallelStream().forEach(f -> {
-            String gerpFileS = f.getName().split("_")[0]+"_gerp.txt.gz";
+//            String gerpFileS = f.getName().split("_")[0]+"_gerp.txt.gz";
+            String gerpFileS = f.getName().split("_")[0]+"_GERP.bed.sort.gz";
+
             gerpFileS = new File (gerpDirS, gerpFileS).getAbsolutePath();
             String header = null;
             List<String> recordList = new ArrayList();
@@ -2208,7 +2287,7 @@ public class VariantsSum {
                 BufferedReader br = AoFile.readFile(f.getAbsolutePath());
                 header = br.readLine();
                 StringBuilder sb = new StringBuilder(header);
-                sb.append("\tGerp");
+                sb.append("\tGerp_16way");
                 header = sb.toString();
                 String temp = null;
                 TIntArrayList posList = new TIntArrayList();
@@ -2254,8 +2333,6 @@ public class VariantsSum {
         // java -Xms50g -Xmx200g -jar PlantGenetics.jar > log_addGerp_20200721.txt 2>&1 &
 //         java -Xms50g -Xmx200g -jar GeneticLoad.jar > log_addGerp_20210716.txt 2>&1 &
 //        java -Xms50g -Xmx200g -jar GeneticLoad.jar > log_addGerp_20210806.txt 2>&1 &
-
-
     }
 
     /**
