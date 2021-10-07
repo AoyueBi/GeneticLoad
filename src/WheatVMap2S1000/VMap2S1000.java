@@ -59,8 +59,8 @@ public class VMap2S1000 {
         /**
          * gene site annotation
          */
-        this.snpAnnotationBuild(); //include many methods XXXXXXX
-//        new DeleteriousXPCLRS1000(); //计算 xpclr 下的Load
+//        this.snpAnnotationBuild(); //include many methods XXXXXXX
+        new DeleteriousXPCLRS1000(); //计算 xpclr 下的Load
 //        new DeleteriousCount();
 
         /**
@@ -715,8 +715,8 @@ public class VMap2S1000 {
         /**
          * PolyPhen script
          */
-        this.runPolyPhen_2();
-//        this.mergePolyPhen_2();
+//        this.runPolyPhen_2();
+        this.mergePolyPhen_2();
 
     }
 
@@ -724,9 +724,15 @@ public class VMap2S1000 {
      * 由于输出4万多个文件，比较大，在R中运行比较费时，故用 java 合并这4万多个文件
      */
     public void mergePolyPhen_2(){
-        String infileDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/015_PolyPhen_2/002_out2";
-        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/015_PolyPhen_2/002_out2_merge/PolyPhen_2_predictions.txt.gz";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/015_PolyPhen_2/002_out_ref2alt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/015_PolyPhen_2/004_out_merge/PolyPhen_2_ref2alt_predictions.txt.gz";
+//        AoFile.mergeTxt(infileDirS,outfileS);
+
+        String infileDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/015_PolyPhen_2/003_out_alt2ref";
+        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/015_PolyPhen_2/004_out_merge/PolyPhen_2_alt2ref_predictions.txt.gz";
         AoFile.mergeTxt(infileDirS,outfileS);
+
+
     }
 
     public void runPolyPhen_2(){

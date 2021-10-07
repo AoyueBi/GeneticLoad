@@ -639,7 +639,7 @@ public class AoFile {
                     bw.write(sb.toString());
                     bw.newLine();
                 }
-                System.out.println(fs[i].getName() + "\t" + cnt);
+//                System.out.println(fs[i].getName() + "\t" + cnt);
             }
             System.out.println("Total lines without header count is " + cnttotal + " at merged file " + outfileS );
             br.close();

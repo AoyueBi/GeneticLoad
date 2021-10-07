@@ -55,7 +55,7 @@ public class GeneticLoadEntrance {
 
     public void projectVMap2S1000(){
         new VMap2S1000(); //进行VCF的fix, QC, and SNP annotation build
-//        AoFile.readheader("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/001_geneSNPAnno.txt.gz");
+//        AoFile.readheader("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/011_geneSNPAnno.txt.gz");
 
     }
 

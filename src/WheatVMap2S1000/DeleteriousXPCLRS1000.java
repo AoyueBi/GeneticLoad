@@ -66,6 +66,11 @@ public class DeleteriousXPCLRS1000 {
         String variantType16 = "016_PhyloP";
         String variantType17 = "017_PhyloP_RefMask";
         String variantType18 = "018_GERP16wayandSIFT";
+        String variantType19 = "019_Alt_PolyPhen2";
+        String variantType20 = "020_Derived_PolyPhen2";
+        String variantType21 = "021_GERP16wayandPolyPhen2";
+
+
 
 
 
@@ -94,7 +99,7 @@ public class DeleteriousXPCLRS1000 {
 //        String[] choice1_variantType = {variantType1,variantType2,variantType3,variantType4,variantType5, variantType6,variantType7,variantType8,variantType9,variantType10};
 //        String[] choice1_variantType = {variantType1,variantType2,variantType7,variantType11,variantType12,variantType13};
 //        String[] choice1_variantType = {variantType3,variantType4,variantType5, variantType6,variantType8,variantType9,variantType10};
-        String[] choice1_variantType = {variantType18};
+        String[] choice1_variantType = {variantType19,variantType20,variantType21};
         String[] choice2_ifSelected = {ifselected3};
         String[] choice3_refobj = {group4};
 
@@ -158,7 +163,8 @@ public class DeleteriousXPCLRS1000 {
         String exonVCFDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/007_geneVCF"; //外显子变异数据 20210808 完成
 //        String SNPAnnoFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/001_geneSNPAnno.txt.gz"; //注释信息库合并后的总文件
 //        String SNPAnnoFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/002_geneSNPAnno_syntenic.txt.gz";
-        String SNPAnnoFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/007_geneSNPAnno.txt.gz";
+//        String SNPAnnoFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/007_geneSNPAnno.txt.gz";
+        String SNPAnnoFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/011_geneSNPAnno.txt.gz";
 
         AoFile.readheader(SNPAnnoFileS);
 /**
@@ -258,6 +264,8 @@ public class DeleteriousXPCLRS1000 {
                 String LIST_S2 = l.get(25);
                 String phyloP = l.get(26);
                 String phyloP_RefMask = l.get(28);
+                String altPolyPhen = l.get(34);
+                String derivedPolyPhen = l.get(40);
                 if(!(ancestralAllele.equals(ref)||ancestralAllele.equals(alt)))continue;
 
 
@@ -377,13 +385,36 @@ public class DeleteriousXPCLRS1000 {
                     if (siftd >= 0.05 ) continue; //说明必须满足sift小于0.05
                 }
 
+                if (type.equals("019_Alt_PolyPhen2")){
+                    if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
+                    if (altPolyPhen.startsWith("N"))continue; //说明必须满足有sift值
+                    double altPolyPhend = Double.parseDouble(altPolyPhen);
+                    if (altPolyPhend < 0.453) continue; //说明必须满足gerp大于等于2.14
+                }
+
+                if (type.equals("020_Derived_PolyPhen2")){
+                    if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
+                    if (derivedPolyPhen.startsWith("N"))continue; //说明必须满足有sift值
+                    double derivedPolyPhend = Double.parseDouble(derivedPolyPhen);
+                    if (derivedPolyPhend < 0.453) continue; //说明必须满足gerp大于等于2.14
+                }
+
+                if (type.equals("021_GERP16wayandPolyPhen2")){
+                    if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
+                    if(gerp16way.startsWith("N")) continue; //说明必须满足GERP有值
+                    if (derivedPolyPhen.startsWith("N"))continue; //说明必须满足有sift值
+                    double gerp16wayd = Double.parseDouble(gerp16way);
+                    double derivedPolyPhend = Double.parseDouble(derivedPolyPhen);
+                    if (gerp16wayd < 2.14) continue; //说明必须满足gerp大于等于2.14
+                    if (derivedPolyPhend < 0.453 ) continue; //说明必须满足sift小于0.05
+                }
+
                 //String variantType18 = "018_GERP16wayandSIFT";
 
                 //        String variantType17 = "017_PhyloP_RefMask";
 
                 //        String variantType15 = "015_LIST_S2";
                 //        String variantType16 = "016_PhyloP";
-
 
                 ////////////////////// depracate
                 if (type.equals("006_nonsynGERPandDerivedSIFT_correction")){
