@@ -30,8 +30,6 @@ public class ExonAnnotation {
     Set<String> loadGroupSet = new HashSet<>();
     List<String> idList = new ArrayList<>();
 
-
-
     public ExonAnnotation(){
         this.readExonAnnotation();
     }

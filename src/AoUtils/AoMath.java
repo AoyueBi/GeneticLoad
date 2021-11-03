@@ -245,17 +245,17 @@ public class AoMath {
      */
     public static List<String>[] continuousRandom_withoutReplacement(String[] sampleArray,int sampleSize){
 
-        List<String>[] out = new List[sampleSize];
+        List<String>[] out = new List[sampleSize]; //例如：sampleSize=10,则有10个List 类型的数组
         for (int i = 0; i < out.length ; i++) {
             out[i] = new ArrayList<>();
         }
 
-        for (int i = 0; i < sampleSize; i++) { //抽1个 2个 3个 4个 5个 6个。。。
+        for (int i = 0; i < sampleSize; i++) { //抽1个 2个 3个 4个 5个 6个。。。  假如抽取3个，那么i=2
             int currentsize = i+1;
-            Set<String> set = new HashSet<>(currentsize);
+            Set<String> set = new HashSet<>(currentsize); //set里面含有3个元素
             ////如果i>1。那么抽样的时候就将上一抽样的taxa全部加入下一抽样，剩下的随机抽样补齐。这样就解决了不放回的问题
-            if (currentsize>1){
-                for (int j = 0; j < out[i-1].size(); j++) {
+            if (currentsize>1){ //假如当下 i = 2, currentsize为3，则抽的第一个样和第二个样不变，第三个随机抽取
+                for (int j = 0; j < out[i-1].size(); j++) { // 将 i=1时的抽样个体，再次加到i=2中
                     set.add(out[i-1].get(j));
                 }
             }
@@ -272,7 +272,7 @@ public class AoMath {
             out[i] = l;
 
             for (int j = 0; j < l.size(); j++) {
-                System.out.print(l.get(j) + "\t");
+                System.out.print(l.get(j) + "\t"); //打印出抽样的内容
             }
             System.out.println();
         }

@@ -6,10 +6,7 @@
 package Entrance;
 
 import Annotation.AnnotationCrossover;
-import AoUtils.AoFile;
-import AoUtils.AoMath;
-import AoUtils.CalVCF;
-import AoUtils.CountSites;
+import AoUtils.*;
 import GermplasmInfo.GermplasmInfo;
 import GermplasmInfo.TaxaDB;
 import Plot.AoMap;
@@ -18,6 +15,7 @@ import Plot.PCA;
 import Plot.Tree;
 import PopulationAnalysis.*;
 import WheatGeneticLoad.*;
+import WheatVMap2S1000.SampleSize2VariantsDiscovery;
 import WheatVMap2S1000.VMap2S1000;
 import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TIntArrayList;
@@ -54,9 +52,16 @@ public class GeneticLoadEntrance {
     }
 
     public void projectVMap2S1000(){
-        new VMap2S1000(); //进行VCF的fix, QC, and SNP annotation build
-//        AoFile.readheader("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/011_geneSNPAnno.txt.gz");
-
+//        new VMap2S1000(); //进行VCF的fix, QC, and SNP annotation build
+//        new Pi();
+//        new Fst();
+//        new TajimaD();
+        new SampleSize2VariantsDiscovery();
+//        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/011_populationPara/003_TajimaD/001_script/001/tajimaD_based50000window_2021_10_22.sh",30,25);
+//        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/011_populationPara/001_Fst/001_script/001/fst_based100000window_50000step_2021_10_22_1.sh",30,28);
+//        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/011_populationPara/002_Pi/001_script/003/pi_based100000window_50000step_2021_10_22_3.sh",20,24);
+//        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/011_populationPara/001_Fst/001_script/001/remained_fst_based100000window_50000step_2021_10_23.sh",49,1);
+//        SplitScript.splitScript2("/Users/Aoyue/Documents/sh.sh",21,2);
     }
 
 
@@ -84,7 +89,7 @@ public class GeneticLoadEntrance {
 //        new AoMap();
 //        new DBgene();
 //        new RefBiasEvaluation();
-        new VMap2Cal(); //sample size vs variants discovery
+//        new VMap2Cal(); //sample size vs variants discovery
 
     }
 
@@ -245,6 +250,7 @@ public class GeneticLoadEntrance {
 //        AoFile.subsetTxt_parallel(args[0],args[1],args[2]);
 //        AoFile.subsetTxt_singleStream(args[0],args[1],args[2]);
 //        CalVCF.filterMAFinVCF_parallel(args[0],Double.parseDouble(args[1]),args[2]);
+//        CalVCF.calAAFFromPop(args[0],args[1],args[2]);
 
     }
 

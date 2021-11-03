@@ -53,29 +53,31 @@ public class DeleteriousXPCLRS1000 {
         String variantType3 = "003_nonsynGERPandDerivedSIFT";
         String variantType4 = "004_nonsynDerivedSIFT";
         String variantType5 = "005_GERP";
-        String variantType6 = "006_StopGain"; //只是SIFT中为
+        String variantType6 = "006_SIFT_StopGain"; //只是SIFT中为
         String variantType7 = "007_VEP";
         String variantType8 = "008_snpEff";
         String variantType9 = "009_VEP_stopGained";
-        String variantType10 = "010_GERP16way";
+        String variantType10 = "010_GERP16way_1"; //1
         String variantType11 = "011_GERP16way_1.2_max";
         String variantType12 = "012_GERP16way_1.2_2.5";
         String variantType13 = "013_GERP16way_2.5_max";
         String variantType14 = "014_GERP16way_2.14_max";
         String variantType15 = "015_LIST_S2";
-        String variantType16 = "016_PhyloP";
-        String variantType17 = "017_PhyloP_RefMask";
-        String variantType18 = "018_GERP16wayandSIFT";
+        String variantType16 = "016_PhyloP1.5_RefNotMask";
+        String variantType17 = "017_PhyloP1.5_RefMask";
+        String variantType18 = "018_GERP16way_2.14andSIFT"; //2.14
         String variantType19 = "019_Alt_PolyPhen2";
         String variantType20 = "020_Derived_PolyPhen2";
-        String variantType21 = "021_GERP16wayandPolyPhen2";
-
-
-
-
-
-
-
+        String variantType21 = "021_GERP16way_2.14andPolyPhen2"; //2.14
+        String variantType22 = "022_GERP16way_1.78";
+        String variantType23 = "023_GERP16way_1.78andPolyPhen2";
+        String variantType24 = "024_GERP16way_1andPolyPhen2";
+        String variantType25 = "025_GERP16way_3.1";
+        String variantType26 = "026_Derived_PolyPhen2_probably";
+        String variantType27 = "027_GERP16way_1andDerived_PolyPhen2_probably";
+        String variantType28 = "028_GERP16way_1.78andDerived_PolyPhen2_probably";
+        String variantType29 = "029_GERP16way_2.14andDerived_PolyPhen2_probably";
+        String variantType30 = "030_GERP16way_3.1andDerived_PolyPhen2_probably";
 
         String ifselected = null;
         String ifselected1 = "1";
@@ -99,7 +101,7 @@ public class DeleteriousXPCLRS1000 {
 //        String[] choice1_variantType = {variantType1,variantType2,variantType3,variantType4,variantType5, variantType6,variantType7,variantType8,variantType9,variantType10};
 //        String[] choice1_variantType = {variantType1,variantType2,variantType7,variantType11,variantType12,variantType13};
 //        String[] choice1_variantType = {variantType3,variantType4,variantType5, variantType6,variantType8,variantType9,variantType10};
-        String[] choice1_variantType = {variantType19,variantType20,variantType21};
+        String[] choice1_variantType = {variantType26,variantType27,variantType28,variantType29,variantType30};
         String[] choice2_ifSelected = {ifselected3};
         String[] choice3_refobj = {group4};
 
@@ -303,7 +305,7 @@ public class DeleteriousXPCLRS1000 {
                     if (gerpd <= 1) continue; //说明必须满足gerp大于1
                 }
 
-                if(type.equals("006_StopGain")){
+                if(type.equals("006_SIFT_StopGain")){
                     if (!variantType.equals("STOP-GAIN") && !variantType.equals("STOP-LOSS") && !variantType.equals("START-LOST"))continue; //等于三者之一
                 }
 
@@ -311,47 +313,47 @@ public class DeleteriousXPCLRS1000 {
                     if (!Impact_VEP.equals("HIGH"))continue; //
                 }
 
-                if(type.equals("009_VEP_stopGained")){
-                    if (!Effect_VEP.contains("start_lost") && !Effect_VEP.contains("stop_gained") && !Effect_VEP.contains("stop_lost")) continue;
-                }
-
                 if(type.equals("008_snpEff")){
                     if (!Impact_snpEff.equals("HIGH"))continue; //
                 }
 
-                if(type.equals("010_GERP16way")){
+                if(type.equals("009_VEP_stopGained")){
+                    if (!Effect_VEP.contains("start_lost") && !Effect_VEP.contains("stop_gained") && !Effect_VEP.contains("stop_lost")) continue;
+                }
+
+                if(type.equals("010_GERP16way_1")){
                     if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
                     if(gerp16way.startsWith("N")) continue; //说明必须满足GERP有值
                     double gerp16wayd = Double.parseDouble(gerp16way);
-                    if (gerp16wayd <= 1) continue; //说明必须满足gerp大于等于1
+                    if (gerp16wayd < 1) continue; //说明必须满足gerp大于等于1
                 }
 
                 if(type.equals("011_GERP16way_1.2_max")){
                     if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
                     if(gerp16way.startsWith("N")) continue; //说明必须满足GERP有值
                     double gerp16wayd = Double.parseDouble(gerp16way);
-                    if (gerp16wayd <= 1.2) continue; //说明必须满足gerp大于等于1
+                    if (gerp16wayd <= 1.2) continue; //说明必须满足gerp大于 1.2
                 }
 
                 if(type.equals("012_GERP16way_1.2_2.5")){
                     if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
                     if(gerp16way.startsWith("N")) continue; //说明必须满足GERP有值
                     double gerp16wayd = Double.parseDouble(gerp16way);
-                    if (gerp16wayd <= 1.2 || gerp16wayd >= 2.5) continue; //说明必须满足gerp大于等于1
+                    if (gerp16wayd <= 1.2 || gerp16wayd >= 2.5) continue; //说明必须满足gerp大于 1.2 小于 2.5
                 }
 
                 if(type.equals("013_GERP16way_2.5_max")){
                     if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
                     if(gerp16way.startsWith("N")) continue; //说明必须满足GERP有值
                     double gerp16wayd = Double.parseDouble(gerp16way);
-                    if (gerp16wayd <= 2.5) continue; //说明必须满足gerp大于等于1
+                    if (gerp16wayd <= 2.5) continue; //说明必须满足gerp大于 2.5
                 }
 
                 if(type.equals("014_GERP16way_2.14_max")){
                     if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
                     if(gerp16way.startsWith("N")) continue; //说明必须满足GERP有值
                     double gerp16wayd = Double.parseDouble(gerp16way);
-                    if (gerp16wayd < 2.14) continue; //说明必须满足gerp大于等于1
+                    if (gerp16wayd < 2.14) continue; //说明必须满足gerp大于等于 2.14
                 }
 
                 if(type.equals("015_LIST_S2")){
@@ -361,21 +363,21 @@ public class DeleteriousXPCLRS1000 {
                     if (LIST_S2d < 0.85) continue; //说明必须满足 list 大于等于 0.85
                 }
 
-                if(type.equals("016_PhyloP")){
+                if(type.equals("016_PhyloP1.5_RefNotMask")){
                     if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
                     if(phyloP.startsWith("N")) continue; //说明必须满足有值
                     double phyloPd = Double.parseDouble(phyloP);
                     if (phyloPd < 1.5) continue; //说明必须满足 list 大于等于 0.85
                 }
 
-                if(type.equals("017_PhyloP_RefMask")){
+                if(type.equals("017_PhyloP1.5_RefMask")){
                     if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
                     if(phyloP_RefMask.startsWith("N")) continue; //说明必须满足有值
                     double phyloP_RefMaskd = Double.parseDouble(phyloP_RefMask);
                     if (phyloP_RefMaskd < 1.5) continue; //说明必须满足 list 大于等于 0.85
                 }
 
-                if (type.equals("018_GERP16wayandSIFT")){
+                if (type.equals("018_GERP16way_2.14andSIFT")){
                     if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
                     if(gerp16way.startsWith("N")) continue; //说明必须满足GERP有值
                     if (sift.startsWith("N"))continue; //说明必须满足有sift值
@@ -399,7 +401,7 @@ public class DeleteriousXPCLRS1000 {
                     if (derivedPolyPhend < 0.453) continue; //说明必须满足gerp大于等于2.14
                 }
 
-                if (type.equals("021_GERP16wayandPolyPhen2")){
+                if (type.equals("021_GERP16way_2.14andPolyPhen2")){
                     if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
                     if(gerp16way.startsWith("N")) continue; //说明必须满足GERP有值
                     if (derivedPolyPhen.startsWith("N"))continue; //说明必须满足有sift值
@@ -409,14 +411,95 @@ public class DeleteriousXPCLRS1000 {
                     if (derivedPolyPhend < 0.453 ) continue; //说明必须满足sift小于0.05
                 }
 
-                //String variantType18 = "018_GERP16wayandSIFT";
+                if(type.equals("022_GERP16way_1.78")){
+                    if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
+                    if(gerp16way.startsWith("N")) continue; //说明必须满足GERP有值
+                    double gerp16wayd = Double.parseDouble(gerp16way);
+                    if (gerp16wayd < 1.78) continue; //说明必须满足gerp大于等于1.78
+                }
 
-                //        String variantType17 = "017_PhyloP_RefMask";
+                if (type.equals("023_GERP16way_1.78andPolyPhen2")){
+                    if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
+                    if(gerp16way.startsWith("N")) continue; //说明必须满足GERP有值
+                    if (derivedPolyPhen.startsWith("N"))continue; //说明必须满足有sift值
+                    double gerp16wayd = Double.parseDouble(gerp16way);
+                    double derivedPolyPhend = Double.parseDouble(derivedPolyPhen);
+                    if (gerp16wayd < 1.78) continue; //说明必须满足gerp大于等于1.78
+                    if (derivedPolyPhend < 0.453 ) continue; //说明必须满足 derivedPolyPhend 大于等于 0.453
+                }
 
-                //        String variantType15 = "015_LIST_S2";
-                //        String variantType16 = "016_PhyloP";
+                if (type.equals("024_GERP16way_1andPolyPhen2")){
+                    if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
+                    if(gerp16way.startsWith("N")) continue; //说明必须满足GERP有值
+                    if (derivedPolyPhen.startsWith("N"))continue; //说明必须满足有sift值
+                    double gerp16wayd = Double.parseDouble(gerp16way);
+                    double derivedPolyPhend = Double.parseDouble(derivedPolyPhen);
+                    if (gerp16wayd < 1) continue; //说明必须满足gerp大于等于1
+                    if (derivedPolyPhend < 0.453 ) continue; //说明必须满足 derivedPolyPhend 大于等于 0.453
+                }
+
+                if (type.equals("025_GERP16way_3.1")){
+                    if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
+                    if(gerp16way.startsWith("N")) continue; //说明必须满足GERP有值
+                    if (derivedPolyPhen.startsWith("N"))continue; //说明必须满足有sift值
+                    double gerp16wayd = Double.parseDouble(gerp16way);
+                    double derivedPolyPhend = Double.parseDouble(derivedPolyPhen);
+                    if (gerp16wayd < 3.1) continue; //说明必须满足gerp大于等于1
+                    if (derivedPolyPhend < 0.453 ) continue; //说明必须满足 derivedPolyPhend 大于等于 0.453
+                }
+
+                if (type.equals("026_Derived_PolyPhen2_probably")){
+                    if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
+                    if (derivedPolyPhen.startsWith("N"))continue; //说明必须满足有sift值
+                    double derivedPolyPhend = Double.parseDouble(derivedPolyPhen);
+                    if (derivedPolyPhend < 0.957) continue; //说明必须满足gerp大于等于2.14
+                }
+
+                if (type.equals("027_GERP16way_1andDerived_PolyPhen2_probably")){
+                    if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
+                    if(gerp16way.startsWith("N")) continue; //说明必须满足GERP有值
+                    if (derivedPolyPhen.startsWith("N"))continue; //说明必须满足有sift值
+                    double gerp16wayd = Double.parseDouble(gerp16way);
+                    double derivedPolyPhend = Double.parseDouble(derivedPolyPhen);
+                    if (gerp16wayd < 1) continue; //说明必须满足gerp大于等于1
+                    if (derivedPolyPhend < 0.957 ) continue; //说明必须满足 derivedPolyPhend 大于等于 0.453
+                }
+
+                if (type.equals("028_GERP16way_1.78andDerived_PolyPhen2_probably")){
+                    if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
+                    if(gerp16way.startsWith("N")) continue; //说明必须满足GERP有值
+                    if (derivedPolyPhen.startsWith("N"))continue; //说明必须满足有sift值
+                    double gerp16wayd = Double.parseDouble(gerp16way);
+                    double derivedPolyPhend = Double.parseDouble(derivedPolyPhen);
+                    if (gerp16wayd < 1.78) continue; //说明必须满足gerp大于等于1
+                    if (derivedPolyPhend < 0.957 ) continue; //说明必须满足 derivedPolyPhend 大于等于 0.453
+                }
+
+                if (type.equals("029_GERP16way_2.14andDerived_PolyPhen2_probably")){
+                    if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
+                    if(gerp16way.startsWith("N")) continue; //说明必须满足GERP有值
+                    if (derivedPolyPhen.startsWith("N"))continue; //说明必须满足有sift值
+                    double gerp16wayd = Double.parseDouble(gerp16way);
+                    double derivedPolyPhend = Double.parseDouble(derivedPolyPhen);
+                    if (gerp16wayd < 2.14) continue; //说明必须满足gerp大于等于1
+                    if (derivedPolyPhend < 0.957 ) continue; //说明必须满足 derivedPolyPhend 大于等于 0.453
+                }
+
+                if (type.equals("030_GERP16way_3.1andDerived_PolyPhen2_probably")){
+                    if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
+                    if(gerp16way.startsWith("N")) continue; //说明必须满足GERP有值
+                    if (derivedPolyPhen.startsWith("N"))continue; //说明必须满足有sift值
+                    double gerp16wayd = Double.parseDouble(gerp16way);
+                    double derivedPolyPhend = Double.parseDouble(derivedPolyPhen);
+                    if (gerp16wayd < 3.1) continue; //说明必须满足gerp大于等于1
+                    if (derivedPolyPhend < 0.957 ) continue; //说明必须满足 derivedPolyPhend 大于等于 0.453
+                }
+
+
 
                 ////////////////////// depracate
+                ////////////////////// depracate
+
                 if (type.equals("006_nonsynGERPandDerivedSIFT_correction")){
                     if (ancestralAllele.equals(ref)){ //
                         if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
@@ -484,6 +567,8 @@ public class DeleteriousXPCLRS1000 {
                 cnt++;
                 if (cnt%100000==0) System.out.println("cnt is " + cnt +" going on at step2");
 
+
+                cntNONSY++;
             }
             br.close();
             System.out.println(cntNONSY + "SNP num in " + type);

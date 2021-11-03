@@ -18,10 +18,10 @@ import java.util.List;
 
 public class TajimaD {
     public TajimaD(){
-//        this.mkTajimaDCommandbasedwinndow();
+        this.mkTajimaDCommandbasedwinndow();
 //        this.window();
 //        this.addGroupToTajimaDwindow();
-        this.getMeanTajimaDvalue();
+//        this.getMeanTajimaDvalue();
 
     }
 
@@ -184,7 +184,7 @@ public class TajimaD {
 
 
     public void mkTajimaDCommandbasedwinndow(){
-
+// ******************************************* 参数设置模板 *********************************************************************
 //        //local path
 //        String grouplocalDirS = "";
 //        //HPC path
@@ -196,7 +196,7 @@ public class TajimaD {
 //        String step = "";
         //        String scriptS = "";
 
-
+// ******************************************* 参数设置 *********************************************************************
         /**
          * first run
          */
@@ -212,20 +212,72 @@ public class TajimaD {
 //        String window = "100000";
 //        String step = "50000";
 
+// ******************************************* 参数设置 *********************************************************************
         /**
          * VMap2.0 after May 1st
          */
         //local path
-        String grouplocalDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/003_TajimaD/000_group";
-        //HPC path
-        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/105_VMap2.1ByRef";
-        String groupDirS = "/data4/home/aoyue/vmap2/analysis/031_popGen/003_TajimaD/000_group";
-        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/031_popGen/003_TajimaD/002_TajimaD_based50000window/001";
-        //para
-        String window = "50000";
-        int numfile = 10;
-        String scriptS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/003_TajimaD/001_srcipt_based50000window/tajimaD_based" + window + "window" + "_20200904.sh";
+//        String grouplocalDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/003_TajimaD/000_group";
+//        //HPC path
+//        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/105_VMap2.1ByRef";
+//        String groupDirS = "/data4/home/aoyue/vmap2/analysis/031_popGen/003_TajimaD/000_group";
+//        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/031_popGen/003_TajimaD/002_TajimaD_based50000window/001";
+//        //para
+//        String window = "50000";
+//        int numfile = 10;
+//        String scriptS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/003_TajimaD/001_srcipt_based50000window/tajimaD_based" + window + "window" + "_20200904.sh";
 
+
+// ******************************************* 参数设置 *********************************************************************
+//        //****** local path
+//        String grouplocalDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/011_populationPara/003_TajimaD/000_group";
+//        //****** HPC path
+//        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/203_VMap2.1ByRef";
+//        String groupDirS = "/data4/home/aoyue/vmap2/analysis/049_PopGenetics/003_TajimaD/000_group";
+//        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/049_PopGenetics/003_TajimaD/002_TajimaD_based50000window";
+//        //****** para
+//        String window = "50000";
+//        String step = "";
+//        String scriptS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/011_populationPara/003_TajimaD/001_script/001/tajimaD_based" + window + "window" + "_2021_10_22_1.sh";
+
+// ******************************************* 参数设置 *********************************************************************
+//        //****** local path
+//        String grouplocalDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/011_populationPara/003_TajimaD/000_group2";
+//        //****** HPC path
+//        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/203_VMap2.1ByRef";
+//        String groupDirS = "/data4/home/aoyue/vmap2/analysis/049_PopGenetics/003_TajimaD/000_group2";
+//        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/049_PopGenetics/003_TajimaD/004_TajimaD_based50000window";
+//        //****** para
+//        String window = "50000";
+//        String step = "";
+//        String scriptS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/011_populationPara/003_TajimaD/001_script/001/tajimaD_based" + window + "window" + "_2021_10_22_2.sh";
+
+//// ******************************************* 参数设置 *********************************************************************
+////        //****** local path
+//        String grouplocalDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/011_populationPara/003_TajimaD/000_group3";
+//        //****** HPC path
+//        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/203_VMap2.1ByRef";
+//        String groupDirS = "/data4/home/aoyue/vmap2/analysis/049_PopGenetics/003_TajimaD/000_group3";
+//        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/049_PopGenetics/003_TajimaD/006_TajimaD_based50000window";
+//        //****** para
+//        String window = "50000";
+//        String step = "";
+//        String scriptS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/011_populationPara/003_TajimaD/001_script/001/tajimaD_based" + window + "window" + "_2021_10_22_3.sh";
+
+
+        // ******************************************* 参数设置 *********************************************************************
+//        //****** local path
+        String grouplocalDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/016_1B1R_translocations/001_popPara/000_group";
+        //****** HPC path
+        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/203_VMap2.1ByRef";
+        String groupDirS = "/data4/home/aoyue/vmap2/analysis/051_1B1R_translocations/001_popPara/000_group";
+        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/051_1B1R_translocations/001_popPara/003_tajimaD";
+        //****** para
+        String window = "50000";
+        String step = "";
+        String scriptS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/016_1B1R_translocations/001_popPara/script/tajimaD_based" + window + "window" + "_2021_10_22_3.sh";
+
+// ******************************************* 参数设置完毕后的 section *********************************************************************
         System.out.println("mkdir 001_srcipt_based" + window + "window" );
         System.out.println("mkdir 002_TajimaD_based" + window + "window");
 
@@ -234,8 +286,16 @@ public class TajimaD {
             BufferedWriter bw = AoFile.writeFile(scriptS);
             for (int i = 0; i < fs.size(); i++) {
                 String groupname = fs.get(i).getName().split(".txt")[0];
-                if (groupname.equals("Cultivar") || groupname.equals("Landrace")){
-                    String[] chrArr = {"1A", "2A", "3A","4A", "5A", "6A", "7A", "1B", "2B", "3B", "4B", "5B", "6B", "7B", "1D", "2D", "3D",  "4D", "5D", "6D", "7D"};
+                if (groupname.equals("With1B1R") || groupname.equals("No1B1R")){
+//                if (groupname.equals("compactum") || groupname.equals("LR_AF") || groupname.equals("LR_AM") || groupname.equals("LR_CSA") || groupname.equals("LR_WA") || groupname.equals("LR_EA") || groupname.equals("LR_EU")
+//                        || groupname.equals("Cultivar") || groupname.equals("macha") || groupname.equals("OtherHexaploids") || groupname.equals("petropavlovskyi") || groupname.equals("spelta") || groupname.equals("sphaerococcum")
+//                        || groupname.equals("tibeticum") || groupname.equals("vavilovii") || groupname.equals("yunna-nense")){
+//                if (groupname.equals("LR_AF") || groupname.equals("LR_AM") || groupname.equals("LR_CSA") || groupname.equals("LR_WA") || groupname.equals("LR_EA") || groupname.equals("LR_EU") || groupname.equals("CL")){
+//                if (groupname.equals("CL") || groupname.equals("LR_EU") || groupname.equals("LR_EA")){
+//                if (groupname.equals("Cultivar") || groupname.equals("Landrace")){
+//                    String[] chrArr = {"1A", "2A", "3A","4A", "5A", "6A", "7A", "1B", "2B", "3B", "4B", "5B", "6B", "7B", "1D", "2D", "3D",  "4D", "5D", "6D", "7D"};
+                    String[] chrArr = {"1A", "1B","1D"};
+
                     for (int j = 0; j < chrArr.length; j++) {
                         String infileS = new File(infileDirS,"chr" + chrArr[j] + "_vmap2.1.vcf.gz").getAbsolutePath();
                         String outfileS = new File(outfileDirS,groupname + "_chr" + chrArr[j] + "_based" + window+ "Window_").getAbsolutePath();
@@ -249,7 +309,10 @@ public class TajimaD {
                     }
 
                 }
-                else if (groupname.equals("Domesticated_emmer") || groupname.equals("Free_threshing_tetraploid") || groupname.equals("Wild_emmer")){
+                else if (groupname.equals("carthlicum") || groupname.equals("dicoccoides") || groupname.equals("dicoccum") || groupname.equals("durum") || groupname.equals("ispahanicum")
+                        || groupname.equals("karamyschevii") || groupname.equals("polonicum") || groupname.equals("turanicum") || groupname.equals("turgidum")){
+//                else if (groupname.equals("DE") || groupname.equals("FTT") || groupname.equals("WE")){
+//                else if (groupname.equals("Domesticated_emmer") || groupname.equals("Free_threshing_tetraploid") || groupname.equals("Wild_emmer")){
                     String[] chrArr = {"1A", "2A", "3A","4A", "5A", "6A", "7A", "1B", "2B", "3B", "4B", "5B", "6B", "7B"};
                     for (int j = 0; j < chrArr.length; j++) {
                         String infileS = new File(infileDirS,"chr" + chrArr[j] + "_vmap2.1.vcf.gz").getAbsolutePath();
@@ -264,7 +327,9 @@ public class TajimaD {
                     }
 
                 }
-                else if (groupname.equals("Ae.tauschii")){
+                else if (groupname.equals("strangulata")){
+//                else if (groupname.equals("AT")){
+//                else if (groupname.equals("Ae.tauschii")){
                     String[] chrArr = {"1D","2D", "3D", "4D", "5D", "6D","7D"};
                     for (int j = 0; j < chrArr.length; j++) {
                         String infileS = new File(infileDirS,"chr" + chrArr[j] + "_vmap2.1.vcf.gz").getAbsolutePath();
@@ -281,7 +346,7 @@ public class TajimaD {
 
             }
             bw.flush();bw.close();
-            SplitScript.splitScript4(scriptS,numfile); //脚本拆分
+//            SplitScript.splitScript4(scriptS,numfile); //脚本拆分
 
         }catch (Exception e) {
             e.printStackTrace();

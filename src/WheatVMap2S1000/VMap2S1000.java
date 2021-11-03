@@ -31,6 +31,8 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
+import static java.util.Arrays.asList;
+
 public class VMap2S1000 {
     public VMap2S1000(){
         /**
@@ -53,15 +55,14 @@ public class VMap2S1000 {
 //        this.extractVCF(); //提取不同倍性的VCF
 //        new FilterVCF2().QC();
 
-//        this.getVCFbyPolyploid();
+//        this.getVCFbyPolyploid(); //获取不同倍性的VCF文件
 //        this.getMAFcountfromPop();
 
         /**
          * gene site annotation
          */
 //        this.snpAnnotationBuild(); //include many methods XXXXXXX
-        new DeleteriousXPCLRS1000(); //计算 xpclr 下的Load
-//        new DeleteriousCount();
+//        new DeleteriousXPCLRS1000(); //计算 xpclr 下的Load
 
         /**
          * XPCLR
@@ -91,6 +92,25 @@ public class VMap2S1000 {
         /**
          * 有害突变数目随样本大小变化
          */
+
+        /**
+         * polyDFE
+         */
+//        this.script_polyDFE();
+    }
+
+    public void script_polyDFE(){
+//        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/012_DFE/006_script_forPolyDFE/sh_modelC.sh";
+//        SplitScript.splitScript2(infileS,64,2);
+
+//        String infileS = "/Users/Aoyue/Documents/sh.sh";
+//        SplitScript.splitScript2(infileS,64,3);
+
+//        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/012_DFE/006_script_forPolyDFE/004/sh_remained_withoutDivergence.sh";
+//        SplitScript.splitScript2(infileS,92,1);
+
+        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/012_DFE/006_script_forPolyDFE/005_follow004/sh_remained_withoutDivergence.sh";
+        SplitScript.splitScript2(infileS,24,1);
 
     }
 
@@ -716,9 +736,25 @@ public class VMap2S1000 {
          * PolyPhen script
          */
 //        this.runPolyPhen_2();
-        this.mergePolyPhen_2();
+//        this.mergePolyPhen_2();
+
+        /**
+         * calculate DAF from subpopulation
+         */
+//        this.getDAFfromVCF();
 
     }
+
+    /**
+     * 以达兴转换的 anc -> derived VCF 为输入，计算 Alt 频率
+     */
+    public void getDAFfromVCF(){
+        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/012_DFE/002_script/sh.sh",25,9);
+
+
+
+    }
+
 
     /**
      * 由于输出4万多个文件，比较大，在R中运行比较费时，故用 java 合并这4万多个文件
@@ -731,8 +767,6 @@ public class VMap2S1000 {
         String infileDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/015_PolyPhen_2/003_out_alt2ref";
         String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/015_PolyPhen_2/004_out_merge/PolyPhen_2_alt2ref_predictions.txt.gz";
         AoFile.mergeTxt(infileDirS,outfileS);
-
-
     }
 
     public void runPolyPhen_2(){
@@ -845,10 +879,6 @@ public class VMap2S1000 {
         }
 
 //        SplitScript.splitScript2("/Users/Aoyue/Documents/sh.sh",20,3);
-
-
-
-
     }
 
 
@@ -1000,7 +1030,7 @@ public class VMap2S1000 {
         String dirS = "/data4/home/aoyue/vmap2/analysis/036_annoDB/002_genicSNP/001_geneSNP_Annotation";
         File[] fs = new File (dirS).listFiles();
         fs = IOUtils.listFilesEndsWith(fs, ".txt");
-        List<File> fList = Arrays.asList(fs);
+        List<File> fList = asList(fs);
         fList.parallelStream().forEach(f -> {
             String header = null;
             List<String> recordList = new ArrayList();
@@ -1076,7 +1106,7 @@ public class VMap2S1000 {
          * parameters need to modify
          */
         File[] fs  = AoFile.getFileArrayInDir(vmapDirS);
-        List<File> vmapList = Arrays.asList(fs);
+        List<File> vmapList = asList(fs);
         Collections.sort(vmapList);
         AoFile.readheader(geneHCFileS);
         RowTable<String> t = new RowTable<>(geneHCFileS);
@@ -1184,7 +1214,7 @@ public class VMap2S1000 {
          */
         int subLength = 200;
         File[] fs  = AoFile.getFileArrayInDir(vmapDirS);
-        List<File> vmapList = Arrays.asList(fs);
+        List<File> vmapList = asList(fs);
         Collections.sort(vmapList);
         AoFile.readheader(geneHCFileS);
         RowTable<String> t = new RowTable<>(geneHCFileS);

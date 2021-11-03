@@ -27,14 +27,14 @@ public class Pi {
 //        this.getMeanPIvaluefromLandraceWAEAEU();
 
 
-//                this.mkPiCommandbasedwinndow();
+                this.mkPiCommandbasedwinndow();
 //                this.getMeanPIvalue();
 //        this.window();
 //        this.addGroupToPiwindow();
 
 //        this.mkPiCMD_by2File();
 //                this.window();
-                this.piRatio();
+//                this.piRatio();
 
 
     }
@@ -467,16 +467,80 @@ public class Pi {
          * VMap2.0 after May 1st
          */
         //local path
-        String grouplocalDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/002_Pi/000_group";
+//        String grouplocalDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/002_Pi/000_group";
+//        //HPC path
+//        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/105_VMap2.1ByRef";
+//        String groupDirS = "/data4/home/aoyue/vmap2/analysis/031_popGen/002_Pi/000_group";
+//        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/031_popGen/002_Pi/002_pi_based100000window_50000step/001";
+//        //para
+//        String window = "100000";
+//        String step = "50000";
+//        int numcmd = 5;
+//        String scriptS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/002_Pi/001_srcipt_based100000window_50000step/pi_based" + window + "window_" + step + "step_20200904.sh";
+
+
+        /**
+         * VMap2.1 2021年10月21日
+         */
+        //local path
+//        String grouplocalDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/011_populationPara/002_Pi/000_group";
+//        //HPC path
+//        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/203_VMap2.1ByRef";
+//        String groupDirS = "/data4/home/aoyue/vmap2/analysis/049_PopGenetics/001_Pi/000_group";
+//        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/049_PopGenetics/001_Pi/002_pi_based100kWindow_50kStep";
+//        //para
+//        String window = "100000";
+//        String step = "50000";
+//        int numcmd = 5;
+//        String scriptS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/011_populationPara/002_Pi/001_script_based100kWindow_50kStep/pi_based" + window + "window_" + step + "step_2021_10_22.sh";
+
+        /**
+         * VMap2.1 2021年10月21日
+         */
+        //local path 六倍体几个亚群的 pi
+//        String grouplocalDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/011_populationPara/002_Pi/000_group2";
+//        //HPC path
+//        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/203_VMap2.1ByRef";
+//        String groupDirS = "/data4/home/aoyue/vmap2/analysis/049_PopGenetics/001_Pi/000_group2";
+//        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/049_PopGenetics/001_Pi/004_pi_based100kWindow_50kStep";
+//        //para
+//        String window = "100000";
+//        String step = "50000";
+//        int numcmd = 5;
+//        String scriptS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/011_populationPara/002_Pi/001_script/002/pi_based" + window + "window_" + step + "step_2021_10_22_2.sh";
+
+        /**
+         * VMap2.1 2021年10月21日
+         */
+        //local path 27 个亚群的多样性
+//        String grouplocalDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/011_populationPara/002_Pi/000_group3";
+//        //HPC path
+//        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/203_VMap2.1ByRef";
+//        String groupDirS = "/data4/home/aoyue/vmap2/analysis/049_PopGenetics/001_Pi/000_group3";
+//        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/049_PopGenetics/001_Pi/006_pi_based100kWindow_50kStep";
+//        //para
+//        String window = "100000";
+//        String step = "50000";
+//        int numcmd = 5;
+//        String scriptS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/011_populationPara/002_Pi/001_script/003/pi_based" + window + "window_" + step + "step_2021_10_22_3.sh";
+//        new File(scriptS).getParentFile().mkdirs();
+
+
+        /**
+         * VMap2.1 2021年10月21日
+         */
+
+        String grouplocalDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/016_1B1R_translocations/001_popPara/000_group";
         //HPC path
-        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/105_VMap2.1ByRef";
-        String groupDirS = "/data4/home/aoyue/vmap2/analysis/031_popGen/002_Pi/000_group";
-        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/031_popGen/002_Pi/002_pi_based100000window_50000step/001";
+        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/203_VMap2.1ByRef";
+        String groupDirS = "/data4/home/aoyue/vmap2/analysis/051_1B1R_translocations/001_popPara/000_group";
+        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/049_PopGenetics/001_Pi/006_pi_based100kWindow_50kStep";
         //para
         String window = "100000";
         String step = "50000";
         int numcmd = 5;
-        String scriptS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/002_Pi/001_srcipt_based100000window_50000step/pi_based" + window + "window_" + step + "step_20200904.sh";
+        String scriptS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/016_1B1R_translocations/001_popPara/script/pi_based" + window + "window_" + step + "step_2021_10_22_3.sh";
+        new File(scriptS).getParentFile().mkdirs();
 
 
 
@@ -488,8 +552,15 @@ public class Pi {
             BufferedWriter bw = AoFile.writeFile(scriptS);
             for (int i = 0; i < fs.size(); i++) {
                 String groupname = fs.get(i).getName().split(".txt")[0];
-                if (groupname.equals("Cultivar") || groupname.equals("Landrace")){
-                    String[] chrArr = {"1A", "2A", "3A","4A", "5A", "6A", "7A", "1B", "2B", "3B", "4B", "5B", "6B", "7B", "1D", "2D", "3D",  "4D", "5D", "6D", "7D"};
+                if(groupname.equals("No1B1R") || groupname.equals("With1B1R")){
+//                if (groupname.equals("compactum") || groupname.equals("LR_AF") || groupname.equals("LR_AM") || groupname.equals("LR_CSA") || groupname.equals("LR_WA") || groupname.equals("LR_EA") || groupname.equals("LR_EU")
+//                        || groupname.equals("Cultivar") || groupname.equals("macha") || groupname.equals("OtherHexaploids") || groupname.equals("petropavlovskyi") || groupname.equals("spelta") || groupname.equals("sphaerococcum")
+//                        || groupname.equals("tibeticum") || groupname.equals("vavilovii") || groupname.equals("yunna-nense")){
+//                    if (groupname.equals("LR_AF") || groupname.equals("LR_AM") || groupname.equals("LR_CSA") || groupname.equals("LR_WA") || groupname.equals("LR_EA") || groupname.equals("LR_EU") || groupname.equals("CL")){
+//                if (groupname.equals("CL") || groupname.equals("LR_EU") || groupname.equals("LR_EA")){
+//                if (groupname.equals("Cultivar") || groupname.equals("Landrace")){
+                    String[] chrArr = {"1A", "1B","1D"};
+//                    String[] chrArr = {"1A", "2A", "3A","4A", "5A", "6A", "7A", "1B", "2B", "3B", "4B", "5B", "6B", "7B", "1D", "2D", "3D",  "4D", "5D", "6D", "7D"};
                     for (int j = 0; j < chrArr.length; j++) {
                         String infileS = new File(infileDirS,"chr" + chrArr[j] + "_vmap2.1.vcf.gz").getAbsolutePath();
                         String outfileS = new File(outfileDirS,groupname + "_chr" + chrArr[j] + "_based" + window+ "Window_" + step + "step").getAbsolutePath();
@@ -503,7 +574,10 @@ public class Pi {
                     }
 
                 }
-                else if (groupname.equals("Domesticated_emmer") || groupname.equals("Free_threshing_tetraploid") || groupname.equals("Wild_emmer")){
+                else if (groupname.equals("carthlicum") || groupname.equals("dicoccoides") || groupname.equals("dicoccum") || groupname.equals("durum") || groupname.equals("ispahanicum")
+                        || groupname.equals("karamyschevii") || groupname.equals("polonicum") || groupname.equals("turanicum") || groupname.equals("turgidum")){
+//                else if (groupname.equals("DE") || groupname.equals("FTT") || groupname.equals("WE")){
+//                else if (groupname.equals("Domesticated_emmer") || groupname.equals("Free_threshing_tetraploid") || groupname.equals("Wild_emmer")){
                     String[] chrArr = {"1A", "2A", "3A","4A", "5A", "6A", "7A", "1B", "2B", "3B", "4B", "5B", "6B", "7B"};
                     for (int j = 0; j < chrArr.length; j++) {
                         String infileS = new File(infileDirS,"chr" + chrArr[j] + "_vmap2.1.vcf.gz").getAbsolutePath();
@@ -518,7 +592,9 @@ public class Pi {
                     }
 
                 }
-                else if (groupname.equals("Ae.tauschii")){
+                else if (groupname.equals("strangulata")){
+//                else if (groupname.equals("AT")){
+//                else if (groupname.equals("Ae.tauschii")){
                     String[] chrArr = {"1D","2D", "3D", "4D", "5D", "6D","7D"};
                     for (int j = 0; j < chrArr.length; j++) {
                         String infileS = new File(infileDirS,"chr" + chrArr[j] + "_vmap2.1.vcf.gz").getAbsolutePath();

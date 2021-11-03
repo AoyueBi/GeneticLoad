@@ -146,7 +146,7 @@ public class CalVCF {
             }
             br.close();
 
-            System.out.println(infileS + " is completed with line number (with header)" + out.size() + "\tActual taxa size: " + indexTaxa.size() + "\tTotal sites : " );
+            System.out.println(infileS + " is completed with line number (with header) " + out.size() + "\tActual taxa size: " + indexTaxa.size() + "\tTotal sites" );
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
@@ -1006,6 +1006,60 @@ public class CalVCF {
                     String[] taxaGenoArray = lTaxaGeno.toArray(new String[lTaxaGeno.size()]);
                     String maf = CalVCF.getPopMAF(taxaGenoArray);
                     bw.write(maf);
+                    bw.newLine();
+                }
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println(infileS + " is completed at " + outfileS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    /**
+     * 根据提供的taxa列表，从总的VCF文件中计算taxa的AAF值
+     *
+     * @param infileS
+     * @param outfileS
+     * @param taxalist 没有header，一行一个taxa名字
+     */
+    public static void calAAFFromPop(String infileS, String outfileS, String taxalist) {
+        List<Integer> indexTaxa = new ArrayList<>();
+        String[] taxaArray = AoFile.getStringArraybyList_withoutHeader(taxalist,0);
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            bw.write("Chr\tPos\tAAF");
+            bw.newLine();
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            while ((temp = br.readLine()) != null) {
+                if (temp.startsWith("##")) continue;
+                if (temp.startsWith("#CHROM")) {
+                    l = PStringUtils.fastSplit(temp);
+                    for (int i = 9; i < l.size(); i++) {
+                        String taxon = l.get(i);
+                        int index1 = Arrays.binarySearch(taxaArray, taxon);
+                        if (index1 > -1) {
+                            indexTaxa.add(i);
+                        }
+                    }
+                    Collections.sort(indexTaxa);
+                }
+                if (!temp.startsWith("#")) {
+                    l = PStringUtils.fastSplit(temp);
+                    String chr = l.get(0);
+                    String pos = l.get(1);
+                    List<String> lTaxaGeno = new ArrayList<>();
+                    for (int i = 0; i < indexTaxa.size(); i++) { //无论有无基因型，都加进去了
+                        lTaxaGeno.add(l.get(indexTaxa.get(i)));
+                    }
+                    String[] taxaGenoArray = lTaxaGeno.toArray(new String[lTaxaGeno.size()]);
+                    String aaf = CalVCF.getPopAAF(taxaGenoArray);
+                    bw.write(chr +  "\t" + pos + "\t" + aaf);
                     bw.newLine();
                 }
             }

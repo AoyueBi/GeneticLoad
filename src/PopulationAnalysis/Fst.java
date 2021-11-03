@@ -39,7 +39,7 @@ public class Fst {
 //        this.mergeFSTwindow();
 
         //********************************* VMap2.0 after -- new Version ********************//
-//        this.mkFstCommandbasedwinndow2();
+        this.mkFstCommandbasedwinndow2();
 //        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/001_Fst/001_script_based100kwindow_50kstep/fst_baesd100kwindow_50kstep_20200907.sh",21,1);
 //        this.window();
 //        this.addGroupToFstwindow();
@@ -555,30 +555,26 @@ public class Fst {
      * 终极版本！运行fst命令的脚本
      */
     public void mkFstCommandbasedwinndow2() {
-        /**
-         * input: including local path and HPC path
-         */
-        // 分组文件
-        //String groupHexaandTetraDirS = ""; //本地
-        //String groupHexaandDiDirS = ""; //本地
+// ******************************************* 参数设置模板 *********************************************************************
+        //****** local file： group
+//        String groupHexaandTetraDirS = ""; //本地
+//        String groupHexaandDiDirS = ""; //本地
+
+        //****** HPC file: output fileDirS
         //String group1FileDirS = ""; //HPC
 //        String group2FileDirS = ""; //HPC
-        //输入输出文件
+
+        //****** HPC file: output fileDirS
 //        String infileDirS = ""; //HPC
 //        String outfileDirS = ""; //HPC
-//          String scriptS = ""; //local script file
-//        //参数
+
+        //****** 参数
 //        int window = 100000;
 //        int step = 50000;
 //        int numcmd = 8;
 
-//        //其他需要修改参数： 输入文件名称
-////        String infileS = new File(infileDirS, "chr" + chr + "_vmap2.1.vcf").getAbsolutePath();
-//
-//        System.out.println("mkdir 001_srcipt_based" + window + "window_" + step + "step");
-//        System.out.println("mkdir 002_fst_based" + window + "window_" + step + "step");
-//
-//
+//        String scriptS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/011_populationPara/001_Fst/001_script/001/fst_based100kwindow_50kstep_20200213.sh"; //local script file
+//        new File(scriptS).getParentFile().mkdirs();
 
 // ******************************************* 参数设置 *********************************************************************
 //        //local file： one: group
@@ -599,11 +595,6 @@ public class Fst {
 //        int step = 2000;
 //        int numcmd = 21;
 
-//        //其他需要修改参数： 输入文件名称
-////        String infileS = new File(infileDirS, "chr" + chr + "_vmap2.1.vcf").getAbsolutePath();
-//        System.out.println("mkdir 001_script_based" + window + "window_" + step + "step");
-//        System.out.println("mkdir 002_fst_based" + window + "window_" + step + "step");
-
 // ******************************************* 参数设置 *********************************************************************
 //        //local file： one: group
 //        String groupHexaandTetraDirS = "";
@@ -619,34 +610,58 @@ public class Fst {
 //        String scriptS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/001_script_based100kwindow_50kstep/fst_based100kwindow_50kstep_20200213.sh"; //local script file
 //        new File(scriptS).getParentFile().mkdirs();
 
-// ******************************************* 参数设置 *********************************************************************
-// 先做一个测试，MAF过滤前后，FST是否有变化
-        //        //local file： one: group
-        String groupHexaandTetraDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/000_group/hexaandTetra";
-        String groupHexaandDiDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/039_popGen/000_group/hexaandDi";
+//        // ******************************************* 参数设置 *********************************************************************
+//        //local file： one: group
+//        String groupHexaandTetraDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/011_populationPara/001_Fst/000_group/hexa_tetra";
+//        String groupHexaandDiDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/011_populationPara/001_Fst/000_group/hexa_di";
+//
+//        // HPC file: group fileDirS
+//        String group1FileDirS = "../000_group/hexa_tetra/";
+//        String group2FileDirS = "../000_group/hexa_di/";
+//
+//        // HPC file: output fileDirS
+//        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/203_VMap2.1ByRef/";
+//        String outfileDirS = "../002_fst_based100000window_50000step/";
+//
+//        //****** 参数
+//        int window = 100000;
+//        int step = 50000;
+//        int numcmd = 8;
+//
+//        String scriptS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/011_populationPara/001_Fst/001_script/001/fst_based" + window + "window_" + step + "step_2021_10_22_1.sh"; //local script file
+//        new File(scriptS).getParentFile().mkdirs();
+
+        // ******************************************* 参数设置 *********************************************************************
+        //local file： one: group
+        String groupHexaandTetraDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/016_1B1R_translocations/001_popPara/000_group/";
+        String groupHexaandDiDirS = "";
+
         // HPC file: group fileDirS
-        String group1FileDirS = "/data4/home/aoyue/vmap2/analysis/031_popGen/000_group/hexaandTetra";
-        String group2FileDirS = "/data4/home/aoyue/vmap2/analysis/031_popGen/000_group/hexaandDi";
+        String group1FileDirS = "/data4/home/aoyue/vmap2/analysis/051_1B1R_translocations/001_popPara/000_group/";
+        String group2FileDirS = "";
 
-        String infileDirS = ""; //HPC
-        String outfileDirS = ""; //HPC
-        String scriptS = ""; //local script file
+        // HPC file: output fileDirS
+        String infileDirS = "/data4/home/aoyue/vmap2/genotype/mergedVCF/203_VMap2.1ByRef/";
+        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/051_1B1R_translocations/001_popPara/002_fst/";
 
-        //        //参数
+        //****** 参数
         int window = 100000;
         int step = 50000;
         int numcmd = 8;
-        //其他需要修改参数： 输入文件名称
-//        String infileS = new File(infileDirS, "chr" + chr + "_vmap2.1.vcf").getAbsolutePath();
+
+        String scriptS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/016_1B1R_translocations/001_popPara/script/fst_based" + window + "window_" + step + "step_2021_10_22_1.sh"; //local script file
+        new File(scriptS).getParentFile().mkdirs();
+
+
+// ******************************************* 参数设置完毕后的 section *********************************************************************
         System.out.println("mkdir 001_srcipt_based" + window + "window_" + step + "step");
         System.out.println("mkdir 002_fst_based" + window + "window_" + step + "step");
-
 
         List<File> fs = AoFile.getFileListInDir(groupHexaandTetraDirS);
         File[] group1FileS = fs.toArray(new File[fs.size()]);
 
-        List<File> fs2 = AoFile.getFileListInDir(groupHexaandDiDirS);
-        File[] group2FileS = fs2.toArray(new File[fs2.size()]);
+//        List<File> fs2 = AoFile.getFileListInDir(groupHexaandDiDirS);
+//        File[] group2FileS = fs2.toArray(new File[fs2.size()]);
 
 
         try{
@@ -655,13 +670,21 @@ public class Fst {
                 String pop1 = group1FileS[i].getName().replace(".txt", ""); //第一组的名字
                 for (int j = i + 1; j < group1FileS.length; j++) {
                     String pop2 = group1FileS[j].getName().replace(".txt", ""); //第二组的名字
-                    String[] chrArr = {"1A", "2A", "3A","4A", "5A", "6A", "7A", "1B", "2B", "3B", "4B", "5B", "6B", "7B"};
+//                    String[] chrArr = {"1A", "2A", "3A","4A", "5A", "6A", "7A", "1B", "2B", "3B", "4B", "5B", "6B", "7B"};
+                    String[] chrArr = {"1A", "1B","1D"};
+
                     for (int k = 0; k < chrArr.length; k++) {
                         String chr = chrArr[k];
-                        String infileS = new File(infileDirS, "chr" + chr + "_vmap2.1.vcf.gz").getAbsolutePath();
-                        String outfileS = new File(outfileDirS, pop1 + "_VS_" + pop2 + "_chr" + chr).getAbsolutePath();
-                        String group1S = new File(group1FileDirS, group1FileS[i].getName()).getAbsolutePath();
-                        String group2S = new File(group1FileDirS, group1FileS[j].getName()).getAbsolutePath();
+//                        String infileS = new File(infileDirS, "chr" + chr + "_vmap2.1.vcf.gz").getAbsolutePath();
+//                        String outfileS = new File(outfileDirS, pop1 + "_VS_" + pop2 + "_chr" + chr).getAbsolutePath();
+//                        String group1S = new File(group1FileDirS, group1FileS[i].getName()).getAbsolutePath();
+//                        String group2S = new File(group1FileDirS, group1FileS[j].getName()).getAbsolutePath();
+                        //****** 相对路径
+                        String infileS = infileDirS + "chr" + chr + "_vmap2.1.vcf.gz";
+                        String outfileS = outfileDirS +  pop1 + "_VS_" + pop2 + "_chr" + chr;
+                        String group1S = group1FileDirS + group1FileS[i].getName();
+                        String group2S = group1FileDirS + group1FileS[j].getName();
+
                         StringBuilder sb = new StringBuilder();
                         sb.append("vcftools --gzvcf ").append(infileS).append(" --weir-fst-pop ").append(group1S).append(" --weir-fst-pop ").append(group2S);
                         sb.append(" --fst-window-size ").append(window).append(" --fst-window-step ").append(step);
@@ -673,29 +696,34 @@ public class Fst {
                 }
             }
 
-            for (int i = 0; i < group2FileS.length - 1; i++) {
-                String pop1 = group2FileS[i].getName().replace(".txt", "");
-                for (int j = i + 1; j < group2FileS.length; j++) {
-                    String pop2 = group2FileS[j].getName().replace(".txt", "");
-                    String[] chrArr = {"1D", "2D", "3D", "4D", "5D", "6D", "7D"};
-                    for (int k = 0; k < chrArr.length; k++) {
-                        String chr = chrArr[k];
-                        String infileS = new File(infileDirS, "chr" + chr + "_vmap2.1.vcf.gz").getAbsolutePath();
-                        String outfileS = new File(outfileDirS, pop1 + "_VS_" + pop2 + "_chr" + chr).getAbsolutePath();
-                        String group1S = new File(group2FileDirS, group2FileS[i].getName()).getAbsolutePath();
-                        String group2S = new File(group2FileDirS, group2FileS[j].getName()).getAbsolutePath();
-                        StringBuilder sb = new StringBuilder();
-                        sb.append("vcftools --gzvcf ").append(infileS).append(" --weir-fst-pop ").append(group1S).append(" --weir-fst-pop ").append(group2S);
-                        sb.append(" --fst-window-size ").append(window).append(" --fst-window-step ").append(step);
-                        sb.append(" --out ").append(outfileS);
-                        System.out.println(sb.toString());
-                        bw.write(sb.toString());bw.newLine();
-                    }
-                }
-            }
+//            for (int i = 0; i < group2FileS.length - 1; i++) {
+//                String pop1 = group2FileS[i].getName().replace(".txt", "");
+//                for (int j = i + 1; j < group2FileS.length; j++) {
+//                    String pop2 = group2FileS[j].getName().replace(".txt", "");
+//                    String[] chrArr = {"1D", "2D", "3D", "4D", "5D", "6D", "7D"};
+//                    for (int k = 0; k < chrArr.length; k++) {
+//                        String chr = chrArr[k];
+////                        String infileS = new File(infileDirS, "chr" + chr + "_vmap2.1.vcf.gz").getAbsolutePath();
+////                        String outfileS = new File(outfileDirS, pop1 + "_VS_" + pop2 + "_chr" + chr).getAbsolutePath();
+////                        String group1S = new File(group2FileDirS, group2FileS[i].getName()).getAbsolutePath();
+////                        String group2S = new File(group2FileDirS, group2FileS[j].getName()).getAbsolutePath();
+//                        String infileS = infileDirS + "chr" + chr + "_vmap2.1.vcf.gz";
+//                        String outfileS = outfileDirS +  pop1 + "_VS_" + pop2 + "_chr" + chr;
+//                        String group1S = group2FileDirS + group2FileS[i].getName();
+//                        String group2S = group2FileDirS + group2FileS[j].getName();
+//
+//                        StringBuilder sb = new StringBuilder();
+//                        sb.append("vcftools --gzvcf ").append(infileS).append(" --weir-fst-pop ").append(group1S).append(" --weir-fst-pop ").append(group2S);
+//                        sb.append(" --fst-window-size ").append(window).append(" --fst-window-step ").append(step);
+//                        sb.append(" --out ").append(outfileS);
+//                        System.out.println(sb.toString());
+//                        bw.write(sb.toString());bw.newLine();
+//                    }
+//                }
+//            }
 
             bw.flush();bw.close();
-            SplitScript.splitScript3(scriptS,numcmd); //脚本拆分
+//            SplitScript.splitScript3(scriptS,numcmd); //脚本拆分
 
         }catch (Exception e) {
             e.printStackTrace();

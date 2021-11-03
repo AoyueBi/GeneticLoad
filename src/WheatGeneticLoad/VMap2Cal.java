@@ -27,13 +27,12 @@ public class VMap2Cal {
      * 估算在exon区域，随着样本量的增大，各种类型的变异数目评估，判定是否达到饱和
      */
     public void sampleSize2variantsDiscovery(){
-        this.mergeExonVCF();
-//        this.convert2GenoTable();
+//        this.mergeExonVCF();
+        this.convert2GenoTable();
 //        this.mainPipe();
 
 //        String[] subspeciesArray = {"Wild_emmer","Domesticated_emmer","Free_threshing_tetraploid","Landrace-AB","Cultivar-AB","Landrace-D","Cultivar-D","OtherTetraploid","OtherHexaploid-AB","OtherHexaploid-D"};
 //        String[] subspeciesArray = {"Landrace","Cultivar","OtherHexaploid"};
-
         String[] subspeciesArray = {"ABsub","Dsub"};
 
         /**
@@ -41,24 +40,23 @@ public class VMap2Cal {
          */
 
         int loop = 10;
-//        for (int j = 0; j < loop; j++) {
-//            for (int i = 0; i < subspeciesArray.length; i++) {
-//                String choice1 = subspeciesArray[i];
-//                this.mainPipe(choice1,j+1);
-//                System.out.println("#########*****************************************" + choice1 + "_" + loop + "   ####### has been completed.");
-//            }
-//        }
+        for (int j = 0; j < loop; j++) {
+            for (int i = 0; i < subspeciesArray.length; i++) {
+                String choice1 = subspeciesArray[i];
+                this.mainPipe(choice1,j+1);
+                System.out.println("#########*****************************************" + choice1 + "_" + loop + "   ####### has been completed.");
+            }
+        }
 
 //        List<File> fileList = AoFile.getFileListInDir("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/006_sampleSize2VariantsDiscovery_ABsub");
 //        File[] fileArray = fileList.toArray(new File[fileList.size()]);
 //        AoFile.mergeTxt_byFileArray(fileArray,"/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/007_merge006/ABsub.txt");
 //        System.out.println("All done");
 
-        List<File> fileList = AoFile.getFileListInDir("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/006_sampleSize2VariantsDiscovery_Dsub");
-        File[] fileArray = fileList.toArray(new File[fileList.size()]);
-        AoFile.mergeTxt_byFileArray(fileArray,"/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/007_merge006/Dsub.txt");
-        System.out.println("All done");
-
+//        List<File> fileList = AoFile.getFileListInDir("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/006_sampleSize2VariantsDiscovery_Dsub");
+//        File[] fileArray = fileList.toArray(new File[fileList.size()]);
+//        AoFile.mergeTxt_byFileArray(fileArray,"/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/007_merge006/Dsub.txt");
+//        System.out.println("All done");
 
         //Ae.tauschii, Cultivar, Domesticated_emmer, Free_threshing_tetraploid, Landrace, OtherHexaploid, OtherTetraploid, Wild_emmer
     }
@@ -237,7 +235,8 @@ public class VMap2Cal {
 
     public void mainPipe(String choice1, int loop){
 
-        String parentDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/004_sampleSize_to_variantsDiscovery";
+//        String parentDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/004_sampleSize_to_variantsDiscovery";
+        String parentDirS = "/data4/home/aoyue/vmap2/analysis/050_sampleSize_to_variantsDiscovery/001";
         String taxaListFileS = null;
         String infileS = null;
         String outfileDirS = null;
@@ -365,6 +364,7 @@ public class VMap2Cal {
         String[] sampleType = {"continuous","discreteByConsistentIntervals","discreteByManual"};
         String choice = "discreteByConsistentIntervals";
 
+        //***********************************************************************************************************************************************************************************************//
         //第一阶段： 抽样taxa，非连续抽样
 //        String[] taxaArray = AoFile.getStringArraybyList(taxaListFileS,0); //本行适用于 AB sub  D sub, 不适用于亚群
         String[] taxaArray = taxalist.toArray(new String[taxalist.size()]);
@@ -403,6 +403,7 @@ public class VMap2Cal {
         }
 
 
+        //***********************************************************************************************************************************************************************************************//
         ////第二阶段：根据第一阶段抽样的taxa,进行genotype table 的提取，并返回数组类型的List,第三阶段：根据geontypeList,进行各种类型的计数
         List<File> fileList = new ArrayList<>();
         //// 获取基因型table,不输出
@@ -437,11 +438,6 @@ public class VMap2Cal {
     }
 
 
-    /**
-     * 将exonVCF 转化为 derived allele table
-     * 假设 ancestral allele 是 0/0 -> 0, derived allele 是1/1 -> 2, heter 是 0/1 ->2
-     * coode: 0: ancestral allele 1:derived allele 2:derived
-     */
     public void convert2GenoTable(){
 //        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/020_exonVCF/ABsubgenome.vcf";
 //        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/021_exon_genoTable/001_exon_ABsubgenome_genoTable.txt.gz";
@@ -451,12 +447,27 @@ public class VMap2Cal {
 //        CalVCF.extractVCFtable(infileS,taxaArray,outfileS);
 
 
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/020_exonVCF/Dsubgenome.vcf";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/021_exon_genoTable/001_exon_Dsubgenome_genoTable.txt.gz";
-        String taxaListFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/000_Dsub.txt";
-        String[] taxaArray = AoFile.getStringArraybyList(taxaListFileS,0);
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/020_exonVCF/Dsubgenome.vcf";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/021_exon_genoTable/001_exon_Dsubgenome_genoTable.txt.gz";
+//        String taxaListFileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/001_taxaList/011_taxaInfoDB/000_Dsub.txt";
+//        String[] taxaArray = AoFile.getStringArraybyList(taxaListFileS,0);
+//        System.out.println(taxaArray.length);
+//        CalVCF.extractVCFtable(infileS,taxaArray,outfileS);
+
+        String infileS = "/data4/home/aoyue/vmap2/analysis/036_annoDB/002_genicSNP/002_merge_geneSNPVCF/ABsubgenome.vcf.gz";
+        String outfileS = "/data4/home/aoyue/vmap2/analysis/036_annoDB/002_genicSNP/004_geneSNP_genoTable/001_gene_ABsubgenome_genoTable.txt.gz";
+        String taxaListFileS = "/data4/home/aoyue/vmap2/analysis/036_annoDB/002_genicSNP/004_geneSNP_genoTable/TaxainABsub.txt";
+        String[] taxaArray = AoFile.getStringArraybyList_withoutHeader(taxaListFileS,0);
         System.out.println(taxaArray.length);
         CalVCF.extractVCFtable(infileS,taxaArray,outfileS);
+
+        String infileS1 = "/data4/home/aoyue/vmap2/analysis/036_annoDB/002_genicSNP/002_merge_geneSNPVCF/Dsubgenome.vcf.gz";
+        String outfileS1 = "/data4/home/aoyue/vmap2/analysis/036_annoDB/002_genicSNP/004_geneSNP_genoTable/002_gene_Dsubgenome_genoTable.txt.gz";
+        String taxaListFileS1 = "/data4/home/aoyue/vmap2/analysis/036_annoDB/002_genicSNP/004_geneSNP_genoTable/TaxainDsub.txt";
+        String[] taxaArray1 = AoFile.getStringArraybyList_withoutHeader(taxaListFileS1,0);
+        System.out.println(taxaArray1.length);
+        CalVCF.extractVCFtable(infileS1,taxaArray1,outfileS1);
+
 
     }
 
@@ -466,8 +477,11 @@ public class VMap2Cal {
 //        CalVCF.mergeVCF(infileDirS,outfileS);
 
 
-        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/016_exonVCF";
-        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/020_exonVCF/";
+//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/016_exonVCF";
+//        String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/020_exonVCF/";
+
+        String infileDirS = "/data4/home/aoyue/vmap2/analysis/036_annoDB/002_genicSNP/002_geneSNPVCF";
+        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/036_annoDB/002_genicSNP/002_merge_geneSNPVCF";
 
         CountSites.mergeVCFtoAB_Dsubgenome(infileDirS,outfileDirS);
 
