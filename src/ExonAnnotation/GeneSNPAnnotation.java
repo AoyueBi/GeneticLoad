@@ -102,11 +102,19 @@ public class GeneSNPAnnotation { //## 注意：请手动选择如何定义有害
     String variantType31 = "031_GERP16way_1.5andDerived_PolyPhen2_0.5";
 
 
+    public GeneSNPAnnotation(String exonAnnotationFileS) {
+//        String type = variantType14;
+        String type = variantType31;
+        this.exonAnnotationFileS=exonAnnotationFileS;
+        this.readExonAnnotation(type);
+    }
+
     public GeneSNPAnnotation() {
 //        String type = variantType14;
         String type = variantType31;
         this.readExonAnnotation(type);
     }
+
 
     public void readExonAnnotation(String type) { //## 注意：请手动选择如何定义有害突变。
         hmIDVariantsGroup = new HashMap<>();

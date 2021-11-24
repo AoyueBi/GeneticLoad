@@ -7,6 +7,7 @@ import gnu.trove.list.array.TDoubleArrayList;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import pgl.infra.utils.IOUtils;
 import pgl.infra.utils.PStringUtils;
+import pgl.infra.utils.wheat.RefV1Utils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -18,10 +19,50 @@ import java.util.List;
 
 public class TajimaD {
     public TajimaD(){
-        this.mkTajimaDCommandbasedwinndow();
+//        this.mkTajimaDCommandbasedwinndow();
 //        this.window();
 //        this.addGroupToTajimaDwindow();
 //        this.getMeanTajimaDvalue();
+
+        this.changePostoRef();
+
+    }
+
+    public void changePostoRef(){
+        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/011_populationPara/004_thetaW/002_merge001/angsd_subspecies26_geneRegion.txt.gz";
+        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/011_populationPara/004_thetaW/002_merge001/angsd_subspecies26_geneRegion_RefChr.txt.gz";
+
+        try{
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            //read header
+            bw.write( br.readLine() + "\tRefChr\tRefPos");
+            bw.newLine();
+            String temp = null; //read header
+            int cnt = 0;
+            List<String> l = new ArrayList<>();
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+                int chrID = Integer.parseInt(l.get(1));
+                int pos = Integer.parseInt(l.get(2));
+                String chr = RefV1Utils.getChromosome(chrID,pos);
+                int posOnChrosome = RefV1Utils.getPosOnChromosome(chrID,pos);
+                //先找到 chr 所在的列
+                StringBuilder sb = new StringBuilder();
+                sb.append(temp).append("\t").append(chr).append("\t").append(posOnChrosome);
+                bw.write(sb.toString());
+                bw.newLine();
+            }
+
+            br.close();
+            bw.flush();
+            bw.close();
+
+        }catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
 
     }
 

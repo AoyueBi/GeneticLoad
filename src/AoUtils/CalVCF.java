@@ -19,6 +19,8 @@ import pgl.infra.table.TableInterface;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -664,6 +666,132 @@ public class CalVCF {
             System.exit(1);
         }
     }
+
+    /**
+     * 根据ANGSD软件要求，输出符合规范的 VCF 文件：
+     * 1.去除多余的header；
+     * 2.##FORMAT=<ID=PL,Number=G,Type=Integer,Description="Genotype likelihoods">
+     * 3.##INFO=<ID=INDEL,Number=0,Type=Flag,Description="">
+     * 4. GT:AD:PL
+     * 提取后，用 bgzip 压缩，并用tabix 建立索引
+     * 根据提供的taxa列表，从总的VCF文件中提取所需的VCF文件，没有分离的位点依旧保留！！！
+     * @param infileS   VCF file
+     * @param outfileS  VCF file
+     * @param taxaListFileS 没有header，一行一个taxa名字
+     */
+    public static void extractVCFforANGSDinput(String infileS, String outfileS, String taxaListFileS) {
+
+        List<Integer> indexTaxa = new ArrayList<>();
+        String[] taxaArray = AoFile.getStringArraybyList_withoutHeader(taxaListFileS,0);
+
+        System.out.println("Chr\tNum_MergedFileVariants");
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cntRaw = 0; //1.总共的SNP数量
+            int cntKept = 0; //2.提取后保留的SNP数量
+            int cntRemoved = 0;  //3.去除的SNP数量
+            int cntNosegregation = 0; //4.没有分离位点的sites
+            int cntSiteNogeno = 0; //5.没有基因型的sites
+
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss.SSS");
+            Date dt = new Date();
+            String S = sdf.format(dt);
+
+            StringBuilder sb = new StringBuilder();
+            sb.append("##fileformat=VCFv4.2\n");
+            sb.append("##fileDate=").append(S.split(" ")[0]).append("\n");
+            sb.append("##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">\n");
+            sb.append("##FORMAT=<ID=AD,Number=1,Type=String,Description=\"Allele depth of a sample\">\n");
+            sb.append("##FORMAT=<ID=PL,Number=G,Type=Integer,Description=\"Genotype likelihoods\">\n");
+            sb.append("##INFO=<ID=INDEL,Number=0,Type=Flag,Description=\"\">");
+            bw.write(sb.toString());bw.newLine();
+            while ((temp = br.readLine()) != null) {
+                int cntNogenotype = 0;
+                //***********************************************************//
+                if (temp.startsWith("##")) continue;
+                //***********************************************************//
+                //开始处理taxa的问题，先把所有taxa放入array中，记住在temp中的index
+                if (temp.startsWith("#CHROM")) {
+                    l = PStringUtils.fastSplit(temp);
+                    bw.write(l.get(0));
+                    for (int i = 1; i < 9; i++) { //先写前8列的信息
+                        bw.write("\t" + l.get(i));
+                    }
+
+                    for (int i = 9; i < l.size(); i++) {
+                        String taxon = l.get(i);
+                        int index1 = Arrays.binarySearch(taxaArray, taxon);
+
+                        if (index1 > -1) { //当找到列表中的taxa时，写列表中的taxa信息
+                            indexTaxa.add(i);
+                            bw.write("\t" + l.get(i));
+                        }
+                    }
+                    bw.newLine(); //写完之后记得换行
+                    Collections.sort(indexTaxa);
+
+                }
+                if (!temp.startsWith("#")) {
+                    cntRaw++;
+                    l = PStringUtils.fastSplit(temp);
+                    List<String> lTaxaGeno = new ArrayList<>();
+                    String altList = l.get(4);
+                    for (int i = 0; i < indexTaxa.size(); i++) { //无论有无基因型，都加进去了
+                        lTaxaGeno.add(l.get(indexTaxa.get(i)));
+                    }
+
+                    //********************* 是否过滤没有分离的位点 **** start ************************//
+
+                    for (int i = 0; i < lTaxaGeno.size(); i++) { //判断没有基因型的taxa数目
+                        if (lTaxaGeno.get(i).startsWith(".")) {
+                            cntNogenotype++;
+                        }
+                    }
+
+                    if (cntNogenotype == lTaxaGeno.size()) { //过滤 所有taxa都没有基因型的位点 全部 ./.
+                        cntSiteNogeno++;
+                        continue;
+                    } //若不过滤，则全是./.的位点在下面的分离测试中会统计到
+
+                    String[] taxaGenoArray = lTaxaGeno.toArray(new String[lTaxaGeno.size()]);
+                    boolean segregation = ifSegregation(taxaGenoArray,altList);
+                    if (segregation == false) { //过滤没有分离的位点
+                        cntNosegregation++;
+                        continue;
+                    }
+                    cntKept++;
+                    //log
+//                    if (cntKept % 10000 == 0){
+//                        System.out.println("SNP number" + cntKept );
+//                    }
+                    //********************* 是否过滤没有分离的位点 **** end ************************//
+                    String info = ".";
+                    sb = new StringBuilder();
+                    for (int i = 0; i < 7; i++) {
+                        sb.append(l.get(i)).append("\t");
+                    }
+                    sb.append(info).append("\tGT:AD:PL");
+                    for (int i = 0; i < lTaxaGeno.size(); i++) {
+                        sb.append("\t").append(lTaxaGeno.get(i));
+                    }
+                    bw.write(sb.toString());
+                    bw.newLine();
+                }
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println(infileS + " is completed at " + outfileS + "\tActual taxa size: " + indexTaxa.size() + "\tGoal taxa size : " + l.size() + "kept SNP num:" + cntKept);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
 
     /**
      *  根据提供的taxa列表，从总的VCF文件中提取所需的VCF文件，并对没有分离的位点进行去除,没有分离位点包括全部都是./.的位点

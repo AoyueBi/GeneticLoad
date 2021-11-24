@@ -78,6 +78,10 @@ public class DeleteriousXPCLRS1000 {
         String variantType28 = "028_GERP16way_1.78andDerived_PolyPhen2_probably";
         String variantType29 = "029_GERP16way_2.14andDerived_PolyPhen2_probably";
         String variantType30 = "030_GERP16way_3.1andDerived_PolyPhen2_probably";
+        String variantType31 = "031_GERP16way_1.5andDerived_PolyPhen2_0.5";
+        String variantType32 = "032_GERP16way_1.5";
+        String variantType33 = "033_Derived_PolyPhen2_0.5";
+
 
         String ifselected = null;
         String ifselected1 = "1";
@@ -101,7 +105,7 @@ public class DeleteriousXPCLRS1000 {
 //        String[] choice1_variantType = {variantType1,variantType2,variantType3,variantType4,variantType5, variantType6,variantType7,variantType8,variantType9,variantType10};
 //        String[] choice1_variantType = {variantType1,variantType2,variantType7,variantType11,variantType12,variantType13};
 //        String[] choice1_variantType = {variantType3,variantType4,variantType5, variantType6,variantType8,variantType9,variantType10};
-        String[] choice1_variantType = {variantType26,variantType27,variantType28,variantType29,variantType30};
+        String[] choice1_variantType = {variantType25,variantType32,variantType33};
         String[] choice2_ifSelected = {ifselected3};
         String[] choice3_refobj = {group4};
 
@@ -110,6 +114,9 @@ public class DeleteriousXPCLRS1000 {
 //        String[] choice2_ifSelected = {ifselected1};
 //        String[] choice3_refobj = {group1,group2,group3};
 
+//        String[] choice1_variantType = {variantType7};
+//        String[] choice2_ifSelected = {ifselected1};
+//        String[] choice3_refobj = {group1,group2,group3};
 
 
 //        String parentDirS = ""; //model
@@ -120,8 +127,8 @@ public class DeleteriousXPCLRS1000 {
 //        String parentDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/009_xpclr/004_summary_XPCLR_top005/003_deleteriousXPCLR";
 //        String parentDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/009_xpclr/005_summary_XPCLR_top001/003_deleteriousXPCLR";
 
-//        String parentDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/005_delCount/004_allIndivi";
         String parentDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/005_delCount/005_allIndivi";
+//        String parentDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/009_xpclr/004_summary_XPCLR_top005/009_allIndivi_xpclr";
 
 
         new File(parentDirS).mkdirs();
@@ -130,8 +137,8 @@ public class DeleteriousXPCLRS1000 {
             group = choice3_refobj[i];
             // infileS 文件是Gene SNP 数据库中受选择区域内的 SNP 位点，即为 Annotation 数据库的子集, 如果计算的是全基因组区域的话，则该文件在程序中不会被处理到，可以忽略。
 //            String infileS = new File("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/009_xpclr/003_summary_XPCLR/002_topK","top0.05_" + group + "_ChrPos_fromExonAnnotation.txt.gz").getAbsolutePath();
-//            String infileS = new File("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/009_xpclr/004_summary_XPCLR_top005/002_topK","top0.05_" + group + "_ChrPos_fromExonAnnotation.txt.gz").getAbsolutePath();
-            String infileS = new File("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/009_xpclr/005_summary_XPCLR_top001/002_topK","top0.01_" + group + "_ChrPos_fromExonAnnotation.txt.gz").getAbsolutePath();
+            String infileS = new File("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/009_xpclr/004_summary_XPCLR_top005/002_topK","top0.05_" + group + "_ChrPos_fromExonAnnotation.txt.gz").getAbsolutePath();
+//            String infileS = new File("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/009_xpclr/005_summary_XPCLR_top001/002_topK","top0.01_" + group + "_ChrPos_fromExonAnnotation.txt.gz").getAbsolutePath();
 
             for (int j = 0; j < choice2_ifSelected.length; j++) { //第二层循环：是否受选择
                 ifselected = choice2_ifSelected[j];
@@ -443,9 +450,7 @@ public class DeleteriousXPCLRS1000 {
                     if(gerp16way.startsWith("N")) continue; //说明必须满足GERP有值
                     if (derivedPolyPhen.startsWith("N"))continue; //说明必须满足有sift值
                     double gerp16wayd = Double.parseDouble(gerp16way);
-                    double derivedPolyPhend = Double.parseDouble(derivedPolyPhen);
                     if (gerp16wayd < 3.1) continue; //说明必须满足gerp大于等于1
-                    if (derivedPolyPhend < 0.453 ) continue; //说明必须满足 derivedPolyPhend 大于等于 0.453
                 }
 
                 if (type.equals("026_Derived_PolyPhen2_probably")){
@@ -495,7 +500,36 @@ public class DeleteriousXPCLRS1000 {
                     if (derivedPolyPhend < 0.957 ) continue; //说明必须满足 derivedPolyPhend 大于等于 0.453
                 }
 
+                if (type.equals("031_GERP16way_1.5andDerived_PolyPhen2_0.5")){
+                    if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
+                    if(gerp16way.startsWith("N")) continue; //说明必须满足GERP有值
+                    if (derivedPolyPhen.startsWith("N"))continue; //说明必须满足有sift值
+                    double gerp16wayd = Double.parseDouble(gerp16way);
+                    double derivedPolyPhend = Double.parseDouble(derivedPolyPhen);
+                    if (gerp16wayd < 1.5) continue; //说明必须满足gerp大于等于1
+                    if (derivedPolyPhend < 0.5) continue; //说明必须满足 derivedPolyPhend 大于等于 0.453
+                }
 
+                if (type.equals("032_GERP16way_1.5")){
+                    if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
+                    if(gerp16way.startsWith("N")) continue; //说明必须满足GERP有值
+                    if (derivedPolyPhen.startsWith("N"))continue; //说明必须满足有sift值
+                    double gerp16wayd = Double.parseDouble(gerp16way);
+                    double derivedPolyPhend = Double.parseDouble(derivedPolyPhen);
+                    if (gerp16wayd < 1.5) continue;
+                }
+
+                if (type.equals("033_Derived_PolyPhen2_0.5")){
+                    if (!variantType.equals("NONSYNONYMOUS"))continue; //说明必须满足是非同义突变
+                    if (derivedPolyPhen.startsWith("N"))continue; //说明必须满足有sift值
+                    double derivedPolyPhend = Double.parseDouble(derivedPolyPhen);
+                    if (derivedPolyPhend < 0.5) continue;
+                }
+
+
+
+
+                //        String variantType31 = "031_GERP16way_1.5andDerived_PolyPhen2_0.5";
 
                 ////////////////////// depracate
                 ////////////////////// depracate

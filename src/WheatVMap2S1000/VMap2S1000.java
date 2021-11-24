@@ -62,7 +62,7 @@ public class VMap2S1000 {
          * gene site annotation
          */
 //        this.snpAnnotationBuild(); //include many methods XXXXXXX
-//        new DeleteriousXPCLRS1000(); //计算 xpclr 下的Load
+        new DeleteriousXPCLRS1000(); //计算 xpclr 下的Load
 
         /**
          * XPCLR

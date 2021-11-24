@@ -23,10 +23,12 @@ import org.apache.commons.math3.stat.StatUtils;
 import pgl.infra.dna.FastaBit;
 import pgl.infra.dna.FastaByte;
 import pgl.infra.utils.PStringUtils;
+import pgl.infra.utils.wheat.RefV1Utils;
 
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -52,16 +54,25 @@ public class GeneticLoadEntrance {
     }
 
     public void projectVMap2S1000(){
-//        new VMap2S1000(); //进行VCF的fix, QC, and SNP annotation build
+        new VMap2S1000(); //进行VCF的fix, QC, and SNP annotation build
 //        new Pi();
 //        new Fst();
+//        AoFile.readheader("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/011_populationPara/004_thetaW/002_merge001/angsd_subspecies26_geneRegion.txt.gz");
 //        new TajimaD();
-        new SampleSize2VariantsDiscovery();
-//        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/011_populationPara/003_TajimaD/001_script/001/tajimaD_based50000window_2021_10_22.sh",30,25);
-//        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/011_populationPara/001_Fst/001_script/001/fst_based100000window_50000step_2021_10_22_1.sh",30,28);
-//        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/011_populationPara/002_Pi/001_script/003/pi_based100000window_50000step_2021_10_22_3.sh",20,24);
-//        SplitScript.splitScript2("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/011_populationPara/001_Fst/001_script/001/remained_fst_based100000window_50000step_2021_10_23.sh",49,1);
-//        SplitScript.splitScript2("/Users/Aoyue/Documents/sh.sh",21,2);
+//        new SampleSize2VariantsDiscovery();
+
+//        String infileS = "/Users/Aoyue/Documents/chr036_vmap2.1.vcf.gz";
+//        String outfileS = "/Users/Aoyue/Documents/chr036_DD.vcf";
+//        String taxaList = "/Users/Aoyue/Documents/test/taxalist.txt";
+//        CalVCF.extractVCFforANGSDinput(infileS,outfileS,taxaList);
+
+//        int chrint = 1;
+//        int posint = 1172094;
+//        String chr = RefV1Utils.getChromosome(chrint,posint);
+//        int pos = RefV1Utils.getPosOnChromosome(chrint,posint);
+//        System.out.println("chr "+ chr);
+//        System.out.println("pos " + pos);
+
     }
 
 
@@ -251,6 +262,8 @@ public class GeneticLoadEntrance {
 //        AoFile.subsetTxt_singleStream(args[0],args[1],args[2]);
 //        CalVCF.filterMAFinVCF_parallel(args[0],Double.parseDouble(args[1]),args[2]);
 //        CalVCF.calAAFFromPop(args[0],args[1],args[2]);
+//        new SampleSize2VariantsDiscovery().sampleSize2SNPdiscovery(Integer.parseInt(args[0]),Integer.parseInt(args[1]),args[2],args[3],args[4],args[5]);
+        new CalVCF().extractVCFforANGSDinput(args[0],args[1],args[2]);
 
     }
 

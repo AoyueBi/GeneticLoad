@@ -19,52 +19,31 @@ public class SampleSize2VariantsDiscovery {
     public SampleSize2VariantsDiscovery(){
 //        this.mergeExonVCF();
 //        this.convert2GenoTable();
-        this.sampleSize2SNPdiscovery();
+//        this.sampleSize2SNPdiscovery();
     }
 
     /**
      * 估算在 gene 区域，随着样本量的增大，各种类型的变异数目评估，判定是否达到饱和
      */
-    public void sampleSize2SNPdiscovery(){
+    public void sampleSize2SNPdiscovery(int loop,int interval, String taxalist,String infileS, String outfileDirS, String exonAnnotationFileS){
 //        String[] subspeciesArray = {"ABsub","Dsub"};
-        String[] subspeciesArray = {"Dsub"};
+//        String[] subspeciesArray = {"Dsub"};
 
-        GeneSNPAnnotation geneSNPAnno = new GeneSNPAnnotation();
+        GeneSNPAnnotation geneSNPAnno = new GeneSNPAnnotation(exonAnnotationFileS);
         System.out.println("******* Stage1: new exonanno class has been build");
-
-//        HashMap<String, String> hm = geneSNPAnno.gethmIDLoadgroup();
-//        hm.forEach((k,v) -> System.out.println("key: " + k+ " value:" + v));
-
-
-//        try{
-//            BufferedWriter bw = AoFile.writeFile("/Users/Aoyue/Documents/test.txt");
-//            bw.write("ID\tLoadGroup");bw.newLine();
-//            String[] idlist = hm.keySet().toArray(new String[hm.size()]);
-//            for (int i = 0; i < hm.size(); i++) {
-//                String id = idlist[i];
-//                String group = hm.get(id);
-//                bw.write(id + "\t" + group);
-//                bw.newLine();
-//            }
-//            bw.flush();bw.close();
-//
-//        }
-//        catch(Exception e){
-//            e.printStackTrace();
-//            System.exit(1);
-//        }
-
 
         /**
          * 外加一层循环，从取样数1到最大值。 bootstrap
          */
-        int loop = 1;
+//        int loop = 1;
         for (int j = 0; j < loop; j++) {
-            for (int i = 0; i < subspeciesArray.length; i++) {
-                String choice1 = subspeciesArray[i];
-                this.mainPipe(choice1,j+1,geneSNPAnno);
-                System.out.println("#########*****************************************" + choice1 + "_" + loop + "   ####### has been completed.");
-            }
+            this.mainPipe(j+1,geneSNPAnno,interval,taxalist,infileS,outfileDirS);
+            System.out.println("#########*****************************************" + taxalist + "_loop" + loop + "   ####### has been completed.");
+//            for (int i = 0; i < subspeciesArray.length; i++) {
+//                String choice1 = subspeciesArray[i];
+//                this.mainPipe(choice1,j+1,geneSNPAnno);
+//                System.out.println("#########*****************************************" + choice1 + "_" + loop + "   ####### has been completed.");
+//            }
         }
     }
 
@@ -242,28 +221,30 @@ public class SampleSize2VariantsDiscovery {
         return out;
     }
 
-    public void mainPipe(String choice1, int loop,GeneSNPAnnotation geneSNPAnno){
-        int interval = Integer.MIN_VALUE; //间隔多少个样品抽一次样
-//        String choice = "discreteByConsistentIntervals"; //选择抽样的方式
-        String choice = "discreteByManual";
+    public void mainPipe(int loop,GeneSNPAnnotation geneSNPAnno,int interval, String taxalistS,String infileS, String outfileDirS){
+        // 非传参法
+//        public void mainPipe(String choice1, int loop,GeneSNPAnnotation geneSNPAnno){
+//        int interval = Integer.MIN_VALUE; //间隔多少个样品抽一次样
+////        String choice = "discreteByConsistentIntervals"; //选择抽样的方式
+//        String choice = "discreteByManual";
+//        List<String> taxalist = new ArrayList<>();
+//        String infileS = null; // genoTable 文件
+//        String outfileDirS = null; //结果输出目录
+//        String finaloutfileS = null;
+
+        //////// 传参法
+        String choice = "discreteByConsistentIntervals"; //选择抽样的方式
+//        String choice = "discreteByManual";
         List<String> taxalist = new ArrayList<>();
-        String infileS = null; // genoTable 文件
-        String outfileDirS = null; //结果输出目录
-        String finaloutfileS = null;
+        taxalist = AoFile.getStringListwithoutHeader(taxalistS,0);
 
-
-        if (choice1.equals("Dsub")){ //即抽样6倍体和2倍体
-            interval = 400;
-            taxalist = AoFile.getStringListwithoutHeader("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/010_sampleSize_to_variantsDiscovery/000_group/TaxainDsub.txt",0);
-            infileS = "/Users/Aoyue/Documents/002_gene_Dsubgenome_genoTable.txt.gz";
-            outfileDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/010_sampleSize_to_variantsDiscovery/001/Dsub";
-            finaloutfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/010_sampleSize_to_variantsDiscovery/001/Dsub.txt";
-        }
-
-        if (choice1.equals("ABsub")){ //即抽样6倍体和4倍体
-
-        }
-
+//        if (choice1.equals("Dsub")){ //即抽样6倍体和2倍体
+//            interval = 400;
+//            taxalist = AoFile.getStringListwithoutHeader("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/010_sampleSize_to_variantsDiscovery/000_group/TaxainDsub.txt",0);
+//            infileS = "/Users/Aoyue/Documents/002_gene_Dsubgenome_genoTable.txt.gz";
+//            outfileDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/010_sampleSize_to_variantsDiscovery/001/Dsub";
+//            finaloutfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/010_sampleSize_to_variantsDiscovery/001/Dsub.txt";
+//        }
 
         //***************************************** 第一阶段： 抽样taxa，非连续抽样 ******************************************************************************************************************************************************//
         String[] taxaArray = taxalist.toArray(new String[taxalist.size()]);
@@ -314,14 +295,17 @@ public class SampleSize2VariantsDiscovery {
             //#### 每个基因型table
             String outfileS = new File(outfileDirS,PStringUtils.getNDigitNumber(3,taxanum) + "_sampleSize_loop" + loop + "_variantsDiscovery.txt").getAbsolutePath();
 //            this.getCountinEachCategory(genoTable,taxanum,outfileS,exonanno);
-            fileList.add(this.getCountinEachCategory(genoTable,taxanum,outfileS,geneSNPAnno,loop)); // genoTable是获取的基因型， taxanum是为了写入文件， outfileS是为了写出文件，只有9行，exonanno是个类，为了后续调用，loop也是为了写入文件。
+//            fileList.add(this.getCountinEachCategory(genoTable,taxanum,outfileS,geneSNPAnno,loop)); // genoTable是获取的基因型， taxanum是为了写入文件， outfileS是为了写出文件，只有9行，exonanno是个类，为了后续调用，loop也是为了写入文件。
+            this.getCountinEachCategory(genoTable,taxanum,outfileS,geneSNPAnno,loop); //不进行文件合并，因为循环多，第四阶段只是合并某一loop 的结果。
             System.out.println("****** the ID " + (i+1) + " with " + "sample size = "+ taxanum + " variants count has been finished");
         }
 
-        //************************************* 第四阶段：将最终结果进行合并，成为一个文件 **********************************************************************************************************************************************************//
-        File[] fileArray = fileList.toArray(new File[fileList.size()]);
-        AoFile.mergeTxt_byFileArray(fileArray,finaloutfileS);
-        System.out.println("All done");
+//        //************************************* 第四阶段：将最终结果进行合并，成为一个文件 **********************************************************************************************************************************************************//
+//        File[] fileArray = fileList.toArray(new File[fileList.size()]);
+//        String taxa = new File(taxalistS).getName().replaceFirst(".txt","");
+//        String finaloutfileS = new File(outfileDirS,taxa+".out.txt").getAbsolutePath(); //### 最终结果放在要输出的文件夹中，并且该文件和 taxalist 的文件名字相同
+//        AoFile.mergeTxt_byFileArray(fileArray,finaloutfileS);
+//        System.out.println("All done");
     }
 
 
