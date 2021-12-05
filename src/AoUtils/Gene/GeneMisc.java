@@ -2,7 +2,7 @@ package AoUtils.Gene;
 
 import AoUtils.AoFile;
 import AoUtils.GeneFeatureAo;
-import daxing.common.PGF;
+import daxing.common.wheat.PGF;
 import pgl.infra.anno.gene.GeneFeature;
 import pgl.infra.range.Range;
 import pgl.infra.utils.PStringUtils;

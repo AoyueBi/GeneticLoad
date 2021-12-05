@@ -24,13 +24,19 @@ public class TajimaD {
 //        this.addGroupToTajimaDwindow();
 //        this.getMeanTajimaDvalue();
 
-        this.changePostoRef();
+//        this.changePostoRef();
+
+        this.window();
+
 
     }
 
     public void changePostoRef(){
-        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/011_populationPara/004_thetaW/002_merge001/angsd_subspecies26_geneRegion.txt.gz";
-        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/011_populationPara/004_thetaW/002_merge001/angsd_subspecies26_geneRegion_RefChr.txt.gz";
+//        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/011_populationPara/004_thetaW/002_merge001/angsd_subspecies26_geneRegion.txt.gz";
+//        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/011_populationPara/004_thetaW/002_merge001/angsd_subspecies26_geneRegion_RefChr.txt.gz";
+
+        String infileS = "/Users/Aoyue/Documents/df4.txt";
+        String outfileS = "/Users/Aoyue/Documents/df4_RefChr.txt";
 
         try{
             BufferedReader br = AoFile.readFile(infileS);
@@ -44,8 +50,8 @@ public class TajimaD {
             while ((temp = br.readLine()) != null) {
                 l = PStringUtils.fastSplit(temp);
                 cnt++;
-                int chrID = Integer.parseInt(l.get(1));
-                int pos = Integer.parseInt(l.get(2));
+                int chrID = Integer.parseInt(l.get(3));
+                int pos = Integer.parseInt(l.get(4));
                 String chr = RefV1Utils.getChromosome(chrID,pos);
                 int posOnChrosome = RefV1Utils.getPosOnChromosome(chrID,pos);
                 //先找到 chr 所在的列
@@ -213,7 +219,9 @@ public class TajimaD {
             int chrColumn = 0;
             int posIndex = 1;
             int valueIndex = 3;
-            double window = 2000000;
+//            double window = 2000000;
+//            double step = 1000000;
+            double window = 10000000;
             double step = 1000000;
             String name = new File(infileS).getName().split(".TajimaD")[0] + "_" + window + "window_" + step + "step.txt.gz";
             String parent = new File(infileS).getParent();

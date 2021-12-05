@@ -7,9 +7,9 @@ import WheatGeneticLoad.FilterVCF2;
 import WheatGeneticLoad.SIFT;
 import WheatGeneticLoad.VariantsSum;
 import com.google.common.collect.Table;
-import daxing.common.IOTool;
-import daxing.common.PGF;
-import daxing.common.RowTableTool;
+import daxing.common.utiles.IOTool;
+import daxing.common.wheat.PGF;
+import daxing.common.table.RowTableTool;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.set.hash.TIntHashSet;
@@ -62,7 +62,7 @@ public class VMap2S1000 {
          * gene site annotation
          */
 //        this.snpAnnotationBuild(); //include many methods XXXXXXX
-        new DeleteriousXPCLRS1000(); //计算 xpclr 下的Load
+//        new DeleteriousXPCLRS1000(); //计算 xpclr 下的Load
 
         /**
          * XPCLR
@@ -97,6 +97,22 @@ public class VMap2S1000 {
          * polyDFE
          */
 //        this.script_polyDFE();
+
+        /**
+         * 全基因组 SNP 数目分布 - 文件合并
+         */
+
+//        this.getHapPosAllelebyRefChr();
+
+    }
+
+    public void getHapPosAllelebyRefChr(){
+        String infileDirS = "/data4/home/aoyue/vmap2/analysis/052_VMap2.1_HapPosAllele/002_output";
+        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/052_VMap2.1_HapPosAllele/004_output_RefChrPos";
+        int chrIndex = 0;
+        int posIndex =1;
+        CountSites.merge1_42to1A_7DandChangeChrPos_txt(infileDirS,outfileDirS,chrIndex,posIndex);
+
     }
 
     public void script_polyDFE(){
@@ -151,11 +167,11 @@ public class VMap2S1000 {
 //        int windowSize = 2000000; //2 M
 //        int windowStep = 1000000; //1 M
 
-//        int windowSize = 20000000; //20 M
-//        int windowStep = 5000000; //5 M
+        int windowSize = 20000000; //20 M
+        int windowStep = 5000000; //5 M
 
-        int windowSize = 10000000; //2 M
-        int windowStep = 1000000; //1 M
+//        int windowSize = 10000000; //10 M
+//        int windowStep = 1000000; //1 M
 
 
 //        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/019_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
@@ -165,44 +181,55 @@ public class VMap2S1000 {
 //        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/016_genomeScan_delvsSyn/001/001_delVSsynOnChr_" + windowSize + "Window" + windowStep + "step.txt";
 
         //******* 2021-09-01 周三 *******//
-        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/001_geneSNPAnno.txt.gz";
-        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/009_genomeScan_delvcSyn/001/001_delVSsynOnChr_" + windowSize + "window" + windowStep + "step.txt";
+//        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/001_geneSNPAnno.txt.gz";
+//        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/009_genomeScan_delvcSyn/001/001_delVSsynOnChr_" + windowSize + "window" + windowStep + "step.txt";
+//        String outfile2S = outfileS.replaceFirst(".txt","_addEffectiveCDSLength.txt");
+
+        //******* 2021-09-01 周三 *******//
+//        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/011_geneSNPAnno.txt.gz";
+//        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/009_genomeScan_delvcSyn/001/001_delVSsynOnChr_" + windowSize + "window" + windowStep + "step.txt";
+//        String outfile2S = outfileS.replaceFirst(".txt","_addEffectiveCDSLength.txt");
+
+        //******* 2021-12-04 周六 *******//
+        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/011_geneSNPAnno.txt.gz";
+        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/009_genomeScan_delvcSyn/002/001_delVSsynOnChr_" + windowSize + "window" + windowStep + "step.txt";
         String outfile2S = outfileS.replaceFirst(".txt","_addEffectiveCDSLength.txt");
+
         AoFile.readheader(infileS);
         String[] chrArr = {"1A", "1B", "1D", "2A", "2B", "2D", "3A", "3B", "3D", "4A", "4B", "4D", "5A", "5B", "5D", "6A", "6B", "6D", "7A", "7B", "7D"};
         int chrNum = chrArr.length;
 
         int[][] synPos = new int[chrNum][];
         int[][] nonsynPos = new int[chrNum][];
-        int[][] siftGerpPos = new int[chrNum][];
-        int[][] siftPos = new int[chrNum][];
+        int[][] pph2GerpPos = new int[chrNum][];
+        int[][] pph2Pos = new int[chrNum][];
         int[][] gerpPos = new int[chrNum][];
         int[][] stopGainSiftPos = new int[chrNum][];
-        int[][] vepPos = new int[chrNum][];
-        int[][] stopGainVEPPos = new int[chrNum][];
-        int[][] snpEffPos = new int[chrNum][];
+//        int[][] vepPos = new int[chrNum][];
+//        int[][] stopGainVEPPos = new int[chrNum][];
+//        int[][] snpEffPos = new int[chrNum][];
 
         TIntArrayList[] synposList = new TIntArrayList[chrNum];
         TIntArrayList[] nonsynPosList = new TIntArrayList[chrNum];
-        TIntArrayList[] siftGerpPosList = new TIntArrayList[chrNum];
-        TIntArrayList[] siftPosList = new TIntArrayList[chrNum];
+        TIntArrayList[] pph2GerpPosList = new TIntArrayList[chrNum];
+        TIntArrayList[] pph2PosList = new TIntArrayList[chrNum];
         TIntArrayList[] gerpPosList = new TIntArrayList[chrNum];
         TIntArrayList[] stopGainSiftPosList = new TIntArrayList[chrNum];
-        TIntArrayList[] vepPosList = new TIntArrayList[chrNum];
-        TIntArrayList[] stopGainVEPPosList = new TIntArrayList[chrNum];
-        TIntArrayList[] snpEffPosList = new TIntArrayList[chrNum];
+//        TIntArrayList[] vepPosList = new TIntArrayList[chrNum];
+//        TIntArrayList[] stopGainVEPPosList = new TIntArrayList[chrNum];
+//        TIntArrayList[] snpEffPosList = new TIntArrayList[chrNum];
 
 
         for (int i = 0; i < chrNum; i++) { //集合类数组，要初始化每一个list
             synposList[i] = new TIntArrayList();
             nonsynPosList[i] = new TIntArrayList();
-            siftGerpPosList[i] = new TIntArrayList();
-            siftPosList[i] = new TIntArrayList();
+            pph2GerpPosList[i] = new TIntArrayList();
+            pph2PosList[i] = new TIntArrayList();
             gerpPosList[i] = new TIntArrayList();
             stopGainSiftPosList[i] = new TIntArrayList();
-            vepPosList[i] = new TIntArrayList();
-            stopGainVEPPosList[i] = new TIntArrayList();
-            snpEffPosList[i] = new TIntArrayList();
+//            vepPosList[i] = new TIntArrayList();
+//            stopGainVEPPosList[i] = new TIntArrayList();
+//            snpEffPosList[i] = new TIntArrayList();
         }
 
         try {
@@ -221,11 +248,15 @@ public class VMap2S1000 {
                 int index = Arrays.binarySearch(chrArr,chromosome); //染色体的索引号
                 String ancestralAllele = l.get(9);
                 String variantType = l.get(13);
-                String sift = l.get(16); // derived_sift
-                String gerp = l.get(11);
-                String Effect_VEP = l.get(17);
-                String Impact_VEP = l.get(18);
-                String Impact_snpEff = l.get(20);
+//                String soft = l.get(16); // derived_sift
+//                String gerp = l.get(11);
+//                String Effect_VEP = l.get(17);
+//                String Impact_VEP = l.get(18);
+//                String Impact_snpEff = l.get(20);
+
+                String pph2 = l.get(40); // derived_pph2
+                String gerp_16way = l.get(22);
+
 
                 // 只考虑有 ancestral 状态的那些位点
                 String ref = l.get(3); String alt = l.get(4);
@@ -240,30 +271,30 @@ public class VMap2S1000 {
                 }
 
                 if (variantType.equals("NONSYNONYMOUS")){ // sift_gerp
-                    if (!sift.startsWith("N")){
-                        if(!gerp.startsWith("N")){
-                            double gerpd = Double.parseDouble(gerp);
-                            double siftd = Double.parseDouble(sift);
-                            if (siftd < 0.05 && gerpd > 1){
-                                siftGerpPosList[index].add(posonchromosome);
+                    if (!pph2.startsWith("N")){
+                        if(!gerp_16way.startsWith("N")){
+                            double gerpd = Double.parseDouble(gerp_16way);
+                            double pph2d = Double.parseDouble(pph2);
+                            if (pph2d >= 0.05 && gerpd >= 1.5){
+                                pph2GerpPosList[index].add(posonchromosome);
                             }
                         }
                     }
                 }
 
                 if (variantType.equals("NONSYNONYMOUS")){ // sift
-                    if (!sift.startsWith("N")){
-                        double siftd = Double.parseDouble(sift);
-                        if (siftd < 0.05){
-                            siftPosList[index].add(posonchromosome);
+                    if (!pph2.startsWith("N")){
+                        double pph2d = Double.parseDouble(pph2);
+                        if (pph2d >= 0.05){
+                            pph2PosList[index].add(posonchromosome);
                         }
                     }
                 }
 
                 if (variantType.equals("NONSYNONYMOUS")){ // gerp
-                    if(!gerp.startsWith("N")){
-                        double gerpd = Double.parseDouble(gerp);
-                        if (gerpd > 1){
+                    if(!gerp_16way.startsWith("N")){
+                        double gerpd = Double.parseDouble(gerp_16way);
+                        if (gerpd >= 1.5){
                             gerpPosList[index].add(posonchromosome);
                         }
                     }
@@ -273,22 +304,26 @@ public class VMap2S1000 {
                     stopGainSiftPosList[index].add(posonchromosome);
                 }
 
-                if (Impact_VEP.equals("HIGH")){ // vepPosList
-                    vepPosList[index].add(posonchromosome);
-                }
+//                if (Impact_VEP.equals("HIGH")){ // vepPosList
+//                    vepPosList[index].add(posonchromosome);
+//                }
 
-                if (Effect_VEP.contains("start_lost") || Effect_VEP.contains("stop_gained") || Effect_VEP.contains("stop_lost")){ // vepPosList
-                    stopGainVEPPosList[index].add(posonchromosome);
-                }
+//                if (Effect_VEP.contains("start_lost") || Effect_VEP.contains("stop_gained") || Effect_VEP.contains("stop_lost")){ // vepPosList
+//                    stopGainVEPPosList[index].add(posonchromosome);
+//                }
 
-                if (Impact_snpEff.equals("HIGH")){ // vepPosList
-                    snpEffPosList[index].add(posonchromosome);
-                }
+//                if (Impact_snpEff.equals("HIGH")){ // vepPosList
+//                    snpEffPosList[index].add(posonchromosome);
+//                }
             }
             System.out.println("======== completing the posList DB on all chromosome.");
 
-            String[] variantTypeArray = {"001_synonymous","002_nonsynonymous","003_nonsynGERPandDerivedSIFT","004_nonsynDerivedSIFT","005_GERP",
-            "006_StopGain","007_VEP","008_snpEff","009_VEP_stopGained"};
+//            String[] variantTypeArray = {"001_synonymous","002_nonsynonymous","003_nonsynGERPandDerivedSIFT","004_nonsynDerivedSIFT","005_GERP",
+//            "006_StopGain","007_VEP","008_snpEff","009_VEP_stopGained"};
+//
+            String[] variantTypeArray = {"001_synonymous","002_nonsynonymous","003_nonsynGERPandDerivedPPH2","004_nonsynDerivedPPH2","005_GERP_16way",
+                    "006_StopGain"};
+
             BufferedWriter bw = AoFile.writeFile(outfileS);
             String outheader = "CHROM\tBIN_START\tBIN_END\tBIN_START_scale"; //和vcftools的格式保持一致
             StringBuilder sb = new StringBuilder();
@@ -311,12 +346,12 @@ public class VMap2S1000 {
                 int[] nonsynPosWindowCount = sw.getWindowValuesInt();
                 sw.clearWindowValues();
 
-                sw.addPositionCount(siftGerpPosList[i].toArray());
-                int[] siftGerpPosWindowCount = sw.getWindowValuesInt();
+                sw.addPositionCount(pph2GerpPosList[i].toArray());
+                int[] pph2GerpPosWindowCount = sw.getWindowValuesInt();
                 sw.clearWindowValues();
 
-                sw.addPositionCount(siftPosList[i].toArray());
-                int[] siftPosWindowCount = sw.getWindowValuesInt();
+                sw.addPositionCount(pph2PosList[i].toArray());
+                int[] pph2PosWindowCount = sw.getWindowValuesInt();
                 sw.clearWindowValues();
 
                 sw.addPositionCount(gerpPosList[i].toArray());
@@ -327,17 +362,17 @@ public class VMap2S1000 {
                 int[] stopGainSiftPosWindowCount = sw.getWindowValuesInt();
                 sw.clearWindowValues();
 
-                sw.addPositionCount(vepPosList[i].toArray());
-                int[] vepPosWindowCount = sw.getWindowValuesInt();
-                sw.clearWindowValues();
+//                sw.addPositionCount(vepPosList[i].toArray());
+//                int[] vepPosWindowCount = sw.getWindowValuesInt();
+//                sw.clearWindowValues();
 
-                sw.addPositionCount(stopGainVEPPosList[i].toArray());
-                int[] stopGainVEPPosWindowCount = sw.getWindowValuesInt();
-                sw.clearWindowValues();
+//                sw.addPositionCount(stopGainVEPPosList[i].toArray());
+//                int[] stopGainVEPPosWindowCount = sw.getWindowValuesInt();
+//                sw.clearWindowValues();
 
-                sw.addPositionCount(snpEffPosList[i].toArray());
-                int[] snpEffPosWindowCount = sw.getWindowValuesInt();
-                sw.clearWindowValues();
+//                sw.addPositionCount(snpEffPosList[i].toArray());
+//                int[] snpEffPosWindowCount = sw.getWindowValuesInt();
+//                sw.clearWindowValues();
 
                 int[] windowStarts = sw.getWindowStarts();
                 int[] windowEnds = sw.getWindowEnds();
@@ -346,10 +381,10 @@ public class VMap2S1000 {
                     String posscale = WheatUtils.getScaledPos(chromosome,windowStarts[j]);
                     sb.append(chromosome).append("\t").append(windowStarts[j]).append("\t").append(windowEnds[j]).append("\t").append(posscale).append("\t");
                     sb.append(synPosWindowCount[j]).append("\t").append(nonsynPosWindowCount[j]).append("\t");
-                    sb.append(siftGerpPosWindowCount[j]).append("\t").append(siftPosWindowCount[j]).append("\t");
-                    sb.append(gerpPosWindowCount[j]).append("\t").append(stopGainSiftPosWindowCount[j]).append("\t");
-                    sb.append(vepPosWindowCount[j]).append("\t").append(stopGainVEPPosWindowCount[j]).append("\t");
-                    sb.append(snpEffPosWindowCount[j]);
+                    sb.append(pph2GerpPosWindowCount[j]).append("\t").append(pph2PosWindowCount[j]).append("\t");
+                    sb.append(gerpPosWindowCount[j]).append("\t").append(stopGainSiftPosWindowCount[j]); //最后一个不加tab键
+//                    sb.append(vepPosWindowCount[j]).append("\t").append(stopGainVEPPosWindowCount[j]).append("\t");
+//                    sb.append(snpEffPosWindowCount[j]);
                     bw.write(sb.toString());
                     bw.newLine();
                 }

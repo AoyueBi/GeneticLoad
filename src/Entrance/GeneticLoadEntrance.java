@@ -170,8 +170,8 @@ public class GeneticLoadEntrance {
 
         System.out.println("Aoyue Repository --- Here is the entrance of GeneticLoad!\n");
         System.out.println(new SimpleDateFormat().format(new Date()) + "\tbegin.");
-        new GeneticLoadEntrance();
-//        new GeneticLoadEntrance(args);
+//        new GeneticLoadEntrance();
+        new GeneticLoadEntrance(args);
         System.out.println(new SimpleDateFormat().format(new Date()) + "\tend.");
 
         //ChrConvertionRule c=new ChrConvertionRule(Paths.get("/Users/Aoyue/Documents/Data/wheat/chrConvertionRule.txt"));
@@ -263,7 +263,10 @@ public class GeneticLoadEntrance {
 //        CalVCF.filterMAFinVCF_parallel(args[0],Double.parseDouble(args[1]),args[2]);
 //        CalVCF.calAAFFromPop(args[0],args[1],args[2]);
 //        new SampleSize2VariantsDiscovery().sampleSize2SNPdiscovery(Integer.parseInt(args[0]),Integer.parseInt(args[1]),args[2],args[3],args[4],args[5]);
-        new CalVCF().extractVCFforANGSDinput(args[0],args[1],args[2]);
+//        new CalVCF().extractVCFforANGSDinput(args[0],args[1],args[2]);
+
+//        CountSites.merge1_42to1A_7DandChangeChrPos_txt(args[0],args[1],Integer.parseInt(args[2]),Integer.parseInt(args[3]));
+//        CountSites.mergeVCF1_42to1A_7DandChangeChrPos(args[0],args[1]);
 
     }
 

@@ -7,13 +7,15 @@ package WheatGeneticLoad;
 
 import AoUtils.*;
 import analysis.wheat.VMap2.VMapDBUtils;
-import daxing.common.IOTool;
-import daxing.common.RowTableTool;
+import com.google.common.collect.Table;
+import daxing.common.utiles.IOTool;
+import daxing.common.table.RowTableTool;
 import gnu.trove.list.TIntList;
-import gnu.trove.list.array.*;
+import gnu.trove.list.array.TByteArrayList;
+import gnu.trove.list.array.TDoubleArrayList;
+import gnu.trove.list.array.TFloatArrayList;
+import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.set.hash.TIntHashSet;
-import nonapi.io.github.classgraph.utils.FileUtils;
-import org.apache.commons.math3.stat.inference.TestUtils;
 import pgl.graph.tSaw.TablesawUtils;
 import pgl.infra.anno.gene.GeneFeature;
 import pgl.infra.range.Range;
@@ -26,12 +28,11 @@ import pgl.infra.utils.PStringUtils;
 import pgl.infra.utils.wheat.RefV1Utils;
 import pgl.infra.window.SimpleWindow;
 import tech.tablesaw.api.IntColumn;
-import com.google.common.collect.Table;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.*;
 
 /**
@@ -106,13 +107,14 @@ public class VariantsSum {
 //        this.WindowDel_Nonsyn_vsSyn_fromExonAnnotation();
 //        this.addRecombinationfromScience(); //该方法凑效！思路：将 del nonysn syn 数据的滑窗设置成和science一致，然后再将重组率文件合并，后续进行其他处理。本次数据分析采用此方法。
 
-//        AoFile.readheader("/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/047_referenceEvaluation/rscript/referenceEvaluation/data/003/chr006_SNP_anno.txt");
+
 
         /**
          * 2021-06-20 周日
          */
 //        this.AddScalePos();
 //        this.AddGenePosition();
+
 
     }
 
@@ -458,18 +460,25 @@ public class VariantsSum {
      */
     public void WindowDel_Nonsyn_vsSyn_fromExonAnnotation(){
 
-//        int windowSize = 10000000; //10 M
-//        int windowStep = 1000000; //1 M
+        int windowSize = 10000000; //10 M
+        int windowStep = 1000000; //1 M
 
         // 为了进行circos画图
-        int windowSize = 20000000; //10 M
-        int windowStep = 5000000; //1 M
+//        int windowSize = 20000000; //10 M
+//        int windowStep = 5000000; //1 M
 
 
-        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/019_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
-        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/016_genomeScan_delvsSyn/003_del_nonsyn_syn/001_del_nonsyn_synOnChr_" + windowSize + "Window" + windowStep + "step.txt";
+//        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/genicSNP/019_exonSNPAnnotation_merge/001_exonSNP_anno.txt.gz";
+//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/033_annoDB/016_genomeScan_delvsSyn/003_del_nonsyn_syn/001_del_nonsyn_synOnChr_" + windowSize + "Window" + windowStep + "step.txt";
+//        String outfile2S = outfileS.replaceFirst(".txt","_addEffectiveCDSLength.txt");
+//        AoFile.readheader(infileS);
+
+        //******* 2021-11-27 周三 *******//
+        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/011_geneSNPAnno.txt.gz";
+        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/009_genomeScan_delvcSyn/001/001_delVSsynOnChr_" + windowSize + "window" + windowStep + "step.txt";
         String outfile2S = outfileS.replaceFirst(".txt","_addEffectiveCDSLength.txt");
-        AoFile.readheader(infileS);
+
+
         String[] chrArr = {"1A", "1B", "1D", "2A", "2B", "2D", "3A", "3B", "3D", "4A", "4B", "4D", "5A", "5B", "5D", "6A", "6B", "6D", "7A", "7B", "7D"};
         int chrNum = chrArr.length;
         int[][] delePos = new int[chrNum][];
@@ -811,6 +820,8 @@ public class VariantsSum {
         String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/001_geneSNPAnno.txt.gz";
         String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/009_genomeScan_delvcSyn/001/001_delVSsynOnChr_" + windowSize + "window" + windowStep + "step.txt";
         String outfile2S = outfileS.replaceFirst(".txt","_addEffectiveCDSLength.txt");
+
+
         AoFile.readheader(infileS);
         String[] chrArr = {"1A", "1B", "1D", "2A", "2B", "2D", "3A", "3B", "3D", "4A", "4B", "4D", "5A", "5B", "5D", "6A", "6B", "6D", "7A", "7B", "7D"};
         int chrNum = chrArr.length;
@@ -3924,7 +3935,7 @@ public class VariantsSum {
     public void countDeleteriousSNPs_basedCHR() {
         String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/015_merge015";
         String outfileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/018_annoDB/104_feiResult/019_countCase";
-        
+
         File[] fs = new File(infileDirS).listFiles();
         for (int i = 0; i < fs.length; i++) {
             if (fs[i].isHidden()) {
@@ -5147,7 +5158,7 @@ public class VariantsSum {
         建立一个二维数组mafFrequency 和 dafFrequency， 长度为class的种类长，100宽；
         建立一个count 和 dafCount 数组，长度为class分类长；
         建立一个 dafList1 和 dafList 数组，长度为class分类长；
-        
+
         进入for循环，对class文件一一遍历，以读表格的形式进入文件
         Chr	Pos	MinorAllele	MAF	DerivedAllele	DAF
         1	92716	A	0.0077619664	NA	NA
@@ -5368,7 +5379,7 @@ public class VariantsSum {
         for (int i = 0; i < chrNum; i++) {
             posGeneMap[i] = new HashMap();
         }
-        //下面这一段将posGeneMap建立完整，使每个位点对应哪些基因名字，都装进这个map里 
+        //下面这一段将posGeneMap建立完整，使每个位点对应哪些基因名字，都装进这个map里
         GeneFeature gf = new GeneFeature(geneFeatureFileS);
         HashMap<String, Integer> geneCDSLengthMap = new HashMap();
         /*将所有基因的名字进行for循环输入到数组genes中，对应于每一个基因，我们通过getTranscriptName得到转录本的名字，通过getCDSList方法得到编码序列的起始位点*/
@@ -5403,7 +5414,7 @@ public class VariantsSum {
                     /*posGeneMap是一个HashMap数组，一条染色体对应一个String类型的ArrayList；
                     故得到该位点的所属基因名字列表，如果该位点不含基因名，就将 genename赋值给该位点，完善posGeneMap
                     否则，如果该位点含有其他基因的基因名字，依旧把genename赋值给该位点*/
-                    ArrayList<String> geneNameList = posGeneMap[chrIndex].get(k); //建立map的关系，那个位点对应哪个list HashMap<Integer, ArrayList<String>>[] posGeneMap = new HashMap[chrNum]; 
+                    ArrayList<String> geneNameList = posGeneMap[chrIndex].get(k); //建立map的关系，那个位点对应哪个list HashMap<Integer, ArrayList<String>>[] posGeneMap = new HashMap[chrNum];
                     if (geneNameList == null) {
                         geneNameList = new ArrayList();
                         geneNameList.add(geneName);
@@ -5512,7 +5523,7 @@ public class VariantsSum {
                         continue;
                     }
                     int pos = Integer.valueOf(l.get(1));
-                    int index = Arrays.binarySearch(snpPos[chrIndex], pos); // 
+                    int index = Arrays.binarySearch(snpPos[chrIndex], pos); //
                     if (index < 0) {
                         continue;
                     }
@@ -5713,10 +5724,10 @@ public class VariantsSum {
     public void scriptAddAncAllele() {
 //        for (int i = 1; i < 43; i++) {
 //            String CHR = PStringUtils.getNDigitNumber(3, i);
-//            System.out.println("java -Xms50g -Xmx100g -jar 017_mkAnnoDB.addAncAllele.single.jar /data4/home/aoyue/vmap2/analysis/015_annoDB/001_step1/chr" 
+//            System.out.println("java -Xms50g -Xmx100g -jar 017_mkAnnoDB.addAncAllele.single.jar /data4/home/aoyue/vmap2/analysis/015_annoDB/001_step1/chr"
 //                    + CHR + ".lineage.maf0.005.bi.AnnoDB.txt.gz "
-//                    + "/data4/home/aoyue/vmap2/analysis/ancestralAllele/Chr" + CHR 
-//                    + ".ancestralAllele.txt " 
+//                    + "/data4/home/aoyue/vmap2/analysis/ancestralAllele/Chr" + CHR
+//                    + ".ancestralAllele.txt "
 //                    + "/data4/home/aoyue/vmap2/analysis/015_annoDB/002_addAncestralAllele/chr"
 //                    + CHR + ".lineage.maf0.005.bi.AnnoDB.addAncAllele.txt.gz"
 //                    );

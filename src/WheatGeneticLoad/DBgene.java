@@ -5,7 +5,7 @@ import AoUtils.AoString;
 import AoUtils.CalVCF;
 import AoUtils.Triads.Standardization;
 import AoUtils.Triads.Triadsgenes;
-import daxing.common.RowTableTool;
+import daxing.common.table.RowTableTool;
 
 
 import pgl.infra.table.RowTable;
