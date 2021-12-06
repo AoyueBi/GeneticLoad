@@ -1295,6 +1295,116 @@ public class CountSites {
     /**
      * 将改变位置的chr5和chr6文本文件合并成1D一个文件， chr11,chr12两个文件合并成2D一个文件。自动识别染色体序号并进行合并。
      * 针对Txt文件,并且根据Ref改变其CHR POS
+     * 单线程操作文件
+     *
+     * @param infileS
+     * @param outfileDirS
+     */
+    public static void merge1_42to1A_7DandChangeChrPos_txt2(String infileS, String outfileDirS, int chrColumnIndex, int posColumnIndex) {
+
+        //建立1-44一一对应chr1A的关系,目的：根据chr1找到chr1A
+        String[] chrs = {"1A", "1B", "1D", "2A", "2B", "2D", "3A", "3B", "3D", "4A", "4B", "4D", "5A", "5B", "5D", "6A", "6B", "6D", "7A", "7B", "7D", "Mit", "Chl"};
+        int[] cnts = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44};
+        HashMap<Integer, String> hmcntchr = new HashMap<>();
+
+        int cnt = 0;
+        for (int i = 0; i < chrs.length; i++) {
+            if (cnt == 43) {
+                hmcntchr.put(43, "Mit");
+            }
+            if (cnt == 44) {
+                hmcntchr.put(44, "Chl");
+            } else {
+                hmcntchr.put(cnts[cnt], chrs[i]);
+                cnt++;
+                hmcntchr.put(cnts[cnt], chrs[i]);
+                cnt++;
+            }
+        }
+
+//        File[] fs = AoFile.getFileArrayInDir(infileDirS);
+//        Arrays.sort(fs);
+        File f = new File(infileS);
+
+        try {
+            int chr = Integer.valueOf(f.getName().substring(3, 6)); //先对文件的题目进行处理，获取染色体号，进行判断
+            for (int j = 1; j < 43; j++) {
+                if (!(j % 2 == 0)) { // j只进行奇数判断，如只进行 chr1 3 5 7 9判断
+                    ///******************内部开始写*******************************//
+                    if (chr == j) {
+                        //读入文件
+//                        String infileS = fs[i].getAbsolutePath();
+                        BufferedReader br = AoFile.readFile(infileS);
+                        String outfileS = new File(outfileDirS, "chr" + hmcntchr.get(chr) + f.getName().substring(6)).getAbsolutePath();
+
+                        //确定输出文件的路径，并读入header
+                        String secondchr = PStringUtils.getNDigitNumber(3, chr + 1);
+                        //名字变一下：
+
+                        BufferedWriter bw = AoFile.writeFile(outfileS);
+                        bw.write(br.readLine()); //先读表头,表头不变
+                        bw.newLine();
+                        ///开始合并文件1和2
+
+                        String temp = null; //read header
+                        List<String> l = new ArrayList<>();
+                        while ((temp = br.readLine()) != null) {
+                            l = PStringUtils.fastSplit(temp);
+                            String CHR = l.get(chrColumnIndex);
+                            String POS = l.get(posColumnIndex);
+                            String[] RefChrArray = getRefChrPos(Integer.parseInt(CHR), Integer.parseInt(POS));
+                            l.set(chrColumnIndex, RefChrArray[0]);
+                            l.set(posColumnIndex,RefChrArray[1]);
+                            StringBuilder sb = new StringBuilder();
+                            for(int k = 0; k < l.size(); k++){
+                                sb.append(l.get(k)).append("\t");
+                            }
+                            sb.deleteCharAt(sb.length()-1);
+                            bw.write(sb.toString());
+                            bw.newLine();
+                        }
+                        //开始读入第2个文件
+                        infileS = new File(f.getParent(), f.getName().replaceFirst(PStringUtils.getNDigitNumber(3, chr), secondchr)).getAbsolutePath();
+                        br = AoFile.readFile(infileS);
+
+                        temp = br.readLine(); //read header
+                        while ((temp = br.readLine()) != null) {
+                            l = PStringUtils.fastSplit(temp);
+                            String CHR = l.get(chrColumnIndex);
+                            String POS = l.get(posColumnIndex);
+                            String[] RefChrArray = getRefChrPos(Integer.parseInt(CHR), Integer.parseInt(POS));
+                            l.set(chrColumnIndex, RefChrArray[0]);
+                            l.set(posColumnIndex,RefChrArray[1]);
+                            StringBuilder sb = new StringBuilder();
+                            for(int k = 0; k < l.size(); k++){
+                                sb.append(l.get(k)).append("\t");
+                            }
+                            sb.deleteCharAt(sb.length()-1);
+                            bw.write(sb.toString());
+                            bw.newLine();
+
+                        }
+                        br.close();
+                        bw.flush();
+                        bw.close();
+                        System.out.println(f + " is completed at " + outfileS);
+
+                    }
+                    ///********************内部写出结束*****************************//
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+
+
+    /**
+     * 将改变位置的chr5和chr6文本文件合并成1D一个文件， chr11,chr12两个文件合并成2D一个文件。自动识别染色体序号并进行合并。
+     * 针对Txt文件,并且根据Ref改变其CHR POS
      *
      * @param infileDirS
      * @param outfileDirS

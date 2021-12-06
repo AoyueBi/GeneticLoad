@@ -102,13 +102,24 @@ public class VMap2S1000 {
          * 全基因组 SNP 数目分布 - 文件合并
          */
 
-//        this.getHapPosAllelebyRefChr();
+        this.getHapPosAllelebyRefChr();
+
 
     }
 
+
+
     public void getHapPosAllelebyRefChr(){
-        String infileDirS = "/data4/home/aoyue/vmap2/analysis/052_VMap2.1_HapPosAllele/002_output";
-        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/052_VMap2.1_HapPosAllele/004_output_RefChrPos";
+//        String infileDirS = "/data4/home/aoyue/vmap2/analysis/052_VMap2.1_HapPosAllele/002_output";
+//        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/052_VMap2.1_HapPosAllele/004_output_RefChrPos";
+//        int chrIndex = 0;
+//        int posIndex =1;
+//        CountSites.merge1_42to1A_7DandChangeChrPos_txt(infileDirS,outfileDirS,chrIndex,posIndex);
+
+
+//        String infileDirS = "/data4/home/aoyue/vmap2/daxing/analysis/008_vmap2_1062_spelt/002_variantsAnnotation/004_constrainted/002_gerp_score/003_gerp_chrID";
+        String infileDirS = "/data4/home/aoyue/vmap2/analysis/053_GERP16WAY/003_input";
+        String outfileDirS = "/data4/home/aoyue/vmap2/analysis/053_GERP16WAY/002_output";
         int chrIndex = 0;
         int posIndex =1;
         CountSites.merge1_42to1A_7DandChangeChrPos_txt(infileDirS,outfileDirS,chrIndex,posIndex);

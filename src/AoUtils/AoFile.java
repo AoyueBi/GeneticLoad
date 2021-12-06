@@ -169,6 +169,82 @@ public class AoFile {
         }
     }
 
+    /**
+     * 过滤操作，即保留和List种一样的行，过滤不满足条件的行
+     * @param infileS
+     * @param columIndex
+     * @param ifcase
+     * @param value
+     * @param outfileS
+     * @return
+     */
+    public static void filterTxtbyValue(String infileS, int columIndex, String ifcase, double value, String outfileS){
+        File out = new File(outfileS);
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String header = br.readLine();
+            bw.write(header); bw.newLine();
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            int cntkeep = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+                String query = l.get(columIndex);
+
+                // 过滤数字是na的
+                if(query == null || query == "" || query.isEmpty() || query.startsWith("N") || query.startsWith("n")
+                        || query.startsWith("Inf") || query.startsWith("-")) continue;  //!!!!! if there is no value, we should set the value as "NA".
+
+                if (ifcase.equals("equal")){
+                    if ( Double.parseDouble(query) == value){
+                        cntkeep++;
+                        bw.write(temp);
+                        bw.newLine();
+                    }
+                }
+                if (ifcase.equals("more_equal")){
+                    if ( Double.parseDouble(query) >= value){
+                        cntkeep++;
+                        bw.write(temp);
+                        bw.newLine();
+                    }
+                }
+                if (ifcase.equals("less_equal")){
+                    if ( Double.parseDouble(query) <= value){
+                        cntkeep++;
+                        bw.write(temp);
+                        bw.newLine();
+                    }
+                }
+                if (ifcase.equals("more")){
+                    if ( Double.parseDouble(query) > value){
+                        cntkeep++;
+                        bw.write(temp);
+                        bw.newLine();
+                    }
+                }
+                if (ifcase.equals("less")){
+                    if ( Double.parseDouble(query) < value){
+                        cntkeep++;
+                        bw.write(temp);
+                        bw.newLine();
+                    }
+                }
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println(cnt + "\tkeep lines " + cntkeep + "\t" + infileS + " is completed at " + outfileS );
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+    }
+
 
     /**
      * 过滤操作，即保留和List种一样的行，过滤不满足条件的行
@@ -311,6 +387,7 @@ public class AoFile {
             if (fs[i].isHidden()) continue;
             if(fs[i].isDirectory()) continue;
             fList.add(fs[i]);
+            System.out.println(fs[i]);
         }
         Collections.sort(fList);
         File[] fsArray = fList.toArray(new File[fList.size()]);
@@ -704,6 +781,8 @@ public class AoFile {
         if (infileS.endsWith(".txt")) {
             br = IOUtils.getTextReader(infileS);
         } else if (infileS.endsWith(".txt.gz")) {
+            br = IOUtils.getTextGzipReader(infileS);
+        }else if (infileS.endsWith(".sort.gz")) {
             br = IOUtils.getTextGzipReader(infileS);
         }else if (infileS.endsWith(".hwe.gz")) {
             br = IOUtils.getTextGzipReader(infileS);

@@ -267,6 +267,8 @@ public class GeneticLoadEntrance {
 
 //        CountSites.merge1_42to1A_7DandChangeChrPos_txt(args[0],args[1],Integer.parseInt(args[2]),Integer.parseInt(args[3]));
 //        CountSites.mergeVCF1_42to1A_7DandChangeChrPos(args[0],args[1]);
+//        CountSites.merge1_42to1A_7DandChangeChrPos_txt2(args[0],args[1],Integer.parseInt(args[2]),Integer.parseInt(args[3]));
+        AoFile.filterTxtbyValue(args[0],Integer.parseInt(args[1]),args[2],Double.parseDouble(args[3]),args[4]);
 
     }
 
