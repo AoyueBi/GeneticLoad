@@ -99,12 +99,15 @@ public class Standardization {
      * @param x The three elements of the array cannot be 0 at the same time
      * @return
      */
-    private static double[] transform100(double[] x){
-        if (x[0]==0 && x[1]== 0 && x[2]==0){
-            System.out.println("The three elements of the array cannot be 0 at the same time");
-            System.exit(1);
-        }
+    public static double[] transform100(double[] x){
         double[] res=new double[x.length];
+        if (x[0]==0 && x[1]== 0 && x[2]==0){
+//            System.out.println("The three elements of the array cannot be 0 at the same time");
+//            System.exit(1);
+            res[0]=-1;res[1]=-1;res[2]=-1;
+            System.out.println("The three elements of the array cannot be 0 at the same time, It will return NaN value");
+        }
+
         for (int i = 0; i < res.length; i++) {
             res[i]=-1;
         }
@@ -126,6 +129,5 @@ public class Standardization {
         coordinate[1]=Math.sqrt(0.75)*transform100[1];
         return coordinate;
     }
-
 
 }

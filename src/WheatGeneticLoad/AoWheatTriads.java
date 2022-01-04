@@ -3,6 +3,7 @@ package WheatGeneticLoad;
 import AoUtils.AoFile;
 import AoUtils.AoMath;
 import AoUtils.AoString;
+import AoUtils.Triads.Standardization;
 import pgl.infra.anno.gene.GeneFeature;
 import pgl.infra.table.RowTable;
 import pgl.infra.utils.IOUtils;
@@ -26,6 +27,55 @@ public class AoWheatTriads {
 //        this.getDelHeter();
 //        this.chromoMapInput();
 
+    }
+
+    /**
+     *
+     * @param infileS
+     * @param outfileS
+     * @param colmnIndexA
+     * @param colmnIndexB
+     * @param colmnIndexD
+     */
+    public static void getTriadsModel(String infileS, String outfileS, int colmnIndexA,int colmnIndexB, int colmnIndexD ){
+//        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/021_Triads/001_pipeline_triads/002_triadsModel/001_Triads_load.txt.gz";
+//        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/021_Triads/001_pipeline_triads/002_triadsModel/002_Triads_load_addRegion.txt.gz";
+//        int colmnIndexA = 3;
+//        int colmnIndexB = 4;
+//        int colmnIndexD = 5;
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String header = br.readLine();
+//            bw.write(header + "\t" + "Region" + "\tA_coord\tB_coord\tD_coord");bw.newLine();
+            bw.write(header + "\t" + "Region");bw.newLine();
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt=0;
+            int keptcnt=0;
+            while ((temp = br.readLine()) != null) {
+                cnt++;
+                l = PStringUtils.fastSplit(temp);
+                String ratioA = l.get(colmnIndexA);
+                String ratioB = l.get(colmnIndexB);
+                String ratioD = l.get(colmnIndexD);
+                //filter NA
+                if (ratioA.startsWith("N") || ratioB.startsWith("N") || ratioD.startsWith("N")) continue;
+                double[] ratiodABD = {Double.parseDouble(ratioA),Double.parseDouble(ratioB),Double.parseDouble(ratioD)};
+                String region = Standardization.getNearestPointIndex(ratiodABD).getRegion(); //##引用类来判断所在的位置
+//                double[] triadsCoord = Standardization.transform100(ratiodABD);
+//                bw.write(temp + "\t" + region + "\t" +"\t"+triadsCoord[0]+"\t"+triadsCoord[1]+"\t"+triadsCoord[2]);
+                bw.write(temp + "\t" + region);
+                bw.newLine();
+                keptcnt++;
+            }
+            System.out.println(cnt + " triads totally, " + keptcnt + " triads kept.");
+            bw.flush();
+            bw.close();
+            br.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 

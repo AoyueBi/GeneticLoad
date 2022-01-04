@@ -3,6 +3,7 @@ package WheatVMap2S1000;
 import AoUtils.*;
 import AoUtils.Gene.GeneMisc;
 import PopulationAnalysis.XPCLR;
+import WheatGeneticLoad.AoWheatTriads;
 import WheatGeneticLoad.FilterVCF2;
 import WheatGeneticLoad.SIFT;
 import WheatGeneticLoad.VariantsSum;
@@ -29,6 +30,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static java.util.Arrays.asList;
@@ -102,9 +104,188 @@ public class VMap2S1000 {
          * 全基因组 SNP 数目分布 - 文件合并
          */
 
-        this.getHapPosAllelebyRefChr();
+//        this.getHapPosAllelebyRefChr();
+
+        /**
+         * Triads 1:1:1 load
+         */
+
+//        this.getTriadsModel();
+
+        /**
+         * Code for loter - local ancestral inference (LAI)
+         */
+
+        this.loter();
+    }
+
+    public void loter(){
+//        this.getProportion("1","2","3","4");
+//        this.testLAIsummary();
+
+    }
 
 
+    public void getProportion(String inputVCFFileS,String infileS,String outfileDirS,String outfileDirS2){
+//        inputVCFFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/024_Loter/000_ancestralVCF_byChrID_hvsc/chr001_vmap2.1.ancestral.hvsc.vcf.gz";
+//        infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/024_Loter/001_V2_Anc_LAI/chr001_vmap2.1_Anc_onlyGenotype_imputation_LAI.txt.gz";
+//        outfileDirS ="/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/024_Loter/002_test_LAIsummary";
+//        outfileFinalS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/024_Loter/test.txt";
+
+        TIntArrayList posList = CalVCF.extractVCFPos(inputVCFFileS);
+        List<String> taxaList = CalVCF.getVCFheader(inputVCFFileS);
+        try{
+            String Chr = new File(infileS).getName().substring(3,6);
+            String outfileS = null;
+            BufferedReader br = AoFile.readFile(infileS);
+
+            String temp = null;
+            String taxa = null;
+            List<File> fileList = new ArrayList<>();
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+//                if (cnt==20) break; //测试第一个个体
+                temp = br.readLine(); //因为一个taxa 有2行一模一样的结果，故需要去除掉一行，只读偶数行
+                taxa = taxaList.get(cnt); //只取整数部分， 因为每个taxa 有2行一模一样的结果
+                outfileS = new File(outfileDirS,"chr" + Chr + "." + taxa + ".LAIsummary.txt.gz").getAbsolutePath();
+                l = PStringUtils.fastSplit(temp," "); // l指的是每行的祖先来源
+//                System.out.println(l.size()); //打印loter结果中每行的列数
+                File f = this.getLAIsummary_fromIndivi(taxa,Integer.parseInt(Chr),posList,l,outfileS);
+                fileList.add(f);
+                cnt = cnt + 1;
+
+            }
+            br.close();
+
+            String outfileFinalS = new File(outfileDirS2,"chr" + Chr + ".LAIsummary.txt.gz").getAbsolutePath();
+            //将所有文件进行合并
+            AoFile.mergeTxt_byFileArray(fileList.toArray(new File[fileList.size()]), outfileFinalS);
+
+        }catch (Exception e){
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    public void testLAIsummary(){
+        ///// test data
+        int[] posArray = {30,60,90,120,200,300,500,550,600,703,888,1000,1100};
+        TIntArrayList posList = new TIntArrayList(posArray);
+        int[] lArray = {1,1,1,1,0,0,0,1,0,1,1,1,1};
+        List<String> AncestralCode = Arrays.stream(lArray).boxed().map(s->String.valueOf(s)).collect(Collectors.toList());
+
+        try{
+            BufferedWriter bw = AoFile.writeFile("/Users/Aoyue/Documents/test.txt");
+            bw.write("Chr\tRangeStart\tRangeEnd\tAncestralCode\tNum_SNP");
+            bw.newLine();
+
+            int index = 0;
+            StringBuilder sb = new StringBuilder();
+            sb.append("1").append("\t").append(posList.get(0));
+            bw.write(sb.toString());
+
+            for (int i = 1; i < AncestralCode.size(); i++) {
+                String AncestralCodeS = AncestralCode.get(i-1);
+                String AncestralCodeS2 = AncestralCode.get(i);
+
+                if (i == AncestralCode.size()-1){
+                    if (AncestralCodeS.equals(AncestralCodeS2)){
+                        int snpNum = i - index +1;
+                        bw.write("\t"+ String.valueOf(posList.get(i)) + "\t" + AncestralCodeS2 + "\t" + snpNum);
+                        bw.newLine();
+                    }else if (!AncestralCodeS.equals(AncestralCodeS2)){
+                        int snpNum = i - index;
+                        bw.write("\t" + String.valueOf(posList.get(i-1)) + "\t" + AncestralCodeS + "\t" + snpNum);
+                        bw.newLine();
+                        snpNum=1;
+                        bw.write( "1" + "\t" + String.valueOf(posList.get(i)) + "\t"+posList.get(i) + "\t" + AncestralCodeS2 + "\t" + snpNum);
+                        bw.newLine();
+                    }
+                }else {
+                    sb.setLength(0);
+                    if (AncestralCodeS.equals(AncestralCodeS2))continue;
+                    // 添加 相同一个片段内相同基因型的SNP个数，用于过滤数据
+                    int snpNum = i - index;
+                    sb.append("\t").append(posList.get(i-1)).append("\t").append(AncestralCodeS).append("\t").append(snpNum);
+                    bw.write(sb.toString());
+                    bw.newLine();
+                    sb.setLength(0);
+                    index = i;
+                    bw.write(sb.append("1").append("\t").append(posList.get(i)).toString());
+                }
+            }
+
+            bw.flush();bw.close();
+
+        }catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+    }
+
+    private File getLAIsummary_fromIndivi(String taxa, int chr,TIntArrayList posList, List<String> AncestralCode,String outfileS){
+        File out = new File(outfileS);
+        try{
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            bw.write("Taxa\tChr\tRangeStart\tRangeEnd\tAncestralCode\tNum_SNP");
+            bw.newLine();
+
+            int index = 0; // 目的是为了根据 index 记数SNP数目
+            StringBuilder sb = new StringBuilder();
+            sb.append(taxa).append("\t").append(chr).append("\t").append(posList.get(0));
+            bw.write(sb.toString());
+
+            for (int i = 1; i < AncestralCode.size(); i++) {
+                String AncestralCodeS = AncestralCode.get(i-1);
+                String AncestralCodeS2 = AncestralCode.get(i);
+
+                if (i == AncestralCode.size()-1){
+                    if (AncestralCodeS.equals(AncestralCodeS2)){
+                        int snpNum = i - index +1;
+                        bw.write("\t"+ posList.get(i) + "\t" + AncestralCodeS2 + "\t" + snpNum);
+                        bw.newLine();
+                    }else if (!AncestralCodeS.equals(AncestralCodeS2)){
+                        int snpNum = i - index;
+                        bw.write("\t" + posList.get(i-1) + "\t" + AncestralCodeS + "\t" + snpNum);
+                        bw.newLine();
+                        snpNum=1;
+                        bw.write( taxa + "\t" + chr + "\t" + posList.get(i) + "\t"+posList.get(i) + "\t" + AncestralCodeS2 + "\t" + snpNum);
+                        bw.newLine();
+                    }
+                }else {
+                    sb.setLength(0);
+                    if (AncestralCodeS.equals(AncestralCodeS2))continue;
+                    // 添加 相同一个片段内相同基因型的SNP个数，用于过滤数据
+                    int snpNum = i - index;
+                    sb.append("\t").append(posList.get(i-1)).append("\t").append(AncestralCodeS).append("\t").append(snpNum);
+                    bw.write(sb.toString());
+                    bw.newLine();
+                    sb.setLength(0);
+                    index = i;
+                    bw.write(sb.append(taxa).append("\t").append(chr).append("\t").append(posList.get(i)).toString());
+                }
+            }
+
+            bw.flush();bw.close();
+
+        }catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        return out;
+    }
+
+    public void getTriadsModel(){
+
+        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/021_Triads/001_pipeline_triads/002_triadsModel/001_Triads_load.txt.gz";
+        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/021_Triads/001_pipeline_triads/002_triadsModel/002_Triads_load_addRegion.txt.gz";
+        int colmnIndexA = 3;
+        int colmnIndexB = 4;
+        int colmnIndexD = 5;
+        AoWheatTriads.getTriadsModel(infileS,outfileS,colmnIndexA,colmnIndexB,colmnIndexD);
     }
 
 
@@ -509,7 +690,6 @@ public class VMap2S1000 {
 //        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/010_Rht/001_outputVCF/chr023_RhtD1_vmap2.1.vcf.gz";
 //        String taxaListFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/010_Rht/002_genoTable/taxaList/LR_EU_CL.txt";
 //        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/010_Rht/002_genoTable/chr023_RhtD1_genoTable.txt.gz";
-
 
 //        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/010_Rht/001_outputVCF/chr021_RhtB1_vmap2.1.vcf.gz";
 //        String taxaListFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/010_Rht/002_genoTable/taxaList/TaxaList_HexaploidandTetraploid.txt";

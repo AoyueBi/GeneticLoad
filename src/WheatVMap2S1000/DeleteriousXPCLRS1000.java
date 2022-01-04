@@ -17,37 +17,8 @@ import java.util.List;
 public class DeleteriousXPCLRS1000 {
 
     public DeleteriousXPCLRS1000(){
-        this.callDeleteriousXPCLR();
+//        this.callDeleteriousXPCLR();
 
-    }
-
-    /**
-     * 先计算不同变异类型下的个体load结果,再和同义突变进行标准化
-     * @param1 choice1 选择要计算的不同变异类型的计数 choice2_ifSelected  choice3_refobj
-     * @param2 parentDirS 结果文件夹
-     * @param3 exonVCFDirS geneVCF vcf文件夹路径
-     * @param4 SNPAnnoFileS SNP Annotation DB位点数据库，注意是42条染色体都合并在一起的文件
-     * @param5 index 染色体号的索引
-     * @param6 pos pos的索引号
-     * @param7 variantType 数据库中的变异类型（Synonymous Nonsynonymous Noncoding Stop-loss Stop-gain Start-lost）
-     * @param8 sift 即derivedSIFT值的那一列的index
-     * @param9 gerp GERP信息所在的列的index
-     * @param10 ancestralAllele index
-     * @param11 ref index
-     * @param12 alt index
-     * @param13 majorAllele index
-     * @param14 minorAllele index
-     * @param14 snpeef vep impact index
-     * @param15 定义不同变异类型的条件？？？ 也需要修改
-     * @param16 vmap2TaxaList taxaInfoDB数据库
-     * @param17 vcfID 中编号所在taxaInfoDB的列index
-     * @param18 delVmapFileS VCF文件的名字补充
-     * @param19
-     *
-     */
-    public void callDeleteriousXPCLR(){
-        //**************************** 不必修改 **************************//
-        String variantType = null;
         String variantType1 = "001_synonymous";
         String variantType2 = "002_nonsynonymous";
         String variantType3 = "003_nonsynGERPandDerivedSIFT";
@@ -82,18 +53,85 @@ public class DeleteriousXPCLRS1000 {
         String variantType32 = "032_GERP16way_1.5";
         String variantType33 = "033_Derived_PolyPhen2_0.5";
 
-
-        String ifselected = null;
         String ifselected1 = "1";
         String ifselected2 = "0";
         String ifselected3 = "Whole_genome";
 
-
-        String group = null;
         String group1 = "wede";
         String group2 = "dedurum";
         String group3 = "lrcul";
         String group4 = "allIndivi";
+
+////////*********************** model *******************
+//        String[] choice1_variantType = {variantType1,variantType2,variantType4,variantType7,variantType8,variantType10,variantType14,variantType17,variantType25,variantType31,variantType32,variantType33};
+//        String[] choice2_ifSelected = {ifselected3};
+//        String[] choice3_refobj = {group4};
+//        String parentDirS = "";
+//        String selectFileS = "aaaaa";
+//        String SNPAnnoFileS = "";
+//        this.callDeleteriousXPCLR(choice1_variantType,choice2_ifSelected,choice3_refobj,parentDirS,selectFileS,SNPAnnoFileS);
+
+
+        //********* triads
+        String[] choice1_variantType = {variantType1,variantType2,variantType4,variantType7,variantType8,variantType10,variantType14,variantType15,variantType17,variantType25,variantType31,variantType32,variantType33};
+        String[] choice2_ifSelected = {ifselected3};
+        String[] choice3_refobj = {group4};
+        String parentDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/005_delCount/006_indivi_triads";
+        String selectFileS = "aaaaa";
+        String SNPAnnoFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/000_triads/001_geneSNPAnno_triads.txt.gz";
+        this.callDeleteriousXPCLR(choice1_variantType,choice2_ifSelected,choice3_refobj,parentDirS,selectFileS,SNPAnnoFileS);
+
+        //********* hexaploid
+        parentDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/005_delCount/007_indivi_hexaploid";
+        SNPAnnoFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/000_hexaploid_pseudohexaploid/001_geneSNPAnno_hexaploid.txt.gz";
+        this.callDeleteriousXPCLR(choice1_variantType,choice2_ifSelected,choice3_refobj,parentDirS,selectFileS,SNPAnnoFileS);
+
+        //********* hexaploid triads
+        parentDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/005_delCount/008_indivi_hexaploid_triads";
+        SNPAnnoFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/000_triads/002_geneSNPAnno_hexaploid_triads.txt.gz";
+        this.callDeleteriousXPCLR(choice1_variantType,choice2_ifSelected,choice3_refobj,parentDirS,selectFileS,SNPAnnoFileS);
+
+        //********* pseudohexaploid
+        parentDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/005_delCount/009_indivi_pseudohexaploid";
+        SNPAnnoFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/000_hexaploid_pseudohexaploid/002_geneSNPAnno_pseudohexaploid.txt.gz";
+        this.callDeleteriousXPCLR(choice1_variantType,choice2_ifSelected,choice3_refobj,parentDirS,selectFileS,SNPAnnoFileS);
+
+        //********* pseudohexaploid triads
+        parentDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/005_delCount/010_indivi_pseudohexaploid_triads";
+        SNPAnnoFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/000_triads/003_geneSNPAnno_pseudohexaploid_triads.txt.gz";
+        this.callDeleteriousXPCLR(choice1_variantType,choice2_ifSelected,choice3_refobj,parentDirS,selectFileS,SNPAnnoFileS);
+
+    }
+    /**
+     * 先计算不同变异类型下的个体load结果,再和同义突变进行标准化
+     * @param1 choice1 选择要计算的不同变异类型的计数 choice2_ifSelected  choice3_refobj
+     * @param2 parentDirS 结果文件夹
+     * @param3 exonVCFDirS geneVCF vcf文件夹路径
+     * @param4 SNPAnnoFileS SNP Annotation DB位点数据库，注意是42条染色体都合并在一起的文件
+     * @param5 index 染色体号的索引
+     * @param6 pos pos的索引号
+     * @param7 variantType 数据库中的变异类型（Synonymous Nonsynonymous Noncoding Stop-loss Stop-gain Start-lost）
+     * @param8 sift 即derivedSIFT值的那一列的index
+     * @param9 gerp GERP信息所在的列的index
+     * @param10 ancestralAllele index
+     * @param11 ref index
+     * @param12 alt index
+     * @param13 majorAllele index
+     * @param14 minorAllele index
+     * @param14 snpeef vep impact index
+     * @param15 定义不同变异类型的条件？？？ 也需要修改
+     * @param16 vmap2TaxaList taxaInfoDB数据库
+     * @param17 vcfID 中编号所在taxaInfoDB的列index
+     * @param18 delVmapFileS VCF文件的名字补充
+     * @param19
+     *
+     */
+    public void callDeleteriousXPCLR(String[] choice1_variantType,String[] choice2_ifSelected,String[] choice3_refobj,String parentDirS,String selectFileS,String SNPAnnoFileS){
+        //**************************** 不必修改 **************************//
+        String variantType = null;
+        String ifselected = null;
+        String group = null;
+
         //**************************** up 不必修改 **************************//
 
         ////*********** selected sweep or not selected sweep *********////
@@ -105,9 +143,9 @@ public class DeleteriousXPCLRS1000 {
 //        String[] choice1_variantType = {variantType1,variantType2,variantType3,variantType4,variantType5, variantType6,variantType7,variantType8,variantType9,variantType10};
 //        String[] choice1_variantType = {variantType1,variantType2,variantType7,variantType11,variantType12,variantType13};
 //        String[] choice1_variantType = {variantType3,variantType4,variantType5, variantType6,variantType8,variantType9,variantType10};
-        String[] choice1_variantType = {variantType25,variantType32,variantType33};
-        String[] choice2_ifSelected = {ifselected3};
-        String[] choice3_refobj = {group4};
+//        String[] choice1_variantType = {variantType25,variantType32,variantType33};
+//        String[] choice2_ifSelected = {ifselected3};
+//        String[] choice3_refobj = {group4};
 
         ////*********** selected sweep or not selected sweep *********////
 //        String[] choice1_variantType = {variantType1,variantType2,variantType3,variantType4,variantType5, variantType6,variantType7,variantType8,variantType9,variantType10};
@@ -127,7 +165,7 @@ public class DeleteriousXPCLRS1000 {
 //        String parentDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/009_xpclr/004_summary_XPCLR_top005/003_deleteriousXPCLR";
 //        String parentDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/009_xpclr/005_summary_XPCLR_top001/003_deleteriousXPCLR";
 
-        String parentDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/005_delCount/005_allIndivi";
+//        String parentDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/005_delCount/005_allIndivi";
 //        String parentDirS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/009_xpclr/004_summary_XPCLR_top005/009_allIndivi_xpclr";
 
 
@@ -137,7 +175,7 @@ public class DeleteriousXPCLRS1000 {
             group = choice3_refobj[i];
             // infileS 文件是Gene SNP 数据库中受选择区域内的 SNP 位点，即为 Annotation 数据库的子集, 如果计算的是全基因组区域的话，则该文件在程序中不会被处理到，可以忽略。
 //            String infileS = new File("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/009_xpclr/003_summary_XPCLR/002_topK","top0.05_" + group + "_ChrPos_fromExonAnnotation.txt.gz").getAbsolutePath();
-            String infileS = new File("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/009_xpclr/004_summary_XPCLR_top005/002_topK","top0.05_" + group + "_ChrPos_fromExonAnnotation.txt.gz").getAbsolutePath();
+//            String selectFileS = new File("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/009_xpclr/004_summary_XPCLR_top005/002_topK","top0.05_" + group + "_ChrPos_fromExonAnnotation.txt.gz").getAbsolutePath();
 //            String infileS = new File("/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/009_xpclr/005_summary_XPCLR_top001/002_topK","top0.01_" + group + "_ChrPos_fromExonAnnotation.txt.gz").getAbsolutePath();
 
             for (int j = 0; j < choice2_ifSelected.length; j++) { //第二层循环：是否受选择
@@ -145,7 +183,7 @@ public class DeleteriousXPCLRS1000 {
                 for (int k = 0; k < choice1_variantType.length; k++) { //第二层循环：计数的类型
                     variantType = choice1_variantType[k];
                     String DelCountFileS = new File(parentDirS,variantType + "_ifselected" + ifselected + "_" + group + "_DelCount_bychr.txt").getAbsolutePath();
-                    this.countDeleteriousVMapII_byChr(infileS,ifselected,variantType,DelCountFileS,group);
+                    this.countDeleteriousVMapII_byChr(selectFileS,ifselected,variantType,DelCountFileS,group,SNPAnnoFileS);
                 }
             }
         }
@@ -153,12 +191,12 @@ public class DeleteriousXPCLRS1000 {
 
     /**
      * 计算指定选择区域的mutation burden 一共有 5 步
-     * @param infileS
+     * @param selectFileS
      * @param ifselected
      * @param type
      * @param DelCountFileS
      */
-    public void countDeleteriousVMapII_byChr(String infileS,String ifselected,String type,String DelCountFileS, String group) {
+    public void countDeleteriousVMapII_byChr(String selectFileS,String ifselected,String type,String DelCountFileS, String group,String SNPAnnoFileS) {
         //model
 
         //######## 需要修改 ########//
@@ -173,7 +211,7 @@ public class DeleteriousXPCLRS1000 {
 //        String SNPAnnoFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/001_geneSNPAnno.txt.gz"; //注释信息库合并后的总文件
 //        String SNPAnnoFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/002_geneSNPAnno_syntenic.txt.gz";
 //        String SNPAnnoFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/007_geneSNPAnno.txt.gz";
-        String SNPAnnoFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/011_geneSNPAnno.txt.gz";
+//        String SNPAnnoFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/004_annoDB/006_geneSNPAnnotation_merge/011_geneSNPAnno.txt.gz";
 
         AoFile.readheader(SNPAnnoFileS);
 /**
@@ -187,7 +225,7 @@ public class DeleteriousXPCLRS1000 {
             for (int i = 0; i < selectedPosList.length; i++) {
                 selectedPosList[i] = new TIntArrayList();
             }
-            RowTable<String> selectedT = new RowTable<>(infileS);
+            RowTable<String> selectedT = new RowTable<>(selectFileS);
             for (int i = 0; i < selectedT.getRowNumber(); i++) {
                 int chr = selectedT.getCellAsInteger(i,0);
                 int pos = selectedT.getCellAsInteger(i,1);

@@ -7,6 +7,7 @@ package Entrance;
 
 import Annotation.AnnotationCrossover;
 import AoUtils.*;
+import GeneFetchFromNCBI.Step1GenesFromNCBI;
 import GermplasmInfo.GermplasmInfo;
 import GermplasmInfo.TaxaDB;
 import Plot.AoMap;
@@ -72,6 +73,8 @@ public class GeneticLoadEntrance {
 //        int pos = RefV1Utils.getPosOnChromosome(chrint,posint);
 //        System.out.println("chr "+ chr);
 //        System.out.println("pos " + pos);
+
+//        new Step1GenesFromNCBI();
 
     }
 
@@ -172,6 +175,7 @@ public class GeneticLoadEntrance {
         System.out.println(new SimpleDateFormat().format(new Date()) + "\tbegin.");
 //        new GeneticLoadEntrance();
         new GeneticLoadEntrance(args);
+
         System.out.println(new SimpleDateFormat().format(new Date()) + "\tend.");
 
         //ChrConvertionRule c=new ChrConvertionRule(Paths.get("/Users/Aoyue/Documents/Data/wheat/chrConvertionRule.txt"));
@@ -267,8 +271,16 @@ public class GeneticLoadEntrance {
 
 //        CountSites.merge1_42to1A_7DandChangeChrPos_txt(args[0],args[1],Integer.parseInt(args[2]),Integer.parseInt(args[3]));
 //        CountSites.mergeVCF1_42to1A_7DandChangeChrPos(args[0],args[1]);
+//        CountSites.mergeVCF1_42to1A_7DandChangeChrPos_bySuffix(args[0],args[1],args[2]);
 //        CountSites.merge1_42to1A_7DandChangeChrPos_txt2(args[0],args[1],Integer.parseInt(args[2]),Integer.parseInt(args[3]));
-        AoFile.filterTxtbyValue(args[0],Integer.parseInt(args[1]),args[2],Double.parseDouble(args[3]),args[4]);
+//        AoFile.filterTxtbyValue(args[0],Integer.parseInt(args[1]),args[2],Double.parseDouble(args[3]),args[4]);
+
+//        AoFile.ChangeChrPos(args[0],Integer.parseInt(args[1]),Integer.parseInt(args[2]),args[3]);
+//        AoWheatTriads.getTriadsModel(args[0],args[1],Integer.parseInt(args[2]),Integer.parseInt(args[3]),Integer.parseInt(args[4]));
+//        CalVCF.getGenoTable_includeChrPosRefAlt(args[0],args[1],args[2]);
+//        CalVCF.extractVCFtable(args[0],args[1]);
+
+        new VMap2S1000().getProportion(args[0],args[1],args[2],args[3]);
 
     }
 

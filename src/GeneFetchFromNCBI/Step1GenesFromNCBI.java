@@ -16,17 +16,17 @@ public class Step1GenesFromNCBI {
          * 4: 获取小麦已克隆的基因 NCBI blast
          */
 
-//        this.geneDeal();
+        this.geneDeal();
 
     }
 
     public void geneDeal(){
-
-        String inGenebankS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/01_ori/sequence.txt";
-        String locusTitleS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/locusTitleDB.txt";
-        String locusTitleS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/004_locusTitleDB_keepTa.txt";
-        String geneCategory = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/007_geneCategory.txt";
-        String locusTitleS3 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/004_locusTitleDB_keepTa_unique.txt";
+        
+//        String inGenebankS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/01_ori/sequence.txt";
+//        String locusTitleS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/locusTitleDB.txt";
+//        String locusTitleS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/004_locusTitleDB_keepTa.txt";
+//        String geneCategory = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/007_geneCategory.txt";
+//        String locusTitleS3 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/004_locusTitleDB_keepTa_unique.txt";
 //        this.getGeneListFromNCBI();
 //        this.getGeneListFromNCBI2();
 //        this.removeDuplicate();
@@ -35,9 +35,123 @@ public class Step1GenesFromNCBI {
 //        this.extractLocusTitle(inGenebankS,locusTitleS);
 //        this.extractLocusTitleOrganism(inGenebankS,locusTitleS2);
 //        this.mkgeneCategory(locusTitleS2,geneCategory);
-        AoMath.countCaseInGroup("/Users/Aoyue/Documents/007_geneCategory.txt",1);
+//        AoMath.countCaseInGroup("/Users/Aoyue/Documents/007_geneCategory.txt",1);
+
+        /**
+         * 2021-12-22 三
+         */
+        /**
+         * 为每个 LOCUS 进行基因功能分类
+         */
+        String locusTitleS2 = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/004_locusTitleDB_keepTa.txt";
+        String geneCategory = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/008_geneCategory_20211222.txt";
+//        this.mkgeneCategory2(locusTitleS2,geneCategory);
+
+        this.getUniqueHM_LOCUSvsUniProtKB();
+
 
     }
+
+    /**
+     * Goal: 将表格中以逗号隔开的LOCUS 写成
+     */
+    public void getUniqueHM_LOCUSvsUniProtKB(){
+        String infileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/009_LOCUS_UniProtKB_hm.txt";
+        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/045_geneClone/002/010_LOCUS_SplitbyLocus_UniProtKB_hm.txt";
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String header = br.readLine();
+
+            bw.write(header);bw.newLine();
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            int cntlocus = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                String locus = l.get(0);
+                List<String> locusList = PStringUtils.fastSplit(locus,",");
+                Collections.sort(locusList);
+                for (int i = 0; i < locusList.size(); i++) {
+                    bw.write(locusList.get(i));
+                    cntlocus++;
+                    for (int j = 1; j < l.size(); j++) { //后面的全部再记录一遍
+                        bw.write("\t");
+                        bw.write(l.get(j));
+                    }
+                    bw.newLine();
+                }
+                cnt++;
+
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println("Totally " + cnt + "lines with " + cntlocus + "locus");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    /**
+     *
+     * @return
+     */
+    private String getGeneCatogreybyTitle2(String title){
+        String out = null;
+
+        String[] key1Array = {"powdery mildew","stem rust","brown rust","stripe rust","yellow rust","leaf rust",
+                "fusarium head blight","nucleotide-binding site-leucine-rich repeat resistance","fusarium","fungal pathogen",
+                "puccinia","hessian fly","nematode","broad-spectrum","disease resistance","pathogen"};
+
+        // Al 按照拆分字符串来判断
+        String[] key2Array = {"salt","host","salinity","aluminum","cold","na-cl","drought","temperature",
+                "abiotic stress","heat stress","water-stress","ionic stress","osmotic stress","light-stressed",
+                "cupric","salinity","osmotic","waterlogging","water","cbf gene","wrky","acc oxidase gene"};
+
+        String[] key3Array = {"spike","kernel","grain yield","plant height","flag leaf"};
+
+
+        Arrays.sort(key1Array);
+        Arrays.sort(key2Array);
+        Arrays.sort(key3Array);
+
+        for (int i = 0; i < key1Array.length; i++) {
+            if (title.toLowerCase().contains(key1Array[i])){
+                out = "Biotic";
+                break;
+            }else {
+                out = "NA";
+            }
+        }
+
+        if (out.equals("NA")){
+            for (int i = 0; i < key2Array.length; i++) {
+                if (title.toLowerCase().contains(key2Array[i])){
+                    out = "Abiotic";
+                    break;
+                }else{
+                    out = "NA";
+                }
+            }
+        }
+
+        if (out.equals("NA")){
+            for (int i = 0; i < key3Array.length; i++) {
+                if (title.toLowerCase().contains(key3Array[i])){
+                    out = "Yield";
+                    break;
+                }else{
+                    out = "NA";
+                }
+            }
+        }
+
+        return out;
+    }
+
 
     /**
      *
@@ -77,7 +191,6 @@ public class Step1GenesFromNCBI {
                 }
             }
         }
-
         return out;
     }
 
@@ -100,6 +213,93 @@ public class Step1GenesFromNCBI {
         }
         return out;
     }
+
+
+    /**
+     * Goal: 对每个LOCUS 进行基因功能的分类，原来的程序保持不变，只在这里新加分类
+     * @param infileS
+     * @param outfileS
+     */
+    public void mkgeneCategory2(String infileS, String outfileS){
+
+        HashMap<String,String> hm = new HashMap<>(AoFile.countFileRowNumber_withHeader(infileS)+1);
+        String[] geneCategory = {"Domestication", "Yield", "Flowering", "Biotic", "Abiotic", "Other"};
+
+        HashMap<String,String> hmLocusTitle = new HashMap<>(AoFile.countFileRowNumber_withHeader(infileS)+1);
+
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            bw.write("Locus\tTitle\tGeneCategory");bw.newLine();
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            List<String> titleList = new ArrayList<>();
+
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+                String locus = l.get(0);
+                String title = l.get(1);
+                hmLocusTitle.put(locus,title);
+                titleList = PStringUtils.fastSplit(title," ");
+                String category = null;
+
+
+                if (title.contains(" Al ")){
+                    hm.put(locus,geneCategory[4]);
+                    System.out.println(title);
+                }
+                else if (title.toLowerCase().contains("pmm")){
+                    hm.put(locus,geneCategory[4]);
+                    System.out.println(title);
+                }
+                else{
+                    // based title
+                    category = this.getGeneCatogreybyTitle2(title);
+                    hm.put(locus,category);
+                    if (category.equals("NA")){
+                        for (int i = 0; i < titleList.size(); i++) {
+                            String element = titleList.get(i);
+                            //1
+//                    if (element.toLowerCase().contains("btr-") ||element.equalsIgnoreCase("q")){
+//                        hm.put(locus,geneCategory[0]);
+//                        break;
+//                    }
+                            //2
+                            if (element.toLowerCase().contains("vrn") || element.toLowerCase().contains("vernalization") ||
+                                    element.toLowerCase().contains("ppd") || element.toLowerCase().contains("photoperiod")){
+                                hm.put(locus,geneCategory[2]);
+                                break;
+                            } else{
+                                //Biotic
+                                String geneCa = this.getGeneCategorybyGene(element);
+                                hm.put(locus,geneCa);
+                            }
+                        }
+                    }
+                }
+            }
+
+            StringBuilder sb = new StringBuilder();
+            for (Map.Entry<String,String> entry: hm.entrySet()){
+                String titleS = hmLocusTitle.get(entry.getKey());
+                sb.setLength(0);
+                sb.append(entry.getKey()).append("\t").append(titleS).append("\t").append(entry.getValue());
+                bw.write(sb.toString());
+                bw.newLine();
+            }
+
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
 
     public void mkgeneCategory(String infileS, String outfileS){
 

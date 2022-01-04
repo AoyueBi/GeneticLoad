@@ -96,6 +96,10 @@ public class CalVCF {
 
 
     /**
+     * 提取指定 taxa 的基因table，输入文件是转换后的 geneTable,不是VCF文件！！！
+     * 最终文件格式为：
+     * CHROM POS Taxa1 Taxa2 Taxa3...
+     * 42 99999 1 2 9
      *
      * @param infileS
      * @param taxaArray
@@ -157,6 +161,15 @@ public class CalVCF {
         return out;
     }
 
+    /**
+     * 提取指定 taxa 的基因table，输入文件是转换后的 geneTable,不是VCF文件！！！
+     * 最终文件格式为： CHROM POS Taxa1 Taxa2 Taxa3...
+     * CHROM POS Taxa1 Taxa2 Taxa3...
+     * 42 99999 1 2 9
+     * @param infileS
+     * @param taxaArray
+     * @param outfileS
+     */
     public static void extractGenotable(String infileS, List<String> taxaArray, String outfileS){
 
         List<Integer> indexTaxa = new ArrayList<>();
@@ -213,9 +226,11 @@ public class CalVCF {
 
 
     /**
-     *
+     * 提取指定 taxa 的基因table，输入文件是转换后的 geneTable,不是VCF文件！！！
+     * 最终文件格式为： CHROM POS Taxa1 Taxa2 Taxa3...
+     * CHROM POS Taxa1 Taxa2 Taxa3...
+     * 42 99999 1 2 9
      * subset genotype table from total genotype table
-     *
      * @param infileS VCF file
      * @param taxaArray taxalist without header
      * @param outfileS TXT file
@@ -275,10 +290,100 @@ public class CalVCF {
     }
 
 
+    public static void getGenoTable_includeChrPosRefAlt(String infileS, String taxaListFileS, String outfileS){
+
+//        String infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/010_Rht/001_outputVCF/chr023_RhtD1_vmap2.1.vcf.gz";
+//        String taxaListFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/010_Rht/002_genoTable/taxaList/TaxaList_HexaploidandDiploid.txt";
+//        String outfileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/010_Rht/002_genoTable/S1026/chr023_RhtD1_genoTable.txt.gz";
+
+        List<Integer> indexTaxa = new ArrayList<>();
+        String[] taxaArray = AoFile.getStringArraybyList_withoutHeader(taxaListFileS,0);
+        Arrays.sort(taxaArray);
+
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                //***********************************************************//
+                if (temp.startsWith("##")) {//将注释信息写入表格中
+
+                }
+                //***********************************************************//
+                //开始处理taxa的问题，先把所有taxa放入array中，记住在temp中的index
+                if (temp.startsWith("#CHROM")) {
+                    l = PStringUtils.fastSplit(temp);
+//                    bw.write("CHROM" + "\t" + l.get(1));
+                    bw.write("CHROM" + "\t" + l.get(1) + "\t" + l.get(3) + "\t" + l.get(4));
+                    for (int i = 9; i < l.size(); i++) {
+                        String taxon = l.get(i);
+                        int index1 = Arrays.binarySearch(taxaArray, taxon);
+
+                        if (index1 > -1) { //当找到列表中的taxa时，写列表中的taxa信息
+                            indexTaxa.add(i);
+                            bw.write("\t" + l.get(i));
+                        }
+                    }
+                    bw.newLine(); //写完之后记得换行
+                    Collections.sort(indexTaxa);
+                }
+                if (!temp.startsWith("#")) {
+                    l = PStringUtils.fastSplit(temp);
+                    String altList = l.get(4);
+//                    int nAlt = PStringUtils.fastSplit(altList, ",").size();
+//                    if (nAlt > 1) continue; //filter alt num with 2 or more
+//                    if (altList.equals("D") || altList.equals("I")) continue; //filter D I
+
+                    String chr = l.get(0);
+                    String pos = l.get(1);
+                    String ref = l.get(3);
+                    String alt = l.get(4);
+//                    bw.write(chr + "\t" + pos);
+                    bw.write(chr + "\t" + pos + "\t" + ref + "\t" + alt);
+
+                    for (int i = 0; i < indexTaxa.size(); i++) { //无论有无基因型，都加进去了
+                        String geno = l.get(indexTaxa.get(i));
+                        geno = PStringUtils.fastSplit(geno,":").get(0);
+//                        System.out.println(geno);
+                        if(geno.equals("0/0")){
+                            bw.write( "\t0");
+                        }
+                        if(geno.equals("0/1") || geno.equals("1/0")){
+                            bw.write(  "\t1");
+                        }
+                        if(geno.equals("1/1")){
+                            bw.write( "\t2");
+                        }
+                        if(geno.equals("./.")){
+                            bw.write("\t9");
+                        }
+                    }
+                    bw.newLine();
+                } //
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println(infileS + " is completed at " + outfileS + "\tActual taxa size: " + indexTaxa.size() + "\tTotal sites : " + cnt);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+
     /**
+     * 注意输入文件是 VCF 文件！！！
      * convert specific taxa in taxaListFileS(without header) into genotype table,
      * aims to calculate the heterozygous genotype proportion along chromosome later or for other pipeline.
-     * Here, I define 0/0 -> 0, 0/1 -> 1, 1/1 -> 2, ./. -> NA
+     * Here, I define 0/0 -> 0, 0/1 -> 1, 1/1 -> 2, ./. -> 9
+     *
+     * 最终文件格式为： CHROM POS Taxa1 Taxa2 Taxa3...
+     * CHROM POS Taxa1 Taxa2 Taxa3...
+     * 42 99999 1 2 9
+     *
      * @param infileS VCF file
      * @param taxaArray taxalist without header
      * @param outfileS TXT file
@@ -358,9 +463,87 @@ public class CalVCF {
     }
 
     /**
+     * Goal: 获取VCF文件的 genoTable， 输出结果为 chr pos taxa1 taxa2 ...  1  18474 0 1
+     * 将基因型转换为 0/0: 0     0/1: 1     1/1: 2     ./.: 9
+     * @param infileS
+     * @param outfileS
+     */
+    public static void extractVCFtable(String infileS, String outfileS){
+        try {
+            BufferedReader br = AoFile.readFile(infileS);
+            BufferedWriter bw = AoFile.writeFile(outfileS);
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            int cnt = 0;
+            int taxaNum=0;
+            while ((temp = br.readLine()) != null) {
+                //***********************************************************//
+                if (temp.startsWith("##")) {//将注释信息写入表格中
+
+                }
+                //***********************************************************//
+                //开始处理taxa的问题，先把所有taxa放入array中，记住在temp中的index
+                if (temp.startsWith("#CHROM")) {
+                    l = PStringUtils.fastSplit(temp);
+                    bw.write("CHROM" + "\t" + l.get(1));
+                    for (int i = 9; i < l.size(); i++) {
+                        bw.write("\t" + l.get(i));
+                        taxaNum++;
+                    }
+                    bw.newLine(); //写完之后记得换行
+                }
+                if (!temp.startsWith("#")) {
+                    cnt++;
+                    l = PStringUtils.fastSplit(temp);
+                    String altList = l.get(4);
+                    int nAlt = PStringUtils.fastSplit(altList, ",").size();
+                    if (nAlt > 1) continue; //filter alt num with 2 or more
+                    if (altList.equals("D") || altList.equals("I")) continue; //filter D I
+
+                    String chr = l.get(0);
+                    String pos = l.get(1);
+                    bw.write(chr + "\t" + pos);
+
+                    for (int i = 9; i < l.size(); i++) { //无论有无基因型，都加进去了
+                        String geno = l.get(i);
+                        geno = PStringUtils.fastSplit(geno,":").get(0);
+//                        System.out.println(geno);
+                        if(geno.equals("0/0")){
+                            bw.write( "\t0");
+                        }
+                        if(geno.equals("0/1") || geno.equals("1/0")){
+                            bw.write(  "\t1");
+                        }
+                        if(geno.equals("1/1")){
+                            bw.write( "\t2");
+                        }
+                        if(geno.equals("./.")){
+                            bw.write("\t9");
+                        }
+                    }
+                    bw.newLine();
+                } //
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println(infileS + " is completed at " + outfileS + "\tActual taxa size: " + taxaNum + "\tTotal sites : " + cnt);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    /**
+     * 注意输入文件是 VCF 文件！！！
      * convert specific taxa in taxaListFileS(without header) into genotype table,
      * aims to calculate the heterozygous genotype proportion along chromosome later or for other pipeline.
-     * Here, I define 0/0 -> 0, 0/1 -> 1, 1/1 -> 2, ./. -> NA
+     * Here, I define 0/0 -> 0, 0/1 -> 1, 1/1 -> 2, ./. -> 9
+     *
+     * 最终文件格式为： CHROM POS Taxa1 Taxa2 Taxa3...
+     * CHROM POS Taxa1 Taxa2 Taxa3...
+     * 42 99999 1 2 9
+     *
      * @param infileS VCF file
      * @param taxaListFileS taxalist without header
      * @param outfileS TXT file
@@ -424,7 +607,7 @@ public class CalVCF {
                             bw.write( "\t2");
                         }
                         if(geno.equals("./.")){
-                            bw.write("\tNA");
+                            bw.write("\t9");
                         }
                     }
                     bw.newLine();
@@ -468,7 +651,7 @@ public class CalVCF {
                 } //
             }
             br.close();
-//            System.out.println(infileS + " is completed. snpNum is\t" + out.size());
+            System.out.println(infileS + ":\tsnpNum is\t" + out.size());
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
@@ -1201,7 +1384,7 @@ public class CalVCF {
         }
     }
 
-    public static String getPopAAF(String[] PopGenoArray) {
+    private static String getPopAAF(String[] PopGenoArray) {
         int[] acCnt = new int[2]; //所有包括ref和alt的个数
         List<String> tempList = null;
         List<String> temList = null;
@@ -1226,7 +1409,7 @@ public class CalVCF {
     }
 
 
-    public static String getPopMAF(String[] PopGenoArray) {
+    private static String getPopMAF(String[] PopGenoArray) {
         int[] acCnt = new int[2]; //所有包括ref和alt的个数
         List<String> tempList = null;
         List<String> temList = null;
@@ -1531,6 +1714,59 @@ public class CalVCF {
             e.printStackTrace();
         }
 
+    }
+
+    public static List<String> getVCFheader(String infileS){
+        List<String> taxaList = new ArrayList<>();
+        try {
+            BufferedReader br = IOUtils.getTextGzipReader(infileS);
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            while ((temp = br.readLine()) != null) {
+                if (temp.startsWith("##")) continue;
+                else if(temp.startsWith("#C")){
+                    l = PStringUtils.fastSplit(temp);
+                    for (int i = 9; i < l.size(); i++) {
+                        String taxa = l.get(i);
+                        taxaList.add(taxa);
+                    }
+                }
+            }
+            br.close();
+            System.out.println(infileS + " contains totally " + taxaList.size() + " taxa.");
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return taxaList;
+    }
+
+    public static void getVCFheader(String infileS, String outfileS){
+        try {
+            BufferedReader br = IOUtils.getTextGzipReader(infileS);
+            BufferedWriter bw = IOUtils.getTextGzipWriter(outfileS);
+            String temp = null;
+            List<String> l = new ArrayList<>();
+            while ((temp = br.readLine()) != null) {
+                if (temp.startsWith("##")) continue;
+                else if(temp.startsWith("#C")){
+                    l = PStringUtils.fastSplit(temp);
+                    for (int i = 9; i < l.size(); i++) {
+                        String taxa = l.get(i);
+                        bw.write(taxa);
+                        bw.newLine();
+                    }
+                }
+            }
+            br.close();
+            bw.flush();
+            bw.close();
+            System.out.println(infileS + " is completed at " + outfileS);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 

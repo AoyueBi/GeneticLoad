@@ -432,71 +432,44 @@ public class AoFile {
 
 
     /**
-     * ############## 该程序待验证
-     * @param fs
+     *
+     * @param infileS
      * @param colomnIndexChr
      * @param columnIndexPos
      * @param outfileS
      */
-    public static void mergeTxtandChangeChrPos(File[] fs, int colomnIndexChr, int columnIndexPos,String outfileS){
-//        String infileDirS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/027_Rebuild_VMap2_VCF/001_depth/004_50000_Sites/004_AddReliableIntersectGroup";
-//        File[] fs = new File(infileDirS).listFiles();
-
-//        fs = IOUtils.listFilesEndsWith(fs,"_AB_sample.txt.gz");
-//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/027_Rebuild_VMap2_VCF/001_depth/004_50000_Sites/005_changeChrPos/AB_Popdepth_sample.txt.gz";
-
-//        fs = IOUtils.listFilesEndsWith(fs,"_ABD_sample.txt.gz");
-//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/027_Rebuild_VMap2_VCF/001_depth/004_50000_Sites/005_changeChrPos/ABD_Popdepth_sample.txt.gz";
-
-//        fs = IOUtils.listFilesEndsWith(fs,"_D_sample.txt.gz");
-//        String outfileS = "/Users/Aoyue/project/wheatVMapII/003_dataAnalysis/005_vcf/027_Rebuild_VMap2_VCF/001_depth/004_50000_Sites/005_changeChrPos/D_Popdepth_sample.txt.gz";
+    public static void ChangeChrPos(String infileS, int colomnIndexChr, int columnIndexPos,String outfileS){
 
         try{
-            Arrays.sort(fs);
-            String infileS = fs[0].getAbsolutePath();
             BufferedReader br = AoFile.readFile(infileS);
             BufferedWriter bw = AoFile.writeFile(outfileS);
             //read header
             bw.write( br.readLine());
             bw.newLine();
 
-            int cnttotal=0;
-            for (int i = 0; i < fs.length; i++) {
-                infileS = fs[i].getAbsolutePath();
+            String temp = null; //read header
+            int cnt = 0;
+            List<String> l = new ArrayList<>();
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                cnt++;
+                int chrID = Integer.parseInt(l.get(colomnIndexChr));
+                int pos = Integer.parseInt(l.get(columnIndexPos));
+                String chr = RefV1Utils.getChromosome(chrID,pos);
+                int posOnChrosome = RefV1Utils.getPosOnChromosome(chrID,pos);
 
-                br = AoFile.readFile(infileS);
-                br.readLine();
-                String temp = null; //read header
-                int cnt = 0;
-                List<String> l = new ArrayList<>();
-                while ((temp = br.readLine()) != null) {
-                    l = PStringUtils.fastSplit(temp);
-                    cnt++;
-                    cnttotal++;
-                    int chrID = Integer.parseInt(l.get(colomnIndexChr));
-                    int pos = Integer.parseInt(l.get(columnIndexPos));
-                    String chr = RefV1Utils.getChromosome(chrID,pos);
-                    int posOnChrosome = RefV1Utils.getPosOnChromosome(chrID,pos);
-                    //先找到 chr 所在的列
-                    StringBuilder sb = new StringBuilder();
-                    for (int j = 0; j < l.size(); j++) {
-                        if (j == colomnIndexChr){
-                            sb.append(chr).append("\t");
-                        }
-                        if (j == columnIndexPos){
-                            sb.append(posOnChrosome).append("\t");
-                        }
-                        else{
-                            sb.append(l.get(j)).append("\t");
-                        }
-                    }
-                    sb.deleteCharAt(sb.length()-1);
-                    bw.write(sb.toString());
-                    bw.newLine();
+                l.set(colomnIndexChr, chr);
+                l.set(columnIndexPos, String.valueOf(posOnChrosome));
+                StringBuilder sb = new StringBuilder();
+                for(int k = 0; k < l.size(); k++){
+                    sb.append(l.get(k)).append("\t");
                 }
-                System.out.println(fs[i].getName() + "\t" + cnt);
+                sb.deleteCharAt(sb.length()-1);
+                bw.write(sb.toString());
+                bw.newLine();
             }
-            System.out.println("Total lines without header count is " + cnttotal + " at merged file " + outfileS );
+            System.out.println(new File(infileS).getName() + "\t" + cnt + " complete.");
+
             br.close();
             bw.flush();
             bw.close();
@@ -505,7 +478,6 @@ public class AoFile {
             e.printStackTrace();
             System.exit(1);
         }
-
     }
 
     /**
@@ -1456,6 +1428,42 @@ public class AoFile {
             }
             br.close();
             System.out.println("Total num in the set is " + out.size());
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return out;
+    }
+
+
+    /**
+     * get String list from a txt file
+     *
+     * @param infileS
+     * @return
+     */
+    public static List<String> getStringListwithoutHeader(String infileS){
+        List<String> out = new ArrayList<>();
+        try {
+            BufferedReader br = null;
+            if (infileS.endsWith(".txt")) {
+                br = IOUtils.getTextReader(infileS);
+            } else if (infileS.endsWith(".txt.gz")) {
+                br = IOUtils.getTextGzipReader(infileS);
+            }
+
+            String temp = null; //read header
+            List<String> l = new ArrayList();
+            int cnt = 0;
+            while ((temp = br.readLine()) != null) {
+                l = PStringUtils.fastSplit(temp);
+                String goal = l.get(0);
+                out.add(goal);
+                cnt++;
+            }
+            br.close();
+            System.out.println("Total num in the list is    " + cnt + "\t" + out.size());
+            Collections.sort(out);
         }
         catch (Exception e) {
             e.printStackTrace();
