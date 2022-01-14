@@ -123,9 +123,25 @@ public class VMap2S1000 {
 //        this.getProportion("1","2","3","4");
 //        this.testLAIsummary();
 
+//        String inputVCFFileS = "/Users/Aoyue/Documents/chr001_V2_onlyGenotype_imputation_pruned_LRCL.recode_00.vcf.gz";
+//        String infileS ="/Users/Aoyue/Documents/003_V2_LAI_pruned/chr001_V2_onlyGenotype_imputation_pruned_LAI_00.txt.gz";
+//        String outfileDirS = "/Users/Aoyue/Documents/test";
+//        String outfileDirS2 = "/Users/Aoyue/Documents/test2";
+//        this.getProportion(inputVCFFileS,infileS,outfileDirS,outfileDirS2);
+
+
+
+
     }
 
 
+    /**
+     *
+     * @param inputVCFFileS //六倍体输入文件，目的是为了提取 taxa list 和 pos 信息
+     * @param infileS //Loter 产生的结果文件
+     * @param outfileDirS //输出文件路径，NOTE：每个个体生成一个文件
+     * @param outfileDirS2 //输出文件路径，将所有个体合并在一起，生成一个最终的结果文件
+     */
     public void getProportion(String inputVCFFileS,String infileS,String outfileDirS,String outfileDirS2){
 //        inputVCFFileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/024_Loter/000_ancestralVCF_byChrID_hvsc/chr001_vmap2.1.ancestral.hvsc.vcf.gz";
 //        infileS = "/Users/Aoyue/project/wheatVMap2_1000/002_dataAnalysis/024_Loter/001_V2_Anc_LAI/chr001_vmap2.1_Anc_onlyGenotype_imputation_LAI.txt.gz";

@@ -173,8 +173,8 @@ public class GeneticLoadEntrance {
 
         System.out.println("Aoyue Repository --- Here is the entrance of GeneticLoad!\n");
         System.out.println(new SimpleDateFormat().format(new Date()) + "\tbegin.");
-//        new GeneticLoadEntrance();
-        new GeneticLoadEntrance(args);
+        new GeneticLoadEntrance();
+//        new GeneticLoadEntrance(args);
 
         System.out.println(new SimpleDateFormat().format(new Date()) + "\tend.");
 
