@@ -129,9 +129,7 @@ public class VMap2S1000 {
 //        String outfileDirS2 = "/Users/Aoyue/Documents/test2";
 //        this.getProportion(inputVCFFileS,infileS,outfileDirS,outfileDirS2);
 
-
-
-
+        System.out.println("test");
     }
 
 
